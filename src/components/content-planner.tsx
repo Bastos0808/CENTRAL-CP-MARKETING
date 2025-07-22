@@ -367,10 +367,12 @@ export default function ContentPlanner() {
                               >
                                   <div className="flex justify-between items-start">
                                       <p className="font-semibold text-sm flex-1 pr-2">{post.title}</p>
-                                      <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEditDialog(post)}><Edit className="h-3 w-3" /></Button>
-                                          <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleDeletePost(post.id)}><Trash2 className="h-3 w-3" /></Button>
-                                      </div>
+                                       {post.status === 'idea' && (
+                                        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEditDialog(post)}><Edit className="h-3 w-3" /></Button>
+                                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleDeletePost(post.id)}><Trash2 className="h-3 w-3" /></Button>
+                                        </div>
+                                      )}
                                   </div>
                                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{post.description}</p>
 
