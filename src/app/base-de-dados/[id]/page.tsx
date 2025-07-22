@@ -26,7 +26,10 @@ import {
   Info,
   FileText,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Frown,
+  Save,
+  Loader2
 } from "lucide-react";
 import {
   Select,
@@ -49,6 +52,8 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
 const markdownToHtml = (markdown: string) => {
@@ -131,6 +136,11 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  
+  const [personaPains, setPersonaPains] = useState('');
+  const [competitors, setCompetitors] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
 
   useEffect(() => {
     if (!clientId) return;
@@ -141,7 +151,11 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setClient({ id: docSnap.id, ...docSnap.data() } as Client);
+          const clientData = { id: docSnap.id, ...docSnap.data() } as Client;
+          setClient(clientData);
+          setPersonaPains(clientData.briefing.publicoPersona.dores || '');
+          setCompetitors(clientData.briefing.concorrenciaMercado.principaisConcorrentes || '');
+
         } else {
           notFound();
         }
@@ -154,6 +168,31 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
     fetchClient();
   }, [clientId]);
+
+  const handleStrategicUpdate = async () => {
+      if (!client) return;
+      setIsSaving(true);
+      const clientDocRef = doc(db, "clients", client.id);
+      try {
+        await updateDoc(clientDocRef, {
+            "briefing.publicoPersona.dores": personaPains,
+            "briefing.concorrenciaMercado.principaisConcorrentes": competitors
+        });
+        toast({
+            title: "Análise Estratégica Salva!",
+            description: "As informações de dores e concorrentes foram atualizadas.",
+        });
+      } catch (error) {
+          console.error("Error updating strategic analysis: ", error);
+          toast({
+              title: "Erro ao Salvar",
+              description: "Não foi possível salvar a análise. Tente novamente.",
+              variant: "destructive",
+          });
+      } finally {
+          setIsSaving(false);
+      }
+  };
 
   const handleStatusChange = async (newStatus: Client['status']) => {
     if (!client) return;
@@ -332,6 +371,44 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
             </CardContent>
           </Card>
         </section>
+
+        <section className="mb-8">
+          <Card>
+              <CardHeader>
+                  <CardTitle>Análise Estratégica</CardTitle>
+                  <CardDescription>Principais dores da persona e análise de concorrentes.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                  <div className="space-y-2">
+                      <Label htmlFor="personaPains" className="flex items-center gap-2 text-md font-semibold text-primary"><Frown className="h-5 w-5" /> Principais Dores da Persona</Label>
+                      <Textarea
+                          id="personaPains"
+                          placeholder="Ex: Dificuldade em encontrar fornecedores confiáveis, falta de tempo para gerenciar redes sociais, baixo retorno sobre o investimento em marketing..."
+                          value={personaPains}
+                          onChange={(e) => setPersonaPains(e.target.value)}
+                          className="min-h-[120px]"
+                      />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="competitors" className="flex items-center gap-2 text-md font-semibold text-primary"><Users className="h-5 w-5" /> Principais Concorrentes</Label>
+                      <Textarea
+                          id="competitors"
+                          placeholder="Liste os principais concorrentes e, se possível, aponte um ponto forte e um fraco de cada um."
+                          value={competitors}
+                          onChange={(e) => setCompetitors(e.target.value)}
+                          className="min-h-[120px]"
+                      />
+                  </div>
+                  <div className="flex justify-end">
+                      <Button onClick={handleStrategicUpdate} disabled={isSaving}>
+                          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                          {isSaving ? 'Salvando...' : 'Salvar Análise'}
+                      </Button>
+                  </div>
+              </CardContent>
+          </Card>
+        </section>
+
 
         <section className="mb-8">
           <Card>
