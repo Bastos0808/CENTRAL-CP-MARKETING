@@ -471,18 +471,18 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                     <Accordion type="single" collapsible className="w-full">
                         {sortedReports.map((report) => (
                             <AccordionItem value={report.id} key={report.id}>
-                                <div className="flex items-center w-full group">
-                                    <AccordionTrigger className='flex-1'>
-                                        <div className='flex justify-between items-center w-full pr-4'>
-                                            <span className='font-semibold'>Relatório de {format(new Date(report.createdAt), 'dd/MM/yyyy')}</span>
-                                            <span className='text-sm text-muted-foreground group-hover:hidden'>Clique para expandir</span>
+                                <div className="flex items-center justify-between w-full group pr-4">
+                                    <AccordionTrigger className="flex-1 py-4">
+                                        <div className="flex items-center gap-4">
+                                            <span className="font-semibold">Relatório de {format(new Date(report.createdAt), 'dd/MM/yyyy')}</span>
+                                            <span className="text-sm text-muted-foreground group-hover:hidden [.group:not(:hover)]:[data-state=closed]:inline [.group:not(:hover)]:[data-state=open]:hidden">Clique para expandir</span>
                                         </div>
                                     </AccordionTrigger>
-                                     <AlertDialog>
+                                    <AlertDialog>
                                         <AlertDialogTrigger asChild>
-                                           <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
-                                              <Trash2 className="h-4 w-4" />
-                                          </Button>
+                                            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
                                         </AlertDialogTrigger>
                                         <AlertDialogContent>
                                             <AlertDialogHeader>
@@ -503,7 +503,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
                                     </AlertDialog>
-
                                 </div>
                                 <AccordionContent>
                                     <div 
@@ -567,5 +566,3 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
-
-    
