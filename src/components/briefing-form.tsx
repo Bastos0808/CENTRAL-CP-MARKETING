@@ -56,8 +56,15 @@ const formSchema = z.object({
   publicoPersona: z.object({
     publicoAlvo: z.string().min(1, "Público-alvo é obrigatório."),
     persona: z.string().optional(),
+    dores: z.string().optional(),
   }),
   concorrenciaMercado: z.object({
+    competitors: z.array(z.object({
+      name: z.string().optional(),
+      website: z.string().optional(),
+      strengths: z.string().optional(),
+      weaknesses: z.string().optional(),
+    })).optional(),
     principaisConcorrentes: z.string().optional(),
     pontosFortesFracos: z.string().optional(),
   }),
@@ -172,14 +179,6 @@ const formSections: {
 ];
 
 
-function downloadJSON(data: object, filename: string) {
-  const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data, null, 2))}`;
-  const link = document.createElement("a");
-  link.href = jsonString;
-  link.download = filename;
-  link.click();
-}
-
 export default function BriefingForm() {
   const { toast } = useToast();
   const form = useForm<FormValues>({
@@ -199,7 +198,7 @@ export default function BriefingForm() {
   async function onSubmit(values: FormValues) {
     const submissionId = crypto.randomUUID();
     
-    // 1. Save to Firestore
+    // Save to Firestore
     try {
       const clientData = {
         id: submissionId,
@@ -211,7 +210,6 @@ export default function BriefingForm() {
         briefing: values, // Save the entire form
       };
 
-      // Use a custom ID to make it predictable
       const clientDocRef = doc(db, "clients", submissionId);
       await setDoc(clientDocRef, clientData);
       
@@ -230,12 +228,7 @@ export default function BriefingForm() {
       return; // Stop execution if save fails
     }
 
-    // 2. Download JSON backup
-    const dataToExport = { submissionId, ...values };
-    const companyName = values.informacoesOperacionais.nomeEmpresa.replace(/\s+/g, '_') || 'briefing';
-    downloadJSON(dataToExport, `${companyName}_${submissionId.substring(0,8)}.json`);
-
-    // 3. Reset the form
+    // Reset the form
     form.reset();
   }
 
@@ -288,7 +281,7 @@ export default function BriefingForm() {
             <div className="flex justify-end">
               <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
                 <Send className="mr-2 h-5 w-5" />
-                {form.formState.isSubmitting ? "Salvando..." : "Salvar Cliente e Exportar"}
+                {form.formState.isSubmitting ? "Salvando..." : "Salvar Cliente"}
               </Button>
             </div>
           </form>
@@ -297,4 +290,3 @@ export default function BriefingForm() {
     </Card>
   );
 }
-
