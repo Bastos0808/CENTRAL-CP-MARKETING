@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText } from 'lucide-react';
+import { ArrowRight, Database, FileText, CalendarCheck } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -53,6 +53,20 @@ export default function Home() {
               <Button className="w-full" variant="outline">
                 Gerar Relatório
                 <FileText className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card className="md:col-span-2 lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Planner de Conteúdo</CardTitle>
+            <CardDescription>Planeje e organize as publicações dos seus clientes.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/planner" passHref>
+              <Button className="w-full" variant="outline">
+                Acessar Planner
+                <CalendarCheck className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </CardContent>
