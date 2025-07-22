@@ -126,7 +126,7 @@ export default function ContentPlanner() {
         }
         acc[status].push(post);
         return acc;
-    }, {} as Record<ContentPost['status'], ContentPost[]>);
+    }, {} as Record<PostStatus, ContentPost[]>);
   }, [selectedClient?.contentPlanner]);
   
   const postsByDate = useMemo(() => {
@@ -488,3 +488,5 @@ export default function ContentPlanner() {
     </div>
   );
 }
+
+    
