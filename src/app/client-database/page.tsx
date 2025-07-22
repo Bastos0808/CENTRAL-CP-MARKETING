@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -14,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { format } from 'date-fns';
 
 interface Client {
   id: string;
@@ -24,11 +26,28 @@ interface Client {
   startDate: string;
 }
 
-const statusVariantMap: { [key: string]: "default" | "secondary" | "destructive" } = {
-    active: "default",
-    pending: "secondary",
-    inactive: "destructive",
+const statusMap: { 
+  [key in Client['status']]: { 
+    text: string; 
+    className: string;
+  } 
+} = {
+    active: { text: "Ativo", className: "bg-green-500/20 text-green-700 border-green-500/50 hover:bg-green-500/30" },
+    pending: { text: "Pendente", className: "bg-yellow-500/20 text-yellow-700 border-yellow-500/50 hover:bg-yellow-500/30" },
+    inactive: { text: "Inativo", className: "bg-red-500/20 text-red-700 border-red-500/50 hover:bg-red-500/30" },
 };
+
+const formatDate = (dateString: string) => {
+  try {
+    // Adding T00:00:00 ensures the date is parsed in the local timezone, avoiding off-by-one day errors.
+    const date = new Date(`${dateString}T00:00:00`);
+    return format(date, 'dd/MM/yyyy');
+  } catch (error) {
+    console.error("Invalid date format:", dateString);
+    return "Data inválida";
+  }
+};
+
 
 export default function ClientDatabasePage() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -97,10 +116,13 @@ export default function ClientDatabasePage() {
                       <TableCell className="font-medium">{client.name}</TableCell>
                       <TableCell>{client.responsible}</TableCell>
                       <TableCell>{client.plan}</TableCell>
-                      <TableCell>{client.startDate}</TableCell>
+                      <TableCell>{formatDate(client.startDate)}</TableCell>
                       <TableCell className="text-right">
-                         <Badge variant={statusVariantMap[client.status] || "secondary"}>
-                          {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+                         <Badge 
+                           className={statusMap[client.status]?.className || "bg-gray-500/20 text-gray-700 border-gray-500/50"}
+                           variant="outline"
+                         >
+                          {statusMap[client.status]?.text || client.status}
                         </Badge>
                       </TableCell>
                     </TableRow>
