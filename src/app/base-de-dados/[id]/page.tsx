@@ -54,6 +54,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
 const markdownToHtml = (markdown: string) => {
@@ -77,6 +78,13 @@ interface Report {
     id: string;
     createdAt: string;
     analysis: string;
+}
+
+interface Competitor {
+  name: string;
+  website: string;
+  strengths: string;
+  weaknesses: string;
 }
 
 interface Client {
@@ -138,7 +146,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const { toast } = useToast();
   
   const [personaPains, setPersonaPains] = useState('');
-  const [competitors, setCompetitors] = useState('');
+  const [competitors, setCompetitors] = useState<Competitor[]>(Array(3).fill({ name: '', website: '', strengths: '', weaknesses: '' }));
   const [isSaving, setIsSaving] = useState(false);
 
 
@@ -154,7 +162,18 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
           const clientData = { id: docSnap.id, ...docSnap.data() } as Client;
           setClient(clientData);
           setPersonaPains(clientData.briefing.publicoPersona.dores || '');
-          setCompetitors(clientData.briefing.concorrenciaMercado.principaisConcorrentes || '');
+          
+          // Initialize competitors from briefing data
+          const savedCompetitors = clientData.briefing.concorrenciaMercado?.competitors;
+          if (Array.isArray(savedCompetitors) && savedCompetitors.length > 0) {
+              const filledCompetitors = savedCompetitors.slice(0, 3);
+              while (filledCompetitors.length < 3) {
+                  filledCompetitors.push({ name: '', website: '', strengths: '', weaknesses: '' });
+              }
+              setCompetitors(filledCompetitors);
+          } else {
+              setCompetitors(Array(3).fill({ name: '', website: '', strengths: '', weaknesses: '' }));
+          }
 
         } else {
           notFound();
@@ -168,6 +187,12 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
     fetchClient();
   }, [clientId]);
+  
+  const handleCompetitorChange = (index: number, field: keyof Competitor, value: string) => {
+    const updatedCompetitors = [...competitors];
+    updatedCompetitors[index] = { ...updatedCompetitors[index], [field]: value };
+    setCompetitors(updatedCompetitors);
+  };
 
   const handleStrategicUpdate = async () => {
       if (!client) return;
@@ -176,7 +201,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       try {
         await updateDoc(clientDocRef, {
             "briefing.publicoPersona.dores": personaPains,
-            "briefing.concorrenciaMercado.principaisConcorrentes": competitors
+            "briefing.concorrenciaMercado.competitors": competitors
         });
         toast({
             title: "Análise Estratégica Salva!",
@@ -373,40 +398,65 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
         </section>
 
         <section className="mb-8">
-          <Card>
-              <CardHeader>
-                  <CardTitle>Análise Estratégica</CardTitle>
-                  <CardDescription>Principais dores da persona e análise de concorrentes.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                      <Label htmlFor="personaPains" className="flex items-center gap-2 text-md font-semibold text-primary"><Frown className="h-5 w-5" /> Principais Dores da Persona</Label>
-                      <Textarea
-                          id="personaPains"
-                          placeholder="Ex: Dificuldade em encontrar fornecedores confiáveis, falta de tempo para gerenciar redes sociais, baixo retorno sobre o investimento em marketing..."
-                          value={personaPains}
-                          onChange={(e) => setPersonaPains(e.target.value)}
-                          className="min-h-[120px]"
-                      />
-                  </div>
-                  <div className="space-y-2">
-                      <Label htmlFor="competitors" className="flex items-center gap-2 text-md font-semibold text-primary"><Users className="h-5 w-5" /> Principais Concorrentes</Label>
-                      <Textarea
-                          id="competitors"
-                          placeholder="Liste os principais concorrentes e, se possível, aponte um ponto forte e um fraco de cada um."
-                          value={competitors}
-                          onChange={(e) => setCompetitors(e.target.value)}
-                          className="min-h-[120px]"
-                      />
-                  </div>
-                  <div className="flex justify-end">
-                      <Button onClick={handleStrategicUpdate} disabled={isSaving}>
-                          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                          {isSaving ? 'Salvando...' : 'Salvar Análise'}
-                      </Button>
-                  </div>
-              </CardContent>
-          </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Análise Estratégica</CardTitle>
+                    <CardDescription>Principais dores da persona e análise de concorrentes.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="personaPains" className="flex items-center gap-2 text-md font-semibold text-primary"><Frown className="h-5 w-5" /> Principais Dores da Persona</Label>
+                        <Textarea
+                            id="personaPains"
+                            placeholder="Ex: Dificuldade em encontrar fornecedores confiáveis, falta de tempo para gerenciar redes sociais, baixo retorno sobre o investimento em marketing..."
+                            value={personaPains}
+                            onChange={(e) => setPersonaPains(e.target.value)}
+                            className="min-h-[120px]"
+                        />
+                    </div>
+
+                    <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
+                        <AccordionItem value="item-0">
+                            <AccordionTrigger>
+                                <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Users className="h-5 w-5" /> Análise de Concorrentes</Label>
+                            </AccordionTrigger>
+                            <AccordionContent className="space-y-6 pt-4">
+                                {competitors.map((competitor, index) => (
+                                    <div key={index} className="p-4 border rounded-lg space-y-4 bg-muted/20">
+                                        <h4 className="font-semibold text-foreground">Concorrente {index + 1}</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-1">
+                                                <Label htmlFor={`competitor-name-${index}`}>Nome do Concorrente</Label>
+                                                <Input id={`competitor-name-${index}`} value={competitor.name} onChange={(e) => handleCompetitorChange(index, 'name', e.target.value)} placeholder="Nome da empresa concorrente" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <Label htmlFor={`competitor-website-${index}`}>Website</Label>
+                                                <Input id={`competitor-website-${index}`} value={competitor.website} onChange={(e) => handleCompetitorChange(index, 'website', e.target.value)} placeholder="www.concorrente.com.br" />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <Label htmlFor={`competitor-strengths-${index}`}>Pontos Fortes</Label>
+                                            <Textarea id={`competitor-strengths-${index}`} value={competitor.strengths} onChange={(e) => handleCompetitorChange(index, 'strengths', e.target.value)} placeholder="O que eles fazem bem?" className="min-h-[80px]" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <Label htmlFor={`competitor-weaknesses-${index}`}>Pontos Fracos</Label>
+                                            <Textarea id={`competitor-weaknesses-${index}`} value={competitor.weaknesses} onChange={(e) => handleCompetitorChange(index, 'weaknesses', e.target.value)} placeholder="Onde eles podem melhorar?" className="min-h-[80px]" />
+                                        </div>
+                                    </div>
+                                ))}
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+
+
+                    <div className="flex justify-end">
+                        <Button onClick={handleStrategicUpdate} disabled={isSaving}>
+                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                            {isSaving ? 'Salvando...' : 'Salvar Análise'}
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
         </section>
 
 
