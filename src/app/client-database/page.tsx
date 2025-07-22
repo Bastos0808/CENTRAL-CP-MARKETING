@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -8,37 +11,18 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const clients = [
-  {
-    name: "Empresa Alpha",
-    responsible: "João Silva",
-    status: "active",
-    plan: "Plano Premium",
-    startDate: "01/02/2023",
-  },
-  {
-    name: "Comércio Beta",
-    responsible: "Maria Oliveira",
-    status: "inactive",
-    plan: "Plano Básico",
-    startDate: "15/07/2022",
-  },
-  {
-    name: "Serviços Gama",
-    responsible: "Carlos Pereira",
-    status: "active",
-    plan: "Plano Intermediário",
-    startDate: "20/09/2023",
-  },
-  {
-    name: "Indústria Delta",
-    responsible: "Ana Costa",
-    status: "pending",
-    plan: "Plano Premium",
-    startDate: "10/01/2024",
-  },
-];
+interface Client {
+  id: string;
+  name: string;
+  responsible: string;
+  status: "active" | "inactive" | "pending";
+  plan: string;
+  startDate: string;
+}
 
 const statusVariantMap: { [key: string]: "default" | "secondary" | "destructive" } = {
     active: "default",
@@ -47,6 +31,26 @@ const statusVariantMap: { [key: string]: "default" | "secondary" | "destructive"
 };
 
 export default function ClientDatabasePage() {
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "clients"));
+        const clientsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
+        setClients(clientsData);
+      } catch (error) {
+        console.error("Error fetching clients: ", error);
+        // Here you could show a toast notification to the user
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, []);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12">
       <div className="w-full max-w-6xl">
@@ -61,7 +65,9 @@ export default function ClientDatabasePage() {
         <Card>
           <CardHeader>
             <CardTitle>Lista de Clientes</CardTitle>
-            <CardDescription>Total de {clients.length} clientes.</CardDescription>
+            <CardDescription>
+              {loading ? "Carregando..." : `Total de ${clients.length} clientes.`}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -75,19 +81,37 @@ export default function ClientDatabasePage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {clients.map((client) => (
-                  <TableRow key={client.name}>
-                    <TableCell className="font-medium">{client.name}</TableCell>
-                    <TableCell>{client.responsible}</TableCell>
-                    <TableCell>{client.plan}</TableCell>
-                    <TableCell>{client.startDate}</TableCell>
-                    <TableCell className="text-right">
-                       <Badge variant={statusVariantMap[client.status] || "secondary"}>
-                        {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
-                      </Badge>
+                {loading ? (
+                  Array.from({ length: 4 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell><Skeleton className="h-5 w-3/4" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-3/4" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-2/4" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-2/4" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="h-5 w-16 inline-block" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : clients.length > 0 ? (
+                  clients.map((client) => (
+                    <TableRow key={client.id}>
+                      <TableCell className="font-medium">{client.name}</TableCell>
+                      <TableCell>{client.responsible}</TableCell>
+                      <TableCell>{client.plan}</TableCell>
+                      <TableCell>{client.startDate}</TableCell>
+                      <TableCell className="text-right">
+                         <Badge variant={statusVariantMap[client.status] || "secondary"}>
+                          {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="h-24 text-center">
+                      Nenhum cliente encontrado.
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </CardContent>
