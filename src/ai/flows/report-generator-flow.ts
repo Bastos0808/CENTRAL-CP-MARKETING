@@ -65,15 +65,16 @@ const reportGeneratorPrompt = ai.definePrompt({
       - 55-64: {{performanceData.faixaEtaria55a64}}
       - 65+: {{performanceData.faixaEtaria65mais}}
     
-    **4. Seguidores por Cidade (texto):**
-    \`\`\`text
-    {{{performanceData.cidadesSeguidores}}}
-    \`\`\`
+    **4. Seguidores por Cidade:**
+    {{#each performanceData.cidadesSeguidores}}
+    - {{this.key}}: {{this.value}}
+    {{/each}}
+    
 
-    **5. Melhores Hashtags (texto):**
-    \`\`\`text
-    {{{performanceData.melhoresHashtags}}}
-    \`\`\`
+    **5. Melhores Hashtags (por interações):**
+    {{#each performanceData.melhoresHashtags}}
+    - {{this.key}}: {{this.value}}
+    {{/each}}
     
     **Agora, gere o campo "analysis" com o texto completo do relatório em Markdown.**
   `,
@@ -86,7 +87,7 @@ const reportGeneratorFlow = ai.defineFlow(
     inputSchema: GenerateReportInputSchema,
     outputSchema: GenerateReportOutputSchema,
   },
-  async (input) => {    
+  async (input) => {
     const { output } = await reportGeneratorPrompt(input);
     return output!;
   }

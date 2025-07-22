@@ -3,6 +3,11 @@
  */
 import { z } from 'zod';
 
+const keyValueSchema = z.object({
+  key: z.string().min(1, 'O nome é obrigatório.'),
+  value: z.string().min(1, 'O valor é obrigatório.'),
+});
+
 export const performanceSchema = z.object({
   seguidores: z.string().optional().describe('Número total de seguidores.'),
   seguidoresVariacao: z.string().optional().describe('Variação percentual de seguidores.'),
@@ -36,8 +41,8 @@ export const performanceSchema = z.object({
   faixaEtaria65mais: z.string().optional().describe('Número de seguidores na faixa etária de 65+ anos.'),
 
   // Location and Hashtags
-  cidadesSeguidores: z.string().optional().describe('Dados de seguidores por cidade, em formato de texto.'),
-  melhoresHashtags: z.string().optional().describe('Dados de melhores hashtags por interações, em formato de texto.'),
+  cidadesSeguidores: z.array(keyValueSchema).optional().describe('Dados de seguidores por cidade.'),
+  melhoresHashtags: z.array(keyValueSchema).optional().describe('Dados de melhores hashtags por interações.'),
 
 }).describe('Os dados de desempenho do período.');
 
