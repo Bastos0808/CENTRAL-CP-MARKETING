@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, type DragEvent } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -21,6 +21,8 @@ import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { cn } from '@/lib/utils';
+
 
 interface Client {
   id: string;
@@ -28,12 +30,14 @@ interface Client {
   contentPlanner?: ContentPost[];
 }
 
+type PostStatus = 'idea' | 'production' | 'posted';
+
 interface ContentPost {
   id: string;
   title: string;
   description: string;
   postDate: string; // YYYY-MM-DD
-  status: 'idea' | 'production' | 'posted';
+  status: PostStatus;
   type: 'arte' | 'reels' | 'carrossel';
 }
 
@@ -47,11 +51,12 @@ const postSchema = z.object({
 
 type PostFormValues = z.infer<typeof postSchema>;
 
-const statusMap = {
+const statusMap: Record<PostStatus, { title: string; className: string }> = {
   idea: { title: '💡 Ideias', className: 'bg-blue-500/10' },
   production: { title: '📋 Em Produção', className: 'bg-yellow-500/10' },
   posted: { title: '✅ Postado', className: 'bg-green-500/10' },
 };
+
 
 const formatDate = (dateString: string) => {
     if (!dateString) return '';
@@ -70,6 +75,8 @@ export default function ContentPlanner() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<ContentPost | null>(null);
+  const [draggedPost, setDraggedPost] = useState<ContentPost | null>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<PostStatus | null>(null);
   
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
@@ -224,6 +231,54 @@ export default function ContentPlanner() {
           </Popover>
       );
   };
+  
+  // Drag and Drop Handlers
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, post: ContentPost) => {
+      setDraggedPost(post);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>, status: PostStatus) => {
+      e.preventDefault();
+      setDragOverColumn(status);
+  };
+
+  const handleDragLeave = () => {
+      setDragOverColumn(null);
+  };
+
+  const handleDrop = async (e: DragEvent<HTMLDivElement>, newStatus: PostStatus) => {
+      e.preventDefault();
+      setDragOverColumn(null);
+      if (!draggedPost || !selectedClient || draggedPost.status === newStatus) {
+          setDraggedPost(null);
+          return;
+      }
+
+      const updatedPlanner = (selectedClient.contentPlanner || []).map(post => 
+          post.id === draggedPost.id ? { ...post, status: newStatus } : post
+      );
+      
+      // Update state immediately for better UX
+      setSelectedClient(prev => prev ? { ...prev, contentPlanner: updatedPlanner } : null);
+      
+      const clientDocRef = doc(db, 'clients', selectedClient.id);
+      try {
+          await updateDoc(clientDocRef, { contentPlanner: updatedPlanner });
+          toast({ title: "Status do Post Atualizado!" });
+      } catch (error) {
+          // Revert state if Firebase update fails
+          setSelectedClient(prev => {
+              if (!prev) return null;
+              const revertedPlanner = (prev.contentPlanner || []).map(post => 
+                  post.id === draggedPost.id ? { ...post, status: draggedPost.status } : post
+              );
+              return { ...prev, contentPlanner: revertedPlanner };
+          });
+          toast({ title: "Erro ao atualizar o post.", variant: "destructive" });
+      } finally {
+          setDraggedPost(null);
+      }
+  };
 
 
   return (
@@ -246,15 +301,34 @@ export default function ContentPlanner() {
       {selectedClient && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-              {Object.entries(statusMap).map(([statusKey, statusValue]) => (
-                  <Card key={statusKey} className={`min-h-[200px] flex flex-col ${statusValue.className}`}>
+              {(Object.keys(statusMap) as PostStatus[]).map((statusKey) => (
+                  <Card 
+                    key={statusKey} 
+                    className={cn(
+                        'min-h-[200px] flex flex-col transition-colors', 
+                        statusMap[statusKey].className,
+                        dragOverColumn === statusKey && 'border-primary border-2'
+                    )}
+                    onDragOver={(e) => handleDragOver(e, statusKey)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, statusKey)}
+                  >
                       <CardHeader>
-                          <CardTitle className="text-lg">{statusValue.title}</CardTitle>
+                          <CardTitle className="text-lg">{statusMap[statusKey].title}</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-4 flex-1 flex flex-col">
                           <div className='flex-1 space-y-4'>
-                            {(sortedPosts[statusKey as ContentPost['status']] || []).map(post => (
-                              <Card key={post.id} className="p-3 bg-background/80 backdrop-blur-sm group shadow-sm hover:shadow-md transition-shadow">
+                            {(sortedPosts[statusKey] || []).map(post => (
+                              <Card 
+                                key={post.id}
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, post)}
+                                onDragEnd={() => setDraggedPost(null)}
+                                className={cn(
+                                  "p-3 bg-background/80 backdrop-blur-sm group shadow-sm hover:shadow-md transition-shadow cursor-grab",
+                                  draggedPost?.id === post.id && 'opacity-50'
+                                )}
+                              >
                                   <div className="flex justify-between items-start">
                                       <p className="font-semibold text-sm flex-1 pr-2">{post.title}</p>
                                       <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -338,8 +412,8 @@ export default function ContentPlanner() {
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <SelectTrigger><SelectValue /></SelectTrigger>
                                 <SelectContent>
-                                    {Object.entries(statusMap).map(([key, val]) => (
-                                        <SelectItem key={key} value={key}>{val.title}</SelectItem>
+                                    {(Object.keys(statusMap) as PostStatus[]).map((key) => (
+                                        <SelectItem key={key} value={key}>{statusMap[key].title}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -359,3 +433,4 @@ export default function ContentPlanner() {
     </div>
   );
 }
+
