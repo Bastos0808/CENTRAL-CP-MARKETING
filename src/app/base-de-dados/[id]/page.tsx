@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, useRef, type ChangeEvent } from 'react';
+import { useEffect, useState, useRef, type ChangeEvent, use } from 'react';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { notFound, useRouter } from 'next/navigation';
@@ -155,7 +155,7 @@ const InfoCard = ({ title, value, icon: Icon }: { title: string; value?: string;
 
 export default function ClientDossierPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const clientId = params.id;
+  const clientId = use(params).id;
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
