@@ -15,7 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { FileText, Loader2, Wand2 } from "lucide-react";
-import { generateReport, GenerateReportInput } from '@/ai/flows/report-generator-flow';
+import { generateReport } from '@/ai/flows/report-generator-flow';
+import type { GenerateReportInput } from '@/ai/schemas/report-schemas';
 import { Skeleton } from './ui/skeleton';
 
 interface Client {
