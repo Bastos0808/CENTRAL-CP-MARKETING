@@ -77,7 +77,7 @@ export default function GeneratedReport({ report, client, isLoading, onSave }: G
     });
     
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-    pdf.save(`Relatorio_${client.name.replace(/\s+/g, '_')}_${new Date().toLocaleDate-BR').replace(/\//g, '-')}.pdf`);
+    pdf.save(`Relatorio_${client.name.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`);
   };
 
   return (
