@@ -16,6 +16,12 @@ export const IdeaGeneratorInputSchema = z.object({
     .describe(
       'O conteúdo completo do briefing do cliente em formato JSON.'
     ),
+  clientReports: z
+    .string()
+    .describe(
+      'O histórico de relatórios de desempenho do cliente em formato JSON.'
+    ),
+  postType: z.enum(['arte', 'reels', 'carrossel']).describe('O tipo de post a ser criado.'),
 });
 export type IdeaGeneratorInput = z.infer<typeof IdeaGeneratorInputSchema>;
 

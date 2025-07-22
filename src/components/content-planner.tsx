@@ -30,6 +30,7 @@ interface Client {
   name: string;
   briefing: any;
   contentPlanner?: ContentPost[];
+  reports?: any[]; // Added reports to client type
 }
 
 type PostStatus = 'idea' | 'production' | 'posted';
@@ -85,12 +86,14 @@ export default function ContentPlanner() {
 
 
   const { toast } = useToast();
-  const { control, handleSubmit, reset, setValue } = useForm<PostFormValues>({
+  const { control, handleSubmit, reset, setValue, watch } = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
     defaultValues: {
       title: "", description: "", postDate: format(new Date(), 'yyyy-MM-dd'), type: "arte", status: 'idea',
     }
   });
+
+  const postType = watch('type');
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -162,9 +165,12 @@ export default function ContentPlanner() {
            if (!clientSnap.exists()) {
               throw new Error("Cliente não encontrado.");
           }
+          const clientData = clientSnap.data();
           
-          const clientBriefing = JSON.stringify(clientSnap.data()?.briefing || {}, null, 2);
-          const result = await generateIdeas({ clientBriefing });
+          const clientBriefing = JSON.stringify(clientData?.briefing || {}, null, 2);
+          const clientReports = JSON.stringify(clientData?.reports || [], null, 2);
+
+          const result = await generateIdeas({ clientBriefing, clientReports, postType });
 
           setValue('title', result.idea.title);
           setValue('description', result.idea.description);
