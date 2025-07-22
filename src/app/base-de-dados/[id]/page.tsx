@@ -1,11 +1,12 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, type ChangeEvent } from 'react';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { notFound, useRouter } from 'next/navigation';
 import { use } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -32,7 +33,8 @@ import {
   Loader2,
   Palette,
   Type,
-  Image as ImageIcon,
+  ImageIcon,
+  Upload,
 } from "lucide-react";
 import {
   Select,
@@ -165,6 +167,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   // Visual Identity State
   const [visualIdentity, setVisualIdentity] = useState<VisualIdentity>({});
   const [isSavingVisual, setIsSavingVisual] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
 
   useEffect(() => {
@@ -215,6 +218,26 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const handleVisualIdentityChange = (field: keyof VisualIdentity, value: string) => {
     setVisualIdentity(prevState => ({...prevState, [field]: value}));
   };
+
+  const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 1024 * 1024) { // 1MB limit
+        toast({
+          title: "Arquivo Muito Grande",
+          description: "Por favor, selecione um logo com menos de 1MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleVisualIdentityChange('logoUrl', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
 
   const handleVisualIdentityUpdate = async () => {
       if (!client) return;
@@ -414,45 +437,65 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                     <CardDescription>Logo, cores e fontes que definem a marca do cliente.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                        <Label htmlFor="logoUrl" className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> URL do Logo</Label>
-                        <Input 
-                            id="logoUrl"
-                            placeholder="https://exemplo.com/logo.png"
-                            value={visualIdentity.logoUrl || ''}
-                            onChange={(e) => handleVisualIdentityChange('logoUrl', e.target.value)}
-                        />
-                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                      <div className="space-y-2">
+                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo da Empresa</Label>
+                          <div 
+                            className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
+                            onClick={() => fileInputRef.current?.click()}
+                          >
+                            {visualIdentity.logoUrl ? (
+                              <Image src={visualIdentity.logoUrl} alt="Preview do Logo" layout="fill" objectFit="contain" className="p-2" />
+                            ) : (
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
+                                <Upload className="w-8 h-8 mb-4" />
+                                <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
+                                <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
+                              </div>
+                            )}
+                            <input 
+                              ref={fileInputRef}
+                              id="logo-upload" 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/png, image/jpeg, image/svg+xml"
+                              onChange={handleLogoUpload}
+                            />
+                          </div>
+                      </div>
 
-                    <div className="space-y-4">
-                         <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Palette className="h-5 w-5" /> Cores da Marca</Label>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-1">
-                                <Label htmlFor="primaryColor">Cor Primária (Hex)</Label>
-                                <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)}/>
-                            </div>
-                            <div className="space-y-1">
-                                <Label htmlFor="secondaryColor">Cor Secundária (Hex)</Label>
-                                <Input id="secondaryColor" placeholder="#000000" value={visualIdentity.secondaryColor || ''} onChange={(e) => handleVisualIdentityChange('secondaryColor', e.target.value)}/>
-                            </div>
-                            <div className="space-y-1">
-                                <Label htmlFor="accentColor">Cor de Destaque (Hex)</Label>
-                                <Input id="accentColor" placeholder="#FF5733" value={visualIdentity.accentColor || ''} onChange={(e) => handleVisualIdentityChange('accentColor', e.target.value)}/>
-                            </div>
-                        </div>
-                    </div>
-                     <div className="space-y-4">
-                         <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Type className="h-5 w-5" /> Fontes da Marca</Label>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <Label htmlFor="primaryFont">Fonte Primária</Label>
-                                <Input id="primaryFont" placeholder="Ex: Montserrat" value={visualIdentity.primaryFont || ''} onChange={(e) => handleVisualIdentityChange('primaryFont', e.target.value)}/>
-                            </div>
-                            <div className="space-y-1">
-                                <Label htmlFor="secondaryFont">Fonte Secundária</Label>
-                                <Input id="secondaryFont" placeholder="Ex: Lato" value={visualIdentity.secondaryFont || ''} onChange={(e) => handleVisualIdentityChange('secondaryFont', e.target.value)}/>
-                            </div>
-                        </div>
+                      <div className="space-y-6">
+                          <div className="space-y-4">
+                              <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Palette className="h-5 w-5" /> Cores da Marca</Label>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  <div className="space-y-1">
+                                      <Label htmlFor="primaryColor">Cor Primária (Hex)</Label>
+                                      <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)}/>
+                                  </div>
+                                  <div className="space-y-1">
+                                      <Label htmlFor="secondaryColor">Cor Secundária (Hex)</Label>
+                                      <Input id="secondaryColor" placeholder="#000000" value={visualIdentity.secondaryColor || ''} onChange={(e) => handleVisualIdentityChange('secondaryColor', e.target.value)}/>
+                                  </div>
+                                  <div className="space-y-1">
+                                      <Label htmlFor="accentColor">Cor de Destaque (Hex)</Label>
+                                      <Input id="accentColor" placeholder="#FF5733" value={visualIdentity.accentColor || ''} onChange={(e) => handleVisualIdentityChange('accentColor', e.target.value)}/>
+                                  </div>
+                              </div>
+                          </div>
+                          <div className="space-y-4">
+                              <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Type className="h-5 w-5" /> Fontes da Marca</Label>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-1">
+                                      <Label htmlFor="primaryFont">Fonte Primária</Label>
+                                      <Input id="primaryFont" placeholder="Ex: Montserrat" value={visualIdentity.primaryFont || ''} onChange={(e) => handleVisualIdentityChange('primaryFont', e.target.value)}/>
+                                  </div>
+                                  <div className="space-y-1">
+                                      <Label htmlFor="secondaryFont">Fonte Secundária</Label>
+                                      <Input id="secondaryFont" placeholder="Ex: Lato" value={visualIdentity.secondaryFont || ''} onChange={(e) => handleVisualIdentityChange('secondaryFont', e.target.value)}/>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
                     </div>
                     <div className="flex justify-end">
                         <Button onClick={handleVisualIdentityUpdate} disabled={isSavingVisual}>
@@ -668,3 +711,5 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
+
+    
