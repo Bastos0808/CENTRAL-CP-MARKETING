@@ -94,6 +94,7 @@ interface Competitor {
 
 interface VisualIdentity {
     logoUrl?: string;
+    secondaryLogoUrl?: string;
     primaryColor?: string;
     secondaryColor?: string;
     accentColor?: string;
@@ -167,7 +168,8 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   // Visual Identity State
   const [visualIdentity, setVisualIdentity] = useState<VisualIdentity>({});
   const [isSavingVisual, setIsSavingVisual] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef1 = useRef<HTMLInputElement>(null);
+  const fileInputRef2 = useRef<HTMLInputElement>(null);
 
 
   useEffect(() => {
@@ -219,7 +221,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     setVisualIdentity(prevState => ({...prevState, [field]: value}));
   };
 
-  const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>, fieldName: 'logoUrl' | 'secondaryLogoUrl') => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 1024 * 1024) { // 1MB limit
@@ -232,7 +234,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       }
       const reader = new FileReader();
       reader.onloadend = () => {
-        handleVisualIdentityChange('logoUrl', reader.result as string);
+        handleVisualIdentityChange(fieldName, reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -437,15 +439,15 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                     <CardDescription>Logo, cores e fontes que definem a marca do cliente.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                       <div className="space-y-2">
-                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo da Empresa</Label>
+                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo Primário</Label>
                           <div 
                             className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
-                            onClick={() => fileInputRef.current?.click()}
+                            onClick={() => fileInputRef1.current?.click()}
                           >
                             {visualIdentity.logoUrl ? (
-                              <Image src={visualIdentity.logoUrl} alt="Preview do Logo" layout="fill" objectFit="contain" className="p-2" />
+                              <Image src={visualIdentity.logoUrl} alt="Preview do Logo Primário" layout="fill" objectFit="contain" className="p-2" />
                             ) : (
                               <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
                                 <Upload className="w-8 h-8 mb-4" />
@@ -454,12 +456,38 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                               </div>
                             )}
                             <input 
-                              ref={fileInputRef}
-                              id="logo-upload" 
+                              ref={fileInputRef1}
+                              id="logo-upload-1" 
                               type="file" 
                               className="hidden" 
                               accept="image/png, image/jpeg, image/svg+xml"
-                              onChange={handleLogoUpload}
+                              onChange={(e) => handleLogoUpload(e, 'logoUrl')}
+                            />
+                          </div>
+                      </div>
+
+                      <div className="space-y-2">
+                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo Secundário</Label>
+                          <div 
+                            className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
+                            onClick={() => fileInputRef2.current?.click()}
+                          >
+                            {visualIdentity.secondaryLogoUrl ? (
+                              <Image src={visualIdentity.secondaryLogoUrl} alt="Preview do Logo Secundário" layout="fill" objectFit="contain" className="p-2" />
+                            ) : (
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
+                                <Upload className="w-8 h-8 mb-4" />
+                                <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
+                                <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
+                              </div>
+                            )}
+                            <input 
+                              ref={fileInputRef2}
+                              id="logo-upload-2" 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/png, image/jpeg, image/svg+xml"
+                              onChange={(e) => handleLogoUpload(e, 'secondaryLogoUrl')}
                             />
                           </div>
                       </div>
@@ -467,7 +495,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                       <div className="space-y-6">
                           <div className="space-y-4">
                               <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Palette className="h-5 w-5" /> Cores da Marca</Label>
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="grid grid-cols-1 gap-4">
                                   <div className="space-y-1">
                                       <Label htmlFor="primaryColor">Cor Primária (Hex)</Label>
                                       <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)}/>
@@ -484,7 +512,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                           </div>
                           <div className="space-y-4">
                               <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Type className="h-5 w-5" /> Fontes da Marca</Label>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="grid grid-cols-1 gap-4">
                                   <div className="space-y-1">
                                       <Label htmlFor="primaryFont">Fonte Primária</Label>
                                       <Input id="primaryFont" placeholder="Ex: Montserrat" value={visualIdentity.primaryFont || ''} onChange={(e) => handleVisualIdentityChange('primaryFont', e.target.value)}/>
@@ -727,5 +755,3 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
-
-    
