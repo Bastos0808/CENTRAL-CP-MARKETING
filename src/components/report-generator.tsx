@@ -10,10 +10,10 @@ import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Loader2, Wand2 } from "lucide-react";
+import { FileText, Loader2, Wand2, Users, BarChart2, MousePointerClick, Eye, Heart, MessageSquare, Share2, Bookmark } from "lucide-react";
 import { generateReport } from '@/ai/flows/report-generator-flow';
 import type { GenerateReportInput } from '@/ai/schemas/report-schemas';
 import { Skeleton } from './ui/skeleton';
@@ -23,12 +23,43 @@ interface Client {
   name: string;
 }
 
+const performanceSchema = z.object({
+  seguidores: z.string().optional(),
+  visualizacoesPerfil: z.string().optional(),
+  alcance: z.string().optional(),
+  impressoes: z.string().optional(),
+  cliquesSite: z.string().optional(),
+  publicacoes: z.string().optional(),
+  stories: z.string().optional(),
+  reels: z.string().optional(),
+  curtidas: z.string().optional(),
+  comentarios: z.string().optional(),
+  compartilhamentos: z.string().optional(),
+  salvos: z.string().optional(),
+});
+
 const reportSchema = z.object({
   clientId: z.string().min(1, "Selecione um cliente."),
-  performanceData: z.string().min(1, "Os dados de desempenho são obrigatórios."),
+  performanceData: performanceSchema,
 });
 
 type ReportFormValues = z.infer<typeof reportSchema>;
+
+const performanceFields: { name: keyof z.infer<typeof performanceSchema>, label: string, icon: React.ElementType }[] = [
+  { name: 'seguidores', label: 'Seguidores', icon: Users },
+  { name: 'visualizacoesPerfil', label: 'Visualizações no Perfil', icon: Eye },
+  { name: 'alcance', label: 'Alcance', icon: BarChart2 },
+  { name: 'impressoes', label: 'Impressões', icon: BarChart2 },
+  { name: 'cliquesSite', label: 'Cliques no Site', icon: MousePointerClick },
+  { name: 'publicacoes', label: 'Publicações', icon: FileText },
+  { name: 'stories', label: 'Stories', icon: Bookmark },
+  { name: 'reels', label: 'Reels', icon: FileText },
+  { name: 'curtidas', label: 'Curtidas', icon: Heart },
+  { name: 'comentarios', label: 'Comentários', icon: MessageSquare },
+  { name: 'compartilhamentos', label: 'Compartilhamentos', icon: Share2 },
+  { name: 'salvos', label: 'Salvos', icon: Bookmark },
+];
+
 
 export default function ReportGenerator() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -43,6 +74,22 @@ export default function ReportGenerator() {
     formState: { errors },
   } = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
+    defaultValues: {
+      performanceData: {
+        seguidores: '',
+        visualizacoesPerfil: '',
+        alcance: '',
+        impressoes: '',
+        cliquesSite: '',
+        publicacoes: '',
+        stories: '',
+        reels: '',
+        curtidas: '',
+        comentarios: '',
+        compartilhamentos: '',
+        salvos: '',
+      }
+    }
   });
 
   useEffect(() => {
@@ -139,22 +186,33 @@ export default function ReportGenerator() {
               {errors.clientId && <p className="text-sm text-destructive">{errors.clientId.message}</p>}
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="performance-data">Dados de Desempenho (Cole os dados do PDF aqui)</Label>
-               <Controller
-                  name="performanceData"
-                  control={control}
-                  render={({ field }) => (
-                    <Textarea
-                      id="performance-data"
-                      placeholder="Copie e cole as métricas do seu relatório (ex: Seguidores: 3.972, Curtidas: 931, Visualizações: 26.419, etc.)."
-                      className="min-h-[150px] font-mono text-xs"
-                       {...field}
-                    />
-                  )}
-                />
-              {errors.performanceData && <p className="text-sm text-destructive">{errors.performanceData.message}</p>}
+            <div className="space-y-4">
+              <Label>Dados de Desempenho</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {performanceFields.map(({ name, label, icon: Icon }) => (
+                  <Controller
+                    key={name}
+                    name={`performanceData.${name}`}
+                    control={control}
+                    render={({ field }) => (
+                      <div className="space-y-1">
+                        <Label htmlFor={name} className="flex items-center text-xs text-muted-foreground gap-1.5">
+                          <Icon className="h-3.5 w-3.5" />
+                          {label}
+                        </Label>
+                        <Input
+                          id={name}
+                          placeholder="0"
+                          {...field}
+                          className="font-mono"
+                        />
+                      </div>
+                    )}
+                  />
+                ))}
+              </div>
             </div>
+
             <div className="flex justify-end">
               <Button type="submit" size="lg" disabled={isGenerating}>
                 {isGenerating ? (

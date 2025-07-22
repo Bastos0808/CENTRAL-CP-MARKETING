@@ -3,10 +3,26 @@
  */
 import { z } from 'zod';
 
+const PerformanceDataSchema = z.object({
+  seguidores: z.string().optional().describe('Número total de seguidores.'),
+  visualizacoesPerfil: z.string().optional().describe('Número de visualizações no perfil.'),
+  alcance: z.string().optional().describe('Número de contas únicas alcançadas.'),
+  impressoes: z.string().optional().describe('Número total de vezes que o conteúdo foi exibido.'),
+  cliquesSite: z.string().optional().describe('Número de cliques no link do site na bio ou em posts.'),
+  publicacoes: z.string().optional().describe('Número de publicações no feed.'),
+  stories: z.string().optional().describe('Número de stories publicados.'),
+  reels: z.string().optional().describe('Número de reels publicados.'),
+  curtidas: z.string().optional().describe('Número total de curtidas.'),
+  comentarios: z.string().optional().describe('Número total de comentários.'),
+  compartilhamentos: z.string().optional().describe('Número total de compartilhamentos.'),
+  salvos: z.string().optional().describe('Número total de posts salvos.'),
+}).describe('Os dados de desempenho do período.');
+
+
 // Define o schema de entrada para o fluxo
 export const GenerateReportInputSchema = z.object({
   clientBriefing: z.string().describe('O conteúdo completo do briefing do cliente em formato JSON.'),
-  performanceData: z.string().describe('Os dados brutos de desempenho, copiados de um relatório (ex: de um PDF). Contém métricas como seguidores, curtidas, comentários, etc.'),
+  performanceData: PerformanceDataSchema,
 });
 export type GenerateReportInput = z.infer<typeof GenerateReportInputSchema>;
 

@@ -28,7 +28,7 @@ const reportGeneratorPrompt = ai.definePrompt({
     **Instruções:**
     1.  **Analise o Briefing:** Entenda o negócio do cliente, seu público-alvo e seus objetivos gerais a partir do JSON do briefing.
     2.  **Analise os Dados de Desempenho:** Interprete as métricas fornecidas nos dados de desempenho. Calcule as variações percentuais se os dados anteriores forem fornecidos.
-    3.  **Escreva o Relatório:** Redija uma análise coesa e clara em formato Markdown. Organize o relatório em seções (ex: Visão Geral, Análise de Crescimento, Análise de Engajamento, Próximos Passos). Use os dados de desempenho para extrair o período do relatório, se disponível.
+    3.  **Escreva o Relatório:** Redija uma análise coesa e clara em formato Markdown. Organize o relatório em seções (ex: Visão Geral, Análise de Crescimento, Análise de Engajamento, Próximos Passos).
     4.  **Forneça Insights e Recomendações:** Não apenas liste os números. Explique o que eles significam. Destaque os pontos positivos e os pontos de melhoria. Ofereça recomendações claras e acionáveis para o próximo período.
     5.  **Mantenha o Tom de Voz:** Use um tom profissional, didático e parceiro, característico da CP Marketing Digital.
 
@@ -39,8 +39,19 @@ const reportGeneratorPrompt = ai.definePrompt({
     {{{clientBriefing}}}
     \`\`\`
 
-    **2. Dados de Desempenho Brutos:**
-    {{{performanceData}}}
+    **2. Dados de Desempenho:**
+    - Seguidores: {{performanceData.seguidores}}
+    - Visualizações no Perfil: {{performanceData.visualizacoesPerfil}}
+    - Alcance: {{performanceData.alcance}}
+    - Impressões: {{performanceData.impressoes}}
+    - Cliques no Site: {{performanceData.cliquesSite}}
+    - Publicações: {{performanceData.publicacoes}}
+    - Stories: {{performanceData.stories}}
+    - Reels: {{performanceData.reels}}
+    - Curtidas: {{performanceData.curtidas}}
+    - Comentários: {{performanceData.comentarios}}
+    - Compartilhamentos: {{performanceData.compartilhamentos}}
+    - Salvos: {{performanceData.salvos}}
 
     **Agora, gere o campo "analysis" com o texto completo do relatório em Markdown.**
   `,
@@ -54,6 +65,16 @@ const reportGeneratorFlow = ai.defineFlow(
     outputSchema: GenerateReportOutputSchema,
   },
   async (input) => {
+    // Transforma o objeto de dados de desempenho em uma string para o prompt
+    const performanceDataString = Object.entries(input.performanceData)
+      .map(([key, value]) => `- ${key}: ${value || 'Não informado'}`)
+      .join('\n');
+
+    const promptInput = {
+      ...input,
+      performanceData: performanceDataString,
+    };
+    
     const { output } = await reportGeneratorPrompt(input);
     return output!;
   }
