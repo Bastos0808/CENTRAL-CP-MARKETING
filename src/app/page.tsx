@@ -8,7 +8,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-8 md:p-12">
       <div className="w-full max-w-4xl text-center">
         <h1 className="text-5xl font-bold tracking-tight text-primary sm:text-6xl">
-          Bem-vindo à Intranet da CP Marketing
+          Bem-vindo à Central Mödus
         </h1>
         <p className="mt-6 text-lg text-muted-foreground">
           Acesse as ferramentas e recursos internos abaixo.
