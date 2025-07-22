@@ -22,7 +22,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Link href="/form-briefing" passHref>
-              <Button className="w-full">
+              <Button className="w-full" variant="outline">
                 Acessar Formulário
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -36,7 +36,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Link href="/client-database" passHref>
-              <Button className="w-full">
+              <Button className="w-full" variant="outline">
                 Acessar Base de Dados
                 <Database className="ml-2 h-4 w-4" />
               </Button>
@@ -50,7 +50,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Link href="/report-generator" passHref>
-              <Button className="w-full">
+              <Button className="w-full" variant="outline">
                 Gerar Relatório
                 <FileText className="ml-2 h-4 w-4" />
               </Button>

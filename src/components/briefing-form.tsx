@@ -250,7 +250,7 @@ export default function BriefingForm() {
             </Accordion>
 
             <div className="flex justify-end">
-              <Button type="submit" size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+              <Button type="submit" size="lg">
                 <Send className="mr-2 h-5 w-5" />
                 Enviar e Exportar JSON
               </Button>

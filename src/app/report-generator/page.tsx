@@ -54,7 +54,7 @@ export default function ReportGeneratorPage() {
                 />
               </div>
                <div className="flex justify-end">
-                <Button type="submit" size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Button type="submit" size="lg">
                   <FileText className="mr-2 h-5 w-5" />
                   Gerar Relatório com IA
                 </Button>
