@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Loader2, Wand2, Users, Heart, MessageSquare, ArrowUp, ArrowDown, Percent, BarChart2, TrendingUp, UserPlus, Eye } from "lucide-react";
+import { FileText, Loader2, Wand2, Users, Heart, MessageSquare, Percent, TrendingUp, UserPlus, Eye, PieChart, BarChartHorizontal } from "lucide-react";
 import { generateReport } from '@/ai/flows/report-generator-flow';
 import type { GenerateReportInput } from '@/ai/schemas/report-schemas';
 import { Skeleton } from './ui/skeleton';
@@ -39,45 +39,66 @@ const performanceFields: {
   comparisonField: {
     name: keyof z.infer<typeof performanceSchema>, 
     label: string,
-    icon: React.ElementType,
   }
 }[] = [
   { 
     name: 'seguidores', 
     label: 'Seguidores', 
     icon: Users, 
-    comparisonField: { name: 'seguidoresVariacao', label: 'Variação % Seguidores', icon: Percent }
+    comparisonField: { name: 'seguidoresVariacao', label: 'Variação' }
   },
   { 
     name: 'comecaramSeguir', 
     label: 'Começaram a Seguir', 
     icon: UserPlus, 
-    comparisonField: { name: 'comecaramSeguirVariacao', label: 'Variação % Novos Seguidores', icon: Percent }
+    comparisonField: { name: 'comecaramSeguirVariacao', label: 'Variação' }
   },
   { 
     name: 'visualizacoes', 
     label: 'Visualizações', 
     icon: Eye,
-    comparisonField: { name: 'visualizacoesVariacao', label: 'Variação % Visualizações', icon: Percent }
+    comparisonField: { name: 'visualizacoesVariacao', label: 'Variação' }
   },
   { 
     name: 'curtidas', 
     label: 'Curtidas', 
     icon: Heart,
-    comparisonField: { name: 'curtidasVariacao', label: 'Variação % Curtidas', icon: Percent }
+    comparisonField: { name: 'curtidasVariacao', label: 'Variação' }
   },
   { 
     name: 'comentarios', 
     label: 'Comentários', 
     icon: MessageSquare,
-    comparisonField: { name: 'comentariosVariacao', label: 'Variação % Comentários', icon: Percent }
+    comparisonField: { name: 'comentariosVariacao', label: 'Variação' }
   },
   { 
     name: 'taxaEngajamento', 
     label: 'Taxa de Engajamento', 
     icon: TrendingUp,
-    comparisonField: { name: 'taxaEngajamentoVariacao', label: 'Variação % Engajamento', icon: Percent }
+    comparisonField: { name: 'taxaEngajamentoVariacao', label: 'Variação' }
   },
+];
+
+const genderFields: {
+  name: keyof z.infer<typeof performanceSchema>,
+  label: string,
+}[] = [
+  { name: 'generoFeminino', label: 'Feminino (%)' },
+  { name: 'generoMasculino', label: 'Masculino (%)' },
+  { name: 'generoNaoEspecificado', label: 'Não Especificado (%)' },
+];
+
+const ageRangeFields: {
+  name: keyof z.infer<typeof performanceSchema>,
+  label: string,
+}[] = [
+  { name: 'faixaEtaria13a17', label: '13-17' },
+  { name: 'faixaEtaria18a24', label: '18-24' },
+  { name: 'faixaEtaria25a34', label: '25-34' },
+  { name: 'faixaEtaria35a44', label: '35-44' },
+  { name: 'faixaEtaria45a54', label: '45-54' },
+  { name: 'faixaEtaria55a64', label: '55-64' },
+  { name: 'faixaEtaria65mais', label: '65+' },
 ];
 
 
@@ -109,6 +130,16 @@ export default function ReportGenerator() {
         comentariosVariacao: '',
         taxaEngajamento: '',
         taxaEngajamentoVariacao: '',
+        generoFeminino: '',
+        generoMasculino: '',
+        generoNaoEspecificado: '',
+        faixaEtaria13a17: '',
+        faixaEtaria18a24: '',
+        faixaEtaria25a34: '',
+        faixaEtaria35a44: '',
+        faixaEtaria45a54: '',
+        faixaEtaria55a64: '',
+        faixaEtaria65mais: '',
       }
     }
   });
@@ -208,7 +239,7 @@ export default function ReportGenerator() {
             </div>
             
             <div className="space-y-4">
-              <Label>Dados de Desempenho (Visão Geral)</Label>
+              <Label className='text-lg font-semibold'>Dados de Desempenho (Visão Geral)</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {performanceFields.map(({ name, label, icon: Icon, comparisonField }) => (
                   <Card key={name} className="p-4 bg-muted/20">
@@ -237,12 +268,12 @@ export default function ReportGenerator() {
                         control={control}
                         render={({ field }) => (
                           <div className="space-y-1">
-                             <Label htmlFor={comparisonField.name} className="text-xs">Variação</Label>
+                             <Label htmlFor={comparisonField.name} className="text-xs">{comparisonField.label}</Label>
                             <div className="relative">
                                <Percent className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                                 <Input
                                 id={comparisonField.name}
-                                placeholder="0.00"
+                                placeholder="0.0"
                                 {...field}
                                 className="font-mono pl-7"
                                 />
@@ -253,6 +284,54 @@ export default function ReportGenerator() {
                     </div>
                   </Card>
                 ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Label className='text-lg font-semibold'>Dados Demográficos</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="p-4 bg-muted/20">
+                  <Label className="flex items-center text-sm text-muted-foreground gap-2 mb-2">
+                    <PieChart className="h-5 w-5" />
+                    Gênero
+                  </Label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {genderFields.map(({ name, label }) => (
+                      <Controller
+                        key={name}
+                        name={`performanceData.${name}`}
+                        control={control}
+                        render={({ field }) => (
+                          <div className="space-y-1">
+                            <Label htmlFor={name} className="text-xs">{label}</Label>
+                            <Input id={name} placeholder="0" {...field} className="font-mono" />
+                          </div>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </Card>
+                <Card className="p-4 bg-muted/20">
+                  <Label className="flex items-center text-sm text-muted-foreground gap-2 mb-2">
+                    <BarChartHorizontal className="h-5 w-5" />
+                    Faixa Etária (Seguidores)
+                  </Label>
+                   <div className="grid grid-cols-4 gap-2">
+                    {ageRangeFields.map(({ name, label }) => (
+                      <Controller
+                        key={name}
+                        name={`performanceData.${name}`}
+                        control={control}
+                        render={({ field }) => (
+                          <div className="space-y-1">
+                            <Label htmlFor={name} className="text-xs">{label}</Label>
+                            <Input id={name} placeholder="0" {...field} className="font-mono" />
+                          </div>
+                        )}
+                      />
+                    ))}
+                  </div>
+                </Card>
               </div>
             </div>
 

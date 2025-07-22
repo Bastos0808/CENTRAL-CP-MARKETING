@@ -22,16 +22,19 @@ export const performanceSchema = z.object({
   taxaEngajamento: z.string().optional().describe('Taxa de engajamento.'),
   taxaEngajamentoVariacao: z.string().optional().describe('Variação percentual da taxa de engajamento.'),
 
-  // Mantendo campos antigos para não quebrar outras partes, mas podem ser removidos se não forem mais usados
-  visualizacoesPerfil: z.string().optional(),
-  alcance: z.string().optional(),
-  impressoes: z.string().optional(),
-  cliquesSite: z.string().optional(),
-  publicacoes: z.string().optional(),
-  stories: z.string().optional(),
-  reels: z.string().optional(),
-  compartilhamentos: z.string().optional(),
-  salvos: z.string().optional(),
+  // Demographics
+  generoFeminino: z.string().optional().describe('Porcentagem do gênero feminino.'),
+  generoMasculino: z.string().optional().describe('Porcentagem do gênero masculino.'),
+  generoNaoEspecificado: z.string().optional().describe('Porcentagem do gênero não especificado.'),
+  
+  faixaEtaria13a17: z.string().optional().describe('Número de seguidores na faixa etária de 13 a 17 anos.'),
+  faixaEtaria18a24: z.string().optional().describe('Número de seguidores na faixa etária de 18 a 24 anos.'),
+  faixaEtaria25a34: z.string().optional().describe('Número de seguidores na faixa etária de 25 a 34 anos.'),
+  faixaEtaria35a44: z.string().optional().describe('Número de seguidores na faixa etária de 35 a 44 anos.'),
+  faixaEtaria45a54: z.string().optional().describe('Número de seguidores na faixa etária de 45 a 54 anos.'),
+  faixaEtaria55a64: z.string().optional().describe('Número de seguidores na faixa etária de 55 a 64 anos.'),
+  faixaEtaria65mais: z.string().optional().describe('Número de seguidores na faixa etária de 65+ anos.'),
+
 }).describe('Os dados de desempenho do período.');
 
 
