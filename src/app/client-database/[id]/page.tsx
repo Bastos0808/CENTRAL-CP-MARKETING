@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { notFound } from 'next/navigation';
 import { use } from 'react';
@@ -26,6 +26,14 @@ import {
   Info,
   FileText
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useToast } from '@/hooks/use-toast';
 
 
 interface Client {
@@ -70,9 +78,10 @@ const InfoCard = ({ title, value, icon: Icon }: { title: string; value?: string;
 );
 
 export default function ClientDossierPage({ params }: { params: { id: string } }) {
-  const { id: clientId } = use(params);
+  const clientId = use(params).id;
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!clientId) return;
@@ -96,6 +105,29 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
     fetchClient();
   }, [clientId]);
+
+  const handleStatusChange = async (newStatus: Client['status']) => {
+    if (!client) return;
+
+    const clientDocRef = doc(db, "clients", client.id);
+
+    try {
+      await updateDoc(clientDocRef, { status: newStatus });
+      setClient(prevClient => prevClient ? { ...prevClient, status: newStatus } : null);
+      toast({
+        title: "Status Atualizado!",
+        description: `O status de ${client.name} foi alterado para "${statusMap[newStatus].text}".`,
+      });
+    } catch (error) {
+      console.error("Error updating status: ", error);
+      toast({
+        title: "Erro ao atualizar status",
+        description: "Não foi possível salvar a alteração. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
 
   if (loading) {
     return (
@@ -142,16 +174,25 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                     <CardDescription>Informações principais e status atual.</CardDescription>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                     <div className="flex items-center gap-4 rounded-lg bg-background p-4 border">
+                    <div className="flex items-start gap-4 rounded-lg bg-background p-4 border">
                         <StatusInfo.icon className={`h-6 w-6 ${StatusInfo.className.split(' ')[1]} flex-shrink-0 mt-1`} />
                         <div>
                             <p className="text-sm text-muted-foreground">Status</p>
-                             <Badge 
-                               className={`${StatusInfo.className} text-md`}
-                               variant="outline"
-                             >
-                              {StatusInfo.text}
-                            </Badge>
+                            <Select value={client.status} onValueChange={handleStatusChange}>
+                                <SelectTrigger className={`w-[140px] focus:ring-0 focus:ring-offset-0 border-0 p-0 h-auto text-md ${StatusInfo.className}`}>
+                                    <SelectValue placeholder="Selecione o status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {Object.entries(statusMap).map(([key, value]) => (
+                                        <SelectItem key={key} value={key}>
+                                            <div className="flex items-center gap-2">
+                                                <value.icon className="h-4 w-4" />
+                                                {value.text}
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                     <InfoCard title="Plano Contratado" value={client.plan} icon={ClipboardList} />
@@ -215,3 +256,5 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
+
+    
