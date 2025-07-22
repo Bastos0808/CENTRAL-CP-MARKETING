@@ -17,6 +17,7 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
 interface Client {
   id: string;
@@ -53,6 +54,7 @@ const formatDate = (dateString: string) => {
 export default function ClientDatabasePage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -120,11 +122,9 @@ export default function ClientDatabasePage() {
                   ))
                 ) : clients.length > 0 ? (
                   clients.map((client) => (
-                    <TableRow key={client.id} className="cursor-pointer hover:bg-muted/60">
-                      <TableCell className="font-medium">
-                        <Link href={`/base-de-dados/${client.id}`} className="hover:underline text-primary">
+                    <TableRow key={client.id} className="cursor-pointer hover:bg-muted/60" onClick={() => router.push(`/base-de-dados/${client.id}`)}>
+                      <TableCell className="font-medium text-primary hover:underline">
                           {client.name}
-                        </Link>
                       </TableCell>
                       <TableCell>{client.responsible}</TableCell>
                       <TableCell>{client.plan}</TableCell>
@@ -154,5 +154,3 @@ export default function ClientDatabasePage() {
     </main>
   );
 }
-
-    
