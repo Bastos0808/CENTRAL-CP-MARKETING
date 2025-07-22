@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database } from 'lucide-react';
+import { ArrowRight, Database, FileText } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -39,6 +39,20 @@ export default function Home() {
               <Button className="w-full">
                 Acessar Base de Dados
                 <Database className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Gerador de Relatórios</CardTitle>
+            <CardDescription>Crie relatórios de desempenho personalizados.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/report-generator" passHref>
+              <Button className="w-full">
+                Gerar Relatório
+                <FileText className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </CardContent>
