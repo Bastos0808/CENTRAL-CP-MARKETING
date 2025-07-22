@@ -70,7 +70,7 @@ const InfoCard = ({ title, value, icon: Icon }: { title: string; value?: string;
 );
 
 export default function ClientDossierPage({ params }: { params: { id: string } }) {
-  const clientId = params.id;
+  const { id: clientId } = use(params);
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
 
