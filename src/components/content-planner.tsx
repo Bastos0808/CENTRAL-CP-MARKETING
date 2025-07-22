@@ -17,6 +17,7 @@ import { PlusCircle, Loader2, CalendarIcon, Edit, Trash2 } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from './ui/textarea';
+import { format } from 'date-fns';
 
 interface Client {
   id: string;
@@ -49,6 +50,16 @@ const statusMap = {
   doing: { title: '⏳ Em Andamento', className: 'bg-orange-500/10' },
   done: { title: '✅ Concluído', className: 'bg-green-500/10' },
 };
+
+const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    try {
+        // As a fallback for invalid dates, we can just return the string
+        return format(new Date(`${dateString}T00:00:00`), 'dd/MM/yyyy');
+    } catch {
+        return dateString;
+    }
+}
 
 export default function ContentPlanner() {
   const [clients, setClients] = useState<Client[]>([]);
@@ -213,7 +224,7 @@ export default function ContentPlanner() {
                                <div className="flex items-center justify-between mt-3">
                                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
                                        <CalendarIcon className="h-3 w-3" />
-                                       <span>{post.postDate}</span>
+                                       <span>{formatDate(post.postDate)}</span>
                                    </div>
                                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">{post.type}</span>
                                </div>
