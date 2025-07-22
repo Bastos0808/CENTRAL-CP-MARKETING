@@ -31,11 +31,12 @@ const statusMap: {
   [key in Client['status']]: { 
     text: string; 
     className: string;
+    order: number;
   } 
 } = {
-    active: { text: "Ativo", className: "bg-green-500/20 text-green-700 border-green-500/50 hover:bg-green-500/30" },
-    pending: { text: "Pendente", className: "bg-yellow-500/20 text-yellow-700 border-yellow-500/50 hover:bg-yellow-500/30" },
-    inactive: { text: "Inativo", className: "bg-red-500/20 text-red-700 border-red-500/50 hover:bg-red-500/30" },
+    active: { text: "Ativo", className: "bg-green-500/20 text-green-700 border-green-500/50 hover:bg-green-500/30", order: 1 },
+    pending: { text: "Pendente", className: "bg-yellow-500/20 text-yellow-700 border-yellow-500/50 hover:bg-yellow-500/30", order: 2 },
+    inactive: { text: "Inativo", className: "bg-red-500/20 text-red-700 border-red-500/50 hover:bg-red-500/30", order: 3 },
 };
 
 const formatDate = (dateString: string) => {
@@ -58,7 +59,15 @@ export default function ClientDatabasePage() {
       try {
         const querySnapshot = await getDocs(collection(db, "clients"));
         const clientsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
-        setClients(clientsData);
+        const sortedClients = clientsData.sort((a, b) => {
+          const orderA = statusMap[a.status]?.order || 99;
+          const orderB = statusMap[b.status]?.order || 99;
+          if (orderA !== orderB) {
+            return orderA - orderB;
+          }
+          return a.name.localeCompare(b.name);
+        });
+        setClients(sortedClients);
       } catch (error) {
         console.error("Error fetching clients: ", error);
       } finally {
@@ -145,3 +154,5 @@ export default function ClientDatabasePage() {
     </main>
   );
 }
+
+    

@@ -2,9 +2,9 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { use } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,8 +25,8 @@ import {
   ClipboardList,
   Info,
   FileText,
-  ChevronDown,
-  Trash2
+  Trash2,
+  AlertTriangle
 } from "lucide-react";
 import {
   Select,
@@ -126,6 +126,7 @@ const InfoCard = ({ title, value, icon: Icon }: { title: string; value?: string;
 );
 
 export default function ClientDossierPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
   const clientId = use(params).id;
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
@@ -194,6 +195,28 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       toast({
         title: "Erro ao Excluir",
         description: "Não foi possível remover o relatório. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteClient = async () => {
+    if (!client) return;
+
+    const clientDocRef = doc(db, "clients", client.id);
+
+    try {
+      await deleteDoc(clientDocRef);
+      toast({
+        title: "Cliente Excluído!",
+        description: `${client.name} foi removido permanentemente da base de dados.`,
+      });
+      router.push('/client-database');
+    } catch (error) {
+      console.error("Error deleting client: ", error);
+      toast({
+        title: "Erro ao Excluir Cliente",
+        description: "Não foi possível remover o cliente. Tente novamente.",
         variant: "destructive",
       });
     }
@@ -374,7 +397,48 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
           </Card>
         </section>
 
+        {client.status === 'inactive' && (
+          <section className="mb-8">
+            <Card className="border-destructive">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-destructive"><AlertTriangle /> Zona de Perigo</CardTitle>
+                <CardDescription>Ações irreversíveis relacionadas a este cliente.</CardDescription>
+              </CardHeader>
+              <CardContent className="flex justify-between items-center">
+                <div>
+                  <h3 className="font-semibold">Excluir Cliente Permanentemente</h3>
+                  <p className="text-sm text-muted-foreground">Todo o dossiê, incluindo briefing e relatórios, será perdido para sempre.</p>
+                </div>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive">Excluir Cliente</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta ação não pode ser desfeita. Isso excluirá permanentemente o cliente <span className="font-semibold">{client.name}</span> e todos os seus dados.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDeleteClient}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Sim, excluir cliente
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </CardContent>
+            </Card>
+          </section>
+        )}
+
       </div>
     </main>
   );
 }
+
+    
