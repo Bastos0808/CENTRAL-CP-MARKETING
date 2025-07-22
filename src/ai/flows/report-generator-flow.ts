@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Um fluxo de IA para gerar relatórios de desempenho de marketing.
@@ -27,9 +28,9 @@ const reportGeneratorPrompt = ai.definePrompt({
 
     **Instruções:**
     1.  **Analise o Briefing:** Entenda o negócio do cliente, seu público-alvo e seus objetivos gerais a partir do JSON do briefing.
-    2.  **Analise os Dados de Desempenho:** Interprete as métricas fornecidas nos dados de desempenho. Calcule as variações percentuais se os dados anteriores forem fornecidos.
-    3.  **Escreva o Relatório:** Redija uma análise coesa e clara em formato Markdown. Organize o relatório em seções (ex: Visão Geral, Análise de Crescimento, Análise de Engajamento, Próximos Passos).
-    4.  **Forneça Insights e Recomendações:** Não apenas liste os números. Explique o que eles significam. Destaque os pontos positivos e os pontos de melhoria. Ofereça recomendações claras e acionáveis para o próximo período.
+    2.  **Analise os Dados de Desempenho:** Interprete as métricas fornecidas nos dados de desempenho. Para cada métrica, você receberá o valor principal e a variação percentual em relação ao período anterior. Use essa variação para comentar sobre crescimento ou queda.
+    3.  **Escreva o Relatório:** Redija uma análise coesa e clara em formato Markdown. Organize o relatório em seções (ex: Visão Geral, Análise de Crescimento de Audiência, Análise de Engajamento, Conclusão e Próximos Passos).
+    4.  **Forneça Insights e Recomendações:** Não apenas liste os números. Explique o que eles significam. Destaque os pontos positivos (crescimentos) e os pontos de melhoria (quedas). Ofereça recomendações claras e acionáveis para o próximo período.
     5.  **Mantenha o Tom de Voz:** Use um tom profissional, didático e parceiro, característico da CP Marketing Digital.
 
     **Dados para Análise:**
@@ -40,19 +41,13 @@ const reportGeneratorPrompt = ai.definePrompt({
     \`\`\`
 
     **2. Dados de Desempenho:**
-    - Seguidores: {{performanceData.seguidores}}
-    - Visualizações no Perfil: {{performanceData.visualizacoesPerfil}}
-    - Alcance: {{performanceData.alcance}}
-    - Impressões: {{performanceData.impressoes}}
-    - Cliques no Site: {{performanceData.cliquesSite}}
-    - Publicações: {{performanceData.publicacoes}}
-    - Stories: {{performanceData.stories}}
-    - Reels: {{performanceData.reels}}
-    - Curtidas: {{performanceData.curtidas}}
-    - Comentários: {{performanceData.comentarios}}
-    - Compartilhamentos: {{performanceData.compartilhamentos}}
-    - Salvos: {{performanceData.salvos}}
-
+    - Seguidores: {{performanceData.seguidores}} (Variação: {{performanceData.seguidoresVariacao}})
+    - Novos Seguidores: {{performanceData.comecaramSeguir}} (Variação: {{performanceData.comecaramSeguirVariacao}})
+    - Visualizações: {{performanceData.visualizacoes}} (Variação: {{performanceData.visualizacoesVariacao}})
+    - Curtidas: {{performanceData.curtidas}} (Variação: {{performanceData.curtidasVariacao}})
+    - Comentários: {{performanceData.comentarios}} (Variação: {{performanceData.comentariosVariacao}})
+    - Taxa de Engajamento: {{performanceData.taxaEngajamento}} (Variação: {{performanceData.taxaEngajamentoVariacao}})
+    
     **Agora, gere o campo "analysis" com o texto completo do relatório em Markdown.**
   `,
 });
@@ -64,17 +59,7 @@ const reportGeneratorFlow = ai.defineFlow(
     inputSchema: GenerateReportInputSchema,
     outputSchema: GenerateReportOutputSchema,
   },
-  async (input) => {
-    // Transforma o objeto de dados de desempenho em uma string para o prompt
-    const performanceDataString = Object.entries(input.performanceData)
-      .map(([key, value]) => `- ${key}: ${value || 'Não informado'}`)
-      .join('\n');
-
-    const promptInput = {
-      ...input,
-      performanceData: performanceDataString,
-    };
-    
+  async (input) => {    
     const { output } = await reportGeneratorPrompt(input);
     return output!;
   }

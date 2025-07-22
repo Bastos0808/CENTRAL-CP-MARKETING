@@ -13,30 +13,17 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Loader2, Wand2, Users, BarChart2, MousePointerClick, Eye, Heart, MessageSquare, Share2, Bookmark } from "lucide-react";
+import { FileText, Loader2, Wand2, Users, Heart, MessageSquare, ArrowUp, ArrowDown, Percent, BarChart2, TrendingUp, UserPlus, Eye } from "lucide-react";
 import { generateReport } from '@/ai/flows/report-generator-flow';
 import type { GenerateReportInput } from '@/ai/schemas/report-schemas';
 import { Skeleton } from './ui/skeleton';
+import { performanceSchema } from '@/ai/schemas/report-schemas';
 
 interface Client {
   id: string;
   name: string;
 }
 
-const performanceSchema = z.object({
-  seguidores: z.string().optional(),
-  visualizacoesPerfil: z.string().optional(),
-  alcance: z.string().optional(),
-  impressoes: z.string().optional(),
-  cliquesSite: z.string().optional(),
-  publicacoes: z.string().optional(),
-  stories: z.string().optional(),
-  reels: z.string().optional(),
-  curtidas: z.string().optional(),
-  comentarios: z.string().optional(),
-  compartilhamentos: z.string().optional(),
-  salvos: z.string().optional(),
-});
 
 const reportSchema = z.object({
   clientId: z.string().min(1, "Selecione um cliente."),
@@ -45,19 +32,52 @@ const reportSchema = z.object({
 
 type ReportFormValues = z.infer<typeof reportSchema>;
 
-const performanceFields: { name: keyof z.infer<typeof performanceSchema>, label: string, icon: React.ElementType }[] = [
-  { name: 'seguidores', label: 'Seguidores', icon: Users },
-  { name: 'visualizacoesPerfil', label: 'Visualizações no Perfil', icon: Eye },
-  { name: 'alcance', label: 'Alcance', icon: BarChart2 },
-  { name: 'impressoes', label: 'Impressões', icon: BarChart2 },
-  { name: 'cliquesSite', label: 'Cliques no Site', icon: MousePointerClick },
-  { name: 'publicacoes', label: 'Publicações', icon: FileText },
-  { name: 'stories', label: 'Stories', icon: Bookmark },
-  { name: 'reels', label: 'Reels', icon: FileText },
-  { name: 'curtidas', label: 'Curtidas', icon: Heart },
-  { name: 'comentarios', label: 'Comentários', icon: MessageSquare },
-  { name: 'compartilhamentos', label: 'Compartilhamentos', icon: Share2 },
-  { name: 'salvos', label: 'Salvos', icon: Bookmark },
+const performanceFields: { 
+  name: keyof z.infer<typeof performanceSchema>, 
+  label: string, 
+  icon: React.ElementType,
+  comparisonField: {
+    name: keyof z.infer<typeof performanceSchema>, 
+    label: string,
+    icon: React.ElementType,
+  }
+}[] = [
+  { 
+    name: 'seguidores', 
+    label: 'Seguidores', 
+    icon: Users, 
+    comparisonField: { name: 'seguidoresVariacao', label: 'Variação % Seguidores', icon: Percent }
+  },
+  { 
+    name: 'comecaramSeguir', 
+    label: 'Começaram a Seguir', 
+    icon: UserPlus, 
+    comparisonField: { name: 'comecaramSeguirVariacao', label: 'Variação % Novos Seguidores', icon: Percent }
+  },
+  { 
+    name: 'visualizacoes', 
+    label: 'Visualizações', 
+    icon: Eye,
+    comparisonField: { name: 'visualizacoesVariacao', label: 'Variação % Visualizações', icon: Percent }
+  },
+  { 
+    name: 'curtidas', 
+    label: 'Curtidas', 
+    icon: Heart,
+    comparisonField: { name: 'curtidasVariacao', label: 'Variação % Curtidas', icon: Percent }
+  },
+  { 
+    name: 'comentarios', 
+    label: 'Comentários', 
+    icon: MessageSquare,
+    comparisonField: { name: 'comentariosVariacao', label: 'Variação % Comentários', icon: Percent }
+  },
+  { 
+    name: 'taxaEngajamento', 
+    label: 'Taxa de Engajamento', 
+    icon: TrendingUp,
+    comparisonField: { name: 'taxaEngajamentoVariacao', label: 'Variação % Engajamento', icon: Percent }
+  },
 ];
 
 
@@ -75,20 +95,7 @@ export default function ReportGenerator() {
   } = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
-      performanceData: {
-        seguidores: '',
-        visualizacoesPerfil: '',
-        alcance: '',
-        impressoes: '',
-        cliquesSite: '',
-        publicacoes: '',
-        stories: '',
-        reels: '',
-        curtidas: '',
-        comentarios: '',
-        compartilhamentos: '',
-        salvos: '',
-      }
+      performanceData: {}
     }
   });
 
@@ -187,28 +194,50 @@ export default function ReportGenerator() {
             </div>
             
             <div className="space-y-4">
-              <Label>Dados de Desempenho</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {performanceFields.map(({ name, label, icon: Icon }) => (
-                  <Controller
-                    key={name}
-                    name={`performanceData.${name}`}
-                    control={control}
-                    render={({ field }) => (
-                      <div className="space-y-1">
-                        <Label htmlFor={name} className="flex items-center text-xs text-muted-foreground gap-1.5">
-                          <Icon className="h-3.5 w-3.5" />
+              <Label>Dados de Desempenho (Visão Geral)</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {performanceFields.map(({ name, label, icon: Icon, comparisonField }) => (
+                  <Card key={name} className="p-4 bg-muted/20">
+                     <Label htmlFor={name} className="flex items-center text-sm text-muted-foreground gap-2 mb-2">
+                          <Icon className="h-5 w-5" />
                           {label}
                         </Label>
-                        <Input
-                          id={name}
-                          placeholder="0"
-                          {...field}
-                          className="font-mono"
-                        />
-                      </div>
-                    )}
-                  />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Controller
+                        name={`performanceData.${name}`}
+                        control={control}
+                        render={({ field }) => (
+                          <div className="space-y-1">
+                            <Label htmlFor={name} className="text-xs">Valor</Label>
+                            <Input
+                              id={name}
+                              placeholder="0"
+                              {...field}
+                              className="font-mono"
+                            />
+                          </div>
+                        )}
+                      />
+                      <Controller
+                        name={`performanceData.${comparisonField.name}`}
+                        control={control}
+                        render={({ field }) => (
+                          <div className="space-y-1">
+                             <Label htmlFor={comparisonField.name} className="text-xs">Variação</Label>
+                            <div className="relative">
+                               <Percent className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                                <Input
+                                id={comparisonField.name}
+                                placeholder="0.00"
+                                {...field}
+                                className="font-mono pl-7"
+                                />
+                            </div>
+                          </div>
+                        )}
+                      />
+                    </div>
+                  </Card>
                 ))}
               </div>
             </div>
