@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Database } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -25,6 +25,20 @@ export default function Home() {
               <Button className="w-full">
                 Acessar Formulário
                 <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Base de Dados de Clientes</CardTitle>
+            <CardDescription>Visualize e gerencie todos os clientes.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/client-database" passHref>
+              <Button className="w-full">
+                Acessar Base de Dados
+                <Database className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </CardContent>
