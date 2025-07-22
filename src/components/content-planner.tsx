@@ -32,7 +32,7 @@ interface ContentPost {
   title: string;
   description: string;
   postDate: string; // YYYY-MM-DD
-  status: 'idea' | 'todo' | 'doing' | 'done';
+  status: 'idea' | 'production' | 'posted';
   type: 'arte' | 'reels' | 'carrossel';
 }
 
@@ -41,16 +41,15 @@ const postSchema = z.object({
   description: z.string().optional(),
   postDate: z.string().min(1, "A data de postagem é obrigatória."),
   type: z.enum(['arte', 'reels', 'carrossel'], { required_error: "O tipo é obrigatório." }),
-  status: z.enum(['idea', 'todo', 'doing', 'done']),
+  status: z.enum(['idea', 'production', 'posted']),
 });
 
 type PostFormValues = z.infer<typeof postSchema>;
 
 const statusMap = {
   idea: { title: '💡 Ideias', className: 'bg-blue-500/10' },
-  todo: { title: '📋 A Fazer', className: 'bg-yellow-500/10' },
-  doing: { title: '⏳ Em Andamento', className: 'bg-orange-500/10' },
-  done: { title: '✅ Concluído', className: 'bg-green-500/10' },
+  production: { title: '📋 Em Produção', className: 'bg-yellow-500/10' },
+  posted: { title: '✅ Postado', className: 'bg-green-500/10' },
 };
 
 const formatDate = (dateString: string) => {
@@ -202,7 +201,7 @@ export default function ContentPlanner() {
 
       {selectedClient && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
               {Object.entries(statusMap).map(([statusKey, statusValue]) => (
                   <Card key={statusKey} className={`min-h-[200px] flex flex-col ${statusValue.className}`}>
                       <CardHeader>
