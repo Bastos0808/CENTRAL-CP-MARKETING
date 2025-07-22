@@ -35,6 +35,10 @@ export const performanceSchema = z.object({
   faixaEtaria55a64: z.string().optional().describe('Número de seguidores na faixa etária de 55 a 64 anos.'),
   faixaEtaria65mais: z.string().optional().describe('Número de seguidores na faixa etária de 65+ anos.'),
 
+  // Location and Hashtags
+  cidadesSeguidores: z.string().optional().describe('Dados de seguidores por cidade, em formato de texto.'),
+  melhoresHashtags: z.string().optional().describe('Dados de melhores hashtags por interações, em formato de texto.'),
+
 }).describe('Os dados de desempenho do período.');
 
 

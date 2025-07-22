@@ -13,11 +13,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Loader2, Wand2, Users, Heart, MessageSquare, Percent, TrendingUp, UserPlus, Eye, PieChart, BarChartHorizontal } from "lucide-react";
+import { FileText, Loader2, Wand2, Users, Heart, MessageSquare, Percent, TrendingUp, UserPlus, Eye, PieChart, BarChartHorizontal, MapPin, Hash } from "lucide-react";
 import { generateReport } from '@/ai/flows/report-generator-flow';
 import type { GenerateReportInput } from '@/ai/schemas/report-schemas';
 import { Skeleton } from './ui/skeleton';
 import { performanceSchema } from '@/ai/schemas/report-schemas';
+import { Textarea } from './ui/textarea';
 
 interface Client {
   id: string;
@@ -140,6 +141,8 @@ export default function ReportGenerator() {
         faixaEtaria45a54: '',
         faixaEtaria55a64: '',
         faixaEtaria65mais: '',
+        cidadesSeguidores: '',
+        melhoresHashtags: '',
       }
     }
   });
@@ -335,6 +338,52 @@ export default function ReportGenerator() {
               </div>
             </div>
 
+            <div className="space-y-4">
+              <Label className='text-lg font-semibold'>Localização e Hashtags</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <Card className="p-4 bg-muted/20">
+                    <Controller
+                        name="performanceData.cidadesSeguidores"
+                        control={control}
+                        render={({ field }) => (
+                        <div className="space-y-2">
+                            <Label htmlFor="cidadesSeguidores" className="flex items-center text-sm text-muted-foreground gap-2">
+                                <MapPin className="h-5 w-5" />
+                                Seguidores por Cidades
+                            </Label>
+                            <Textarea
+                            id="cidadesSeguidores"
+                            placeholder="Ex:&#10;Goiânia, Goiás: 1.969&#10;Aparecida de Goiânia, Goiás: 292"
+                            {...field}
+                            className="font-mono min-h-[150px]"
+                            />
+                        </div>
+                        )}
+                    />
+                 </Card>
+                 <Card className="p-4 bg-muted/20">
+                    <Controller
+                        name="performanceData.melhoresHashtags"
+                        control={control}
+                        render={({ field }) => (
+                        <div className="space-y-2">
+                            <Label htmlFor="melhoresHashtags" className="flex items-center text-sm text-muted-foreground gap-2">
+                                <Hash className="h-5 w-5" />
+                                Melhores Hashtags
+                            </Label>
+                            <Textarea
+                            id="melhoresHashtags"
+                            placeholder="Ex:&#10;#GestãoPública: 910&#10;#ASTEGO: 575"
+                            {...field}
+                            className="font-mono min-h-[150px]"
+                            />
+                        </div>
+                        )}
+                    />
+                 </Card>
+              </div>
+            </div>
+
             <div className="flex justify-end">
               <Button type="submit" size="lg" disabled={isGenerating}>
                 {isGenerating ? (
@@ -379,5 +428,3 @@ export default function ReportGenerator() {
     </div>
   );
 }
-
-    
