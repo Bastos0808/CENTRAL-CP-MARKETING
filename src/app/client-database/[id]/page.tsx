@@ -4,7 +4,8 @@
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
+import { use } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +23,8 @@ import {
   User,
   CheckCircle,
   ClipboardList,
-  Info
+  Info,
+  FileText
 } from "lucide-react";
 
 
@@ -67,9 +69,8 @@ const InfoCard = ({ title, value, icon: Icon }: { title: string; value?: string;
     </div>
 );
 
-export default function ClientDossierPage() {
-  const params = useParams();
-  const clientId = params.id as string;
+export default function ClientDossierPage({ params }: { params: { id: string } }) {
+  const clientId = params.id;
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -191,6 +192,21 @@ export default function ClientDossierPage() {
                     </div>
                 </div>
                  {/* Add other briefing sections here following the same pattern */}
+            </CardContent>
+          </Card>
+        </section>
+
+        <section className="mb-8">
+          <Card>
+            <CardHeader>
+                <CardTitle>Relatórios Gerados</CardTitle>
+                <CardDescription>Histórico de relatórios de desempenho gerados para este cliente.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="text-center text-muted-foreground py-8">
+                    <FileText className="mx-auto h-12 w-12" />
+                    <p className="mt-4">Nenhum relatório gerado ainda.</p>
+                </div>
             </CardContent>
           </Card>
         </section>
