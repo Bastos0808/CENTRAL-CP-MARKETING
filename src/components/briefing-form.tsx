@@ -37,7 +37,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { format } from "date-fns";
 
 
@@ -199,20 +199,27 @@ export default function BriefingForm() {
   });
 
   async function onSubmit(values: FormValues) {
+    const submissionId = crypto.randomUUID();
+    
     // 1. Save to Firestore
     try {
-      const newClient = {
+      const clientData = {
+        id: submissionId,
         name: values.informacoesOperacionais.nomeEmpresa,
         responsible: values.equipeMidiaSocial.responsavel || "Não definido",
         plan: values.metasObjetivos.planoContratado,
         startDate: format(new Date(), 'yyyy-MM-dd'),
         status: 'pending' as const,
+        briefing: values, // Save the entire form
       };
-      const docRef = await addDoc(collection(db, "clients"), newClient);
+
+      // Use a custom ID to make it predictable
+      const clientDocRef = doc(db, "clients", submissionId);
+      await setDoc(clientDocRef, clientData);
       
       toast({
         title: "Cliente Adicionado com Sucesso!",
-        description: `${newClient.name} foi adicionado à base de dados com status pendente.`,
+        description: `${clientData.name} foi adicionado à base de dados com status pendente.`,
       });
 
     } catch (error) {
@@ -222,13 +229,16 @@ export default function BriefingForm() {
         description: "Houve um problema ao salvar o cliente no banco de dados.",
         variant: "destructive",
       });
+      return; // Stop execution if save fails
     }
 
     // 2. Download JSON backup
-    const submissionId = crypto.randomUUID();
     const dataToExport = { submissionId, ...values };
     const companyName = values.informacoesOperacionais.nomeEmpresa.replace(/\s+/g, '_') || 'briefing';
     downloadJSON(dataToExport, `${companyName}_${submissionId.substring(0,8)}.json`);
+
+    // 3. Reset the form
+    form.reset();
   }
 
   return (
@@ -247,23 +257,23 @@ export default function BriefingForm() {
                   </AccordionTrigger>
                   <AccordionContent className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {section.fields.map((field) => (
+                      {section.fields.map((fieldInfo) => (
                          <FormField
-                            key={field.name}
+                            key={fieldInfo.name}
                             control={form.control}
-                            name={`${section.id}.${field.name}` as any}
-                            render={({ field: formField }) => (
-                            <FormItem className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
-                                <FormLabel>{label}</FormLabel>
+                            name={`${section.id}.${fieldInfo.name}` as any}
+                            render={({ field }) => (
+                            <FormItem className={fieldInfo.type === 'textarea' ? 'md:col-span-2' : ''}>
+                                <FormLabel>{fieldInfo.label}</FormLabel>
                                 <FormControl>
-                                {field.type === "textarea" ? (
+                                {fieldInfo.type === "textarea" ? (
                                     <Textarea
-                                    placeholder={field.placeholder}
-                                    {...formField}
+                                    placeholder={fieldInfo.placeholder}
+                                    {...field}
                                     className="min-h-[120px]"
                                     />
                                 ) : (
-                                    <Input placeholder={field.placeholder} {...formField} />
+                                    <Input placeholder={fieldInfo.placeholder} {...field} />
                                 )}
                                 </FormControl>
                                 <FormMessage />
@@ -278,9 +288,9 @@ export default function BriefingForm() {
             </Accordion>
 
             <div className="flex justify-end">
-              <Button type="submit" size="lg">
+              <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
                 <Send className="mr-2 h-5 w-5" />
-                Salvar Cliente e Exportar
+                {form.formState.isSubmitting ? "Salvando..." : "Salvar Cliente e Exportar"}
               </Button>
             </div>
           </form>

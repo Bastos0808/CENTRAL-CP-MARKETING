@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -39,7 +40,6 @@ const statusMap: {
 
 const formatDate = (dateString: string) => {
   try {
-    // Adding T00:00:00 ensures the date is parsed in the local timezone, avoiding off-by-one day errors.
     const date = new Date(`${dateString}T00:00:00`);
     return format(date, 'dd/MM/yyyy');
   } catch (error) {
@@ -61,7 +61,6 @@ export default function ClientDatabasePage() {
         setClients(clientsData);
       } catch (error) {
         console.error("Error fetching clients: ", error);
-        // Here you could show a toast notification to the user
       } finally {
         setLoading(false);
       }
@@ -112,8 +111,12 @@ export default function ClientDatabasePage() {
                   ))
                 ) : clients.length > 0 ? (
                   clients.map((client) => (
-                    <TableRow key={client.id}>
-                      <TableCell className="font-medium">{client.name}</TableCell>
+                    <TableRow key={client.id} className="cursor-pointer hover:bg-muted/60">
+                      <TableCell className="font-medium">
+                        <Link href={`/client-database/${client.id}`} className="hover:underline text-primary">
+                          {client.name}
+                        </Link>
+                      </TableCell>
                       <TableCell>{client.responsible}</TableCell>
                       <TableCell>{client.plan}</TableCell>
                       <TableCell>{formatDate(client.startDate)}</TableCell>
