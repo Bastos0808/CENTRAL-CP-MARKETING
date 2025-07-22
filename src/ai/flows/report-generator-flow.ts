@@ -74,7 +74,7 @@ const reportGeneratorPrompt = ai.definePrompt({
 
     **5. Melhores Hashtags (por interações):**
     {{#each performanceData.melhoresHashtags}}
-    - {{this.key}}: {{this.value}}
+    - #{{this.key}}: {{this.value}}
     {{/each}}
 
     **6. Principais Publicações (por taxa de engajamento):**

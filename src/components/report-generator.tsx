@@ -226,8 +226,8 @@ export default function ReportGenerator() {
                     <Label className="flex items-center text-sm text-muted-foreground gap-2"><Hash className="h-5 w-5" /> Melhores Hashtags</Label>
                     {hashtagsFields.map((field, index) => (
                       <div key={field.id} className="flex items-end gap-2">
-                        <Controller name={`performanceData.melhoresHashtags.${index}.key`} control={control} render={({ field }) => (<div className="flex-1 space-y-1"><Label className="text-xs">Hashtag</Label><Input {...field} placeholder="#GestãoPública" /></div>)} />
-                        <Controller name={`performanceData.melhoresHashtags.${index}.value`} control={control} render={({ field }) => (<div className="flex-1 space-y-1"><Label className="text-xs">Interações</Label><Input {...field} placeholder="910" /></div>)} />
+                        <Controller name={`performanceData.melhoresHashtags.${index}.key`} control={control} render={({ field }) => (<div className="flex-1 space-y-1"><Label className="text-xs">Hashtag</Label><Input {...field} placeholder="#MarketingDigital" /></div>)} />
+                        <Controller name={`performanceData.melhoresHashtags.${index}.value`} control={control} render={({ field }) => (<div className="flex-1 space-y-1"><Label className="text-xs">Taxa média de engajamento</Label><Input {...field} placeholder="2.5%" /></div>)} />
                         <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeHashtag(index)}><XCircle className="h-5 w-5" /></Button>
                       </div>
                     ))}
@@ -265,10 +265,10 @@ export default function ReportGenerator() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><FileText /> Relatório Gerado</CardTitle>
             <CardDescription>Esta é a análise gerada pela IA com base nos dados fornecidos.</CardDescription>
-          </CardHeader>
+          </Header>
           <CardContent>
             {isGenerating && (<div className="space-y-4"><Skeleton className="h-6 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-5/6" /></div>)}
-            {generatedReport && (<div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: generatedReport.replace(/\n/g, '<br />') }} />)}
+            {generatedReport && (<div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: generatedReport.replace(/\\n/g, '<br />') }} />)}
           </CardContent>
         </Card>
       )}
