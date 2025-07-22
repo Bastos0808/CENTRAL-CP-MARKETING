@@ -29,7 +29,10 @@ import {
   AlertTriangle,
   Frown,
   Save,
-  Loader2
+  Loader2,
+  Palette,
+  Type,
+  Image as ImageIcon,
 } from "lucide-react";
 import {
   Select,
@@ -87,6 +90,15 @@ interface Competitor {
   weaknesses: string;
 }
 
+interface VisualIdentity {
+    logoUrl?: string;
+    primaryColor?: string;
+    secondaryColor?: string;
+    accentColor?: string;
+    primaryFont?: string;
+    secondaryFont?: string;
+}
+
 interface Client {
   id: string;
   name: string;
@@ -96,6 +108,7 @@ interface Client {
   startDate: string;
   briefing: any; 
   reports?: Report[];
+  visualIdentity?: VisualIdentity;
 }
 
 const statusMap: { 
@@ -148,6 +161,10 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const [personaPains, setPersonaPains] = useState('');
   const [competitors, setCompetitors] = useState<Competitor[]>(Array(3).fill({ name: '', website: '', strengths: '', weaknesses: '' }));
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Visual Identity State
+  const [visualIdentity, setVisualIdentity] = useState<VisualIdentity>({});
+  const [isSavingVisual, setIsSavingVisual] = useState(false);
 
 
   useEffect(() => {
@@ -162,6 +179,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
           const clientData = { id: docSnap.id, ...docSnap.data() } as Client;
           setClient(clientData);
           setPersonaPains(clientData.briefing.publicoPersona.dores || '');
+          setVisualIdentity(clientData.visualIdentity || {});
           
           // Initialize competitors from briefing data
           const savedCompetitors = clientData.briefing.concorrenciaMercado?.competitors;
@@ -193,6 +211,33 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     updatedCompetitors[index] = { ...updatedCompetitors[index], [field]: value };
     setCompetitors(updatedCompetitors);
   };
+  
+  const handleVisualIdentityChange = (field: keyof VisualIdentity, value: string) => {
+    setVisualIdentity(prevState => ({...prevState, [field]: value}));
+  };
+
+  const handleVisualIdentityUpdate = async () => {
+      if (!client) return;
+      setIsSavingVisual(true);
+      const clientDocRef = doc(db, "clients", client.id);
+      try {
+          await updateDoc(clientDocRef, { visualIdentity: visualIdentity });
+          toast({
+              title: "Identidade Visual Salva!",
+              description: "As informações de identidade visual foram atualizadas.",
+          });
+      } catch (error) {
+          console.error("Error updating visual identity: ", error);
+          toast({
+              title: "Erro ao Salvar",
+              description: "Não foi possível salvar a identidade visual. Tente novamente.",
+              variant: "destructive",
+          });
+      } finally {
+          setIsSavingVisual(false);
+      }
+  };
+
 
   const handleStrategicUpdate = async () => {
       if (!client) return;
@@ -361,7 +406,64 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                 </CardContent>
             </Card>
         </section>
-        
+
+        <section className="mb-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Identidade Visual</CardTitle>
+                    <CardDescription>Logo, cores e fontes que definem a marca do cliente.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="logoUrl" className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> URL do Logo</Label>
+                        <Input 
+                            id="logoUrl"
+                            placeholder="https://exemplo.com/logo.png"
+                            value={visualIdentity.logoUrl || ''}
+                            onChange={(e) => handleVisualIdentityChange('logoUrl', e.target.value)}
+                        />
+                    </div>
+
+                    <div className="space-y-4">
+                         <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Palette className="h-5 w-5" /> Cores da Marca</Label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-1">
+                                <Label htmlFor="primaryColor">Cor Primária (Hex)</Label>
+                                <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)}/>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="secondaryColor">Cor Secundária (Hex)</Label>
+                                <Input id="secondaryColor" placeholder="#000000" value={visualIdentity.secondaryColor || ''} onChange={(e) => handleVisualIdentityChange('secondaryColor', e.target.value)}/>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="accentColor">Cor de Destaque (Hex)</Label>
+                                <Input id="accentColor" placeholder="#FF5733" value={visualIdentity.accentColor || ''} onChange={(e) => handleVisualIdentityChange('accentColor', e.target.value)}/>
+                            </div>
+                        </div>
+                    </div>
+                     <div className="space-y-4">
+                         <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Type className="h-5 w-5" /> Fontes da Marca</Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <Label htmlFor="primaryFont">Fonte Primária</Label>
+                                <Input id="primaryFont" placeholder="Ex: Montserrat" value={visualIdentity.primaryFont || ''} onChange={(e) => handleVisualIdentityChange('primaryFont', e.target.value)}/>
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="secondaryFont">Fonte Secundária</Label>
+                                <Input id="secondaryFont" placeholder="Ex: Lato" value={visualIdentity.secondaryFont || ''} onChange={(e) => handleVisualIdentityChange('secondaryFont', e.target.value)}/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex justify-end">
+                        <Button onClick={handleVisualIdentityUpdate} disabled={isSavingVisual}>
+                            {isSavingVisual ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                            {isSavingVisual ? 'Salvando...' : 'Salvar Identidade Visual'}
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </section>
+
         <section className="mb-8">
           <Card>
             <CardHeader>
