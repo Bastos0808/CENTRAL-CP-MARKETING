@@ -10,7 +10,6 @@ import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -26,8 +25,6 @@ interface Client {
 
 const reportSchema = z.object({
   clientId: z.string().min(1, "Selecione um cliente."),
-  reportPeriod: z.string().min(1, "O período do relatório é obrigatório."),
-  reportGoals: z.string().min(1, "Os objetivos são obrigatórios."),
   performanceData: z.string().min(1, "Os dados de desempenho são obrigatórios."),
 });
 
@@ -86,8 +83,6 @@ export default function ReportGenerator() {
 
       const input: GenerateReportInput = {
         clientBriefing: JSON.stringify(clientData.briefing, null, 2),
-        reportPeriod: data.reportPeriod,
-        reportGoals: data.reportGoals,
         performanceData: data.performanceData,
       };
 
@@ -117,59 +112,33 @@ export default function ReportGenerator() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="client-id">Selecione o Cliente</Label>
-                {loadingClients ? (
-                   <Skeleton className="h-10 w-full" />
-                ) : (
-                <Controller
+            <div className="space-y-2">
+              <Label htmlFor="client-id">Selecione o Cliente</Label>
+              {loadingClients ? (
+                  <Skeleton className="h-10 w-full" />
+              ) : (
+              <Controller
                   name="clientId"
                   control={control}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Escolha um cliente..." />
+                      <SelectValue placeholder="Escolha um cliente..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {clients.map(client => (
+                      {clients.map(client => (
                           <SelectItem key={client.id} value={client.id}>
-                            {client.name}
+                          {client.name}
                           </SelectItem>
-                        ))}
+                      ))}
                       </SelectContent>
-                    </Select>
+                  </Select>
                   )}
-                />
-                )}
-                {errors.clientId && <p className="text-sm text-destructive">{errors.clientId.message}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="report-period">Período do Relatório</Label>
-                 <Controller
-                    name="reportPeriod"
-                    control={control}
-                    render={({ field }) => <Input id="report-period" placeholder="Ex: 01/01/2024 - 31/01/2024" {...field} />}
-                  />
-                {errors.reportPeriod && <p className="text-sm text-destructive">{errors.reportPeriod.message}</p>}
-              </div>
+              />
+              )}
+              {errors.clientId && <p className="text-sm text-destructive">{errors.clientId.message}</p>}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="report-goals">Objetivos Principais</Label>
-               <Controller
-                  name="reportGoals"
-                  control={control}
-                  render={({ field }) => (
-                    <Textarea
-                      id="report-goals"
-                      placeholder="Descreva os principais objetivos que este relatório deve analisar. Ex: Análise de crescimento de seguidores, engajamento nas publicações, etc."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  )}
-                />
-              {errors.reportGoals && <p className="text-sm text-destructive">{errors.reportGoals.message}</p>}
-            </div>
+            
             <div className="space-y-2">
               <Label htmlFor="performance-data">Dados de Desempenho (Cole os dados do PDF aqui)</Label>
                <Controller
@@ -219,9 +188,10 @@ export default function ReportGenerator() {
                 </div>
             )}
             {generatedReport && (
-              <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
-                {generatedReport}
-              </div>
+              <div
+                className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ __html: generatedReport.replace(/\n/g, '<br />') }}
+              />
             )}
           </CardContent>
         </Card>

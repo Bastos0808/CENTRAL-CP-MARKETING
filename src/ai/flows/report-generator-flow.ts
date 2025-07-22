@@ -23,30 +23,23 @@ const reportGeneratorPrompt = ai.definePrompt({
   prompt: `
     Você é um especialista em análise de marketing digital e redator de relatórios para a agência "CP Marketing Digital".
 
-    Sua tarefa é criar um relatório de desempenho para um cliente. Você receberá o briefing do cliente, os dados de desempenho do período, o período do relatório e os objetivos definidos.
+    Sua tarefa é criar um relatório de desempenho para um cliente. Você receberá o briefing do cliente e os dados de desempenho do período.
 
     **Instruções:**
     1.  **Analise o Briefing:** Entenda o negócio do cliente, seu público-alvo e seus objetivos gerais a partir do JSON do briefing.
     2.  **Analise os Dados de Desempenho:** Interprete as métricas fornecidas nos dados de desempenho. Calcule as variações percentuais se os dados anteriores forem fornecidos.
-    3.  **Conecte com os Objetivos:** Relacione o desempenho observado com os objetivos definidos para o período. O desempenho ajudou a alcançar as metas?
-    4.  **Escreva o Relatório:** Redija uma análise coesa e clara em formato Markdown. Organize o relatório em seções (ex: Visão Geral, Análise de Crescimento, Análise de Engajamento, Próximos Passos).
-    5.  **Forneça Insights e Recomendações:** Não apenas liste os números. Explique o que eles significam. Destaque os pontos positivos e os pontos de melhoria. Ofereça recomendações claras e acionáveis para o próximo período.
-    6.  **Mantenha o Tom de Voz:** Use um tom profissional, didático e parceiro, característico da CP Marketing Digital.
+    3.  **Escreva o Relatório:** Redija uma análise coesa e clara em formato Markdown. Organize o relatório em seções (ex: Visão Geral, Análise de Crescimento, Análise de Engajamento, Próximos Passos). Use os dados de desempenho para extrair o período do relatório, se disponível.
+    4.  **Forneça Insights e Recomendações:** Não apenas liste os números. Explique o que eles significam. Destaque os pontos positivos e os pontos de melhoria. Ofereça recomendações claras e acionáveis para o próximo período.
+    5.  **Mantenha o Tom de Voz:** Use um tom profissional, didático e parceiro, característico da CP Marketing Digital.
 
     **Dados para Análise:**
 
-    **1. Período do Relatório:**
-    {{{reportPeriod}}}
-
-    **2. Objetivos para o Período:**
-    {{{reportGoals}}}
-
-    **3. Briefing do Cliente (em JSON):**
+    **1. Briefing do Cliente (em JSON):**
     \`\`\`json
     {{{clientBriefing}}}
     \`\`\`
 
-    **4. Dados de Desempenho Brutos:**
+    **2. Dados de Desempenho Brutos:**
     {{{performanceData}}}
 
     **Agora, gere o campo "analysis" com o texto completo do relatório em Markdown.**
