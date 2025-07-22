@@ -442,127 +442,124 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                     <CardTitle>Identidade Visual</CardTitle>
                     <CardDescription>Logo, cores e fontes que definem a marca do cliente.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-                        <div className="md:col-span-2">
-                            <Carousel>
-                                <CarouselContent>
-                                    <CarouselItem>
-                                        <div className="p-1">
-                                            <div className="space-y-2">
-                                                <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo Primário</Label>
-                                                <div className="relative group">
-                                                    <div 
-                                                        className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
-                                                        onClick={() => fileInputRef1.current?.click()}
-                                                    >
-                                                        {visualIdentity.logoUrl ? (
-                                                            <Image src={visualIdentity.logoUrl} alt="Preview do Logo Primário" layout="fill" objectFit="contain" className="p-2" />
-                                                        ) : (
-                                                            <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
-                                                                <Upload className="w-8 h-8 mb-4" />
-                                                                <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
-                                                                <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
-                                                            </div>
-                                                        )}
-                                                        <input ref={fileInputRef1} id="logo-upload-1" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'logoUrl')} />
+                <CardContent className="space-y-8">
+                    <Carousel className="w-full max-w-lg mx-auto">
+                        <CarouselContent>
+                            <CarouselItem>
+                                <div className="p-1">
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 text-md font-semibold text-primary justify-center"><ImageIcon className="h-5 w-5" /> Logo Primário</Label>
+                                        <div className="relative group">
+                                            <div 
+                                                className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
+                                                onClick={() => fileInputRef1.current?.click()}
+                                            >
+                                                {visualIdentity.logoUrl ? (
+                                                    <Image src={visualIdentity.logoUrl} alt="Preview do Logo Primário" layout="fill" objectFit="contain" className="p-2" />
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
+                                                        <Upload className="w-8 h-8 mb-4" />
+                                                        <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
+                                                        <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
                                                     </div>
-                                                    {visualIdentity.logoUrl && (
-                                                        <Button
-                                                            variant="destructive"
-                                                            size="icon"
-                                                            className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                            onClick={(e) => { e.stopPropagation(); handleRemoveLogo('logoUrl'); }}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
+                                                )}
+                                                <input ref={fileInputRef1} id="logo-upload-1" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'logoUrl')} />
                                             </div>
+                                            {visualIdentity.logoUrl && (
+                                                <Button
+                                                    variant="destructive"
+                                                    size="icon"
+                                                    className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    onClick={(e) => { e.stopPropagation(); handleRemoveLogo('logoUrl'); }}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            )}
                                         </div>
-                                    </CarouselItem>
-                                    <CarouselItem>
-                                        <div className="p-1">
-                                            <div className="space-y-2">
-                                                <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo Secundário</Label>
-                                                 <div className="relative group">
-                                                    <div 
-                                                        className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
-                                                        onClick={() => fileInputRef2.current?.click()}
-                                                    >
-                                                        {visualIdentity.secondaryLogoUrl ? (
-                                                            <Image src={visualIdentity.secondaryLogoUrl} alt="Preview do Logo Secundário" layout="fill" objectFit="contain" className="p-2" />
-                                                        ) : (
-                                                            <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
-                                                                <Upload className="w-8 h-8 mb-4" />
-                                                                <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
-                                                                <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
-                                                            </div>
-                                                        )}
-                                                        <input ref={fileInputRef2} id="logo-upload-2" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'secondaryLogoUrl')} />
+                                    </div>
+                                </div>
+                            </CarouselItem>
+                            <CarouselItem>
+                                <div className="p-1">
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2 text-md font-semibold text-primary justify-center"><ImageIcon className="h-5 w-5" /> Logo Secundário</Label>
+                                         <div className="relative group">
+                                            <div 
+                                                className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
+                                                onClick={() => fileInputRef2.current?.click()}
+                                            >
+                                                {visualIdentity.secondaryLogoUrl ? (
+                                                    <Image src={visualIdentity.secondaryLogoUrl} alt="Preview do Logo Secundário" layout="fill" objectFit="contain" className="p-2" />
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
+                                                        <Upload className="w-8 h-8 mb-4" />
+                                                        <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
+                                                        <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
                                                     </div>
-                                                    {visualIdentity.secondaryLogoUrl && (
-                                                        <Button
-                                                            variant="destructive"
-                                                            size="icon"
-                                                            className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                            onClick={(e) => { e.stopPropagation(); handleRemoveLogo('secondaryLogoUrl'); }}
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
+                                                )}
+                                                <input ref={fileInputRef2} id="logo-upload-2" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'secondaryLogoUrl')} />
                                             </div>
+                                            {visualIdentity.secondaryLogoUrl && (
+                                                <Button
+                                                    variant="destructive"
+                                                    size="icon"
+                                                    className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    onClick={(e) => { e.stopPropagation(); handleRemoveLogo('secondaryLogoUrl'); }}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            )}
                                         </div>
-                                    </CarouselItem>
-                                </CarouselContent>
-                                <CarouselPrevious className="ml-12" />
-                                <CarouselNext className="mr-12" />
-                            </Carousel>
-                        </div>
-                      <div className="space-y-6">
+                                    </div>
+                                </div>
+                            </CarouselItem>
+                        </CarouselContent>
+                        <CarouselPrevious className="-left-10" />
+                        <CarouselNext className="-right-10" />
+                    </Carousel>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
+                      <div className="space-y-4">
+                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Palette className="h-5 w-5" /> Cores da Marca</Label>
                           <div className="space-y-4">
-                              <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Palette className="h-5 w-5" /> Cores da Marca</Label>
-                              <div className="grid grid-cols-1 gap-4">
-                                  <div className="space-y-1">
-                                      <Label htmlFor="primaryColor">Cor Primária (Hex)</Label>
-                                      <div className="flex items-center gap-2">
-                                        <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)} className="flex-1"/>
-                                        <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.primaryColor || 'transparent' }} />
-                                      </div>
-                                  </div>
-                                  <div className="space-y-1">
-                                      <Label htmlFor="secondaryColor">Cor Secundária (Hex)</Label>
-                                      <div className="flex items-center gap-2">
-                                        <Input id="secondaryColor" placeholder="#000000" value={visualIdentity.secondaryColor || ''} onChange={(e) => handleVisualIdentityChange('secondaryColor', e.target.value)} className="flex-1"/>
-                                        <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.secondaryColor || 'transparent' }} />
-                                      </div>
-                                  </div>
-                                  <div className="space-y-1">
-                                      <Label htmlFor="accentColor">Cor de Destaque (Hex)</Label>
-                                      <div className="flex items-center gap-2">
-                                        <Input id="accentColor" placeholder="#FF5733" value={visualIdentity.accentColor || ''} onChange={(e) => handleVisualIdentityChange('accentColor', e.target.value)} className="flex-1"/>
-                                        <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.accentColor || 'transparent' }} />
-                                      </div>
+                              <div className="space-y-1">
+                                  <Label htmlFor="primaryColor">Cor Primária (Hex)</Label>
+                                  <div className="flex items-center gap-2">
+                                    <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)} className="flex-1"/>
+                                    <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.primaryColor || 'transparent' }} />
                                   </div>
                               </div>
-                          </div>
-                          <div className="space-y-4">
-                              <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Type className="h-5 w-5" /> Fontes da Marca</Label>
-                              <div className="grid grid-cols-1 gap-4">
-                                  <div className="space-y-1">
-                                      <Label htmlFor="primaryFont">Fonte Primária</Label>
-                                      <Input id="primaryFont" placeholder="Ex: Montserrat" value={visualIdentity.primaryFont || ''} onChange={(e) => handleVisualIdentityChange('primaryFont', e.target.value)}/>
+                              <div className="space-y-1">
+                                  <Label htmlFor="secondaryColor">Cor Secundária (Hex)</Label>
+                                  <div className="flex items-center gap-2">
+                                    <Input id="secondaryColor" placeholder="#000000" value={visualIdentity.secondaryColor || ''} onChange={(e) => handleVisualIdentityChange('secondaryColor', e.target.value)} className="flex-1"/>
+                                    <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.secondaryColor || 'transparent' }} />
                                   </div>
-                                  <div className="space-y-1">
-                                      <Label htmlFor="secondaryFont">Fonte Secundária</Label>
-                                      <Input id="secondaryFont" placeholder="Ex: Lato" value={visualIdentity.secondaryFont || ''} onChange={(e) => handleVisualIdentityChange('secondaryFont', e.target.value)}/>
+                              </div>
+                              <div className="space-y-1">
+                                  <Label htmlFor="accentColor">Cor de Destaque (Hex)</Label>
+                                  <div className="flex items-center gap-2">
+                                    <Input id="accentColor" placeholder="#FF5733" value={visualIdentity.accentColor || ''} onChange={(e) => handleVisualIdentityChange('accentColor', e.target.value)} className="flex-1"/>
+                                    <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.accentColor || 'transparent' }} />
                                   </div>
                               </div>
                           </div>
                       </div>
+                      <div className="space-y-4">
+                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Type className="h-5 w-5" /> Fontes da Marca</Label>
+                          <div className="space-y-4">
+                              <div className="space-y-1">
+                                  <Label htmlFor="primaryFont">Fonte Primária</Label>
+                                  <Input id="primaryFont" placeholder="Ex: Montserrat" value={visualIdentity.primaryFont || ''} onChange={(e) => handleVisualIdentityChange('primaryFont', e.target.value)}/>
+                              </div>
+                              <div className="space-y-1">
+                                  <Label htmlFor="secondaryFont">Fonte Secundária</Label>
+                                  <Input id="secondaryFont" placeholder="Ex: Lato" value={visualIdentity.secondaryFont || ''} onChange={(e) => handleVisualIdentityChange('secondaryFont', e.target.value)}/>
+                              </div>
+                          </div>
+                      </div>
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex justify-end pt-4">
                         <Button onClick={handleVisualIdentityUpdate} disabled={isSavingVisual}>
                             {isSavingVisual ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                             {isSavingVisual ? 'Salvando...' : 'Salvar Identidade Visual'}
