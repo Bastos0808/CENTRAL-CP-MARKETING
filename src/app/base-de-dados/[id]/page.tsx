@@ -249,8 +249,17 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       if (!client) return;
       setIsSavingVisual(true);
       const clientDocRef = doc(db, "clients", client.id);
+
+      // Create a clean copy of the data to be saved, removing any undefined fields
+      const dataToSave: Partial<VisualIdentity> = {};
+      Object.entries(visualIdentity).forEach(([key, value]) => {
+          if (value !== undefined) {
+              dataToSave[key as keyof VisualIdentity] = value;
+          }
+      });
+
       try {
-          await updateDoc(clientDocRef, { visualIdentity: visualIdentity });
+          await updateDoc(clientDocRef, { visualIdentity: dataToSave });
           toast({
               title: "Identidade Visual Salva!",
               description: "As informações de identidade visual foram atualizadas.",
