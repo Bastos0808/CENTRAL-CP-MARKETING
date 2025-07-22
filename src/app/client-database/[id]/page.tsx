@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -66,16 +66,18 @@ const InfoCard = ({ title, value, icon: Icon }: { title: string; value?: string;
     </div>
 );
 
-export default function ClientDossierPage({ params }: { params: { id: string } }) {
+export default function ClientDossierPage() {
+  const params = useParams();
+  const clientId = params.id as string;
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!params.id) return;
+    if (!clientId) return;
 
     const fetchClient = async () => {
       try {
-        const docRef = doc(db, 'clients', params.id);
+        const docRef = doc(db, 'clients', clientId);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -91,7 +93,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     };
 
     fetchClient();
-  }, [params.id]);
+  }, [clientId]);
 
   if (loading) {
     return (
