@@ -24,17 +24,24 @@ interface GeneratedReportProps {
 const markdownToHtml = (markdown: string) => {
   if (!markdown) return '';
 
+  // Improved regex to handle lists and paragraphs better
   let html = markdown
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    .replace(/^### (.*$)/gim, '<h3 class="text-xl font-semibold text-primary mt-6 mb-2">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-bold text-primary mt-8 mb-4 border-b pb-2">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>') // This will be handled by the header now
     .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
     .replace(/\*(.*)\*/gim, '<em>$1</em>')
-    .replace(/\\n/g, '<br />')
-    .replace(/\n/g, '<br />');
-
-  return html;
+    .replace(/^- (.*$)/gim, '<li class="ml-4 mb-1">$1</li>') // Basic list item
+    .replace(/(<li>.*<\/li>)/gim, '<ul>$1</ul>') // Wrap list items in ul
+    .replace(/<\/ul>\n<ul>/gim, '') // Merge consecutive lists
+    .split('\n')
+    .filter(line => line.trim() !== '')
+    .map(line => (line.startsWith('<')) ? line : `<p class="mb-3">${line}</p>`) // Wrap non-html lines in <p>
+    .join('');
+    
+  return html.replace(/\\n/g, '<br />');
 };
+
 
 export default function GeneratedReport({ report, client, isLoading }: GeneratedReportProps) {
   const reportRef = useRef<HTMLDivElement>(null);
@@ -88,31 +95,35 @@ export default function GeneratedReport({ report, client, isLoading }: Generated
       </CardHeader>
       <CardContent>
         <div 
-          ref={reportRef} 
-          className="p-8 bg-white text-black rounded-md prose prose-sm dark:prose-invert max-w-none prose-headings:text-primary"
-          style={{ fontFamily: "'Inter', sans-serif" }} // Ensure consistent font
+          className="bg-muted/20 p-4 rounded-md"
         >
-          {isLoading && (
-            <div className="space-y-4">
-              <Skeleton className="h-8 w-3/4 bg-gray-300" />
-              <Skeleton className="h-5 w-full bg-gray-200" />
-              <Skeleton className="h-5 w-full bg-gray-200" />
-              <Skeleton className="h-5 w-5/6 bg-gray-200" />
-              <Skeleton className="h-8 w-1/2 bg-gray-300 mt-6" />
-              <Skeleton className="h-5 w-full bg-gray-200" />
-              <Skeleton className="h-5 w-full bg-gray-200" />
+            <div
+              ref={reportRef} 
+              className="bg-white text-black rounded p-8 shadow-lg"
+              style={{ fontFamily: "'Inter', sans-serif" }} // Ensure consistent font
+            >
+              {isLoading && (
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-3/4 bg-gray-300" />
+                  <Skeleton className="h-5 w-full bg-gray-200" />
+                  <Skeleton className="h-5 w-full bg-gray-200" />
+                  <Skeleton className="h-5 w-5/6 bg-gray-200" />
+                  <Skeleton className="h-8 w-1/2 bg-gray-300 mt-6" />
+                  <Skeleton className="h-5 w-full bg-gray-200" />
+                  <Skeleton className="h-5 w-full bg-gray-200" />
+                </div>
+              )}
+              {report && client && (
+                 <article className="prose prose-sm max-w-none">
+                    <header className="text-center border-b-2 pb-4 mb-8 border-primary/50">
+                        <h1 className="text-3xl font-bold text-primary">{`Relatório de Desempenho`}</h1>
+                        <h2 className="text-xl font-semibold text-gray-700">{client.name}</h2>
+                        <p className="text-xs text-gray-500 mt-1">{`Período de Análise: ${new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}`}</p>
+                    </header>
+                    <div dangerouslySetInnerHTML={{ __html: markdownToHtml(report) }} />
+                 </article>
+              )}
             </div>
-          )}
-          {report && client && (
-             <article>
-                <header className="text-center border-b-2 pb-4 mb-8 border-primary">
-                    <h1 className="text-4xl font-bold text-primary">{`Relatório de Desempenho`}</h1>
-                    <h2 className="text-2xl font-semibold">{client.name}</h2>
-                    <p className="text-sm text-gray-500">{`Período de Análise: ${new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}`}</p>
-                </header>
-                <div dangerouslySetInnerHTML={{ __html: markdownToHtml(report) }} />
-             </article>
-          )}
         </div>
       </CardContent>
     </Card>
