@@ -73,7 +73,6 @@ const formSchema = z.object({
   }),
   equipeMidiaSocial: z.object({
     responsavel: z.string().optional(),
-    orcamento: z.string().optional(),
   }),
   equipeTrafegoPago: z.object({
     responsavel: z.string().optional(),
@@ -159,7 +158,6 @@ const formSections: {
     icon: Users,
     fields: [
       { name: "responsavel", label: "Quem é o responsável pela gestão de mídias sociais?", placeholder: "Nome e cargo.", type: "input" },
-      { name: "orcamento", label: "Qual o orçamento mensal para mídias sociais (sem incluir anúncios)?", placeholder: "Ex: R$ 1.000,00", type: "input" },
     ],
   },
   {
@@ -193,7 +191,7 @@ export default function BriefingForm() {
       concorrenciaMercado: { principaisConcorrentes: "", pontosFortesFracos: "" },
       comunicacaoExpectativas: { canaisAtuais: "", tomDeVoz: "", expectativas: "" },
       metasObjetivos: { principalObjetivo: "", metasEspecificas: "", planoContratado: "" },
-      equipeMidiaSocial: { responsavel: "", orcamento: "" },
+      equipeMidiaSocial: { responsavel: "" },
       equipeTrafegoPago: { responsavel: "", orcamento: "" },
     },
   });
