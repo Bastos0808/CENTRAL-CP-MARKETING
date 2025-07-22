@@ -265,7 +265,7 @@ export default function ReportGenerator() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><FileText /> Relatório Gerado</CardTitle>
             <CardDescription>Esta é a análise gerada pela IA com base nos dados fornecidos.</CardDescription>
-          </Header>
+          </CardHeader>
           <CardContent>
             {isGenerating && (<div className="space-y-4"><Skeleton className="h-6 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-5/6" /></div>)}
             {generatedReport && (<div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: generatedReport.replace(/\\n/g, '<br />') }} />)}
