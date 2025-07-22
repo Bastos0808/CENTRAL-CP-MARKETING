@@ -13,20 +13,22 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Loader2, CalendarIcon, Edit, Trash2, CalendarDays } from "lucide-react";
+import { PlusCircle, Loader2, CalendarIcon, Edit, Trash2, CalendarDays, Wand2 } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from './ui/textarea';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
+import { generateIdeas } from '@/ai/flows/idea-generator-flow';
 
 
 interface Client {
   id: string;
   name: string;
+  briefing: any;
   contentPlanner?: ContentPost[];
 }
 
@@ -77,6 +79,7 @@ export default function ContentPlanner() {
   const [editingPost, setEditingPost] = useState<ContentPost | null>(null);
   const [draggedPost, setDraggedPost] = useState<ContentPost | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<PostStatus | null>(null);
+  const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
   
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
@@ -149,6 +152,46 @@ export default function ContentPlanner() {
       reset({ title: "", description: "", postDate: "", type: "arte", status: status });
       setIsDialogOpen(true);
   }
+
+  const handleGenerateIdeas = async () => {
+      if (!selectedClient) {
+          toast({ title: "Nenhum cliente selecionado", variant: "destructive" });
+          return;
+      }
+      setIsGeneratingIdeas(true);
+      try {
+          const clientDocRef = doc(db, 'clients', selectedClient.id);
+          const clientSnap = await getDoc(clientDocRef);
+          if (!clientSnap.exists()) {
+              throw new Error("Cliente não encontrado.");
+          }
+          
+          const clientBriefing = JSON.stringify(clientSnap.data()?.briefing || {}, null, 2);
+          const result = await generateIdeas({ clientBriefing });
+          
+          const newPosts: ContentPost[] = result.ideas.map((idea, index) => ({
+              id: crypto.randomUUID(),
+              title: idea.title,
+              description: idea.description,
+              postDate: format(addDays(new Date(), index + 1), 'yyyy-MM-dd'),
+              status: 'idea',
+              type: 'arte',
+          }));
+
+          const updatedPlanner = [...(selectedClient.contentPlanner || []), ...newPosts];
+
+          await updateDoc(clientDocRef, { contentPlanner: updatedPlanner });
+          setSelectedClient(prev => prev ? { ...prev, contentPlanner: updatedPlanner } : null);
+          toast({ title: "Novas Ideias Geradas!", description: `${newPosts.length} posts foram adicionados à coluna de Ideias.` });
+          
+      } catch (error) {
+          console.error(error);
+          toast({ title: "Erro ao gerar ideias", description: "A IA não conseguiu gerar ideias. Tente novamente.", variant: "destructive" });
+      } finally {
+          setIsGeneratingIdeas(false);
+      }
+  };
+
 
   const onSubmit = async (data: PostFormValues) => {
     if (!selectedClient) return;
@@ -313,8 +356,14 @@ export default function ContentPlanner() {
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, statusKey)}
                   >
-                      <CardHeader>
+                      <CardHeader className="flex-row justify-between items-center">
                           <CardTitle className="text-lg">{statusMap[statusKey].title}</CardTitle>
+                           {statusKey === 'idea' && (
+                                <Button size="sm" variant="outline" onClick={handleGenerateIdeas} disabled={isGeneratingIdeas}>
+                                    {isGeneratingIdeas ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Wand2 className="h-4 w-4 mr-2" />}
+                                    Gerar Ideias
+                                </Button>
+                           )}
                       </CardHeader>
                       <CardContent className="space-y-4 flex-1 flex flex-col">
                           <div className='flex-1 space-y-4'>
@@ -433,4 +482,3 @@ export default function ContentPlanner() {
     </div>
   );
 }
-
