@@ -60,6 +60,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
 const markdownToHtml = (markdown: string) => {
@@ -440,57 +441,56 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-                      <div className="space-y-2">
-                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo Primário</Label>
-                          <div 
-                            className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
-                            onClick={() => fileInputRef1.current?.click()}
-                          >
-                            {visualIdentity.logoUrl ? (
-                              <Image src={visualIdentity.logoUrl} alt="Preview do Logo Primário" layout="fill" objectFit="contain" className="p-2" />
-                            ) : (
-                              <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
-                                <Upload className="w-8 h-8 mb-4" />
-                                <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
-                                <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
-                              </div>
-                            )}
-                            <input 
-                              ref={fileInputRef1}
-                              id="logo-upload-1" 
-                              type="file" 
-                              className="hidden" 
-                              accept="image/png, image/jpeg, image/svg+xml"
-                              onChange={(e) => handleLogoUpload(e, 'logoUrl')}
-                            />
-                          </div>
-                      </div>
-
-                      <div className="space-y-2">
-                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo Secundário</Label>
-                          <div 
-                            className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
-                            onClick={() => fileInputRef2.current?.click()}
-                          >
-                            {visualIdentity.secondaryLogoUrl ? (
-                              <Image src={visualIdentity.secondaryLogoUrl} alt="Preview do Logo Secundário" layout="fill" objectFit="contain" className="p-2" />
-                            ) : (
-                              <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
-                                <Upload className="w-8 h-8 mb-4" />
-                                <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
-                                <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
-                              </div>
-                            )}
-                            <input 
-                              ref={fileInputRef2}
-                              id="logo-upload-2" 
-                              type="file" 
-                              className="hidden" 
-                              accept="image/png, image/jpeg, image/svg+xml"
-                              onChange={(e) => handleLogoUpload(e, 'secondaryLogoUrl')}
-                            />
-                          </div>
-                      </div>
+                        <Carousel className="md:col-span-2">
+                            <CarouselContent>
+                                <CarouselItem>
+                                    <div className="p-1">
+                                        <div className="space-y-2">
+                                            <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo Primário</Label>
+                                            <div 
+                                                className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
+                                                onClick={() => fileInputRef1.current?.click()}
+                                            >
+                                                {visualIdentity.logoUrl ? (
+                                                    <Image src={visualIdentity.logoUrl} alt="Preview do Logo Primário" layout="fill" objectFit="contain" className="p-2" />
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
+                                                        <Upload className="w-8 h-8 mb-4" />
+                                                        <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
+                                                        <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
+                                                    </div>
+                                                )}
+                                                <input ref={fileInputRef1} id="logo-upload-1" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'logoUrl')} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CarouselItem>
+                                <CarouselItem>
+                                    <div className="p-1">
+                                        <div className="space-y-2">
+                                            <Label className="flex items-center gap-2 text-md font-semibold text-primary"><ImageIcon className="h-5 w-5" /> Logo Secundário</Label>
+                                            <div 
+                                                className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
+                                                onClick={() => fileInputRef2.current?.click()}
+                                            >
+                                                {visualIdentity.secondaryLogoUrl ? (
+                                                    <Image src={visualIdentity.secondaryLogoUrl} alt="Preview do Logo Secundário" layout="fill" objectFit="contain" className="p-2" />
+                                                ) : (
+                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
+                                                        <Upload className="w-8 h-8 mb-4" />
+                                                        <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
+                                                        <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
+                                                    </div>
+                                                )}
+                                                <input ref={fileInputRef2} id="logo-upload-2" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'secondaryLogoUrl')} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CarouselItem>
+                            </CarouselContent>
+                            <CarouselPrevious className="ml-12" />
+                            <CarouselNext className="mr-12" />
+                        </Carousel>
 
                       <div className="space-y-6">
                           <div className="space-y-4">
