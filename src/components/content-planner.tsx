@@ -79,13 +79,13 @@ export default function ContentPlanner() {
   const [editingPost, setEditingPost] = useState<ContentPost | null>(null);
   const [draggedPost, setDraggedPost] = useState<ContentPost | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<PostStatus | null>(null);
-  const [generatingIdeaFor, setGeneratingIdeaFor] = useState<string | null>(null);
+  const [isGeneratingIdea, setIsGeneratingIdea] = useState(false);
   
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
 
   const { toast } = useToast();
-  const { control, handleSubmit, reset } = useForm<PostFormValues>({
+  const { control, handleSubmit, reset, setValue } = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
     defaultValues: {
       title: "", description: "", postDate: format(new Date(), 'yyyy-MM-dd'), type: "arte", status: 'idea',
@@ -153,9 +153,9 @@ export default function ContentPlanner() {
       setIsDialogOpen(true);
   }
 
- const handleGenerateSingleIdea = async (postToUpdate: ContentPost) => {
+  const handleGenerateIdea = async () => {
       if (!selectedClient) return;
-      setGeneratingIdeaFor(postToUpdate.id);
+      setIsGeneratingIdea(true);
       try {
           const clientDocRef = doc(db, 'clients', selectedClient.id);
           const clientSnap = await getDoc(clientDocRef);
@@ -166,25 +166,16 @@ export default function ContentPlanner() {
           const clientBriefing = JSON.stringify(clientSnap.data()?.briefing || {}, null, 2);
           const result = await generateIdeas({ clientBriefing });
 
-          const updatedPost = {
-              ...postToUpdate,
-              title: result.idea.title,
-              description: result.idea.description,
-          };
-          
-          const updatedPlanner = (selectedClient.contentPlanner || []).map(p =>
-              p.id === postToUpdate.id ? updatedPost : p
-          );
+          setValue('title', result.idea.title);
+          setValue('description', result.idea.description);
 
-          await updateDoc(clientDocRef, { contentPlanner: updatedPlanner });
-          setSelectedClient(prev => prev ? { ...prev, contentPlanner: updatedPlanner } : null);
-          toast({ title: "Ideia Gerada!", description: `O card foi atualizado com uma nova sugestão.` });
+          toast({ title: "Ideia Gerada!", description: "Os campos de título e descrição foram preenchidos." });
 
       } catch (error) {
           console.error(error);
           toast({ title: "Erro ao gerar ideia", description: "A IA não conseguiu gerar a ideia. Tente novamente.", variant: "destructive" });
       } finally {
-          setGeneratingIdeaFor(null);
+          setIsGeneratingIdea(false);
       }
   };
 
@@ -376,22 +367,7 @@ export default function ContentPlanner() {
                                       </div>
                                   </div>
                                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{post.description}</p>
-                                   {post.status === 'idea' && !post.title && !post.description && (
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      className="w-full mt-3 h-8"
-                                      onClick={() => handleGenerateSingleIdea(post)}
-                                      disabled={generatingIdeaFor === post.id}
-                                    >
-                                      {generatingIdeaFor === post.id ? (
-                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                      ) : (
-                                        <Wand2 className="h-4 w-4 mr-2" />
-                                      )}
-                                      Gerar Ideia
-                                    </Button>
-                                  )}
+
                                   <div className="flex items-center justify-between mt-3">
                                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                           <CalendarIcon className="h-3.5 w-3.5" />
@@ -446,6 +422,12 @@ export default function ContentPlanner() {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
                 <Controller name="title" control={control} render={({ field }) => (<div><Label>Título</Label><Input {...field} placeholder="Ex: Lançamento da nova coleção"/></div>)} />
                 <Controller name="description" control={control} render={({ field }) => (<div><Label>Descrição</Label><Textarea {...field} placeholder="Detalhes do post, texto da legenda, etc."/></div>)} />
+                <div className="flex justify-end -mt-2">
+                    <Button type="button" variant="ghost" size="sm" onClick={handleGenerateIdea} disabled={isGeneratingIdea}>
+                       {isGeneratingIdea ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                       Gerar com IA
+                    </Button>
+                </div>
                 <Controller name="postDate" control={control} render={({ field }) => (<div><Label>Data de Postagem</Label><Input type="date" {...field} /></div>)} />
                 <div className='grid grid-cols-2 gap-4'>
                     <Controller name="type" control={control} render={({ field }) => (
@@ -488,5 +470,3 @@ export default function ContentPlanner() {
     </div>
   );
 }
-
-    
