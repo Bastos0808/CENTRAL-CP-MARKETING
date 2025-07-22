@@ -8,6 +8,13 @@ const keyValueSchema = z.object({
   value: z.string().min(1, 'O valor é obrigatório.'),
 });
 
+const publicacaoSchema = z.object({
+  key: z.string().min(1, 'O nome da publicação é obrigatório.'),
+  value: z.string().min(1, 'A taxa de engajamento é obrigatória.'),
+  type: z.enum(['arte', 'reels', 'carrossel']).describe('O tipo da publicação.'),
+});
+
+
 export const performanceSchema = z.object({
   seguidores: z.string().optional().describe('Número total de seguidores.'),
   seguidoresVariacao: z.string().optional().describe('Variação percentual de seguidores.'),
@@ -43,7 +50,7 @@ export const performanceSchema = z.object({
   // Location and Hashtags
   cidadesSeguidores: z.array(keyValueSchema).optional().describe('Dados de seguidores por cidade.'),
   melhoresHashtags: z.array(keyValueSchema).optional().describe('Dados de melhores hashtags por interações.'),
-  principaisPublicacoes: z.array(keyValueSchema).optional().describe('Dados das principais publicações por taxa de engajamento.'),
+  principaisPublicacoes: z.array(publicacaoSchema).optional().describe('Dados das principais publicações por taxa de engajamento.'),
 
 
 }).describe('Os dados de desempenho do período.');

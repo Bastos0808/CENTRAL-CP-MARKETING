@@ -32,7 +32,7 @@ const reportGeneratorPrompt = ai.definePrompt({
     3.  **Analise os Dados Demográficos:** Comente sobre a distribuição de gênero e faixa etária do público.
     4.  **Analise os Dados de Localização:** Com base nos dados de seguidores por cidade, comente sobre a distribuição geográfica da audiência. Destaque as principais cidades.
     5.  **Analise o Desempenho das Hashtags:** Com base nos dados de melhores hashtags, comente sobre quais trouxeram mais interações e o que isso pode significar.
-    6.  **Analise as Principais Publicações:** Com base nos dados das publicações com melhor taxa de engajamento, comente sobre o que esses posts têm em comum e por que performaram bem.
+    6.  **Analise as Principais Publicações:** Com base nos dados das publicações com melhor taxa de engajamento, comente sobre o que esses posts (por tipo: Arte, Reels, Carrossel) têm em comum e por que performaram bem.
     7.  **Escreva o Relatório:** Redija uma análise coesa e clara em formato Markdown. Organize o relatório em seções (ex: Visão Geral, Análise de Crescimento, Perfil do Público, Desempenho Geográfico, Análise de Hashtags, Análise das Publicações, Conclusão e Próximos Passos).
     8.  **Forneça Insights e Recomendações:** Não apenas liste os números. Explique o que eles significam. Destaque os pontos positivos (crescimentos) e os pontos de melhoria (quedas). Ofereça recomendações claras e acionáveis para o próximo período com base em todos os dados.
     9.  **Mantenha o Tom de Voz:** Use um tom profissional, didático e parceiro, característico da CP Marketing Digital.
@@ -72,14 +72,14 @@ const reportGeneratorPrompt = ai.definePrompt({
     {{/each}}
     
 
-    **5. Melhores Hashtags (por interações):**
+    **5. Melhores Hashtags (por taxa média de engajamento):**
     {{#each performanceData.melhoresHashtags}}
     - #{{this.key}}: {{this.value}}
     {{/each}}
 
     **6. Principais Publicações (por taxa de engajamento):**
     {{#each performanceData.principaisPublicacoes}}
-    - "{{this.key}}": {{this.value}}%
+    - [{{this.type}}] "{{this.key}}": {{this.value}}%
     {{/each}}
     
     **Agora, gere o campo "analysis" com o texto completo do relatório em Markdown.**

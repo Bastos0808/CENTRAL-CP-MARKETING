@@ -82,7 +82,7 @@ export default function ReportGenerator() {
         faixaEtaria45a54: '', faixaEtaria55a64: '', faixaEtaria65mais: '',
         cidadesSeguidores: [{ key: '', value: '' }],
         melhoresHashtags: [{ key: '', value: '' }],
-        principaisPublicacoes: [{ key: '', value: '' }],
+        principaisPublicacoes: [{ key: '', value: '', type: 'arte' }],
       }
     }
   });
@@ -241,12 +241,22 @@ export default function ReportGenerator() {
                     <Label className="flex items-center text-lg font-semibold gap-2"><FileSignature className="h-5 w-5" /> Principais Publicações</Label>
                     {publicacoesFields.map((field, index) => (
                       <div key={field.id} className="flex items-end gap-2">
-                        <Controller name={`performanceData.principaisPublicacoes.${index}.key`} control={control} render={({ field }) => (<div className="flex-1 space-y-1"><Label className="text-xs">Nome da Publicação</Label><Input {...field} placeholder="Técnicos em destaque..." /></div>)} />
-                        <Controller name={`performanceData.principaisPublicacoes.${index}.value`} control={control} render={({ field }) => (<div className="w-40 space-y-1"><Label className="text-xs">Taxa de Engajamento</Label><Input {...field} placeholder="12,76" /></div>)} />
+                        <div className="flex-1 space-y-1"><Label className="text-xs">Nome da Publicação</Label><Controller name={`performanceData.principaisPublicacoes.${index}.key`} control={control} render={({ field }) => (<Input {...field} placeholder="Técnicos em destaque..." />)} /></div>
+                        <div className="w-40 space-y-1"><Label className="text-xs">Tipo</Label><Controller name={`performanceData.principaisPublicacoes.${index}.type`} control={control} render={({ field }) => (
+                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                               <SelectTrigger><SelectValue placeholder="Tipo..." /></SelectTrigger>
+                               <SelectContent>
+                                   <SelectItem value="arte">Arte</SelectItem>
+                                   <SelectItem value="reels">Reels</SelectItem>
+                                   <SelectItem value="carrossel">Carrossel</SelectItem>
+                               </SelectContent>
+                           </Select>
+                        )} /></div>
+                        <div className="w-40 space-y-1"><Label className="text-xs">Taxa de Engajamento</Label><Controller name={`performanceData.principaisPublicacoes.${index}.value`} control={control} render={({ field }) => (<Input {...field} placeholder="12,76" />)} /></div>
                         <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removePublicacao(index)}><XCircle className="h-5 w-5" /></Button>
                       </div>
                     ))}
-                    <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => appendPublicacao({ key: '', value: '' })}><PlusCircle className="mr-2 h-4 w-4" />Adicionar Publicação</Button>
+                    <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => appendPublicacao({ key: '', value: '', type: 'arte' })}><PlusCircle className="mr-2 h-4 w-4" />Adicionar Publicação</Button>
                 </Card>
             </div>
 
