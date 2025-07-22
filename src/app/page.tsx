@@ -35,7 +35,7 @@ export default function Home() {
             <CardDescription>Visualize e gerencie todos os clientes.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/client-database" passHref>
+            <Link href="/base-de-dados" passHref>
               <Button className="w-full" variant="outline">
                 Acessar Base de Dados
                 <Database className="ml-2 h-4 w-4" />
