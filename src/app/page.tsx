@@ -49,7 +49,7 @@ export default function Home() {
             <CardDescription>Crie relatórios de desempenho personalizados.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/report-generator" passHref>
+            <Link href="/relatorios" passHref>
               <Button className="w-full" variant="outline">
                 Gerar Relatório
                 <FileText className="ml-2 h-4 w-4" />
