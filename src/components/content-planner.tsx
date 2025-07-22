@@ -20,6 +20,7 @@ import { Textarea } from './ui/textarea';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar } from './ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface Client {
   id: string;
@@ -70,8 +71,8 @@ export default function ContentPlanner() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<ContentPost | null>(null);
   
-  // Calendar state
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
+
 
   const { toast } = useToast();
   const { control, handleSubmit, reset } = useForm<PostFormValues>({
@@ -118,15 +119,16 @@ export default function ContentPlanner() {
     }, {} as Record<ContentPost['status'], ContentPost[]>);
   }, [selectedClient?.contentPlanner]);
   
-  const scheduledDates = useMemo(() => {
-      return (selectedClient?.contentPlanner || []).map(p => parseISO(`${p.postDate}T00:00:00`));
+  const postsByDate = useMemo(() => {
+      const postsMap: { [key: string]: ContentPost[] } = {};
+      (selectedClient?.contentPlanner || []).forEach(post => {
+          if (!postsMap[post.postDate]) {
+              postsMap[post.postDate] = [];
+          }
+          postsMap[post.postDate].push(post);
+      });
+      return postsMap;
   }, [selectedClient?.contentPlanner]);
-
-  const postsOnSelectedDate = useMemo(() => {
-    if (!selectedDate || !selectedClient?.contentPlanner) return [];
-    const formattedSelectedDate = format(selectedDate, 'yyyy-MM-dd');
-    return selectedClient.contentPlanner.filter(p => p.postDate === formattedSelectedDate);
-  }, [selectedDate, selectedClient?.contentPlanner]);
 
 
   const openEditDialog = (post: ContentPost) => {
@@ -180,6 +182,48 @@ export default function ContentPlanner() {
           toast({ title: "Erro ao excluir post", variant: "destructive" });
       }
   };
+  
+  const DayContent = ({ date }: { date: Date }) => {
+      const formattedDate = format(date, 'yyyy-MM-dd');
+      const posts = postsByDate[formattedDate];
+      const hasPosts = posts && posts.length > 0;
+
+      if (!hasPosts) {
+          return <div className="h-full w-full p-1 text-center">{format(date, 'd')}</div>;
+      }
+
+      return (
+          <Popover>
+              <PopoverTrigger asChild>
+                  <div className="h-full w-full p-1 text-center cursor-pointer rounded-md hover:bg-accent relative">
+                      {format(date, 'd')}
+                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-1">
+                          {posts.slice(0, 3).map(post => (
+                              <div key={post.id} className="h-1.5 w-1.5 rounded-full bg-primary" />
+                          ))}
+                      </div>
+                  </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                      <h4 className="font-semibold">Posts para {format(date, 'dd/MM/yyyy')}</h4>
+                      <div className="space-y-3">
+                          {posts.map(post => (
+                              <div key={post.id} className="p-3 border rounded-md bg-muted/30">
+                                  <p className="font-semibold text-sm">{post.title}</p>
+                                  <p className="text-xs text-muted-foreground line-clamp-1">{post.description}</p>
+                                  <div className='flex justify-between items-center mt-2'>
+                                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">{post.type}</span>
+                                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusMap[post.status].className}`}>{statusMap[post.status].title.split(' ')[1]}</span>
+                                  </div>
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+              </PopoverContent>
+          </Popover>
+      );
+  };
 
 
   return (
@@ -200,8 +244,8 @@ export default function ContentPlanner() {
       </Card>
 
       {selectedClient && (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
               {Object.entries(statusMap).map(([statusKey, statusValue]) => (
                   <Card key={statusKey} className={`min-h-[200px] flex flex-col ${statusValue.className}`}>
                       <CardHeader>
@@ -236,49 +280,33 @@ export default function ContentPlanner() {
                       </CardContent>
                   </Card>
               ))}
+            </div>
+            
+            <div className="lg:col-span-1">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><CalendarDays /> Visão Mensal</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Calendar
+                            mode="single"
+                            selected={currentDate}
+                            onSelect={setCurrentDate}
+                            month={currentDate}
+                            onMonthChange={setCurrentDate}
+                            className="rounded-md border p-0"
+                            locale={ptBR}
+                            components={{
+                                Day: DayContent
+                            }}
+                            classNames={{
+                                day_cell: "h-12 w-12"
+                            }}
+                        />
+                    </CardContent>
+                </Card>
+            </div>
           </div>
-
-          <Card>
-              <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><CalendarDays /> Visão Mensal</CardTitle>
-                  <CardDescription>Navegue pelo calendário para ver os posts agendados.</CardDescription>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className='md:col-span-2'>
-                  <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={setSelectedDate}
-                      className="rounded-md border p-0"
-                      locale={ptBR}
-                      modifiers={{ scheduled: scheduledDates }}
-                      modifiersClassNames={{ scheduled: 'bg-primary/20 rounded-md' }}
-                  />
-                </div>
-                <div className='space-y-4'>
-                  <h3 className='font-semibold'>
-                      Posts para {selectedDate ? format(selectedDate, 'dd/MM/yyyy') : '...'}
-                  </h3>
-                  <div className='space-y-3'>
-                    {postsOnSelectedDate.length > 0 ? (
-                      postsOnSelectedDate.map(post => (
-                          <div key={post.id} className="p-3 border rounded-md bg-muted/30">
-                              <p className="font-semibold text-sm">{post.title}</p>
-                              <p className="text-xs text-muted-foreground line-clamp-1">{post.description}</p>
-                              <div className='flex justify-between items-center mt-2'>
-                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">{post.type}</span>
-                                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusMap[post.status].className}`}>{statusMap[post.status].title}</span>
-                              </div>
-                          </div>
-                      ))
-                    ) : (
-                      <p className='text-sm text-muted-foreground text-center py-4'>Nenhum post para esta data.</p>
-                    )}
-                  </div>
-                </div>
-              </CardContent>
-          </Card>
-        </>
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
