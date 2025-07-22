@@ -527,15 +527,24 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                               <div className="grid grid-cols-1 gap-4">
                                   <div className="space-y-1">
                                       <Label htmlFor="primaryColor">Cor Primária (Hex)</Label>
-                                      <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)}/>
+                                      <div className="flex items-center gap-2">
+                                        <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)} className="flex-1"/>
+                                        <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.primaryColor || 'transparent' }} />
+                                      </div>
                                   </div>
                                   <div className="space-y-1">
                                       <Label htmlFor="secondaryColor">Cor Secundária (Hex)</Label>
-                                      <Input id="secondaryColor" placeholder="#000000" value={visualIdentity.secondaryColor || ''} onChange={(e) => handleVisualIdentityChange('secondaryColor', e.target.value)}/>
+                                      <div className="flex items-center gap-2">
+                                        <Input id="secondaryColor" placeholder="#000000" value={visualIdentity.secondaryColor || ''} onChange={(e) => handleVisualIdentityChange('secondaryColor', e.target.value)} className="flex-1"/>
+                                        <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.secondaryColor || 'transparent' }} />
+                                      </div>
                                   </div>
                                   <div className="space-y-1">
                                       <Label htmlFor="accentColor">Cor de Destaque (Hex)</Label>
-                                      <Input id="accentColor" placeholder="#FF5733" value={visualIdentity.accentColor || ''} onChange={(e) => handleVisualIdentityChange('accentColor', e.target.value)}/>
+                                      <div className="flex items-center gap-2">
+                                        <Input id="accentColor" placeholder="#FF5733" value={visualIdentity.accentColor || ''} onChange={(e) => handleVisualIdentityChange('accentColor', e.target.value)} className="flex-1"/>
+                                        <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.accentColor || 'transparent' }} />
+                                      </div>
                                   </div>
                               </div>
                           </div>
