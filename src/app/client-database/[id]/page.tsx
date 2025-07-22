@@ -25,7 +25,8 @@ import {
   ClipboardList,
   Info,
   FileText,
-  ChevronDown
+  ChevronDown,
+  Trash2
 } from "lucide-react";
 import {
   Select,
@@ -34,8 +35,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
 const markdownToHtml = (markdown: string) => {
@@ -158,6 +170,29 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       toast({
         title: "Erro ao atualizar status",
         description: "Não foi possível salvar a alteração. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleDeleteReport = async (reportId: string) => {
+    if (!client) return;
+
+    const clientDocRef = doc(db, "clients", client.id);
+    const updatedReports = client.reports?.filter(report => report.id !== reportId) || [];
+
+    try {
+      await updateDoc(clientDocRef, { reports: updatedReports });
+      setClient(prevClient => prevClient ? { ...prevClient, reports: updatedReports } : null);
+      toast({
+        title: "Relatório Excluído!",
+        description: "O relatório foi removido permanentemente do dossiê.",
+      });
+    } catch (error) {
+      console.error("Error deleting report: ", error);
+      toast({
+        title: "Erro ao Excluir",
+        description: "Não foi possível remover o relatório. Tente novamente.",
         variant: "destructive",
       });
     }
@@ -285,12 +320,40 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                     <Accordion type="single" collapsible className="w-full">
                         {sortedReports.map((report) => (
                             <AccordionItem value={report.id} key={report.id}>
-                                <AccordionTrigger>
-                                    <div className='flex justify-between items-center w-full pr-4'>
-                                        <span className='font-semibold'>Relatório de {format(new Date(report.createdAt), 'dd/MM/yyyy')}</span>
-                                        <span className='text-sm text-muted-foreground'>Clique para expandir</span>
-                                    </div>
-                                </AccordionTrigger>
+                                <div className="flex items-center w-full group">
+                                    <AccordionTrigger className='flex-1'>
+                                        <div className='flex justify-between items-center w-full pr-4'>
+                                            <span className='font-semibold'>Relatório de {format(new Date(report.createdAt), 'dd/MM/yyyy')}</span>
+                                            <span className='text-sm text-muted-foreground group-hover:hidden'>Clique para expandir</span>
+                                        </div>
+                                    </AccordionTrigger>
+                                     <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                           <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity">
+                                              <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Esta ação não pode ser desfeita. Isso excluirá permanentemente o relatório
+                                                    de <span className="font-semibold">{format(new Date(report.createdAt), 'dd/MM/yyyy')}</span> do dossiê de {client.name}.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={() => handleDeleteReport(report.id)}
+                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                >
+                                                    Sim, excluir relatório
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+
+                                </div>
                                 <AccordionContent>
                                     <div 
                                       className="prose dark:prose-invert max-w-none p-4 border rounded-md bg-muted/20"
@@ -314,5 +377,3 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
-
-    
