@@ -18,6 +18,8 @@ import { generateReport } from '@/ai/flows/report-generator-flow';
 import type { GenerateReportInput } from '@/ai/schemas/report-schemas';
 import { Skeleton } from './ui/skeleton';
 import { performanceSchema } from '@/ai/schemas/report-schemas';
+import GeneratedReport from './generated-report';
+
 
 interface Client {
   id: string;
@@ -67,9 +69,10 @@ export default function ReportGenerator() {
   const [loadingClients, setLoadingClients] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedReport, setGeneratedReport] = useState<string | null>(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const { toast } = useToast();
 
-  const { control, handleSubmit, formState: { errors } } = useForm<ReportFormValues>({
+  const { control, handleSubmit, watch, formState: { errors } } = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
       clientId: "",
@@ -96,6 +99,18 @@ export default function ReportGenerator() {
   const { fields: publicacoesFields, append: appendPublicacao, remove: removePublicacao } = useFieldArray({
     control, name: "performanceData.principaisPublicacoes"
   });
+  
+  const selectedClientId = watch("clientId");
+  
+  useEffect(() => {
+      if (selectedClientId) {
+          const client = clients.find(c => c.id === selectedClientId);
+          setSelectedClient(client || null);
+      } else {
+          setSelectedClient(null);
+      }
+  }, [selectedClientId, clients]);
+
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -271,16 +286,11 @@ export default function ReportGenerator() {
       </Card>
 
       {(isGenerating || generatedReport) && (
-         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><FileText /> Relatório Gerado</CardTitle>
-            <CardDescription>Esta é a análise gerada pela IA com base nos dados fornecidos.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isGenerating && (<div className="space-y-4"><Skeleton className="h-6 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-5/6" /></div>)}
-            {generatedReport && (<div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: generatedReport.replace(/\\n/g, '<br />') }} />)}
-          </CardContent>
-        </Card>
+        <GeneratedReport
+          report={generatedReport}
+          client={selectedClient}
+          isLoading={isGenerating}
+        />
       )}
     </div>
   );
