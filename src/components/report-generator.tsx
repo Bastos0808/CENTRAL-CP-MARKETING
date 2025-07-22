@@ -95,7 +95,21 @@ export default function ReportGenerator() {
   } = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
-      performanceData: {}
+      clientId: "",
+      performanceData: {
+        seguidores: '',
+        seguidoresVariacao: '',
+        comecaramSeguir: '',
+        comecaramSeguirVariacao: '',
+        visualizacoes: '',
+        visualizacoesVariacao: '',
+        curtidas: '',
+        curtidasVariacao: '',
+        comentarios: '',
+        comentariosVariacao: '',
+        taxaEngajamento: '',
+        taxaEngajamentoVariacao: '',
+      }
     }
   });
 
