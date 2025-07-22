@@ -24,7 +24,8 @@ import {
   CheckCircle,
   ClipboardList,
   Info,
-  FileText
+  FileText,
+  ChevronDown
 } from "lucide-react";
 import {
   Select,
@@ -34,7 +35,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from '@/hooks/use-toast';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
+// Simple markdown to HTML converter, can be extracted to utils if used elsewhere
+const markdownToHtml = (markdown: string) => {
+    if (!markdown) return '';
+    let html = markdown
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-primary mt-4 mb-1">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-primary mt-6 mb-2 border-b pb-1">$1</h2>')
+      .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*(.*)\*/gim, '<em>$1</em>')
+      .replace(/^- (.*$)/gim, '<li class="ml-4 list-disc mb-1">$1</li>')
+      .replace(/(<li>.*<\/li>)/gim, '<ul>$1</ul>')
+      .replace(/<\/ul>\n<ul>/gim, '')
+      .split('\n')
+      .filter(line => line.trim() !== '')
+      .map(line => (line.startsWith('<')) ? line : `<p class="mb-2 leading-relaxed">${line}</p>`)
+      .join('');
+    return html.replace(/\\n/g, '<br />');
+};
+
+interface Report {
+    id: string;
+    createdAt: string;
+    analysis: string;
+}
 
 interface Client {
   id: string;
@@ -44,6 +69,7 @@ interface Client {
   plan: string;
   startDate: string;
   briefing: any; 
+  reports?: Report[];
 }
 
 const statusMap: { 
@@ -60,7 +86,16 @@ const statusMap: {
 
 const formatDate = (dateString: string) => {
   try {
-    const date = new Date(`${dateString}T00:00:00`);
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) { // Invalid date
+        const parts = dateString.split('-');
+        if (parts.length === 3) {
+            // Assuming YYYY-MM-DD
+            const [year, month, day] = parts;
+            return `${day}/${month}/${year}`;
+        }
+        return "Data inválida";
+    }
     return format(date, 'dd/MM/yyyy');
   } catch (error) {
     return "Data inválida";
@@ -154,6 +189,8 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   }
 
   const StatusInfo = statusMap[client.status];
+  const sortedReports = client.reports?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12">
@@ -244,10 +281,31 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                 <CardDescription>Histórico de relatórios de desempenho gerados para este cliente.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="text-center text-muted-foreground py-8">
-                    <FileText className="mx-auto h-12 w-12" />
-                    <p className="mt-4">Nenhum relatório gerado ainda.</p>
-                </div>
+                {sortedReports && sortedReports.length > 0 ? (
+                    <Accordion type="single" collapsible className="w-full">
+                        {sortedReports.map((report) => (
+                            <AccordionItem value={report.id} key={report.id}>
+                                <AccordionTrigger>
+                                    <div className='flex justify-between items-center w-full pr-4'>
+                                        <span className='font-semibold'>Relatório de {format(new Date(report.createdAt), 'dd/MM/yyyy')}</span>
+                                        <span className='text-sm text-muted-foreground'>Clique para expandir</span>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div 
+                                      className="prose dark:prose-invert max-w-none p-4 border rounded-md bg-muted/20"
+                                      dangerouslySetInnerHTML={{ __html: markdownToHtml(report.analysis) }} 
+                                    />
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                ) : (
+                    <div className="text-center text-muted-foreground py-8">
+                        <FileText className="mx-auto h-12 w-12" />
+                        <p className="mt-4">Nenhum relatório gerado ainda.</p>
+                    </div>
+                )}
             </CardContent>
           </Card>
         </section>

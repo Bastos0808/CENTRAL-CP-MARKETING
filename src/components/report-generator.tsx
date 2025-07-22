@@ -6,7 +6,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { db } from '@/lib/firebase';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -131,6 +131,40 @@ export default function ReportGenerator() {
     };
     fetchClients();
   }, [toast]);
+
+  const handleSaveReport = async () => {
+    if (!generatedReport || !selectedClientId) {
+      toast({ title: "Erro", description: "Nenhum relatório ou cliente selecionado.", variant: "destructive" });
+      return;
+    }
+
+    const clientDocRef = doc(db, 'clients', selectedClientId);
+
+    try {
+      const newReport = {
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        analysis: generatedReport,
+      };
+
+      await updateDoc(clientDocRef, {
+        reports: arrayUnion(newReport)
+      });
+      
+      toast({
+        title: "Relatório Salvo!",
+        description: "O relatório foi adicionado com sucesso ao dossiê do cliente.",
+      });
+
+    } catch (error) {
+      console.error("Error saving report: ", error);
+      toast({
+        title: "Erro ao Salvar",
+        description: "Não foi possível salvar o relatório no dossiê. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const onSubmit = async (data: ReportFormValues) => {
     setIsGenerating(true);
@@ -290,6 +324,7 @@ export default function ReportGenerator() {
           report={generatedReport}
           client={selectedClient}
           isLoading={isGenerating}
+          onSave={handleSaveReport}
         />
       )}
     </div>

@@ -5,7 +5,7 @@ import { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Download, FileText } from 'lucide-react';
+import { Download, FileText, Save } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -18,6 +18,7 @@ interface GeneratedReportProps {
   report: string | null;
   client: Client | null;
   isLoading: boolean;
+  onSave: () => void;
 }
 
 // Simple markdown to HTML converter
@@ -43,7 +44,7 @@ const markdownToHtml = (markdown: string) => {
 };
 
 
-export default function GeneratedReport({ report, client, isLoading }: GeneratedReportProps) {
+export default function GeneratedReport({ report, client, isLoading, onSave }: GeneratedReportProps) {
   const reportRef = useRef<HTMLDivElement>(null);
 
   const handleDownloadPdf = async () => {
@@ -76,7 +77,7 @@ export default function GeneratedReport({ report, client, isLoading }: Generated
     });
     
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-    pdf.save(`Relatorio_${client.name.replace(/\s+/g, '_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.pdf`);
+    pdf.save(`Relatorio_${client.name.replace(/\s+/g, '_')}_${new Date().toLocaleDate-BR').replace(/\//g, '-')}.pdf`);
   };
 
   return (
@@ -87,10 +88,16 @@ export default function GeneratedReport({ report, client, isLoading }: Generated
           <CardDescription>Esta é a análise gerada pela IA com base nos dados fornecidos.</CardDescription>
         </div>
         {!isLoading && report && (
-          <Button onClick={handleDownloadPdf} variant="outline">
-            <Download className="mr-2 h-4 w-4" />
-            Baixar PDF
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={onSave} variant="outline">
+              <Save className="mr-2 h-4 w-4" />
+              Salvar no Dossiê
+            </Button>
+            <Button onClick={handleDownloadPdf}>
+              <Download className="mr-2 h-4 w-4" />
+              Baixar PDF
+            </Button>
+          </div>
         )}
       </CardHeader>
       <CardContent>
