@@ -43,6 +43,8 @@ export const performanceSchema = z.object({
   // Location and Hashtags
   cidadesSeguidores: z.array(keyValueSchema).optional().describe('Dados de seguidores por cidade.'),
   melhoresHashtags: z.array(keyValueSchema).optional().describe('Dados de melhores hashtags por interações.'),
+  principaisPublicacoes: z.array(keyValueSchema).optional().describe('Dados das principais publicações por taxa de engajamento.'),
+
 
 }).describe('Os dados de desempenho do período.');
 

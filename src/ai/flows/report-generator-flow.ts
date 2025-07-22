@@ -24,7 +24,7 @@ const reportGeneratorPrompt = ai.definePrompt({
   prompt: `
     Você é um especialista em análise de marketing digital e redator de relatórios para a agência "CP Marketing Digital".
 
-    Sua tarefa é criar um relatório de desempenho para um cliente. Você receberá o briefing do cliente e os dados de desempenho do período, incluindo dados demográficos, de localização e de hashtags.
+    Sua tarefa é criar um relatório de desempenho para um cliente. Você receberá o briefing do cliente e os dados de desempenho do período, incluindo dados demográficos, de localização, de hashtags e de publicações.
 
     **Instruções:**
     1.  **Analise o Briefing:** Entenda o negócio do cliente, seu público-alvo e seus objetivos gerais a partir do JSON do briefing.
@@ -32,9 +32,10 @@ const reportGeneratorPrompt = ai.definePrompt({
     3.  **Analise os Dados Demográficos:** Comente sobre a distribuição de gênero e faixa etária do público.
     4.  **Analise os Dados de Localização:** Com base nos dados de seguidores por cidade, comente sobre a distribuição geográfica da audiência. Destaque as principais cidades.
     5.  **Analise o Desempenho das Hashtags:** Com base nos dados de melhores hashtags, comente sobre quais trouxeram mais interações e o que isso pode significar.
-    6.  **Escreva o Relatório:** Redija uma análise coesa e clara em formato Markdown. Organize o relatório em seções (ex: Visão Geral, Análise de Crescimento, Perfil do Público, Desempenho Geográfico, Análise de Hashtags, Conclusão e Próximos Passos).
-    7.  **Forneça Insights e Recomendações:** Não apenas liste os números. Explique o que eles significam. Destaque os pontos positivos (crescimentos) e os pontos de melhoria (quedas). Ofereça recomendações claras e acionáveis para o próximo período com base em todos os dados.
-    8.  **Mantenha o Tom de Voz:** Use um tom profissional, didático e parceiro, característico da CP Marketing Digital.
+    6.  **Analise as Principais Publicações:** Com base nos dados das publicações com melhor taxa de engajamento, comente sobre o que esses posts têm em comum e por que performaram bem.
+    7.  **Escreva o Relatório:** Redija uma análise coesa e clara em formato Markdown. Organize o relatório em seções (ex: Visão Geral, Análise de Crescimento, Perfil do Público, Desempenho Geográfico, Análise de Hashtags, Análise das Publicações, Conclusão e Próximos Passos).
+    8.  **Forneça Insights e Recomendações:** Não apenas liste os números. Explique o que eles significam. Destaque os pontos positivos (crescimentos) e os pontos de melhoria (quedas). Ofereça recomendações claras e acionáveis para o próximo período com base em todos os dados.
+    9.  **Mantenha o Tom de Voz:** Use um tom profissional, didático e parceiro, característico da CP Marketing Digital.
 
     **Dados para Análise:**
 
@@ -74,6 +75,11 @@ const reportGeneratorPrompt = ai.definePrompt({
     **5. Melhores Hashtags (por interações):**
     {{#each performanceData.melhoresHashtags}}
     - {{this.key}}: {{this.value}}
+    {{/each}}
+
+    **6. Principais Publicações (por taxa de engajamento):**
+    {{#each performanceData.principaisPublicacoes}}
+    - "{{this.key}}": {{this.value}}%
     {{/each}}
     
     **Agora, gere o campo "analysis" com o texto completo do relatório em Markdown.**

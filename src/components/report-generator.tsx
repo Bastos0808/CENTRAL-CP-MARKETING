@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Loader2, Wand2, Users, Heart, MessageSquare, Percent, TrendingUp, UserPlus, Eye, PieChart, BarChartHorizontal, MapPin, Hash, PlusCircle, XCircle } from "lucide-react";
+import { FileText, Loader2, Wand2, Users, Heart, MessageSquare, Percent, TrendingUp, UserPlus, Eye, PieChart, BarChartHorizontal, MapPin, Hash, PlusCircle, XCircle, FileSignature } from "lucide-react";
 import { generateReport } from '@/ai/flows/report-generator-flow';
 import type { GenerateReportInput } from '@/ai/schemas/report-schemas';
 import { Skeleton } from './ui/skeleton';
@@ -82,6 +82,7 @@ export default function ReportGenerator() {
         faixaEtaria45a54: '', faixaEtaria55a64: '', faixaEtaria65mais: '',
         cidadesSeguidores: [{ key: '', value: '' }],
         melhoresHashtags: [{ key: '', value: '' }],
+        principaisPublicacoes: [{ key: '', value: '' }],
       }
     }
   });
@@ -91,6 +92,9 @@ export default function ReportGenerator() {
   });
   const { fields: hashtagsFields, append: appendHashtag, remove: removeHashtag } = useFieldArray({
     control, name: "performanceData.melhoresHashtags"
+  });
+  const { fields: publicacoesFields, append: appendPublicacao, remove: removePublicacao } = useFieldArray({
+    control, name: "performanceData.principaisPublicacoes"
   });
 
   useEffect(() => {
@@ -205,7 +209,7 @@ export default function ReportGenerator() {
             </div>
 
             <div className="space-y-4">
-              <Label className='text-lg font-semibold'>Localização e Hashtags</Label>
+              <Label className='text-lg font-semibold'>Localização e Conteúdo</Label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <Card className="p-4 bg-muted/20 space-y-3">
                     <Label className="flex items-center text-sm text-muted-foreground gap-2"><MapPin className="h-5 w-5" /> Seguidores por Cidades</Label>
@@ -230,6 +234,20 @@ export default function ReportGenerator() {
                     <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => appendHashtag({ key: '', value: '' })}><PlusCircle className="mr-2 h-4 w-4" />Adicionar Hashtag</Button>
                  </Card>
               </div>
+            </div>
+
+            <div className="space-y-4">
+                <Card className="p-4 bg-muted/20 space-y-3">
+                    <Label className="flex items-center text-lg font-semibold gap-2"><FileSignature className="h-5 w-5" /> Principais Publicações</Label>
+                    {publicacoesFields.map((field, index) => (
+                      <div key={field.id} className="flex items-end gap-2">
+                        <Controller name={`performanceData.principaisPublicacoes.${index}.key`} control={control} render={({ field }) => (<div className="flex-1 space-y-1"><Label className="text-xs">Nome da Publicação</Label><Input {...field} placeholder="Técnicos em destaque..." /></div>)} />
+                        <Controller name={`performanceData.principaisPublicacoes.${index}.value`} control={control} render={({ field }) => (<div className="w-40 space-y-1"><Label className="text-xs">Taxa de Engajamento</Label><Input {...field} placeholder="12,76" /></div>)} />
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removePublicacao(index)}><XCircle className="h-5 w-5" /></Button>
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => appendPublicacao({ key: '', value: '' })}><PlusCircle className="mr-2 h-4 w-4" />Adicionar Publicação</Button>
+                </Card>
             </div>
 
             <div className="flex justify-end">
