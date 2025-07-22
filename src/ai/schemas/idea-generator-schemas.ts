@@ -21,10 +21,8 @@ export type IdeaGeneratorInput = z.infer<typeof IdeaGeneratorInputSchema>;
 
 // Define the output schema for the flow
 export const IdeaGeneratorOutputSchema = z.object({
-  ideas: z
-    .array(IdeaSchema)
-    .describe(
-      'Uma lista de 3 ideias de posts geradas pela IA, cada uma com título e descrição.'
-    ),
+  idea: IdeaSchema.describe(
+    'Uma ideia de post gerada pela IA, contendo título e descrição.'
+  ),
 });
 export type IdeaGeneratorOutput = z.infer<typeof IdeaGeneratorOutputSchema>;

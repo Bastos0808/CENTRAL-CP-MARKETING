@@ -17,7 +17,7 @@ import { PlusCircle, Loader2, CalendarIcon, Edit, Trash2, CalendarDays, Wand2 } 
 import { Skeleton } from './ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from './ui/textarea';
-import { format, parseISO, addDays } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -79,7 +79,7 @@ export default function ContentPlanner() {
   const [editingPost, setEditingPost] = useState<ContentPost | null>(null);
   const [draggedPost, setDraggedPost] = useState<ContentPost | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<PostStatus | null>(null);
-  const [isGeneratingIdeas, setIsGeneratingIdeas] = useState(false);
+  const [generatingIdeaFor, setGeneratingIdeaFor] = useState<string | null>(null);
   
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
@@ -88,7 +88,7 @@ export default function ContentPlanner() {
   const { control, handleSubmit, reset } = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
     defaultValues: {
-      title: "", description: "", postDate: "", type: "arte", status: 'idea',
+      title: "", description: "", postDate: format(new Date(), 'yyyy-MM-dd'), type: "arte", status: 'idea',
     }
   });
 
@@ -149,46 +149,42 @@ export default function ContentPlanner() {
   
   const openNewDialog = (status: ContentPost['status']) => {
       setEditingPost(null);
-      reset({ title: "", description: "", postDate: "", type: "arte", status: status });
+      reset({ title: "", description: "", postDate: format(new Date(), 'yyyy-MM-dd'), type: "arte", status: status });
       setIsDialogOpen(true);
   }
 
-  const handleGenerateIdeas = async () => {
-      if (!selectedClient) {
-          toast({ title: "Nenhum cliente selecionado", variant: "destructive" });
-          return;
-      }
-      setIsGeneratingIdeas(true);
+ const handleGenerateSingleIdea = async (postToUpdate: ContentPost) => {
+      if (!selectedClient) return;
+      setGeneratingIdeaFor(postToUpdate.id);
       try {
           const clientDocRef = doc(db, 'clients', selectedClient.id);
           const clientSnap = await getDoc(clientDocRef);
-          if (!clientSnap.exists()) {
+           if (!clientSnap.exists()) {
               throw new Error("Cliente não encontrado.");
           }
           
           const clientBriefing = JSON.stringify(clientSnap.data()?.briefing || {}, null, 2);
           const result = await generateIdeas({ clientBriefing });
-          
-          const newPosts: ContentPost[] = result.ideas.map((idea, index) => ({
-              id: crypto.randomUUID(),
-              title: idea.title,
-              description: idea.description,
-              postDate: format(addDays(new Date(), index + 1), 'yyyy-MM-dd'),
-              status: 'idea',
-              type: 'arte',
-          }));
 
-          const updatedPlanner = [...(selectedClient.contentPlanner || []), ...newPosts];
+          const updatedPost = {
+              ...postToUpdate,
+              title: result.idea.title,
+              description: result.idea.description,
+          };
+          
+          const updatedPlanner = (selectedClient.contentPlanner || []).map(p =>
+              p.id === postToUpdate.id ? updatedPost : p
+          );
 
           await updateDoc(clientDocRef, { contentPlanner: updatedPlanner });
           setSelectedClient(prev => prev ? { ...prev, contentPlanner: updatedPlanner } : null);
-          toast({ title: "Novas Ideias Geradas!", description: `${newPosts.length} posts foram adicionados à coluna de Ideias.` });
-          
+          toast({ title: "Ideia Gerada!", description: `O card foi atualizado com uma nova sugestão.` });
+
       } catch (error) {
           console.error(error);
-          toast({ title: "Erro ao gerar ideias", description: "A IA não conseguiu gerar ideias. Tente novamente.", variant: "destructive" });
+          toast({ title: "Erro ao gerar ideia", description: "A IA não conseguiu gerar a ideia. Tente novamente.", variant: "destructive" });
       } finally {
-          setIsGeneratingIdeas(false);
+          setGeneratingIdeaFor(null);
       }
   };
 
@@ -358,12 +354,6 @@ export default function ContentPlanner() {
                   >
                       <CardHeader className="flex-row justify-between items-center">
                           <CardTitle className="text-lg">{statusMap[statusKey].title}</CardTitle>
-                           {statusKey === 'idea' && (
-                                <Button size="sm" variant="outline" onClick={handleGenerateIdeas} disabled={isGeneratingIdeas}>
-                                    {isGeneratingIdeas ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Wand2 className="h-4 w-4 mr-2" />}
-                                    Gerar Ideias
-                                </Button>
-                           )}
                       </CardHeader>
                       <CardContent className="space-y-4 flex-1 flex flex-col">
                           <div className='flex-1 space-y-4'>
@@ -386,6 +376,22 @@ export default function ContentPlanner() {
                                       </div>
                                   </div>
                                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{post.description}</p>
+                                   {post.status === 'idea' && !post.title && !post.description && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="w-full mt-3 h-8"
+                                      onClick={() => handleGenerateSingleIdea(post)}
+                                      disabled={generatingIdeaFor === post.id}
+                                    >
+                                      {generatingIdeaFor === post.id ? (
+                                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                      ) : (
+                                        <Wand2 className="h-4 w-4 mr-2" />
+                                      )}
+                                      Gerar Ideia
+                                    </Button>
+                                  )}
                                   <div className="flex items-center justify-between mt-3">
                                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                           <CalendarIcon className="h-3.5 w-3.5" />
