@@ -303,7 +303,7 @@ export default function ReportGenerator() {
                         control={control}
                         render={({ field }) => (
                           <div className="space-y-1">
-                            <Label htmlFor={name} className="text-xs">{label}</Label>
+                            <Label htmlFor={name} className="text-xs whitespace-nowrap">{label}</Label>
                             <Input id={name} placeholder="0" {...field} className="font-mono" />
                           </div>
                         )}
@@ -316,7 +316,7 @@ export default function ReportGenerator() {
                     <BarChartHorizontal className="h-5 w-5" />
                     Faixa Etária (Seguidores)
                   </Label>
-                   <div className="grid grid-cols-4 gap-2">
+                   <div className="grid grid-cols-1 sm:grid-cols-4 md:grid-cols-7 gap-2">
                     {ageRangeFields.map(({ name, label }) => (
                       <Controller
                         key={name}
@@ -379,3 +379,5 @@ export default function ReportGenerator() {
     </div>
   );
 }
+
+    
