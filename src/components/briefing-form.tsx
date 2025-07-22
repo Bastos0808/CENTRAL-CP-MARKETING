@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +13,7 @@ import {
   Goal,
   DollarSign,
   Send,
+  FileText,
   type LucideIcon,
 } from "lucide-react";
 
@@ -34,6 +36,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { db } from "@/lib/firebase";
+import { collection, addDoc } from "firebase/firestore";
+import { format } from "date-fns";
+
 
 const formSchema = z.object({
   informacoesOperacionais: z.object({
@@ -63,6 +69,7 @@ const formSchema = z.object({
   metasObjetivos: z.object({
     principalObjetivo: z.string().min(1, "Objetivo principal é obrigatório."),
     metasEspecificas: z.string().optional(),
+    planoContratado: z.string().min(1, "Plano é obrigatório."),
   }),
   equipeMidiaSocial: z.object({
     responsavel: z.string().optional(),
@@ -143,6 +150,7 @@ const formSections: {
     fields: [
       { name: "principalObjetivo", label: "Qual o principal objetivo com o marketing digital?", placeholder: "Ex: Aumentar vendas, gerar leads, fortalecer a marca.", type: "textarea" },
       { name: "metasEspecificas", label: "Metas Específicas (SMART)", placeholder: "Ex: Aumentar as vendas online em 20% em 6 meses.", type: "textarea" },
+      { name: "planoContratado", label: "Plano Contratado", placeholder: "Ex: Plano Basic, Pro, Enterprise", type: "input" },
     ],
   },
   {
@@ -184,23 +192,43 @@ export default function BriefingForm() {
       publicoPersona: { publicoAlvo: "", persona: "" },
       concorrenciaMercado: { principaisConcorrentes: "", pontosFortesFracos: "" },
       comunicacaoExpectativas: { canaisAtuais: "", tomDeVoz: "", expectativas: "" },
-      metasObjetivos: { principalObjetivo: "", metasEspecificas: "" },
+      metasObjetivos: { principalObjetivo: "", metasEspecificas: "", planoContratado: "" },
       equipeMidiaSocial: { responsavel: "", orcamento: "" },
       equipeTrafegoPago: { responsavel: "", orcamento: "" },
     },
   });
 
-  function onSubmit(values: FormValues) {
+  async function onSubmit(values: FormValues) {
+    // 1. Save to Firestore
+    try {
+      const newClient = {
+        name: values.informacoesOperacionais.nomeEmpresa,
+        responsible: values.equipeMidiaSocial.responsavel || "Não definido",
+        plan: values.metasObjetivos.planoContratado,
+        startDate: format(new Date(), 'yyyy-MM-dd'),
+        status: 'pending' as const,
+      };
+      const docRef = await addDoc(collection(db, "clients"), newClient);
+      
+      toast({
+        title: "Cliente Adicionado com Sucesso!",
+        description: `${newClient.name} foi adicionado à base de dados com status pendente.`,
+      });
+
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      toast({
+        title: "Erro ao Adicionar Cliente",
+        description: "Houve um problema ao salvar o cliente no banco de dados.",
+        variant: "destructive",
+      });
+    }
+
+    // 2. Download JSON backup
     const submissionId = crypto.randomUUID();
     const dataToExport = { submissionId, ...values };
-    
     const companyName = values.informacoesOperacionais.nomeEmpresa.replace(/\s+/g, '_') || 'briefing';
     downloadJSON(dataToExport, `${companyName}_${submissionId.substring(0,8)}.json`);
-
-    toast({
-      title: "Formulário Enviado com Sucesso!",
-      description: "O arquivo JSON com suas respostas foi baixado.",
-    });
   }
 
   return (
@@ -226,7 +254,7 @@ export default function BriefingForm() {
                             name={`${section.id}.${field.name}` as any}
                             render={({ field: formField }) => (
                             <FormItem className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
-                                <FormLabel>{field.label}</FormLabel>
+                                <FormLabel>{label}</FormLabel>
                                 <FormControl>
                                 {field.type === "textarea" ? (
                                     <Textarea
@@ -252,7 +280,7 @@ export default function BriefingForm() {
             <div className="flex justify-end">
               <Button type="submit" size="lg">
                 <Send className="mr-2 h-5 w-5" />
-                Enviar e Exportar JSON
+                Salvar Cliente e Exportar
               </Button>
             </div>
           </form>
@@ -261,3 +289,4 @@ export default function BriefingForm() {
     </Card>
   );
 }
+
