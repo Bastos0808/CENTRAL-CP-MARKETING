@@ -75,13 +75,15 @@ const formSchema = z.object({
     canaisUtilizados: z.string().optional(),
   }),
   concorrenciaMercado: z.object({
-    competitors: z.array(z.object({
+    principaisConcorrentes: z.array(z.object({
         name: z.string(),
-        website: z.string(),
         strengths: z.string(),
         weaknesses: z.string(),
     })).optional(),
-    inspiracoes: z.string().optional(),
+    inspiracoesPerfis: z.array(z.object({
+        nome: z.string(),
+        perfil: z.string(),
+    })).optional(),
   }),
   comunicacaoExpectativas: z.object({
     investimentoAnterior: z.string().optional(),
@@ -124,7 +126,8 @@ export default function BriefingForm() {
       negociosPosicionamento: {},
       publicoPersona: {},
       concorrenciaMercado: {
-        competitors: [{name: '', website: '', strengths: '', weaknesses: ''}, {name: '', website: '', strengths: '', weaknesses: ''}, {name: '', website: '', strengths: '', weaknesses: ''}]
+        principaisConcorrentes: Array(3).fill({ name: '', strengths: '', weaknesses: '' }),
+        inspiracoesPerfis: [{ nome: '', perfil: '' }],
       },
       comunicacaoExpectativas: {},
       metasObjetivos: {},
@@ -133,15 +136,25 @@ export default function BriefingForm() {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields: redesSociaisFields, append: appendRedeSocial, remove: removeRedeSocial } = useFieldArray({
     control: form.control,
     name: "informacoesOperacionais.redesSociaisAcesso",
   });
+  
+  const { fields: concorrentesFields, append: appendConcorrente, remove: removeConcorrente } = useFieldArray({
+    control: form.control,
+    name: "concorrenciaMercado.principaisConcorrentes",
+  });
+
+  const { fields: inspiracoesFields, append: appendInspiracao, remove: removeInspiracao } = useFieldArray({
+      control: form.control,
+      name: "concorrenciaMercado.inspiracoesPerfis",
+  });
+
 
   async function onSubmit(values: FormValues) {
     const submissionId = crypto.randomUUID();
     
-    // Save to Firestore
     try {
       const clientData = {
         id: submissionId,
@@ -186,14 +199,11 @@ export default function BriefingForm() {
                 <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Building className="h-6 w-6 text-primary" />Informações Operacionais</div></AccordionTrigger>
                 <AccordionContent className="pt-4 space-y-6">
                   <FormField control={form.control} name="informacoesOperacionais.nomeNegocio" render={({ field }) => (<FormItem><FormLabel>Nome do negócio</FormLabel><FormControl><Input placeholder="Ex: CP Marketing Digital" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="informacoesOperacionais.website" render={({ field }) => (<FormItem><FormLabel>Website</FormLabel><FormControl><Input placeholder="www.seusite.com.br" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="informacoesOperacionais.telefone" render={({ field }) => (<FormItem><FormLabel>Telefone de Contato</FormLabel><FormControl><Input placeholder="(62) 99999-9999" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="informacoesOperacionais.emailContato" render={({ field }) => (<FormItem><FormLabel>Email de Contato Principal</FormLabel><FormControl><Input placeholder="contato@seudominio.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
-
+                  
                   <div className="space-y-4">
                     <FormLabel>Acessos a redes sociais e gerenciadores</FormLabel>
                     <div className="space-y-4 rounded-md border p-4">
-                        {fields.map((field, index) => (
+                        {redesSociaisFields.map((field, index) => (
                           <div key={field.id} className="flex flex-col md:flex-row gap-4 items-end">
                             <FormField
                               control={form.control}
@@ -239,7 +249,7 @@ export default function BriefingForm() {
                               variant="ghost"
                               size="icon"
                               className="text-muted-foreground hover:text-destructive"
-                              onClick={() => remove(index)}
+                              onClick={() => removeRedeSocial(index)}
                             >
                               <Trash2 className="h-5 w-5" />
                             </Button>
@@ -250,7 +260,7 @@ export default function BriefingForm() {
                           variant="outline"
                           size="sm"
                           className="w-full"
-                          onClick={() => append({ plataforma: "", login: "", senha: "" })}
+                          onClick={() => appendRedeSocial({ plataforma: "", login: "", senha: "" })}
                         >
                           <PlusCircle className="mr-2 h-4 w-4" />
                           Adicionar Rede Social
@@ -311,11 +321,127 @@ export default function BriefingForm() {
                 </AccordionContent>
               </AccordionItem>
               
-              {/* CONCORRÊNCIA E MERCADO */}
+              {/* CONCORRÊNCIA E INSPIRAÇÕES */}
               <AccordionItem value="concorrenciaMercado">
-                <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Users className="h-6 w-6 text-primary" />Concorrência e Mercado</div></AccordionTrigger>
+                <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Users className="h-6 w-6 text-primary" />Concorrência e Inspirações</div></AccordionTrigger>
                  <AccordionContent className="pt-4 space-y-6">
-                   <FormField control={form.control} name="concorrenciaMercado.inspiracoes" render={({ field }) => (<FormItem><FormLabel>Existe alguma referência de marca ou perfil que você gostaria de se inspirar?</FormLabel><FormControl><Textarea placeholder="Cole os links ou @ de perfis que você admira." {...field} /></FormControl><FormMessage /></FormItem>)} />
+
+                  <div className="space-y-4">
+                      <FormLabel>Perfis de Inspiração</FormLabel>
+                      <div className="space-y-4 rounded-md border p-4">
+                          {inspiracoesFields.map((field, index) => (
+                            <div key={field.id} className="flex flex-col md:flex-row gap-4 items-end">
+                              <FormField
+                                control={form.control}
+                                name={`concorrenciaMercado.inspiracoesPerfis.${index}.nome`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>Nome da Marca/Perfil</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="Ex: Nike, Apple" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={form.control}
+                                name={`concorrenciaMercado.inspiracoesPerfis.${index}.perfil`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel>@ ou Link do Perfil</FormLabel>
+                                    <FormControl>
+                                      <Input placeholder="@nome_do_perfil" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="text-muted-foreground hover:text-destructive"
+                                onClick={() => removeInspiracao(index)}
+                              >
+                                <Trash2 className="h-5 w-5" />
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => appendInspiracao({ nome: "", perfil: "" })}
+                          >
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Adicionar Inspiração
+                          </Button>
+                      </div>
+                  </div>
+
+                  <div className="space-y-4">
+                      <FormLabel>Principais Concorrentes</FormLabel>
+                       <div className="space-y-4 rounded-md border p-4">
+                          {concorrentesFields.map((field, index) => (
+                            <div key={field.id} className="p-4 border rounded-lg space-y-4 bg-muted/20 relative">
+                                <FormLabel className="font-semibold">Concorrente {index + 1}</FormLabel>
+                                <FormField
+                                  control={form.control}
+                                  name={`concorrenciaMercado.principaisConcorrentes.${index}.name`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>Nome do Concorrente</FormLabel>
+                                      <FormControl>
+                                        <Input placeholder="Nome da empresa concorrente" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name={`concorrenciaMercado.principaisConcorrentes.${index}.strengths`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>O que eles fazem bem que você admira?</FormLabel>
+                                      <FormControl>
+                                        <Textarea placeholder="Pontos fortes" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <FormField
+                                  control={form.control}
+                                  name={`concorrenciaMercado.principaisConcorrentes.${index}.weaknesses`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel>O que eles deixam a desejar e que você faz melhor?</FormLabel>
+                                      <FormControl>
+                                        <Textarea placeholder="Pontos fracos" {...field} />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                {index > 0 && (
+                                   <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-muted-foreground hover:text-destructive absolute top-2 right-2"
+                                    onClick={() => removeConcorrente(index)}
+                                  >
+                                    <Trash2 className="h-5 w-5" />
+                                  </Button>
+                                )}
+                            </div>
+                          ))}
+                      </div>
+                  </div>
+
                 </AccordionContent>
               </AccordionItem>
               
