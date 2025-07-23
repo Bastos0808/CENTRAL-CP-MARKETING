@@ -189,44 +189,46 @@ export default function MindMap() {
     const columnWidth = 384; // w-96 in tailwind
 
     return (
-        <div className="relative overflow-hidden p-4 bg-background/30 rounded-lg border min-h-[400px]">
-            {level > 0 && (
+        <div className="flex items-start gap-4">
+             {level > 0 && (
                 <Button 
                     variant="outline" 
                     size="icon" 
-                    className="absolute top-4 left-4 z-10"
+                    className="mt-2"
                     onClick={handleGoBack}
                 >
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
             )}
-            <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${level * columnWidth}px)`, width: `${(columns.length + 1) * columnWidth}px`}}>
-                {/* Root Node */}
-                <div className="flex-shrink-0 w-96 p-2 flex items-start justify-center">
-                     <div
-                        className={cn(
-                            'w-full p-4 mb-3 rounded-lg border cursor-pointer transition-all duration-300 flex justify-between items-center',
-                             level === 0 && path.length === 0 ? 'bg-primary text-primary-foreground shadow-lg' : 'bg-background/50 hover:bg-muted/80',
-                             'hover:bg-primary/90' 
-                        )}
-                        onClick={handleRootClick}
-                    >
-                        <h3 className="font-bold text-xl">{rootNode.title}</h3>
-                        <ChevronRight className="h-5 w-5" />
+            <div className="relative overflow-hidden p-4 bg-background/30 rounded-lg border min-h-[400px] flex-1">
+                <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${level * columnWidth}px)`, width: `${(columns.length + 1) * columnWidth}px`}}>
+                    {/* Root Node */}
+                    <div className="flex-shrink-0 w-96 p-2 flex items-start justify-center">
+                        <div
+                            className={cn(
+                                'w-full p-4 mb-3 rounded-lg border cursor-pointer transition-all duration-300 flex justify-between items-center',
+                                level === 0 && path.length === 0 ? 'bg-primary text-primary-foreground shadow-lg' : 'bg-background/50 hover:bg-muted/80',
+                                'hover:bg-primary/90' 
+                            )}
+                            onClick={handleRootClick}
+                        >
+                            <h3 className="font-bold text-xl">{rootNode.title}</h3>
+                            <ChevronRight className="h-5 w-5" />
+                        </div>
                     </div>
+                    
+                    {/* Dynamic Columns */}
+                    {columns.map((columnNodes, l_idx) => (
+                        <div key={l_idx} className="flex-shrink-0 w-96">
+                            <MindMapColumn
+                                nodes={columnNodes}
+                                level={l_idx}
+                                onNodeClick={handleNodeClick}
+                                activePath={path}
+                            />
+                        </div>
+                    ))}
                 </div>
-                
-                {/* Dynamic Columns */}
-                {columns.map((columnNodes, l_idx) => (
-                    <div key={l_idx} className="flex-shrink-0 w-96">
-                        <MindMapColumn
-                            nodes={columnNodes}
-                            level={l_idx}
-                            onNodeClick={handleNodeClick}
-                            activePath={path}
-                        />
-                    </div>
-                ))}
             </div>
         </div>
     );
