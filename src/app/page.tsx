@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,19 +17,7 @@ export default function Home() {
         </p>
       </div>
 
-      <section className="w-full max-w-full lg:max-w-7xl mb-12">
-        <Card>
-          <CardHeader>
-            <CardTitle>Visão Geral do CP MÖDUS</CardTitle>
-            <CardDescription>O mapa mental estratégico que guia nossas operações.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <MindMap />
-          </CardContent>
-        </Card>
-      </section>
-
-      <div className="w-full max-w-6xl grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="w-full max-w-6xl grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
         <Card>
           <CardHeader>
             <CardTitle>Formulário de Briefing</CardTitle>
@@ -86,6 +75,18 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+      
+      <section className="w-full max-w-6xl">
+        <Card>
+          <CardHeader>
+            <CardTitle>Visão Geral do CP MÖDUS</CardTitle>
+            <CardDescription>O mapa mental estratégico que guia nossas operações.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <MindMap />
+          </CardContent>
+        </Card>
+      </section>
     </main>
   );
 }
