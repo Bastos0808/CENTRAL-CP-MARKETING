@@ -603,6 +603,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                     <AccordionItem value="item-1">
                         <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Building className="h-5 w-5" />Informações Operacionais</h3></AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-4">
+                            <InfoCard title="Observações sobre o Plano" value={client.briefing.informacoesOperacionais?.observacoesPlano} icon={StickyNote} />
                             <InfoCard title="Website" value={client.briefing.informacoesOperacionais?.website} icon={Info} />
                             <InfoCard title="Telefone" value={client.briefing.informacoesOperacionais?.telefone} icon={Info} />
                             <InfoCard title="Email de Contato" value={client.briefing.informacoesOperacionais?.emailContato} icon={Info} />
@@ -639,7 +640,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                            <InfoCard title="Metas Específicas" value={client.briefing.metasObjetivos?.metasEspecificas} icon={CheckCircle} />
                            <InfoCard title="Sazonalidade / Campanhas Importantes" value={client.briefing.metasObjetivos?.sazonalidade} icon={Calendar} />
                            <InfoCard title="Verba para Tráfego Pago" value={client.briefing.metasObjetivos?.verbaTrafego} icon={Users} />
-                           <InfoCard title="Observações sobre o Plano" value={client.briefing.metasObjetivos?.observacoesPlano} icon={StickyNote} />
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
