@@ -120,18 +120,58 @@ export default function BriefingForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       informacoesOperacionais: {
-        redesSociaisAcesso: [{plataforma: 'Instagram', login: '', senha: ''}]
+        nomeNegocio: '',
+        redesSociaisAcesso: [{plataforma: 'Instagram', login: '', senha: ''}],
+        linksRelevantes: '',
+        website: '',
+        telefone: '',
+        emailContato: '',
       },
-      negociosPosicionamento: {},
-      publicoPersona: {},
+      negociosPosicionamento: {
+        descricao: '',
+        diferencial: '',
+        missaoValores: '',
+        ticketMedio: '',
+        maiorDesafio: '',
+        erroMercado: '',
+      },
+      publicoPersona: {
+        publicoAlvo: '',
+        persona: '',
+        dores: '',
+        duvidasObjecoes: '',
+        impedimentoCompra: '',
+        canaisUtilizados: '',
+      },
       concorrenciaMercado: {
         principaisConcorrentes: [{ name: '', perfil: '' }],
         inspiracoesPerfis: [{ nome: '', perfil: '' }],
       },
-      comunicacaoExpectativas: {},
-      metasObjetivos: {},
-      equipeMidiaSocial: {},
-      equipeTrafegoPago: {},
+      comunicacaoExpectativas: {
+        investimentoAnterior: '',
+        conteudosPreferidos: '',
+        naoFazer: '',
+        tomDeVoz: '',
+      },
+      metasObjetivos: {
+        objetivoPrincipal: '',
+        metasEspecificas: '',
+        sazonalidade: '',
+        verbaTrafego: '',
+      },
+      equipeMidiaSocial: {
+        formatoConteudo: '',
+        temasObrigatorios: '',
+        disponibilidadeGravacao: '',
+        principaisGatilhos: '',
+      },
+      equipeTrafegoPago: {
+        principalProdutoAnunciar: '',
+        objetivoCampanhas: '',
+        promocaoCondicao: '',
+        localVeiculacao: '',
+        limiteVerba: '',
+      },
     },
   });
 
@@ -163,6 +203,7 @@ export default function BriefingForm() {
         startDate: format(new Date(), 'yyyy-MM-dd'),
         status: 'pending' as const,
         briefing: values,
+        visualIdentity: {}, // Initialize visual identity
       };
 
       const clientDocRef = doc(db, "clients", submissionId);

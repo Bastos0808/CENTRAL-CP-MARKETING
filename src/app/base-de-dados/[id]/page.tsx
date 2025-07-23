@@ -86,9 +86,7 @@ interface Report {
 
 interface Competitor {
   name: string;
-  website: string;
-  strengths: string;
-  weaknesses: string;
+  perfil: string;
 }
 
 interface VisualIdentity {
@@ -153,6 +151,24 @@ const InfoCard = ({ title, value, icon: Icon }: { title: string; value?: string;
     </div>
 );
 
+const renderList = (items?: { name: string; perfil: string }[]) => {
+  if (!items || items.length === 0 || (items.length === 1 && !items[0].name && !items[0].perfil)) {
+    return <p className="text-md font-semibold text-foreground">Não informado</p>;
+  }
+  return (
+    <ul className="list-disc pl-5 space-y-1">
+      {items.map((item, index) => (
+        (item.name || item.perfil) && (
+          <li key={index} className="text-md font-semibold text-foreground break-all">
+            {item.name} {item.perfil && `(${item.perfil})`}
+          </li>
+        )
+      ))}
+    </ul>
+  );
+};
+
+
 export default function ClientDossierPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const clientId = use(params).id;
@@ -161,7 +177,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const { toast } = useToast();
   
   const [personaPains, setPersonaPains] = useState('');
-  const [competitors, setCompetitors] = useState<Competitor[]>(Array(3).fill({ name: '', website: '', strengths: '', weaknesses: '' }));
+  const [competitors, setCompetitors] = useState<Competitor[]>(Array(3).fill({ name: '', perfil: '' }));
   const [isSaving, setIsSaving] = useState(false);
   
   // Visual Identity State
@@ -182,18 +198,18 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
         if (docSnap.exists()) {
           const clientData = { id: docSnap.id, ...docSnap.data() } as Client;
           setClient(clientData);
-          setPersonaPains(clientData.briefing.publicoPersona.dores || '');
+          setPersonaPains(clientData.briefing.publicoPersona?.dores || '');
           setVisualIdentity(clientData.visualIdentity || {});
           
-          const savedCompetitors = clientData.briefing.concorrenciaMercado?.competitors;
+          const savedCompetitors = clientData.briefing.concorrenciaMercado?.principaisConcorrentes;
           if (Array.isArray(savedCompetitors) && savedCompetitors.length > 0) {
               const filledCompetitors = savedCompetitors.slice(0, 3);
               while (filledCompetitors.length < 3) {
-                  filledCompetitors.push({ name: '', website: '', strengths: '', weaknesses: '' });
+                  filledCompetitors.push({ name: '', perfil: '' });
               }
               setCompetitors(filledCompetitors);
           } else {
-              setCompetitors(Array(3).fill({ name: '', website: '', strengths: '', weaknesses: '' }));
+              setCompetitors(Array(3).fill({ name: '', perfil: '' }));
           }
 
         } else {
@@ -281,7 +297,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       try {
         await updateDoc(clientDocRef, {
             "briefing.publicoPersona.dores": personaPains,
-            "briefing.concorrenciaMercado.competitors": competitors
+            "briefing.concorrenciaMercado.principaisConcorrentes": competitors.filter(c => c.name || c.perfil)
         });
         toast({
             title: "Análise Estratégica Salva!",
@@ -582,30 +598,40 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                 <CardDescription>Respostas fornecidas no formulário de briefing inicial.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                <div className="space-y-4">
-                    <h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Building className="h-5 w-5" />Informações Operacionais</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-7 border-l-2 border-primary/20">
-                        <InfoCard title="Website" value={client.briefing.informacoesOperacionais?.website} icon={Info} />
-                        <InfoCard title="Telefone" value={client.briefing.informacoesOperacionais?.telefone} icon={Info} />
-                        <InfoCard title="Email de Contato" value={client.briefing.informacoesOperacionais?.emailContato} icon={Info} />
-                    </div>
-                </div>
-                 <div className="space-y-4">
-                    <h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Briefcase className="h-5 w-5" />Negócios e Posicionamento</h3>
-                    <div className="space-y-4 pl-7 border-l-2 border-primary/20">
-                        <InfoCard title="O que a empresa faz?" value={client.briefing.negociosPosicionamento?.descricao} icon={Megaphone} />
-                        <InfoCard title="Principal diferencial competitivo" value={client.briefing.negociosPosicionamento?.diferencial} icon={Target} />
-                        <InfoCard title="Missão, Visão e Valores" value={client.briefing.negociosPosicionamento?.missaoValores} icon={Goal} />
-                    </div>
-                </div>
-                 <div className="space-y-4">
-                    <h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Target className="h-5 w-5" />Público e Persona</h3>
-                    <div className="space-y-4 pl-7 border-l-2 border-primary/20">
-                        <InfoCard title="Público-alvo" value={client.briefing.publicoPersona?.publicoAlvo} icon={Users} />
-                        <InfoCard title="Persona ideal" value={client.briefing.publicoPersona?.persona} icon={User} />
-                        <InfoCard title="Dores que resolve" value={client.briefing.publicoPersona?.dores} icon={User} />
-                    </div>
-                </div>
+                <Accordion type="multiple" className="w-full space-y-4">
+                    <AccordionItem value="item-1">
+                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Building className="h-5 w-5" />Informações Operacionais</h3></AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-4">
+                            <InfoCard title="Website" value={client.briefing.informacoesOperacionais?.website} icon={Info} />
+                            <InfoCard title="Telefone" value={client.briefing.informacoesOperacionais?.telefone} icon={Info} />
+                            <InfoCard title="Email de Contato" value={client.briefing.informacoesOperacionais?.emailContato} icon={Info} />
+                            <InfoCard title="Possui Identidade Visual?" value={client.briefing.informacoesOperacionais?.possuiIdentidadeVisual} icon={ImageIcon} />
+                            <InfoCard title="Possui Banco de Imagens?" value={client.briefing.informacoesOperacionais?.possuiBancoImagens} icon={ImageIcon} />
+                            <InfoCard title="Links Relevantes" value={client.briefing.informacoesOperacionais?.linksRelevantes} icon={Info} />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-2">
+                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Briefcase className="h-5 w-5" />Negócio e Posicionamento</h3></AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-4">
+                            <InfoCard title="O que a empresa faz?" value={client.briefing.negociosPosicionamento?.descricao} icon={Megaphone} />
+                            <InfoCard title="Principal diferencial competitivo" value={client.briefing.negociosPosicionamento?.diferencial} icon={Target} />
+                            <InfoCard title="Missão, Visão e Valores" value={client.briefing.negociosPosicionamento?.missaoValores} icon={Goal} />
+                            <InfoCard title="Maior desafio do negócio" value={client.briefing.negociosPosicionamento?.maiorDesafio} icon={Target} />
+                            <InfoCard title="Maior erro que o mercado comete" value={client.briefing.negociosPosicionamento?.erroMercado} icon={Target} />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-3">
+                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Target className="h-5 w-5" />Público e Persona</h3></AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-4">
+                            <InfoCard title="Público-alvo" value={client.briefing.publicoPersona?.publicoAlvo} icon={Users} />
+                            <InfoCard title="Persona ideal" value={client.briefing.publicoPersona?.persona} icon={User} />
+                            <InfoCard title="Dores que resolve" value={client.briefing.publicoPersona?.dores} icon={Frown} />
+                            <InfoCard title="Dúvidas e Objeções" value={client.briefing.publicoPersona?.duvidasObjecoes} icon={Info} />
+                            <InfoCard title="Impedimento de Compra" value={client.briefing.publicoPersona?.impedimentoCompra} icon={Info} />
+                            <InfoCard title="Canais Utilizados" value={client.briefing.publicoPersona?.canaisUtilizados} icon={Megaphone} />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </CardContent>
           </Card>
         </section>
@@ -613,12 +639,12 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
         <section className="mb-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Análise Estratégica</CardTitle>
-                    <CardDescription>Principais dores da persona e análise de concorrentes.</CardDescription>
+                    <CardTitle>Análise Estratégica (Interno)</CardTitle>
+                    <CardDescription>Principais dores da persona e análise de concorrentes. Editável pela equipe.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
-                        <Label htmlFor="personaPains" className="flex items-center gap-2 text-md font-semibold text-primary"><Frown className="h-5 w-5" /> Principais Dores da Persona</Label>
+                        <Label htmlFor="personaPains" className="flex items-center gap-2 text-md font-semibold text-primary"><Frown className="h-5 w-5" /> Principais Dores da Persona (Compilado)</Label>
                         <Textarea
                             id="personaPains"
                             placeholder="Ex: Dificuldade em encontrar fornecedores confiáveis, falta de tempo para gerenciar redes sociais, baixo retorno sobre o investimento em marketing..."
@@ -643,17 +669,9 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                                                 <Input id={`competitor-name-${index}`} value={competitor.name} onChange={(e) => handleCompetitorChange(index, 'name', e.target.value)} placeholder="Nome da empresa concorrente" />
                                             </div>
                                             <div className="space-y-1">
-                                                <Label htmlFor={`competitor-website-${index}`}>Website</Label>
-                                                <Input id={`competitor-website-${index}`} value={competitor.website} onChange={(e) => handleCompetitorChange(index, 'website', e.target.value)} placeholder="www.concorrente.com.br" />
+                                                <Label htmlFor={`competitor-perfil-${index}`}>@ ou Link</Label>
+                                                <Input id={`competitor-perfil-${index}`} value={competitor.perfil} onChange={(e) => handleCompetitorChange(index, 'perfil', e.target.value)} placeholder="@concorrente" />
                                             </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <Label htmlFor={`competitor-strengths-${index}`}>Pontos Fortes</Label>
-                                            <Textarea id={`competitor-strengths-${index}`} value={competitor.strengths} onChange={(e) => handleCompetitorChange(index, 'strengths', e.target.value)} placeholder="O que eles fazem bem?" className="min-h-[80px]" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <Label htmlFor={`competitor-weaknesses-${index}`}>Pontos Fracos</Label>
-                                            <Textarea id={`competitor-weaknesses-${index}`} value={competitor.weaknesses} onChange={(e) => handleCompetitorChange(index, 'weaknesses', e.target.value)} placeholder="Onde eles podem melhorar?" className="min-h-[80px]" />
                                         </div>
                                     </div>
                                 ))}
