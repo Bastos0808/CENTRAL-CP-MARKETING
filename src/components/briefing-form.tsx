@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import {
   Briefcase,
@@ -18,6 +18,8 @@ import {
   Palette,
   Camera,
   Link2,
+  PlusCircle,
+  Trash2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -49,8 +51,11 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 const formSchema = z.object({
   informacoesOperacionais: z.object({
     nomeNegocio: z.string().min(1, "Nome do negócio é obrigatório."),
-    redesSociais: z.string().optional(),
-    senhas: z.string().optional(),
+    redesSociaisAcesso: z.array(z.object({
+        plataforma: z.string().min(1, "Plataforma é obrigatória"),
+        login: z.string().min(1, "Login é obrigatório"),
+        senha: z.string().min(1, "Senha é obrigatória"),
+    })).optional(),
     possuiIdentidadeVisual: z.enum(['sim', 'nao'], { required_error: "Selecione uma opção." }),
     possuiBancoImagens: z.enum(['sim', 'nao'], { required_error: "Selecione uma opção." }),
     linksRelevantes: z.string().optional(),
@@ -111,7 +116,9 @@ export default function BriefingForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      informacoesOperacionais: {},
+      informacoesOperacionais: {
+        redesSociaisAcesso: [{plataforma: 'Instagram', login: '', senha: ''}]
+      },
       negociosPosicionamento: {},
       publicoPersona: {},
       concorrenciaMercado: {},
@@ -120,6 +127,11 @@ export default function BriefingForm() {
       equipeMidiaSocial: {},
       equipeTrafegoPago: {},
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "informacoesOperacionais.redesSociaisAcesso",
   });
 
   async function onSubmit(values: FormValues) {
@@ -171,8 +183,75 @@ export default function BriefingForm() {
                 <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Building className="h-6 w-6 text-primary" />Informações Operacionais</div></AccordionTrigger>
                 <AccordionContent className="pt-4 space-y-6">
                   <FormField control={form.control} name="informacoesOperacionais.nomeNegocio" render={({ field }) => (<FormItem><FormLabel>Nome do negócio</FormLabel><FormControl><Input placeholder="Ex: CP Marketing Digital" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="informacoesOperacionais.redesSociais" render={({ field }) => (<FormItem><FormLabel>@ das redes sociais</FormLabel><FormControl><Input placeholder="@cpmarketing" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="informacoesOperacionais.senhas" render={({ field }) => (<FormItem><FormLabel>Senha de acesso às redes sociais e gerenciadores</FormLabel><FormControl><Textarea placeholder="Para agilizar o processo, insira aqui as senhas de acesso. Este formulário é seguro." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  
+                  <div className="space-y-4">
+                    <FormLabel>Acessos a redes sociais e gerenciadores</FormLabel>
+                    <div className="space-y-4 rounded-md border p-4">
+                        {fields.map((field, index) => (
+                          <div key={field.id} className="flex flex-col md:flex-row gap-4 items-end">
+                            <FormField
+                              control={form.control}
+                              name={`informacoesOperacionais.redesSociaisAcesso.${index}.plataforma`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1">
+                                  <FormLabel>Plataforma</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="Instagram, Facebook, Google..." {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`informacoesOperacionais.redesSociaisAcesso.${index}.login`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1">
+                                  <FormLabel>Login</FormLabel>
+                                  <FormControl>
+                                    <Input placeholder="usuário ou email" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name={`informacoesOperacionais.redesSociaisAcesso.${index}.senha`}
+                              render={({ field }) => (
+                                <FormItem className="flex-1">
+                                  <FormLabel>Senha</FormLabel>
+                                  <FormControl>
+                                    <Input type="password" placeholder="••••••••" {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                             <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="text-muted-foreground hover:text-destructive"
+                              onClick={() => remove(index)}
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </Button>
+                          </div>
+                        ))}
+                         <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => append({ plataforma: "", login: "", senha: "" })}
+                        >
+                          <PlusCircle className="mr-2 h-4 w-4" />
+                          Adicionar Rede Social
+                        </Button>
+                    </div>
+                  </div>
+
                   <FormField control={form.control} name="informacoesOperacionais.possuiIdentidadeVisual" render={({ field }) => (
                     <FormItem className="space-y-3"><FormLabel>Cliente possui identidade visual?</FormLabel>
                       <FormControl>
