@@ -2,8 +2,9 @@
 "use client";
 
 import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from './ui/button';
 
 interface MindMapNodeData {
   title: string;
@@ -35,19 +36,19 @@ const mindMapData: MindMapNodeData[] = [
         title: 'Dor das Personas',
         description: '"Quais são as maiores dores de [público] que busca [produto/serviço]?"',
         list: [
-          'Polêmica ou confronto: "Mentiram pra você sobre [dor]"',
-          'Provocação: "Você continua [dor] porque não entendeu isso"',
-          'Verdade crua: "A real sobre [dor] que ninguém te contou"',
-          'Storytelling: Uma história real ou fictícia sobre a dor',
+          '<b>Polêmica ou confronto:</b> "Mentiram pra você sobre [dor]"',
+          '<b>Provocação:</b> "Você continua [dor] porque não entendeu isso"',
+          '<b>Verdade crua:</b> "A real sobre [dor] que ninguém te contou"',
+          '<b>Storytelling:</b> Uma história real ou fictícia sobre a dor',
         ],
       },
       {
         title: 'Dor do Cliente',
         description: 'Mapear dores do cliente para resolver limitações HOJE e da persona para resolver o que impede o SEGUIDOR de comprar.',
         list: [
-          'Falta de Leads: Público só pede preço? → Atrai curioso e não qualificado.',
-          'Falta de Resultados: Só tem like e nada de venda? → Conteúdo superficial e sem CTA.',
-          'Falta de Prova Social: Concorrente virou referência? → Falta de autoridade.',
+          '<b>Falta de Leads:</b> Público só pede preço? → Atrai curioso e não qualificado.',
+          '<b>Falta de Resultados:</b> Só tem like e nada de venda? → Conteúdo superficial e sem CTA.',
+          '<b>Falta de Prova Social:</b> Concorrente virou referência? → Falta de autoridade.',
         ],
       },
     ],
@@ -56,9 +57,9 @@ const mindMapData: MindMapNodeData[] = [
     title: 'Diagnóstico Interno',
     children: [
         { title: "Diagnóstico Profundo", description: "Entender o contexto completo do cliente e seu mercado.", list: ["Reunião de briefing estratégico", "Auditoria das redes sociais e presença digital", "Análise da comunicação e tom de voz", "Mapeamento de concorrentes e benchmark", "Levantamento dos objetivos (curto, médio, longo prazo)"] },
-        { title: "Mapeamento de Dores", description: "Entender o que trava o crescimento e impede a compra.", list: ["Cliente: Falta de leads, prova social, resultado, posicionamento.", "Persona: O que impede de comprar/confiar, o que perguntam, objeções."] },
-        { title: "Arquitetura de Conteúdo", description: "Construir um plano alinhado às dores, objetivos e diferenciais.", list: ["Etapas: Pilares, formatos, temas, tom de voz, planejamento visual.", "Estratégias de destaque: Polêmica, verdade crua, storytelling, provocação."] },
-        { title: "Análise e Otimização", description: "Monitorar o que performa e ajustar o plano sempre.", list: ["Etapas: Relatório mensal, comparativo, análise de concorrência, sugestões.", "Ferramentas: Métricas (Insta/TikTok), Google Analytics, Relatório visual."] }
+        { title: "Mapeamento de Dores", description: "Entender o que trava o crescimento e impede a compra.", list: ["<b>Cliente:</b> Falta de leads, prova social, resultado, posicionamento.", "<b>Persona:</b> O que impede de comprar/confiar, o que perguntam, objeções."] },
+        { title: "Arquitetura de Conteúdo", description: "Construir um plano alinhado às dores, objetivos e diferenciais.", list: ["<b>Etapas:</b> Pilares, formatos, temas, tom de voz, planejamento visual.", "<b>Estratégias de destaque:</b> Polêmica, verdade crua, storytelling, provocação."] },
+        { title: "Análise e Otimização", description: "Monitorar o que performa e ajustar o plano sempre.", list: ["<b>Etapas:</b> Relatório mensal, comparativo, análise de concorrência, sugestões.", "<b>Ferramentas:</b> Métricas (Insta/TikTok), Google Analytics, Relatório visual."] }
     ]
   },
   {
@@ -67,18 +68,18 @@ const mindMapData: MindMapNodeData[] = [
         { 
             title: "Matriz de Conteúdo (5 Categorias)",
             description: "Para cada dor/objetivo da persona, gerar um tipo de conteúdo.", 
-            list: ["Despertar: Atrai curiosos", "Confronto: Quebra crenças", "Educação: Ensina o porquê", "Prova: Valida com fatos/casos", "Ação: Leva para a conversão"],
+            list: ["<b>Despertar:</b> Atrai curiosos", "<b>Confronto:</b> Quebra crenças", "<b>Educação:</b> Ensina o porquê", "<b>Prova:</b> Valida com fatos/casos", "<b>Ação:</b> Leva para a conversão"],
             children: [
-                { title: "Exemplo Aplicado: Insegurança com o corpo", list: ["Despertar: \"Você se olha no espelho e finge que está tudo bem?\"", "Confronto: \"Ninguém te conta, mas autoestima baixa afasta oportunidades\"", "Educação: \"Como a imagem corporal impacta suas relações\"", "Prova: \"O que essa cliente relatou após o tratamento X\"", "Ação: \"Tá pronta pra se priorizar de verdade?\""] }
+                { title: "Exemplo Aplicado: Insegurança com o corpo", list: ["<b>Despertar:</b> \"Você se olha no espelho e finge que está tudo bem?\"", "<b>Confronto:</b> \"Ninguém te conta, mas autoestima baixa afasta oportunidades\"", "<b>Educação:</b> \"Como a imagem corporal impacta suas relações\"", "<b>Prova:</b> \"O que essa cliente relatou após o tratamento X\"", "<b>Ação:</b> \"Tá pronta pra se priorizar de verdade?\""] }
             ]
         },
-        { title: "Estrutura e Profundidade", list: ["Fórmula: \"Temas Base\" (ex: ansiedade) + \"Gatilhos criativos\" (ex: bastidor).", "Matriz de Profundidade: Superficial (rápido), Intermediário (educa), Profundo (análise técnica).", "Regra: Proibido repetir título com variação estética sem mudar a intenção."] }
+        { title: "Estrutura e Profundidade", list: ["<b>Fórmula:</b> \"Temas Base\" (ex: ansiedade) + \"Gatilhos criativos\" (ex: bastidor).", "<b>Matriz de Profundidade:</b> Superficial (rápido), Intermediário (educa), Profundo (análise técnica).", "<b>Regra:</b> Proibido repetir título com variação estética sem mudar a intenção."] }
     ]
   },
   {
     title: 'Garantia de Consistência',
     children: [
-        { title: "Critérios Obrigatórios", list: ["Padronização Visual: Cores, fontes, elementos, logos.", "Tom de Voz: Formal, técnico, descontraído, etc.", "Linguagem e Estilo: Acessível ou técnica, conforme persona.", "Validação: Material novo deve ser aprovado.", "Ajustes Periódicos: Revisão trimestral da estética."] }
+        { title: "Critérios Obrigatórios", list: ["<b>Padronização Visual:</b> Cores, fontes, elementos, logos.", "<b>Tom de Voz:</b> Formal, técnico, descontraído, etc.", "<b>Linguagem e Estilo:</b> Acessível ou técnica, conforme persona.", "<b>Validação:</b> Material novo deve ser aprovado.", "<b>Ajustes Periódicos:</b> Revisão trimestral da estética."] }
     ]
   },
   {
@@ -172,18 +173,41 @@ export default function MindMap() {
         setPath([]);
         setLevel(0);
     }
+
+    const handleGoBack = () => {
+        if (level > 0) {
+            const newLevel = level - 1;
+            const newPath = path.slice(0, newLevel);
+            const newColumns = columns.slice(0, newLevel + 1);
+            
+            setLevel(newLevel);
+            setPath(newPath);
+            setColumns(newColumns);
+        }
+    }
     
     const columnWidth = 384; // w-96 in tailwind
 
     return (
-        <div className="flex overflow-hidden p-4 bg-background/30 rounded-lg border min-h-[400px]">
+        <div className="relative overflow-hidden p-4 bg-background/30 rounded-lg border min-h-[400px]">
+            {level > 0 && (
+                <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="absolute top-4 left-4 z-10"
+                    onClick={handleGoBack}
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                </Button>
+            )}
             <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${level * columnWidth}px)`, width: `${(columns.length + 1) * columnWidth}px`}}>
                 {/* Root Node */}
                 <div className="flex-shrink-0 w-96 p-2 flex items-start justify-center">
                      <div
                         className={cn(
                             'w-full p-4 mb-3 rounded-lg border cursor-pointer transition-all duration-300 flex justify-between items-center',
-                             'bg-primary text-primary-foreground shadow-lg hover:bg-primary/90' 
+                             level === 0 && path.length === 0 ? 'bg-primary text-primary-foreground shadow-lg' : 'bg-background/50 hover:bg-muted/80',
+                             'hover:bg-primary/90' 
                         )}
                         onClick={handleRootClick}
                     >
@@ -208,4 +232,3 @@ export default function MindMap() {
     );
 }
 
-    
