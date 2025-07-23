@@ -54,32 +54,33 @@ const formSchema = z.object({
     possuiIdentidadeVisual: z.enum(['sim', 'nao'], { required_error: "Selecione uma opção." }),
     possuiBancoImagens: z.enum(['sim', 'nao'], { required_error: "Selecione uma opção." }),
     linksRelevantes: z.string().optional(),
+    website: z.string().optional(),
+    telefone: z.string().optional(),
+    emailContato: z.string().email("Email inválido.").optional().or(z.literal('')),
   }),
   negociosPosicionamento: z.object({
-    historiaMarca: z.string().optional(),
-    diferencialReal: z.string().optional(),
+    descricao: z.string().optional(),
+    diferencial: z.string().optional(),
+    missaoValores: z.string().optional(),
     ticketMedio: z.string().optional(),
-    persona: z.object({
-        nome: z.string().optional(),
-        idade: z.string().optional(),
-        profissao: z.string().optional(),
-        doresNecessidades: z.string().optional(),
-        objetivosSonhos: z.string().optional(),
-    }).optional(),
     maiorDesafio: z.string().optional(),
-    sentimentoMarca: z.string().optional(),
     erroMercado: z.string().optional(),
   }),
   publicoPersona: z.object({
+    publicoAlvo: z.string().optional(),
+    persona: z.string().optional(),
+    dores: z.string().optional(),
     duvidasObjecoes: z.string().optional(),
     impedimentoCompra: z.string().optional(),
-    doresResolvidas: z.string().optional(),
     canaisUtilizados: z.string().optional(),
   }),
   concorrenciaMercado: z.object({
-    principaisConcorrentes: z.string().optional(),
-    pontosFortesConcorrencia: z.string().optional(),
-    pontosFracosConcorrencia: z.string().optional(),
+    competitors: z.array(z.object({
+        name: z.string(),
+        website: z.string(),
+        strengths: z.string(),
+        weaknesses: z.string(),
+    })).optional(),
     inspiracoes: z.string().optional(),
   }),
   comunicacaoExpectativas: z.object({
@@ -120,17 +121,11 @@ export default function BriefingForm() {
       informacoesOperacionais: {
         redesSociaisAcesso: [{plataforma: 'Instagram', login: '', senha: ''}]
       },
-      negociosPosicionamento: {
-        persona: {
-            nome: '',
-            idade: '',
-            profissao: '',
-            doresNecessidades: '',
-            objetivosSonhos: ''
-        }
-      },
+      negociosPosicionamento: {},
       publicoPersona: {},
-      concorrenciaMercado: {},
+      concorrenciaMercado: {
+        competitors: [{name: '', website: '', strengths: '', weaknesses: ''}, {name: '', website: '', strengths: '', weaknesses: ''}, {name: '', website: '', strengths: '', weaknesses: ''}]
+      },
       comunicacaoExpectativas: {},
       metasObjetivos: {},
       equipeMidiaSocial: {},
@@ -152,10 +147,10 @@ export default function BriefingForm() {
         id: submissionId,
         name: values.informacoesOperacionais.nomeNegocio,
         responsible: "Não definido",
-        plan: "Não definido", // You might want to add a field for this
+        plan: "Não definido", 
         startDate: format(new Date(), 'yyyy-MM-dd'),
         status: 'pending' as const,
-        briefing: values, // Save the entire form
+        briefing: values,
       };
 
       const clientDocRef = doc(db, "clients", submissionId);
@@ -173,10 +168,9 @@ export default function BriefingForm() {
         description: "Houve um problema ao salvar o cliente no banco de dados.",
         variant: "destructive",
       });
-      return; // Stop execution if save fails
+      return; 
     }
 
-    // Reset the form
     form.reset();
   }
 
@@ -192,7 +186,10 @@ export default function BriefingForm() {
                 <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Building className="h-6 w-6 text-primary" />Informações Operacionais</div></AccordionTrigger>
                 <AccordionContent className="pt-4 space-y-6">
                   <FormField control={form.control} name="informacoesOperacionais.nomeNegocio" render={({ field }) => (<FormItem><FormLabel>Nome do negócio</FormLabel><FormControl><Input placeholder="Ex: CP Marketing Digital" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  
+                  <FormField control={form.control} name="informacoesOperacionais.website" render={({ field }) => (<FormItem><FormLabel>Website</FormLabel><FormControl><Input placeholder="www.seusite.com.br" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField control={form.control} name="informacoesOperacionais.telefone" render={({ field }) => (<FormItem><FormLabel>Telefone de Contato</FormLabel><FormControl><Input placeholder="(62) 99999-9999" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField control={form.control} name="informacoesOperacionais.emailContato" render={({ field }) => (<FormItem><FormLabel>Email de Contato Principal</FormLabel><FormControl><Input placeholder="contato@seudominio.com" {...field} /></FormControl><FormMessage /></FormItem>)} />
+
                   <div className="space-y-4">
                     <FormLabel>Acessos a redes sociais e gerenciadores</FormLabel>
                     <div className="space-y-4 rounded-md border p-4">
@@ -292,23 +289,11 @@ export default function BriefingForm() {
               <AccordionItem value="negociosPosicionamento">
                 <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Briefcase className="h-6 w-6 text-primary" />Negócio e Posicionamento</div></AccordionTrigger>
                 <AccordionContent className="pt-4 space-y-6">
-                   <FormField control={form.control} name="negociosPosicionamento.historiaMarca" render={({ field }) => (<FormItem><FormLabel>Qual a história por trás da sua marca?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   <FormField control={form.control} name="negociosPosicionamento.diferencialReal" render={({ field }) => (<FormItem><FormLabel>Qual o seu diferencial real em relação aos concorrentes?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                   <FormField control={form.control} name="negociosPosicionamento.descricao" render={({ field }) => (<FormItem><FormLabel>O que a empresa faz?</FormLabel><FormControl><Textarea placeholder="Descreva os produtos, serviços e o que a empresa oferece." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                   <FormField control={form.control} name="negociosPosicionamento.diferencial" render={({ field }) => (<FormItem><FormLabel>Principal diferencial competitivo</FormLabel><FormControl><Textarea placeholder="O que torna sua empresa única no mercado?" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                   <FormField control={form.control} name="negociosPosicionamento.missaoValores" render={({ field }) => (<FormItem><FormLabel>Missão, Visão e Valores</FormLabel><FormControl><Textarea placeholder="Qual o propósito e os princípios da marca?" {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="negociosPosicionamento.ticketMedio" render={({ field }) => (<FormItem><FormLabel>Qual seu ticket médio atual?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   
-                    <div className="space-y-4 rounded-md border p-4">
-                        <FormLabel className="font-semibold text-base">Quem é a sua Persona principal?</FormLabel>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <FormField control={form.control} name="negociosPosicionamento.persona.nome" render={({ field }) => (<FormItem><FormLabel>Nome da Persona</FormLabel><FormControl><Input placeholder="Ex: Ana" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            <FormField control={form.control} name="negociosPosicionamento.persona.idade" render={({ field }) => (<FormItem><FormLabel>Idade</FormLabel><FormControl><Input placeholder="Ex: 35" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                            <FormField control={form.control} name="negociosPosicionamento.persona.profissao" render={({ field }) => (<FormItem><FormLabel>Profissão</FormLabel><FormControl><Input placeholder="Ex: Advogada" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        </div>
-                        <FormField control={form.control} name="negociosPosicionamento.persona.doresNecessidades" render={({ field }) => (<FormItem><FormLabel>Quais são as dores e necessidades?</FormLabel><FormControl><Textarea placeholder="Ex: Falta de tempo, dificuldade em encontrar clientes..." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="negociosPosicionamento.persona.objetivosSonhos" render={({ field }) => (<FormItem><FormLabel>Quais são os objetivos e sonhos?</FormLabel><FormControl><Textarea placeholder="Ex: Ser reconhecida na sua área, ter mais tempo para a família..." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    </div>
-
                    <FormField control={form.control} name="negociosPosicionamento.maiorDesafio" render={({ field }) => (<FormItem><FormLabel>Qual é o maior desafio do seu negócio hoje?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   <FormField control={form.control} name="negociosPosicionamento.sentimentoMarca" render={({ field }) => (<FormItem><FormLabel>O que você deseja que o público sinta ou pense ao ver sua marca?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="negociosPosicionamento.erroMercado" render={({ field }) => (<FormItem><FormLabel>Qual é o maior erro que o seu mercado comete e você combate?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </AccordionContent>
               </AccordionItem>
@@ -317,9 +302,11 @@ export default function BriefingForm() {
               <AccordionItem value="publicoPersona">
                 <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Target className="h-6 w-6 text-primary" />Público e Persona</div></AccordionTrigger>
                  <AccordionContent className="pt-4 space-y-6">
+                   <FormField control={form.control} name="publicoPersona.publicoAlvo" render={({ field }) => (<FormItem><FormLabel>Público-alvo</FormLabel><FormControl><Textarea placeholder="Descreva as características gerais do público (idade, gênero, localização, interesses)." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                   <FormField control={form.control} name="publicoPersona.persona" render={({ field }) => (<FormItem><FormLabel>Persona ideal</FormLabel><FormControl><Textarea placeholder="Descreva em mais detalhes o cliente ideal (profissão, hábitos, estilo de vida)." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                   <FormField control={form.control} name="publicoPersona.dores" render={({ field }) => (<FormItem><FormLabel>Quais dores seu cliente resolve?</FormLabel><FormControl><Textarea placeholder="Liste os principais problemas, dificuldades e necessidades que seu produto/serviço soluciona." {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="publicoPersona.duvidasObjecoes" render={({ field }) => (<FormItem><FormLabel>Quais as principais dúvidas ou objeções que seu público tem?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="publicoPersona.impedimentoCompra" render={({ field }) => (<FormItem><FormLabel>O que geralmente impede o seu público de comprar de você?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   <FormField control={form.control} name="publicoPersona.doresResolvidas" render={({ field }) => (<FormItem><FormLabel>Quais dores seu cliente resolve?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="publicoPersona.canaisUtilizados" render={({ field }) => (<FormItem><FormLabel>Quais canais o seu público mais utiliza? (Instagram, TikTok, WhatsApp, YouTube...)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </AccordionContent>
               </AccordionItem>
@@ -328,16 +315,13 @@ export default function BriefingForm() {
               <AccordionItem value="concorrenciaMercado">
                 <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Users className="h-6 w-6 text-primary" />Concorrência e Mercado</div></AccordionTrigger>
                  <AccordionContent className="pt-4 space-y-6">
-                   <FormField control={form.control} name="concorrenciaMercado.principaisConcorrentes" render={({ field }) => (<FormItem><FormLabel>Quem são seus principais concorrentes?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   <FormField control={form.control} name="concorrenciaMercado.pontosFortesConcorrencia" render={({ field }) => (<FormItem><FormLabel>O que eles fazem bem que você admira?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   <FormField control={form.control} name="concorrenciaMercado.pontosFracosConcorrencia" render={({ field }) => (<FormItem><FormLabel>O que eles deixam a desejar e que você faz melhor?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   <FormField control={form.control} name="concorrenciaMercado.inspiracoes" render={({ field }) => (<FormItem><FormLabel>Existe alguma referência de marca ou perfil que você gostaria de se inspirar?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                   <FormField control={form.control} name="concorrenciaMercado.inspiracoes" render={({ field }) => (<FormItem><FormLabel>Existe alguma referência de marca ou perfil que você gostaria de se inspirar?</FormLabel><FormControl><Textarea placeholder="Cole os links ou @ de perfis que você admira." {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </AccordionContent>
               </AccordionItem>
               
               {/* COMUNICAÇÃO ATUAL E EXPECTATIVAS */}
               <AccordionItem value="comunicacaoExpectativas">
-                <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Megaphone className="h-6 w-6 text-primary" />Comunicação Atual e Expectativas</div></AccordionTrigger>
+                <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Megaphone className="h-6 w-6 text-primary" />Comunicação e Expectativas</div></AccordionTrigger>
                  <AccordionContent className="pt-4 space-y-6">
                    <FormField control={form.control} name="comunicacaoExpectativas.investimentoAnterior" render={({ field }) => (<FormItem><FormLabel>Você já investiu em marketing digital antes? O que funcionou e o que não funcionou?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="comunicacaoExpectativas.conteudosPreferidos" render={({ field }) => (<FormItem><FormLabel>Quais tipos de conteúdo você mais gosta de produzir?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />

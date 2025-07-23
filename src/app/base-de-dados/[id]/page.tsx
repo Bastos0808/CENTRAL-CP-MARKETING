@@ -148,7 +148,7 @@ const InfoCard = ({ title, value, icon: Icon }: { title: string; value?: string;
         <Icon className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
         <div>
             <p className="text-sm text-muted-foreground">{title}</p>
-            <p className="text-md font-semibold text-foreground">{value || "Não informado"}</p>
+            <p className="text-md font-semibold text-foreground break-words">{value || "Não informado"}</p>
         </div>
     </div>
 );
@@ -185,7 +185,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
           setPersonaPains(clientData.briefing.publicoPersona.dores || '');
           setVisualIdentity(clientData.visualIdentity || {});
           
-          // Initialize competitors from briefing data
           const savedCompetitors = clientData.briefing.concorrenciaMercado?.competitors;
           if (Array.isArray(savedCompetitors) && savedCompetitors.length > 0) {
               const filledCompetitors = savedCompetitors.slice(0, 3);
@@ -240,7 +239,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   };
   
   const handleRemoveLogo = (fieldName: 'logoUrl' | 'secondaryLogoUrl') => {
-    // We stop propagation to prevent the file input from opening
     setVisualIdentity(prevState => ({...prevState, [fieldName]: undefined}));
   };
 
@@ -250,7 +248,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       setIsSavingVisual(true);
       const clientDocRef = doc(db, "clients", client.id);
 
-      // Create a clean copy of the data to be saved, removing any undefined fields
       const dataToSave: Partial<VisualIdentity> = {};
       Object.entries(visualIdentity).forEach(([key, value]) => {
           if (value !== undefined) {
@@ -588,43 +585,27 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                 <div className="space-y-4">
                     <h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Building className="h-5 w-5" />Informações Operacionais</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-7 border-l-2 border-primary/20">
-                        {client.briefing.informacoesOperacionais.website && (
-                          <InfoCard title="Website" value={client.briefing.informacoesOperacionais.website} icon={Info} />
-                        )}
-                        {client.briefing.informacoesOperacionais.telefone && (
-                          <InfoCard title="Telefone" value={client.briefing.informacoesOperacionais.telefone} icon={Info} />
-                        )}
-                        {client.briefing.informacoesOperacionais.emailContato && (
-                          <InfoCard title="Email de Contato" value={client.briefing.informacoesOperacionais.emailContato} icon={Info} />
-                        )}
+                        <InfoCard title="Website" value={client.briefing.informacoesOperacionais?.website} icon={Info} />
+                        <InfoCard title="Telefone" value={client.briefing.informacoesOperacionais?.telefone} icon={Info} />
+                        <InfoCard title="Email de Contato" value={client.briefing.informacoesOperacionais?.emailContato} icon={Info} />
                     </div>
                 </div>
                  <div className="space-y-4">
                     <h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Briefcase className="h-5 w-5" />Negócios e Posicionamento</h3>
                     <div className="space-y-4 pl-7 border-l-2 border-primary/20">
-                        {client.briefing.negociosPosicionamento.descricao && (
-                          <InfoCard title="O que a empresa faz?" value={client.briefing.negociosPosicionamento.descricao} icon={Megaphone} />
-                        )}
-                        {client.briefing.negociosPosicionamento.diferencial && (
-                          <InfoCard title="Principal diferencial competitivo" value={client.briefing.negociosPosicionamento.diferencial} icon={Target} />
-                        )}
-                        {client.briefing.negociosPosicionamento.missaoValores && (
-                          <InfoCard title="Missão, Visão e Valores" value={client.briefing.negociosPosicionamento.missaoValores} icon={Goal} />
-                        )}
+                        <InfoCard title="O que a empresa faz?" value={client.briefing.negociosPosicionamento?.descricao} icon={Megaphone} />
+                        <InfoCard title="Principal diferencial competitivo" value={client.briefing.negociosPosicionamento?.diferencial} icon={Target} />
+                        <InfoCard title="Missão, Visão e Valores" value={client.briefing.negociosPosicionamento?.missaoValores} icon={Goal} />
                     </div>
                 </div>
                  <div className="space-y-4">
                     <h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Target className="h-5 w-5" />Público e Persona</h3>
                     <div className="space-y-4 pl-7 border-l-2 border-primary/20">
-                        {client.briefing.publicoPersona.publicoAlvo && (
-                          <InfoCard title="Público-alvo" value={client.briefing.publicoPersona.publicoAlvo} icon={Users} />
-                        )}
-                        {client.briefing.publicoPersona.persona && (
-                          <InfoCard title="Persona ideal" value={client.briefing.publicoPersona.persona} icon={User} />
-                        )}
+                        <InfoCard title="Público-alvo" value={client.briefing.publicoPersona?.publicoAlvo} icon={Users} />
+                        <InfoCard title="Persona ideal" value={client.briefing.publicoPersona?.persona} icon={User} />
+                        <InfoCard title="Dores que resolve" value={client.briefing.publicoPersona?.dores} icon={User} />
                     </div>
                 </div>
-                 {/* Add other briefing sections here following the same pattern */}
             </CardContent>
           </Card>
         </section>
