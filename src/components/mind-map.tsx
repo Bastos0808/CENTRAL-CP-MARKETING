@@ -134,7 +134,7 @@ const Node = ({ node, onClick, isSelected }: { node: MindMapNodeData, onClick: (
 
 const MindMapColumn = ({ nodes, level, onNodeClick, activePath }: { nodes: MindMapNodeData[], level: number, onNodeClick: (node: MindMapNodeData, index: number, level: number) => void, activePath: number[] }) => {
   return (
-    <div className="mindmap-column flex-shrink-0 w-80 md:w-96 space-y-2 p-2">
+    <div className="mindmap-column flex-shrink-0 w-full p-2">
       {nodes.map((node, index) => (
         <Node
           key={index}
@@ -152,6 +152,7 @@ export default function MindMap() {
     const rootNode: MindMapNodeData = { title: "CP MÖDUS", children: mindMapData };
     const [columns, setColumns] = useState<MindMapNodeData[][]>([rootNode.children || []]);
     const [path, setPath] = useState<number[]>([]);
+    const [level, setLevel] = useState(0);
 
     const handleNodeClick = (node: MindMapNodeData, index: number, level: number) => {
         const newPath = path.slice(0, level);
@@ -161,36 +162,48 @@ export default function MindMap() {
         const newColumns = columns.slice(0, level + 1);
         if (node.children && node.children.length > 0) {
             newColumns.push(node.children);
+            setLevel(level + 1);
         }
         setColumns(newColumns);
     };
+    
+    const handleRootClick = () => {
+        setColumns([rootNode.children || []]);
+        setPath([]);
+        setLevel(0);
+    }
+    
+    const columnWidth = 384; // w-96 in tailwind
 
     return (
-        <div className="flex overflow-x-auto p-4 bg-background/30 rounded-lg border min-h-[400px]">
-            {/* Root Node */}
-            <div className="flex-shrink-0 w-80 md:w-96 space-y-2 p-2 flex items-start">
-                 <div
-                    className={cn(
-                        'w-full p-4 mb-3 rounded-lg border cursor-pointer transition-all duration-300 flex justify-between items-center',
-                         'bg-primary text-primary-foreground shadow-lg' 
-                    )}
-                    onClick={() => { setColumns([rootNode.children || []]); setPath([]); }}
-                >
-                    <h3 className="font-bold text-xl">{rootNode.title}</h3>
-                    <ChevronRight className="h-5 w-5" />
+        <div className="flex overflow-hidden p-4 bg-background/30 rounded-lg border min-h-[400px]">
+            <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${level * columnWidth}px)`, width: `${columns.length * columnWidth}px`}}>
+                {/* Root Node */}
+                <div className="flex-shrink-0 w-96 space-y-2 p-2 flex items-start">
+                     <div
+                        className={cn(
+                            'w-full p-4 mb-3 rounded-lg border cursor-pointer transition-all duration-300 flex justify-between items-center',
+                             'bg-primary text-primary-foreground shadow-lg' 
+                        )}
+                        onClick={handleRootClick}
+                    >
+                        <h3 className="font-bold text-xl">{rootNode.title}</h3>
+                        <ChevronRight className="h-5 w-5" />
+                    </div>
                 </div>
+                
+                {/* Dynamic Columns */}
+                {columns.map((columnNodes, l_idx) => (
+                    <div key={l_idx} className="flex-shrink-0 w-96">
+                        <MindMapColumn
+                            nodes={columnNodes}
+                            level={l_idx}
+                            onNodeClick={handleNodeClick}
+                            activePath={path}
+                        />
+                    </div>
+                ))}
             </div>
-            
-            {/* Dynamic Columns */}
-            {columns.map((columnNodes, level) => (
-                <MindMapColumn
-                    key={level}
-                    nodes={columnNodes}
-                    level={level}
-                    onNodeClick={handleNodeClick}
-                    activePath={path}
-                />
-            ))}
         </div>
     );
 }
