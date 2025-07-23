@@ -46,6 +46,8 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 const formSchema = z.object({
   informacoesOperacionais: z.object({
     nomeNegocio: z.string().min(1, "Nome do negócio é obrigatório."),
+    planoContratado: z.string().optional(),
+    observacoesPlano: z.string().optional(),
     redesSociaisAcesso: z.array(z.object({
         plataforma: z.string().min(1, "Plataforma é obrigatória"),
         login: z.string().min(1, "Login é obrigatório"),
@@ -95,8 +97,6 @@ const formSchema = z.object({
     metasEspecificas: z.string().optional(),
     sazonalidade: z.string().optional(),
     verbaTrafego: z.string().optional(),
-    planoContratado: z.string().optional(),
-    observacoesPlano: z.string().optional(),
   }),
   equipeMidiaSocial: z.object({
     formatoConteudo: z.string().optional(),
@@ -123,6 +123,8 @@ export default function BriefingForm() {
     defaultValues: {
       informacoesOperacionais: {
         nomeNegocio: '',
+        planoContratado: '',
+        observacoesPlano: '',
         redesSociaisAcesso: [{plataforma: 'Instagram', login: '', senha: ''}],
         linksRelevantes: '',
         website: '',
@@ -160,8 +162,6 @@ export default function BriefingForm() {
         metasEspecificas: '',
         sazonalidade: '',
         verbaTrafego: '',
-        planoContratado: '',
-        observacoesPlano: '',
       },
       equipeMidiaSocial: {
         formatoConteudo: '',
@@ -203,7 +203,7 @@ export default function BriefingForm() {
         id: submissionId,
         name: values.informacoesOperacionais.nomeNegocio,
         responsible: "Não definido",
-        plan: values.metasObjetivos.planoContratado || "Não definido", 
+        plan: values.informacoesOperacionais.planoContratado || "Não definido", 
         startDate: format(new Date(), 'yyyy-MM-dd'),
         status: 'pending' as const,
         briefing: values,
@@ -243,6 +243,8 @@ export default function BriefingForm() {
                 <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Building className="h-6 w-6 text-primary" />Informações Operacionais</div></AccordionTrigger>
                 <AccordionContent className="pt-4 space-y-6">
                   <FormField control={form.control} name="informacoesOperacionais.nomeNegocio" render={({ field }) => (<FormItem><FormLabel>Nome do negócio</FormLabel><FormControl><Input placeholder="Ex: CP Marketing Digital" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField control={form.control} name="informacoesOperacionais.planoContratado" render={({ field }) => (<FormItem><FormLabel>Plano Contratado</FormLabel><FormControl><Input placeholder="Ex: Plano Performance" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField control={form.control} name="informacoesOperacionais.observacoesPlano" render={({ field }) => (<FormItem><FormLabel>Observações sobre o Plano</FormLabel><FormControl><Textarea placeholder="Detalhes, exceções ou acordos específicos sobre o plano contratado." {...field} /></FormControl><FormMessage /></FormItem>)} />
                   
                   <div className="space-y-4">
                     <FormLabel>Acessos a redes sociais e gerenciadores</FormLabel>
@@ -502,8 +504,6 @@ export default function BriefingForm() {
                    <FormField control={form.control} name="metasObjetivos.metasEspecificas" render={({ field }) => (<FormItem><FormLabel>Você já possui metas específicas de vendas, leads ou alcance? Quais?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="metasObjetivos.sazonalidade" render={({ field }) => (<FormItem><FormLabel>Existe alguma sazonalidade ou campanha importante no ano?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="metasObjetivos.verbaTrafego" render={({ field }) => (<FormItem><FormLabel>Existe verba para tráfego pago? Qual o valor médio mensal que pretende investir?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   <FormField control={form.control} name="metasObjetivos.planoContratado" render={({ field }) => (<FormItem><FormLabel>Plano Contratado</FormLabel><FormControl><Input placeholder="Ex: Plano Performance" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   <FormField control={form.control} name="metasObjetivos.observacoesPlano" render={({ field }) => (<FormItem><FormLabel>Observações sobre o Plano</FormLabel><FormControl><Textarea placeholder="Detalhes, exceções ou acordos específicos sobre o plano contratado." {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </AccordionContent>
               </AccordionItem>
 
