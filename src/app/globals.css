@@ -18,6 +18,82 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.mindmap-horizontal {
+    @apply flex items-center;
+}
+
+.central-node-container {
+    @apply flex-shrink-0 relative pr-16;
+}
+
+.central-node-container::after {
+    content: '';
+    @apply absolute right-0 top-1/2 w-16 h-0.5 bg-border;
+    transform: translateY(-50%);
+}
+
+.branches-container {
+    @apply flex flex-col items-start relative;
+}
+
+.branches-container::before {
+    content: '';
+    @apply absolute left-[-2px] top-0 h-full w-0.5 bg-border;
+}
+
+.branch {
+    @apply flex flex-col items-start relative pl-16 my-2;
+}
+
+.branch::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 2.2em; /* Aligns with the center of the node */
+    @apply w-16 h-0.5 bg-border;
+}
+
+.node-content {
+    @apply flex-shrink-0 flex items-center;
+}
+
+.children {
+    @apply pl-16 max-h-0 overflow-hidden transition-all duration-700 ease-in-out opacity-0;
+}
+
+.children.expanded {
+    max-height: 2000px; /* Adjust as needed */
+    @apply opacity-100;
+}
+
+.node {
+    @apply inline-flex flex-col p-4 sm:p-6 rounded-lg shadow-md text-left min-w-[280px] max-w-md border border-border whitespace-normal;
+}
+
+.node-title {
+    @apply font-bold text-center w-full flex items-center justify-center;
+}
+
+.node-description {
+    @apply text-xs sm:text-sm font-normal mt-2 leading-snug text-center;
+}
+
+.node-list {
+    @apply text-xs sm:text-sm text-left mt-3 pl-4 list-disc;
+}
+
+.node-list li {
+    @apply py-0.5;
+}
+
+.icon {
+    @apply ml-2 transition-transform duration-300 ease-in-out h-5 w-5;
+}
+
+.icon.rotated {
+    transform: rotate(90deg);
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
