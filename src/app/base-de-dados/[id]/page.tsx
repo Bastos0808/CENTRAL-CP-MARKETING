@@ -33,6 +33,7 @@ import {
   Type,
   ImageIcon,
   Upload,
+  StickyNote,
 } from "lucide-react";
 import {
   Select,
@@ -598,7 +599,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                 <CardDescription>Respostas fornecidas no formulário de briefing inicial.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                <Accordion type="multiple" className="w-full space-y-4">
+                <Accordion type="multiple" className="w-full space-y-4" defaultValue={['item-1']}>
                     <AccordionItem value="item-1">
                         <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Building className="h-5 w-5" />Informações Operacionais</h3></AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-4">
@@ -629,6 +630,16 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                             <InfoCard title="Dúvidas e Objeções" value={client.briefing.publicoPersona?.duvidasObjecoes} icon={Info} />
                             <InfoCard title="Impedimento de Compra" value={client.briefing.publicoPersona?.impedimentoCompra} icon={Info} />
                             <InfoCard title="Canais Utilizados" value={client.briefing.publicoPersona?.canaisUtilizados} icon={Megaphone} />
+                        </AccordionContent>
+                    </AccordionItem>
+                     <AccordionItem value="item-4">
+                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Goal className="h-5 w-5" />Metas e Objetivos</h3></AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-4">
+                           <InfoCard title="Objetivo Principal (Próximos 3 meses)" value={client.briefing.metasObjetivos?.objetivoPrincipal} icon={Target} />
+                           <InfoCard title="Metas Específicas" value={client.briefing.metasObjetivos?.metasEspecificas} icon={CheckCircle} />
+                           <InfoCard title="Sazonalidade / Campanhas Importantes" value={client.briefing.metasObjetivos?.sazonalidade} icon={Calendar} />
+                           <InfoCard title="Verba para Tráfego Pago" value={client.briefing.metasObjetivos?.verbaTrafego} icon={Users} />
+                           <InfoCard title="Observações sobre o Plano" value={client.briefing.metasObjetivos?.observacoesPlano} icon={StickyNote} />
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
