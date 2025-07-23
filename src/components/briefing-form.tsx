@@ -13,11 +13,6 @@ import {
   Goal,
   DollarSign,
   Send,
-  FileText,
-  type LucideIcon,
-  Palette,
-  Camera,
-  Link2,
   PlusCircle,
   Trash2,
 } from "lucide-react";
@@ -64,11 +59,12 @@ const formSchema = z.object({
     historiaMarca: z.string().optional(),
     diferencialReal: z.string().optional(),
     ticketMedio: z.string().optional(),
-    icp: z.object({
-        setor: z.string().optional(),
-        tamanhoEmpresa: z.string().optional(),
-        cargoDecisor: z.string().optional(),
-        desafios: z.string().optional(),
+    persona: z.object({
+        nome: z.string().optional(),
+        idade: z.string().optional(),
+        profissao: z.string().optional(),
+        doresNecessidades: z.string().optional(),
+        objetivosSonhos: z.string().optional(),
     }).optional(),
     maiorDesafio: z.string().optional(),
     sentimentoMarca: z.string().optional(),
@@ -125,11 +121,12 @@ export default function BriefingForm() {
         redesSociaisAcesso: [{plataforma: 'Instagram', login: '', senha: ''}]
       },
       negociosPosicionamento: {
-        icp: {
-            setor: '',
-            tamanhoEmpresa: '',
-            cargoDecisor: '',
-            desafios: ''
+        persona: {
+            nome: '',
+            idade: '',
+            profissao: '',
+            doresNecessidades: '',
+            objetivosSonhos: ''
         }
       },
       publicoPersona: {},
@@ -300,11 +297,14 @@ export default function BriefingForm() {
                    <FormField control={form.control} name="negociosPosicionamento.ticketMedio" render={({ field }) => (<FormItem><FormLabel>Qual seu ticket médio atual?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                    
                     <div className="space-y-4 rounded-md border p-4">
-                        <FormLabel className="font-semibold text-base">Qual seu Perfil de Cliente Ideal (ICP)?</FormLabel>
-                        <FormField control={form.control} name="negociosPosicionamento.icp.setor" render={({ field }) => (<FormItem><FormLabel>Setor de Atuação</FormLabel><FormControl><Input placeholder="Ex: Varejo de moda, tecnologia, saúde..." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="negociosPosicionamento.icp.tamanhoEmpresa" render={({ field }) => (<FormItem><FormLabel>Tamanho da Empresa</FormLabel><FormControl><Input placeholder="Ex: Pequena (1-50), Média (51-200), Grande (200+)" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="negociosPosicionamento.icp.cargoDecisor" render={({ field }) => (<FormItem><FormLabel>Cargo do Decisor</FormLabel><FormControl><Input placeholder="Ex: CEO, Gerente de Marketing, Diretor de Vendas" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="negociosPosicionamento.icp.desafios" render={({ field }) => (<FormItem><FormLabel>Principais Desafios</FormLabel><FormControl><Textarea placeholder="Ex: Aumentar a geração de leads, melhorar a presença online, etc." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormLabel className="font-semibold text-base">Quem é a sua Persona principal?</FormLabel>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <FormField control={form.control} name="negociosPosicionamento.persona.nome" render={({ field }) => (<FormItem><FormLabel>Nome da Persona</FormLabel><FormControl><Input placeholder="Ex: Ana" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="negociosPosicionamento.persona.idade" render={({ field }) => (<FormItem><FormLabel>Idade</FormLabel><FormControl><Input placeholder="Ex: 35" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="negociosPosicionamento.persona.profissao" render={({ field }) => (<FormItem><FormLabel>Profissão</FormLabel><FormControl><Input placeholder="Ex: Advogada" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        </div>
+                        <FormField control={form.control} name="negociosPosicionamento.persona.doresNecessidades" render={({ field }) => (<FormItem><FormLabel>Quais são as dores e necessidades?</FormLabel><FormControl><Textarea placeholder="Ex: Falta de tempo, dificuldade em encontrar clientes..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="negociosPosicionamento.persona.objetivosSonhos" render={({ field }) => (<FormItem><FormLabel>Quais são os objetivos e sonhos?</FormLabel><FormControl><Textarea placeholder="Ex: Ser reconhecida na sua área, ter mais tempo para a família..." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     </div>
 
                    <FormField control={form.control} name="negociosPosicionamento.maiorDesafio" render={({ field }) => (<FormItem><FormLabel>Qual é o maior desafio do seu negócio hoje?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
