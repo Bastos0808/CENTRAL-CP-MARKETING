@@ -28,9 +28,9 @@ import { generateIdeas } from '@/ai/flows/idea-generator-flow';
 interface Client {
   id: string;
   name: string;
-  briefing: any;
   contentPlanner?: ContentPost[];
-  reports?: any[]; // Added reports to client type
+  reports?: any[];
+  briefing?: any;
 }
 
 type PostStatus = 'idea' | 'production' | 'posted';
@@ -160,15 +160,8 @@ export default function ContentPlanner() {
       if (!selectedClient) return;
       setIsGeneratingIdea(true);
       try {
-          const clientDocRef = doc(db, 'clients', selectedClient.id);
-          const clientSnap = await getDoc(clientDocRef);
-           if (!clientSnap.exists()) {
-              throw new Error("Cliente não encontrado.");
-          }
-          const clientData = clientSnap.data();
-          
-          const clientBriefing = JSON.stringify(clientData?.briefing || {}, null, 2);
-          const clientReports = JSON.stringify(clientData?.reports || [], null, 2);
+          const clientBriefing = JSON.stringify(selectedClient.briefing || {}, null, 2);
+          const clientReports = JSON.stringify(selectedClient.reports || [], null, 2);
 
           const result = await generateIdeas({ clientBriefing, clientReports, postType });
 
