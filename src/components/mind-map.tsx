@@ -127,9 +127,9 @@ const Node = ({ node }: { node: MindMapNodeData }) => {
   
   const nodeColors: Record<number, string> = {
     0: 'bg-primary text-primary-foreground',
-    1: 'bg-gray-700 text-white',
-    2: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-100',
-    3: 'bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-50',
+    1: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+    2: 'bg-muted/50 text-muted-foreground',
+    3: 'bg-background text-foreground',
   }
   
   const titleSize: Record<number, string> = {
@@ -140,15 +140,15 @@ const Node = ({ node }: { node: MindMapNodeData }) => {
   }
 
   const descriptionColor: Record<number, string> = {
-    1: 'text-gray-300',
-    2: 'text-slate-500 dark:text-slate-400',
-    3: 'text-slate-600 dark:text-slate-300',
+    1: 'text-secondary-foreground/80',
+    2: 'text-muted-foreground/90',
+    3: 'text-foreground/80',
   }
   
   const listColor: Record<number, string> = {
-     1: 'text-gray-200',
-     2: 'text-slate-600 dark:text-slate-300',
-     3: 'text-slate-700 dark:text-slate-200',
+     1: 'text-secondary-foreground/90',
+     2: 'text-muted-foreground',
+     3: 'text-foreground/90',
   }
 
 
@@ -159,7 +159,7 @@ const Node = ({ node }: { node: MindMapNodeData }) => {
           className={cn(
             'node',
             nodeColors[node.level],
-            isCollapsible && 'cursor-pointer'
+            isCollapsible && 'collapsible'
           )}
           onClick={handleToggle}
         >
@@ -167,7 +167,7 @@ const Node = ({ node }: { node: MindMapNodeData }) => {
             <span className={cn('node-title', titleSize[node.level])}>
               {node.title}
               {isCollapsible && (
-                <ChevronRight className={cn('icon', isExpanded && 'rotated')} />
+                <ChevronRight className={cn('icon', isExpanded && 'rotate-90')} />
               )}
             </span>
           )}
@@ -179,14 +179,14 @@ const Node = ({ node }: { node: MindMapNodeData }) => {
           {node.list && (
             <ul className={cn('node-list', listColor[node.level])}>
               {node.list.map((item, index) => (
-                <li key={index}>{item}</li>
+                <li key={index} dangerouslySetInnerHTML={{ __html: item }} />
               ))}
             </ul>
           )}
         </div>
       </div>
       {isCollapsible && (
-        <div className={cn('children', isExpanded && 'expanded')}>
+        <div className={cn('children')} data-state={isExpanded ? 'open' : 'closed'}>
           {node.children?.map((childNode, index) => (
             <Node key={index} node={childNode} />
           ))}
@@ -202,7 +202,7 @@ export default function MindMap() {
         <div className="mindmap-container overflow-x-auto p-4 bg-background">
             <div className="mindmap-horizontal">
                 <div className="central-node-container">
-                    <div className={cn('node', 'bg-blue-800 text-white')}>
+                    <div className={cn('node', 'bg-primary text-primary-foreground')}>
                         <span className="node-title text-2xl">CP MÖDUS</span>
                     </div>
                 </div>
