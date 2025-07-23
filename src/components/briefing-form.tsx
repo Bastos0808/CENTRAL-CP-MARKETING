@@ -64,7 +64,12 @@ const formSchema = z.object({
     historiaMarca: z.string().optional(),
     diferencialReal: z.string().optional(),
     ticketMedio: z.string().optional(),
-    clienteIdeal: z.string().optional(),
+    icp: z.object({
+        setor: z.string().optional(),
+        tamanhoEmpresa: z.string().optional(),
+        cargoDecisor: z.string().optional(),
+        desafios: z.string().optional(),
+    }).optional(),
     maiorDesafio: z.string().optional(),
     sentimentoMarca: z.string().optional(),
     erroMercado: z.string().optional(),
@@ -119,7 +124,14 @@ export default function BriefingForm() {
       informacoesOperacionais: {
         redesSociaisAcesso: [{plataforma: 'Instagram', login: '', senha: ''}]
       },
-      negociosPosicionamento: {},
+      negociosPosicionamento: {
+        icp: {
+            setor: '',
+            tamanhoEmpresa: '',
+            cargoDecisor: '',
+            desafios: ''
+        }
+      },
       publicoPersona: {},
       concorrenciaMercado: {},
       comunicacaoExpectativas: {},
@@ -286,7 +298,15 @@ export default function BriefingForm() {
                    <FormField control={form.control} name="negociosPosicionamento.historiaMarca" render={({ field }) => (<FormItem><FormLabel>Qual a história por trás da sua marca?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="negociosPosicionamento.diferencialReal" render={({ field }) => (<FormItem><FormLabel>Qual o seu diferencial real em relação aos concorrentes?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="negociosPosicionamento.ticketMedio" render={({ field }) => (<FormItem><FormLabel>Qual seu ticket médio atual?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                   <FormField control={form.control} name="negociosPosicionamento.clienteIdeal" render={({ field }) => (<FormItem><FormLabel>Quem é o seu cliente ideal? Idade, profissões, hábitos?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                   
+                    <div className="space-y-4 rounded-md border p-4">
+                        <FormLabel className="font-semibold text-base">Qual seu Perfil de Cliente Ideal (ICP)?</FormLabel>
+                        <FormField control={form.control} name="negociosPosicionamento.icp.setor" render={({ field }) => (<FormItem><FormLabel>Setor de Atuação</FormLabel><FormControl><Input placeholder="Ex: Varejo de moda, tecnologia, saúde..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="negociosPosicionamento.icp.tamanhoEmpresa" render={({ field }) => (<FormItem><FormLabel>Tamanho da Empresa</FormLabel><FormControl><Input placeholder="Ex: Pequena (1-50), Média (51-200), Grande (200+)" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="negociosPosicionamento.icp.cargoDecisor" render={({ field }) => (<FormItem><FormLabel>Cargo do Decisor</FormLabel><FormControl><Input placeholder="Ex: CEO, Gerente de Marketing, Diretor de Vendas" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="negociosPosicionamento.icp.desafios" render={({ field }) => (<FormItem><FormLabel>Principais Desafios</FormLabel><FormControl><Textarea placeholder="Ex: Aumentar a geração de leads, melhorar a presença online, etc." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    </div>
+
                    <FormField control={form.control} name="negociosPosicionamento.maiorDesafio" render={({ field }) => (<FormItem><FormLabel>Qual é o maior desafio do seu negócio hoje?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="negociosPosicionamento.sentimentoMarca" render={({ field }) => (<FormItem><FormLabel>O que você deseja que o público sinta ou pense ao ver sua marca?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="negociosPosicionamento.erroMercado" render={({ field }) => (<FormItem><FormLabel>Qual é o maior erro que o seu mercado comete e você combate?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -374,5 +394,3 @@ export default function BriefingForm() {
     </Card>
   );
 }
-
-    
