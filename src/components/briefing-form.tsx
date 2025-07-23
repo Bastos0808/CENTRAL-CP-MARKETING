@@ -54,9 +54,19 @@ const formSchema = z.object({
     missaoValores: z.string().optional(),
   }),
   publicoPersona: z.object({
-    publicoAlvo: z.string().min(1, "Público-alvo é obrigatório."),
-    persona: z.string().optional(),
+    // Público-alvo
+    faixaEtaria: z.string().optional(),
+    genero: z.string().optional(),
+    localizacao: z.string().optional(),
+    interesses: z.string().optional(),
+    classeSocial: z.string().optional(),
+    // Persona
+    nome: z.string().optional(),
+    idade: z.string().optional(),
+    profissao: z.string().optional(),
     dores: z.string().optional(),
+    objetivos: z.string().optional(),
+    comoAjuda: z.string().optional(),
   }),
   concorrenciaMercado: z.object({
     competitors: z.array(z.object({
@@ -93,12 +103,22 @@ const formSections: {
   id: keyof FormValues;
   title: string;
   icon: LucideIcon;
-  fields: {
-    name: keyof FormValues[keyof FormValues];
-    label: string;
-    placeholder: string;
-    type: "input" | "textarea";
-  }[];
+  fields: (
+    | {
+        name: keyof FormValues[keyof FormValues];
+        label: string;
+        placeholder: string;
+        type: "input" | "textarea";
+        sectionTitle?: never;
+      }
+    | {
+        sectionTitle: string;
+        type: "title";
+        name?: never;
+        label?: never;
+        placeholder?: never;
+      }
+  )[];
 }[] = [
   {
     id: "informacoesOperacionais",
@@ -126,8 +146,19 @@ const formSections: {
     title: "Público e Persona",
     icon: Target,
     fields: [
-      { name: "publicoAlvo", label: "Quem é o público-alvo?", placeholder: "Idade, gênero, localização, interesses, etc.", type: "textarea" },
-      { name: "persona", label: "Descreva a persona ideal", placeholder: "Nome, idade, profissão, dores, necessidades de um cliente ideal.", type: "textarea" },
+        { type: "title", sectionTitle: "Público-alvo" },
+        { name: "faixaEtaria", label: "Faixa Etária", placeholder: "Ex: 25-35 anos", type: "input" },
+        { name: "genero", label: "Gênero", placeholder: "Ex: Feminino, Masculino, Ambos", type: "input" },
+        { name: "localizacao", label: "Localização", placeholder: "Ex: Goiânia, GO", type: "input" },
+        { name: "classeSocial", label: "Classe Social", placeholder: "Ex: A, B, C", type: "input" },
+        { name: "interesses", label: "Principais Interesses", placeholder: "Ex: Tecnologia, viagens, alimentação saudável", type: "textarea" },
+        { type: "title", sectionTitle: "Persona" },
+        { name: "nome", label: "Nome da Persona", placeholder: "Ex: Ana", type: "input" },
+        { name: "idade", label: "Idade", placeholder: "Ex: 30 anos", type: "input" },
+        { name: "profissao", label: "Profissão", placeholder: "Ex: Advogada", type: "input" },
+        { name: "dores", label: "Quais são as dores e necessidades?", placeholder: "Ex: Falta de tempo para gerenciar as finanças", type: "textarea" },
+        { name: "objetivos", label: "Quais são os objetivos e sonhos?", placeholder: "Ex: Alcançar independência financeira, viajar mais", type: "textarea" },
+        { name: "comoAjuda", label: "Como sua empresa ajuda a persona a resolver suas dores e alcançar seus objetivos?", placeholder: "Descreva a solução que sua empresa oferece", type: "textarea" },
     ],
   },
   {
@@ -186,7 +217,10 @@ export default function BriefingForm() {
     defaultValues: {
       informacoesOperacionais: { nomeEmpresa: "", website: "", telefone: "", emailContato: "" },
       negociosPosicionamento: { descricao: "", diferencial: "", missaoValores: "" },
-      publicoPersona: { publicoAlvo: "", persona: "" },
+      publicoPersona: {
+        faixaEtaria: "", genero: "", localizacao: "", interesses: "", classeSocial: "",
+        nome: "", idade: "", profissao: "", dores: "", objetivos: "", comoAjuda: ""
+      },
       concorrenciaMercado: { principaisConcorrentes: "", pontosFortesFracos: "" },
       comunicacaoExpectativas: { canaisAtuais: "", tomDeVoz: "", expectativas: "" },
       metasObjetivos: { principalObjetivo: "", metasEspecificas: "", planoContratado: "" },
@@ -248,30 +282,39 @@ export default function BriefingForm() {
                   </AccordionTrigger>
                   <AccordionContent className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {section.fields.map((fieldInfo) => (
-                         <FormField
-                            key={fieldInfo.name}
-                            control={form.control}
-                            name={`${section.id}.${fieldInfo.name}` as any}
-                            render={({ field }) => (
-                            <FormItem className={fieldInfo.type === 'textarea' ? 'md:col-span-2' : ''}>
-                                <FormLabel>{fieldInfo.label}</FormLabel>
-                                <FormControl>
-                                {fieldInfo.type === "textarea" ? (
-                                    <Textarea
-                                    placeholder={fieldInfo.placeholder}
-                                    {...field}
-                                    className="min-h-[120px]"
-                                    />
-                                ) : (
-                                    <Input placeholder={fieldInfo.placeholder} {...field} />
+                      {section.fields.map((fieldInfo, index) => {
+                         if (fieldInfo.type === 'title') {
+                            return (
+                                <h3 key={`${fieldInfo.sectionTitle}-${index}`} className="md:col-span-2 text-md font-semibold text-primary/90 mt-2 mb-[-10px]">
+                                    {fieldInfo.sectionTitle}
+                                </h3>
+                            )
+                         }
+                         return (
+                            <FormField
+                                key={fieldInfo.name}
+                                control={form.control}
+                                name={`${section.id}.${fieldInfo.name}` as any}
+                                render={({ field }) => (
+                                <FormItem className={fieldInfo.type === 'textarea' ? 'md:col-span-2' : ''}>
+                                    <FormLabel>{fieldInfo.label}</FormLabel>
+                                    <FormControl>
+                                    {fieldInfo.type === "textarea" ? (
+                                        <Textarea
+                                        placeholder={fieldInfo.placeholder}
+                                        {...field}
+                                        className="min-h-[120px]"
+                                        />
+                                    ) : (
+                                        <Input placeholder={fieldInfo.placeholder} {...field} />
+                                    )}
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
                                 )}
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                      ))}
+                            />
+                         )
+                      })}
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -290,3 +333,4 @@ export default function BriefingForm() {
     </Card>
   );
 }
+
