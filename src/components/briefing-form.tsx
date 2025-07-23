@@ -39,7 +39,17 @@ import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { format } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
+
+const personaSchema = z.object({
+    nome: z.string().optional(),
+    idade: z.string().optional(),
+    profissao: z.string().optional(),
+    dores: z.string().optional(),
+    objetivos: z.string().optional(),
+    comoAjuda: z.string().optional(),
+});
 
 const formSchema = z.object({
   informacoesOperacionais: z.object({
@@ -60,13 +70,8 @@ const formSchema = z.object({
     localizacao: z.string().optional(),
     interesses: z.string().optional(),
     classeSocial: z.string().optional(),
-    // Persona
-    nome: z.string().optional(),
-    idade: z.string().optional(),
-    profissao: z.string().optional(),
-    dores: z.string().optional(),
-    objetivos: z.string().optional(),
-    comoAjuda: z.string().optional(),
+    // Personas
+    personas: z.array(personaSchema).optional(),
   }),
   concorrenciaMercado: z.object({
     competitors: z.array(z.object({
@@ -99,6 +104,34 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+const publicoFields: {
+    name: keyof z.infer<typeof formSchema>['publicoPersona'];
+    label: string;
+    placeholder: string;
+    type: "input" | "textarea";
+}[] = [
+    { name: "faixaEtaria", label: "Faixa Etária", placeholder: "Ex: 25-35 anos", type: "input" },
+    { name: "genero", label: "Gênero", placeholder: "Ex: Feminino, Masculino, Ambos", type: "input" },
+    { name: "localizacao", label: "Localização", placeholder: "Ex: Goiânia, GO", type: "input" },
+    { name: "classeSocial", label: "Classe Social", placeholder: "Ex: A, B, C", type: "input" },
+    { name: "interesses", label: "Principais Interesses", placeholder: "Ex: Tecnologia, viagens, alimentação saudável", type: "textarea" },
+];
+
+const personaFields: {
+    name: keyof z.infer<typeof personaSchema>;
+    label: string;
+    placeholder: string;
+    type: "input" | "textarea";
+}[] = [
+    { name: "nome", label: "Nome da Persona", placeholder: "Ex: Ana", type: "input" },
+    { name: "idade", label: "Idade", placeholder: "Ex: 30 anos", type: "input" },
+    { name: "profissao", label: "Profissão", placeholder: "Ex: Advogada", type: "input" },
+    { name: "dores", label: "Quais são as dores e necessidades?", placeholder: "Ex: Falta de tempo para gerenciar as finanças", type: "textarea" },
+    { name: "objetivos", label: "Quais são os objetivos e sonhos?", placeholder: "Ex: Alcançar independência financeira, viajar mais", type: "textarea" },
+    { name: "comoAjuda", label: "Como sua empresa ajuda a persona a resolver suas dores e alcançar seus objetivos?", placeholder: "Descreva a solução que sua empresa oferece", type: "textarea" },
+];
+
+
 const formSections: {
   id: keyof FormValues;
   title: string;
@@ -109,14 +142,6 @@ const formSections: {
         label: string;
         placeholder: string;
         type: "input" | "textarea";
-        sectionTitle?: never;
-      }
-    | {
-        sectionTitle: string;
-        type: "title";
-        name?: never;
-        label?: never;
-        placeholder?: never;
       }
   )[];
 }[] = [
@@ -139,26 +164,6 @@ const formSections: {
       { name: "descricao", label: "O que a empresa faz?", placeholder: "Descreva os produtos ou serviços oferecidos.", type: "textarea" },
       { name: "diferencial", label: "Qual o principal diferencial competitivo?", placeholder: "O que torna sua empresa única no mercado?", type: "textarea" },
       { name: "missaoValores", label: "Missão, Visão e Valores", placeholder: "Descreva a missão, visão e valores da empresa.", type: "textarea" },
-    ],
-  },
-  {
-    id: "publicoPersona",
-    title: "Público e Persona",
-    icon: Target,
-    fields: [
-        { type: "title", sectionTitle: "Público-alvo" },
-        { name: "faixaEtaria", label: "Faixa Etária", placeholder: "Ex: 25-35 anos", type: "input" },
-        { name: "genero", label: "Gênero", placeholder: "Ex: Feminino, Masculino, Ambos", type: "input" },
-        { name: "localizacao", label: "Localização", placeholder: "Ex: Goiânia, GO", type: "input" },
-        { name: "classeSocial", label: "Classe Social", placeholder: "Ex: A, B, C", type: "input" },
-        { name: "interesses", label: "Principais Interesses", placeholder: "Ex: Tecnologia, viagens, alimentação saudável", type: "textarea" },
-        { type: "title", sectionTitle: "Persona" },
-        { name: "nome", label: "Nome da Persona", placeholder: "Ex: Ana", type: "input" },
-        { name: "idade", label: "Idade", placeholder: "Ex: 30 anos", type: "input" },
-        { name: "profissao", label: "Profissão", placeholder: "Ex: Advogada", type: "input" },
-        { name: "dores", label: "Quais são as dores e necessidades?", placeholder: "Ex: Falta de tempo para gerenciar as finanças", type: "textarea" },
-        { name: "objetivos", label: "Quais são os objetivos e sonhos?", placeholder: "Ex: Alcançar independência financeira, viajar mais", type: "textarea" },
-        { name: "comoAjuda", label: "Como sua empresa ajuda a persona a resolver suas dores e alcançar seus objetivos?", placeholder: "Descreva a solução que sua empresa oferece", type: "textarea" },
     ],
   },
   {
@@ -219,7 +224,9 @@ export default function BriefingForm() {
       negociosPosicionamento: { descricao: "", diferencial: "", missaoValores: "" },
       publicoPersona: {
         faixaEtaria: "", genero: "", localizacao: "", interesses: "", classeSocial: "",
-        nome: "", idade: "", profissao: "", dores: "", objetivos: "", comoAjuda: ""
+        personas: Array(3).fill({
+            nome: "", idade: "", profissao: "", dores: "", objetivos: "", comoAjuda: ""
+        })
       },
       concorrenciaMercado: { principaisConcorrentes: "", pontosFortesFracos: "" },
       comunicacaoExpectativas: { canaisAtuais: "", tomDeVoz: "", expectativas: "" },
@@ -271,7 +278,7 @@ export default function BriefingForm() {
       <CardContent className="p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <Accordion type="multiple" defaultValue={[formSections[0].id]} className="w-full">
+            <Accordion type="multiple" defaultValue={['informacoesOperacionais', 'publicoPersona']} className="w-full">
               {formSections.map((section) => (
                 <AccordionItem value={section.id} key={section.id}>
                   <AccordionTrigger className="text-lg hover:no-underline">
@@ -282,43 +289,118 @@ export default function BriefingForm() {
                   </AccordionTrigger>
                   <AccordionContent className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {section.fields.map((fieldInfo, index) => {
-                         if (fieldInfo.type === 'title') {
-                            return (
-                                <h3 key={`${fieldInfo.sectionTitle}-${index}`} className="md:col-span-2 text-md font-semibold text-primary/90 mt-2 mb-[-10px]">
-                                    {fieldInfo.sectionTitle}
-                                </h3>
-                            )
-                         }
-                         return (
-                            <FormField
-                                key={fieldInfo.name}
-                                control={form.control}
-                                name={`${section.id}.${fieldInfo.name}` as any}
-                                render={({ field }) => (
-                                <FormItem className={fieldInfo.type === 'textarea' ? 'md:col-span-2' : ''}>
-                                    <FormLabel>{fieldInfo.label}</FormLabel>
-                                    <FormControl>
-                                    {fieldInfo.type === "textarea" ? (
-                                        <Textarea
-                                        placeholder={fieldInfo.placeholder}
-                                        {...field}
-                                        className="min-h-[120px]"
-                                        />
-                                    ) : (
-                                        <Input placeholder={fieldInfo.placeholder} {...field} />
-                                    )}
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                      {section.fields.map((fieldInfo) => (
+                          <FormField
+                            key={fieldInfo.name}
+                            control={form.control}
+                            name={`${section.id}.${fieldInfo.name}` as any}
+                            render={({ field }) => (
+                            <FormItem className={fieldInfo.type === 'textarea' ? 'md:col-span-2' : ''}>
+                                <FormLabel>{fieldInfo.label}</FormLabel>
+                                <FormControl>
+                                {fieldInfo.type === "textarea" ? (
+                                    <Textarea
+                                    placeholder={fieldInfo.placeholder}
+                                    {...field}
+                                    className="min-h-[120px]"
+                                    />
+                                ) : (
+                                    <Input placeholder={fieldInfo.placeholder} {...field} />
                                 )}
-                            />
-                         )
-                      })}
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                      ))}
                     </div>
                   </AccordionContent>
                 </AccordionItem>
               ))}
+               <AccordionItem value="publicoPersona">
+                    <AccordionTrigger className="text-lg hover:no-underline">
+                        <div className="flex items-center gap-3">
+                            <Target className="h-6 w-6 text-primary" />
+                            Público e Persona
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pt-4 space-y-6">
+                        <div>
+                            <h3 className="text-md font-semibold text-primary/90 mb-4">
+                                Público-alvo (Geral)
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {publicoFields.map((fieldInfo) => (
+                                    <FormField
+                                        key={fieldInfo.name}
+                                        control={form.control}
+                                        name={`publicoPersona.${fieldInfo.name}` as any}
+                                        render={({ field }) => (
+                                        <FormItem className={fieldInfo.type === 'textarea' ? 'md:col-span-2' : ''}>
+                                            <FormLabel>{fieldInfo.label}</FormLabel>
+                                            <FormControl>
+                                            {fieldInfo.type === "textarea" ? (
+                                                <Textarea
+                                                placeholder={fieldInfo.placeholder}
+                                                {...field}
+                                                className="min-h-[120px]"
+                                                />
+                                            ) : (
+                                                <Input placeholder={fieldInfo.placeholder} {...field} />
+                                            )}
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                        )}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                             <h3 className="text-md font-semibold text-primary/90 mb-4 mt-6">
+                                Personas
+                            </h3>
+                            <Tabs defaultValue="persona-0" className="w-full">
+                                <TabsList className="grid w-full grid-cols-3">
+                                    <TabsTrigger value="persona-0">Persona 1</TabsTrigger>
+                                    <TabsTrigger value="persona-1">Persona 2</TabsTrigger>
+                                    <TabsTrigger value="persona-2">Persona 3</TabsTrigger>
+                                </TabsList>
+                                {[0, 1, 2].map(index => (
+                                    <TabsContent value={`persona-${index}`} key={index}>
+                                        <Card>
+                                            <CardContent className="p-6">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                    {personaFields.map((fieldInfo) => (
+                                                        <FormField
+                                                            key={`persona-${index}-${fieldInfo.name}`}
+                                                            control={form.control}
+                                                            name={`publicoPersona.personas.${index}.${fieldInfo.name}`}
+                                                            render={({ field }) => (
+                                                                <FormItem className={fieldInfo.type === 'textarea' ? 'md:col-span-2' : ''}>
+                                                                    <FormLabel>{fieldInfo.label}</FormLabel>
+                                                                    <FormControl>
+                                                                        {fieldInfo.type === 'textarea' ? (
+                                                                            <Textarea placeholder={fieldInfo.placeholder} {...field} className="min-h-[100px]" />
+                                                                        ) : (
+                                                                            <Input placeholder={fieldInfo.placeholder} {...field} />
+                                                                        )}
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </TabsContent>
+                                ))}
+                            </Tabs>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
             </Accordion>
 
             <div className="flex justify-end">
@@ -333,4 +415,3 @@ export default function BriefingForm() {
     </Card>
   );
 }
-
