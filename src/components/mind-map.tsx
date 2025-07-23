@@ -177,13 +177,13 @@ export default function MindMap() {
 
     return (
         <div className="flex overflow-hidden p-4 bg-background/30 rounded-lg border min-h-[400px]">
-            <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${level * columnWidth}px)`, width: `${columns.length * columnWidth}px`}}>
+            <div className="flex transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${level * columnWidth}px)`, width: `${(columns.length + 1) * columnWidth}px`}}>
                 {/* Root Node */}
-                <div className="flex-shrink-0 w-96 space-y-2 p-2 flex items-start">
+                <div className="flex-shrink-0 w-96 p-2 flex items-start justify-center">
                      <div
                         className={cn(
                             'w-full p-4 mb-3 rounded-lg border cursor-pointer transition-all duration-300 flex justify-between items-center',
-                             'bg-primary text-primary-foreground shadow-lg' 
+                             'bg-primary text-primary-foreground shadow-lg hover:bg-primary/90' 
                         )}
                         onClick={handleRootClick}
                     >
@@ -207,3 +207,5 @@ export default function MindMap() {
         </div>
     );
 }
+
+    
