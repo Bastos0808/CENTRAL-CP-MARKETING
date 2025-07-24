@@ -3,22 +3,24 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, doc, getDoc, updateDoc, setDoc, addDoc, query, where } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, updateDoc, setDoc, addDoc, query, where, deleteDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Loader2, Calendar as CalendarIcon, Users, Package, CalendarPlus, ChevronsUpDown, Mic, Moon, Sun } from "lucide-react";
+import { PlusCircle, Loader2, Calendar as CalendarIcon, Users, Package, CalendarPlus, ChevronsUpDown, Mic, Moon, Sun, Trash2 } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
-import { format, startOfMonth } from 'date-fns';
+import { format, startOfMonth, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Badge } from './ui/badge';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
+import { ScrollArea } from './ui/scroll-area';
 
 interface PodcastPlan {
     recordingsPerMonth: number;
@@ -50,6 +52,7 @@ export default function PodcastManager() {
     const [canRecordAtNight, setCanRecordAtNight] = useState<'sim' | 'nao'>('nao');
     const [schedules, setSchedules] = useState<Schedule[]>([]);
     const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
+    const [isClientScheduleDialogOpen, setIsClientScheduleDialogOpen] = useState(false);
     const [scheduleDate, setScheduleDate] = useState<Date | undefined>(new Date());
     const [scheduleTime, setScheduleTime] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,6 +91,25 @@ export default function PodcastManager() {
         fetchClients();
         fetchSchedules();
     }, []);
+    
+    const schedulesByDate = useMemo(() => {
+        const postsMap: { [key: string]: Schedule[] } = {};
+        schedules.forEach(schedule => {
+            if (!postsMap[schedule.date]) {
+                postsMap[schedule.date] = [];
+            }
+            postsMap[schedule.date].push(schedule);
+        });
+        return postsMap;
+    }, [schedules]);
+
+    const clientSchedules = useMemo(() => {
+        if (!selectedClient) return [];
+        return schedules
+            .filter(s => s.clientId === selectedClient.id)
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    }, [schedules, selectedClient]);
+
 
     // Function to update accumulated recordings based on the current month
     const updateAccumulatedRecordings = async (client: Client): Promise<Client> => {
@@ -225,6 +247,71 @@ export default function PodcastManager() {
             setIsSubmitting(false);
         }
     };
+    
+    const handleDeleteSchedule = async (scheduleId: string) => {
+        if(!selectedClient || !selectedClient.podcastPlan) return;
+        
+        try {
+            // Delete schedule from DB
+            await deleteDoc(doc(db, "schedules", scheduleId));
+            setSchedules(prev => prev.filter(s => s.id !== scheduleId));
+
+            // Refund credit to client
+            const newAccumulated = selectedClient.podcastPlan.accumulatedRecordings + 1;
+            const clientDocRef = doc(db, 'clients', selectedClient.id);
+            await updateDoc(clientDocRef, { "podcastPlan.accumulatedRecordings": newAccumulated });
+            
+            const updatedClient = {...selectedClient, podcastPlan: {...selectedClient.podcastPlan!, accumulatedRecordings: newAccumulated}};
+
+            setSelectedClient(updatedClient);
+            setPodcastClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+
+            toast({ title: "Agendamento Cancelado!", description: "A gravação foi removida e o crédito devolvido."});
+
+        } catch (error) {
+             console.error("Error deleting schedule:", error);
+             toast({ title: "Erro ao cancelar agendamento", variant: "destructive" });
+        }
+
+    }
+    
+    const DayContent = ({ date }: { date: Date }) => {
+        const formattedDate = format(date, 'yyyy-MM-dd');
+        const daySchedules = schedulesByDate[formattedDate];
+        const hasSchedules = daySchedules && daySchedules.length > 0;
+
+        return (
+            <Popover>
+                <PopoverTrigger asChild disabled={!hasSchedules}>
+                    <div className="h-full w-full p-1 text-center cursor-pointer rounded-md hover:bg-accent relative">
+                        {format(date, 'd')}
+                        {hasSchedules && (
+                          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-1">
+                              {daySchedules.slice(0, 3).map(schedule => (
+                                  <div key={schedule.id} className="h-1.5 w-1.5 rounded-full bg-primary" />
+                              ))}
+                          </div>
+                        )}
+                    </div>
+                </PopoverTrigger>
+                {hasSchedules && (
+                    <PopoverContent className="w-80">
+                        <div className="space-y-4">
+                            <h4 className="font-semibold">Agenda de {format(date, 'dd/MM/yyyy', { locale: ptBR })}</h4>
+                            <div className="space-y-3">
+                                {daySchedules.map(schedule => (
+                                    <div key={schedule.id} className="p-3 border rounded-md bg-muted/30">
+                                        <p className="font-semibold text-sm">{schedule.clientName}</p>
+                                        <p className="text-xs text-muted-foreground">Horário: {schedule.time}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </PopoverContent>
+                )}
+            </Popover>
+        );
+    };
 
 
     return (
@@ -245,7 +332,7 @@ export default function PodcastManager() {
             </Card>
 
             {selectedClient && (
-                <div className='grid md:grid-cols-3 gap-8'>
+                <div className='grid md:grid-cols-3 gap-8 items-start'>
                     <div className='md:col-span-1 space-y-8'>
                         <Card>
                             <CardHeader>
@@ -266,7 +353,7 @@ export default function PodcastManager() {
                                 <div className="flex justify-between items-center p-3 rounded-lg bg-muted">
                                     <Label className="flex items-center gap-2">Pode Gravar à Noite?</Label>
                                     <Badge variant={selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? 'default' : 'secondary'}>
-                                        {selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? <Moon className='mr-2' /> : <Sun className='mr-2' />}
+                                        {selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? <Moon className='mr-2 h-3 w-3' /> : <Sun className='mr-2 h-3 w-3' />}
                                         {selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? 'Sim' : 'Não'}
                                     </Badge>
                                 </div>
@@ -281,15 +368,19 @@ export default function PodcastManager() {
                              <CardHeader>
                                 <CardTitle className="flex justify-between items-center">
                                     <span>Agenda Geral de Podcasts</span>
-                                    <Button variant="outline" size="sm"><ChevronsUpDown className="mr-2"/>Ver Agenda do Cliente</Button>
+                                     <Button variant="outline" size="sm" onClick={() => setIsClientScheduleDialogOpen(true)} disabled={!clientSchedules.length}>
+                                        <ChevronsUpDown className="mr-2 h-4 w-4"/>Ver Agenda do Cliente
+                                    </Button>
                                 </CardTitle>
                                 <CardDescription>Visão geral de todos os agendamentos para evitar conflitos.</CardDescription>
                             </CardHeader>
                              <CardContent>
                                 <Calendar
-                                    mode="month"
+                                    mode="single"
                                     locale={ptBR}
-                                    className="rounded-md border"
+                                    className="rounded-md border p-0"
+                                    components={{ Day: DayContent }}
+                                    classNames={{ day_cell: "h-12 w-12" }}
                                 />
                              </CardContent>
                         </Card>
@@ -372,6 +463,56 @@ export default function PodcastManager() {
                 </DialogContent>
             </Dialog>
 
+             {/* Dialog to show client schedule */}
+            <Dialog open={isClientScheduleDialogOpen} onOpenChange={setIsClientScheduleDialogOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Agenda de {selectedClient?.name}</DialogTitle>
+                        <CardDescription>Lista de gravações agendadas para este cliente.</CardDescription>
+                    </DialogHeader>
+                    <ScrollArea className="max-h-96 pr-4">
+                        <div className="py-4 space-y-3">
+                            {clientSchedules.length > 0 ? clientSchedules.map(schedule => (
+                                <div key={schedule.id} className="flex items-center justify-between p-3 rounded-lg bg-muted">
+                                    <div>
+                                        <p className='font-medium'>{format(parseISO(schedule.date), 'PPP', { locale: ptBR })}</p>
+                                        <p className='text-sm text-muted-foreground'>Horário: {schedule.time}</p>
+                                    </div>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="text-destructive">
+                                                <Trash2 className="h-4 w-4"/>
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Cancelar Agendamento?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Esta ação não pode ser desfeita. O agendamento será removido e o crédito de gravação será devolvido ao saldo do cliente.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Voltar</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDeleteSchedule(schedule.id)} className="bg-destructive hover:bg-destructive/90">Confirmar</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </div>
+                            )) : (
+                                <p className='text-center text-muted-foreground py-8'>Nenhum agendamento encontrado.</p>
+                            )}
+                        </div>
+                    </ScrollArea>
+                    <DialogFooter>
+                        <DialogClose asChild>
+                             <Button type="button" variant="outline">Fechar</Button>
+                        </DialogClose>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 }
+
+    
