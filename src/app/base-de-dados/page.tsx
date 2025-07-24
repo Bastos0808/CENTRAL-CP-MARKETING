@@ -28,6 +28,12 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Loader2 } from 'lucide-react';
 
+interface PodcastPlan {
+    recordingsPerMonth: number;
+    accumulatedRecordings: number;
+    lastUpdated: string; // ISO string for the month this was last updated
+}
+
 interface Client {
   id: string;
   name: string;
@@ -35,6 +41,7 @@ interface Client {
   status: "active" | "inactive" | "pending";
   plan: string;
   startDate: string;
+  podcastPlan?: PodcastPlan;
 }
 
 const preRegisterSchema = z.object({

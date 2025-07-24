@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, CalendarCheck } from 'lucide-react';
+import { ArrowRight, Database, FileText, CalendarCheck, Mic } from 'lucide-react';
 import MindMap from '@/components/mind-map';
 
 export default function Home() {
@@ -60,7 +60,10 @@ export default function Home() {
             </Link>
           </CardContent>
         </Card>
-        <Card className="md:col-span-2 lg:col-span-3">
+      </div>
+      
+      <div className="w-full max-w-6xl grid gap-8 mb-12">
+        <Card>
           <CardHeader>
             <CardTitle>Planner de Conteúdo</CardTitle>
             <CardDescription>Planeje e organize as publicações dos seus clientes.</CardDescription>
@@ -74,8 +77,23 @@ export default function Home() {
             </Link>
           </CardContent>
         </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Gerenciamento de Podcast</CardTitle>
+            <CardDescription>Gerencie clientes, saldos de gravações e agendamentos de podcasts.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/podcast" passHref>
+              <Button className="w-full" variant="outline">
+                Gerenciar Podcasts
+                <Mic className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
-      
+
       <section className="w-full max-w-6xl">
         <Card>
           <CardHeader>
