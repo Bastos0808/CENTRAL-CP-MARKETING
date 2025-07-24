@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -8,12 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Loader2, Mic, Package, Calendar } from "lucide-react";
+import { PlusCircle, Loader2, Mic, Package, Calendar, DollarSign } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { startOfToday, startOfMonth, isBefore } from 'date-fns';
+import { startOfToday, isBefore } from 'date-fns';
 
 interface PodcastPlan {
     recordingsPerMonth: number;
@@ -32,6 +31,8 @@ export default function PodcastManager() {
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [loadingClients, setLoadingClients] = useState(true);
     const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
+    const [isAdvancePaymentDialogOpen, setIsAdvancePaymentDialogOpen] = useState(false);
+    const [advanceCredits, setAdvanceCredits] = useState(0);
     const [recordingsPerMonth, setRecordingsPerMonth] = useState(0);
     const [paymentDay, setPaymentDay] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,7 +57,7 @@ export default function PodcastManager() {
     
     useEffect(() => {
         fetchClients();
-    }, []);
+    }, [toast]);
 
     // Function to update accumulated recordings based on the current month
     const updateAccumulatedRecordings = async (client: Client): Promise<Client> => {
@@ -65,11 +66,21 @@ export default function PodcastManager() {
         const { paymentDay, lastCreditUpdate, recordingsPerMonth } = client.podcastPlan;
         const today = startOfToday();
         const lastUpdateDate = new Date(lastCreditUpdate);
-        const thisMonthCreditCycleDate = new Date(today.getFullYear(), today.getMonth(), paymentDay);
+        
+        // Determine the renewal date for the current month.
+        // If today is before the payment day, the renewal date is for last month.
+        // If today is on or after the payment day, the renewal date is for this month.
+        let renewalDate;
+        if (today.getDate() >= paymentDay) {
+            renewalDate = new Date(today.getFullYear(), today.getMonth(), paymentDay);
+        } else {
+            // Check renewal for last month
+            renewalDate = new Date(today.getFullYear(), today.getMonth() - 1, paymentDay);
+        }
 
-        // Check if today is past the payment day for this month, and if the last update was before this month's cycle date
-        if (isBefore(thisMonthCreditCycleDate, today) && isBefore(lastUpdateDate, thisMonthCreditCycleDate)) {
-             const newAccumulated = client.podcastPlan.accumulatedRecordings + recordingsPerMonth;
+        // Check if the last update was before this cycle's renewal date
+        if (isBefore(lastUpdateDate, renewalDate)) {
+             const newAccumulated = (client.podcastPlan.accumulatedRecordings || 0) + recordingsPerMonth;
             
             const updatedClient = {
                 ...client,
@@ -164,7 +175,7 @@ export default function PodcastManager() {
             const updatedPlan = { ...selectedClient.podcastPlan, accumulatedRecordings: newAccumulated };
 
             const clientDocRef = doc(db, 'clients', selectedClient.id);
-            await updateDoc(clientDocRef, { podcastPlan: updatedPlan });
+            await updateDoc(clientDocRef, { "podcastPlan.accumulatedRecordings": newAccumulated });
 
             const updatedClient = { ...selectedClient, podcastPlan: updatedPlan };
             setSelectedClient(updatedClient);
@@ -178,6 +189,34 @@ export default function PodcastManager() {
             setIsSubmitting(false);
         }
     };
+
+    const handleAddAdvanceCredits = async () => {
+         if (!selectedClient?.podcastPlan || advanceCredits <= 0) {
+            toast({ title: "Dados inválidos", description: "Informe um número de créditos válido.", variant: "destructive"});
+            return;
+        }
+        setIsSubmitting(true);
+        try {
+            const newAccumulated = selectedClient.podcastPlan.accumulatedRecordings + advanceCredits;
+            const updatedPlan = { ...selectedClient.podcastPlan, accumulatedRecordings: newAccumulated };
+
+            const clientDocRef = doc(db, 'clients', selectedClient.id);
+            await updateDoc(clientDocRef, { "podcastPlan.accumulatedRecordings": newAccumulated });
+
+            const updatedClient = { ...selectedClient, podcastPlan: updatedPlan };
+            setSelectedClient(updatedClient);
+            setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+            
+            toast({ title: "Créditos Adicionados!", description: `${advanceCredits} créditos foram adicionados ao saldo de ${selectedClient.name}.`});
+            setIsAdvancePaymentDialogOpen(false);
+            setAdvanceCredits(0);
+        } catch(error) {
+            console.error("Error adding advance credits:", error);
+            toast({ title: "Erro ao adicionar créditos", variant: "destructive" });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
 
 
     return (
@@ -202,9 +241,15 @@ export default function PodcastManager() {
                     <CardHeader>
                         <CardTitle className="flex justify-between items-center">
                             <span>Plano e Créditos de {selectedClient.name}</span>
-                            <Button variant="outline" size="sm" onClick={handleOpenPlanDialog}>
-                                {selectedClient.podcastPlan ? 'Editar Plano' : 'Criar Plano'}
-                            </Button>
+                             <div className='flex items-center gap-2'>
+                                <Button variant="outline" size="sm" onClick={handleOpenPlanDialog}>
+                                    {selectedClient.podcastPlan ? 'Editar Plano' : 'Criar Plano'}
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => setIsAdvancePaymentDialogOpen(true)}>
+                                    <DollarSign className='mr-2 h-4 w-4' />
+                                    Adicionar Créditos
+                                </Button>
+                            </div>
                         </CardTitle>
                         <CardDescription>Gerencie o plano mensal e o saldo de gravações do cliente.</CardDescription>
                     </CardHeader>
@@ -276,6 +321,35 @@ export default function PodcastManager() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+            
+            {/* Dialog to add advance payment */}
+            <Dialog open={isAdvancePaymentDialogOpen} onOpenChange={setIsAdvancePaymentDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Adicionar Créditos Antecipados para {selectedClient?.name}</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        <div className='space-y-2'>
+                            <Label htmlFor="advance-credits">Quantidade de Créditos</Label>
+                            <Input 
+                                id="advance-credits" 
+                                type="number" 
+                                value={advanceCredits} 
+                                onChange={(e) => setAdvanceCredits(Number(e.target.value))}
+                                placeholder="Ex: 10"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => { setIsAdvancePaymentDialogOpen(false); setAdvanceCredits(0); }}>Cancelar</Button>
+                        <Button onClick={handleAddAdvanceCredits} disabled={isSubmitting}>
+                           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                           Adicionar Créditos
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 }
