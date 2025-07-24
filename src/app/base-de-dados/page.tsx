@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -26,9 +26,10 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Loader2 } from 'lucide-react';
+import { PlusCircle, Loader2, Search } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { BackButton } from '@/components/ui/back-button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface PodcastPlan {
     recordingsPerMonth: number;
@@ -69,12 +70,13 @@ const preRegisterSchema = z.object({
 type PreRegisterFormValues = z.infer<typeof preRegisterSchema>;
 
 const statusMap: { 
-  [key in Client['status']]: { 
+  [key in Client['status'] | 'all']: { 
     text: string; 
-    className: string;
-    order: number;
+    className?: string;
+    order?: number;
   } 
 } = {
+    all: { text: "Todos" },
     active: { text: "Ativo", className: "bg-green-500/20 text-green-700 border-green-500/50 hover:bg-green-500/30", order: 1 },
     pending: { text: "Pendente", className: "bg-yellow-500/20 text-yellow-700 border-yellow-500/50 hover:bg-yellow-500/30", order: 2 },
     inactive: { text: "Inativo", className: "bg-red-500/20 text-red-700 border-red-500/50 hover:bg-red-500/30", order: 3 },
@@ -95,6 +97,8 @@ export default function ClientDatabasePage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const router = useRouter();
   const { toast } = useToast();
 
@@ -132,6 +136,22 @@ export default function ClientDatabasePage() {
   useEffect(() => {
     fetchClients();
   }, []);
+  
+  const filteredClients = useMemo(() => {
+    return clients
+      .filter(client => {
+        // Status filter
+        if (statusFilter !== 'all' && client.status !== statusFilter) {
+          return false;
+        }
+        // Search term filter
+        if (searchTerm && !client.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+          return false;
+        }
+        return true;
+      });
+  }, [clients, searchTerm, statusFilter]);
+
 
   const onPreRegisterSubmit = async (data: PreRegisterFormValues) => {
       const newClientId = crypto.randomUUID();
@@ -205,97 +225,123 @@ export default function ClientDatabasePage() {
           </p>
         </header>
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-                <CardTitle>Lista de Clientes</CardTitle>
-                <CardDescription>
-                {loading ? "Carregando..." : `Total de ${clients.length} clientes.`}
-                </CardDescription>
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <CardTitle>Lista de Clientes</CardTitle>
+                    <CardDescription>
+                    {loading ? "Carregando..." : `Total de ${filteredClients.length} clientes encontrados.`}
+                    </CardDescription>
+                </div>
+                 <div className="flex sm:justify-end items-center gap-2">
+                    <div className="relative w-full sm:max-w-xs">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                            placeholder="Buscar por nome..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10"
+                        />
+                    </div>
+                     <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger className="w-full sm:w-[180px]">
+                            <SelectValue placeholder="Filtrar por status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {Object.entries(statusMap).map(([key, value]) => (
+                                <SelectItem key={key} value={key}>{value.text}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                    <Button>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Adicionar Novo Cliente
-                    </Button>
-                </DialogTrigger>
-                <DialogContent className="max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                        <DialogTitle>Pré-Cadastro de Cliente</DialogTitle>
-                    </DialogHeader>
-                    <form onSubmit={handleSubmit(onPreRegisterSubmit)} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">Nome do Cliente</Label>
-                            <Input id="name" {...register("name")} placeholder="Ex: Acme Inc."/>
-                            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="plan">Plano Contratado</Label>
-                            <Input id="plan" {...register("plan")} placeholder="Ex: Plano Performance"/>
-                            {errors.plan && <p className="text-sm text-destructive">{errors.plan.message}</p>}
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="planDetails">Observações sobre o Plano</Label>
-                            <Textarea id="planDetails" {...register("planDetails")} placeholder="Detalhes, exceções ou acordos específicos..."/>
-                        </div>
-
-                        <div className='p-4 border rounded-md space-y-4'>
-                           <Controller
-                                control={control}
-                                name="hasPodcast"
-                                render={({ field }) => (
-                                    <div className="flex items-center justify-between">
-                                        <Label htmlFor="has-podcast" className='font-semibold'>Cliente possui plano de podcast?</Label>
-                                        <Switch
-                                            id="has-podcast"
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
-                                    </div>
-                                )}
-                            />
-                            {hasPodcast && (
-                                <div className='space-y-4 pt-2 border-t'>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="recordingsPerMonth">Gravações por Mês</Label>
-                                            <Input 
-                                            id="recordingsPerMonth" 
-                                            type="number" 
-                                            {...register("recordingsPerMonth")} 
-                                            placeholder="Ex: 4"
-                                            />
-                                            {errors.recordingsPerMonth && <p className="text-sm text-destructive">{errors.recordingsPerMonth.message}</p>}
-                                        </div>
-                                         <div className="space-y-2">
-                                            <Label htmlFor="paymentDay">Dia do Pagamento</Label>
-                                            <Input 
-                                            id="paymentDay" 
-                                            type="number"
-                                            min="1" max="31"
-                                            {...register("paymentDay")} 
-                                            placeholder="Ex: 10"
-                                            />
-                                            {errors.paymentDay && <p className="text-sm text-destructive">{errors.paymentDay.message}</p>}
-                                        </div>
-                                    </div>
-                                    {errors.root && <p className="text-sm text-destructive">{errors.root.message}</p>}
-                                </div>
-                            )}
-                        </div>
-
-                        <DialogFooter>
-                            <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
-                            <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Salvar Cliente
-                            </Button>
-                        </DialogFooter>
-                    </form>
-                </DialogContent>
-            </Dialog>
           </CardHeader>
           <CardContent>
+             <div className="flex justify-between items-center mb-4">
+                <div />
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button>
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Adicionar Novo Cliente
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-h-[90vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle>Pré-Cadastro de Cliente</DialogTitle>
+                        </DialogHeader>
+                        <form onSubmit={handleSubmit(onPreRegisterSubmit)} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="name">Nome do Cliente</Label>
+                                <Input id="name" {...register("name")} placeholder="Ex: Acme Inc."/>
+                                {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="plan">Plano Contratado</Label>
+                                <Input id="plan" {...register("plan")} placeholder="Ex: Plano Performance"/>
+                                {errors.plan && <p className="text-sm text-destructive">{errors.plan.message}</p>}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="planDetails">Observações sobre o Plano</Label>
+                                <Textarea id="planDetails" {...register("planDetails")} placeholder="Detalhes, exceções ou acordos específicos..."/>
+                            </div>
+
+                            <div className='p-4 border rounded-md space-y-4'>
+                               <Controller
+                                    control={control}
+                                    name="hasPodcast"
+                                    render={({ field }) => (
+                                        <div className="flex items-center justify-between">
+                                            <Label htmlFor="has-podcast" className='font-semibold'>Cliente possui plano de podcast?</Label>
+                                            <Switch
+                                                id="has-podcast"
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </div>
+                                    )}
+                                />
+                                {hasPodcast && (
+                                    <div className='space-y-4 pt-2 border-t'>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="recordingsPerMonth">Gravações por Mês</Label>
+                                                <Input 
+                                                id="recordingsPerMonth" 
+                                                type="number" 
+                                                {...register("recordingsPerMonth")} 
+                                                placeholder="Ex: 4"
+                                                />
+                                                {errors.recordingsPerMonth && <p className="text-sm text-destructive">{errors.recordingsPerMonth.message}</p>}
+                                            </div>
+                                             <div className="space-y-2">
+                                                <Label htmlFor="paymentDay">Dia do Pagamento</Label>
+                                                <Input 
+                                                id="paymentDay" 
+                                                type="number"
+                                                min="1" max="31"
+                                                {...register("paymentDay")} 
+                                                placeholder="Ex: 10"
+                                                />
+                                                {errors.paymentDay && <p className="text-sm text-destructive">{errors.paymentDay.message}</p>}
+                                            </div>
+                                        </div>
+                                        {errors.root && <p className="text-sm text-destructive">{errors.root.message}</p>}
+                                    </div>
+                                )}
+                            </div>
+
+                            <DialogFooter>
+                                <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                                <Button type="submit" disabled={isSubmitting}>
+                                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Salvar Cliente
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    </DialogContent>
+                </Dialog>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -317,8 +363,8 @@ export default function ClientDatabasePage() {
                       <TableCell className="text-right"><Skeleton className="h-5 w-16 inline-block" /></TableCell>
                     </TableRow>
                   ))
-                ) : clients.length > 0 ? (
-                  clients.map((client) => (
+                ) : filteredClients.length > 0 ? (
+                  filteredClients.map((client) => (
                     <TableRow key={client.id} className="cursor-pointer hover:bg-muted/60" onClick={() => router.push(`/base-de-dados/${client.id}`)}>
                       <TableCell className="font-medium text-primary hover:underline">
                           {client.name}
