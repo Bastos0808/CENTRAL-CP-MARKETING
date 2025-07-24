@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -14,10 +13,20 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { db } from '@/lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useToast } from '@/hooks/use-toast';
+import { PlusCircle, Loader2 } from 'lucide-react';
 
 interface Client {
   id: string;
@@ -27,6 +36,14 @@ interface Client {
   plan: string;
   startDate: string;
 }
+
+const preRegisterSchema = z.object({
+    name: z.string().min(1, "O nome do cliente é obrigatório."),
+    plan: z.string().min(1, "O plano é obrigatório."),
+    planDetails: z.string().optional(),
+});
+
+type PreRegisterFormValues = z.infer<typeof preRegisterSchema>;
 
 const statusMap: { 
   [key in Client['status']]: { 
@@ -54,31 +71,90 @@ const formatDate = (dateString: string) => {
 export default function ClientDatabasePage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
+
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<PreRegisterFormValues>({
+      resolver: zodResolver(preRegisterSchema)
+  });
+
+  const fetchClients = async () => {
+    setLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, "clients"));
+      const clientsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
+      const sortedClients = clientsData.sort((a, b) => {
+        const orderA = statusMap[a.status]?.order || 99;
+        const orderB = statusMap[b.status]?.order || 99;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        return a.name.localeCompare(b.name);
+      });
+      setClients(sortedClients);
+    } catch (error) {
+      console.error("Error fetching clients: ", error);
+      toast({ title: "Erro ao buscar clientes", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "clients"));
-        const clientsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
-        const sortedClients = clientsData.sort((a, b) => {
-          const orderA = statusMap[a.status]?.order || 99;
-          const orderB = statusMap[b.status]?.order || 99;
-          if (orderA !== orderB) {
-            return orderA - orderB;
-          }
-          return a.name.localeCompare(b.name);
-        });
-        setClients(sortedClients);
-      } catch (error) {
-        console.error("Error fetching clients: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchClients();
   }, []);
+
+  const onPreRegisterSubmit = async (data: PreRegisterFormValues) => {
+      const newClientId = crypto.randomUUID();
+      const newClient = {
+          id: newClientId,
+          name: data.name,
+          plan: data.plan,
+          responsible: "Não definido",
+          status: "pending" as const,
+          startDate: format(new Date(), 'yyyy-MM-dd'),
+          briefing: {
+              informacoesOperacionais: {
+                  nomeNegocio: data.name,
+                  planoContratado: data.plan,
+                  observacoesPlano: data.planDetails || '',
+                  // Initialize other briefing fields as empty
+                  redesSociaisAcesso: [],
+                  possuiIdentidadeVisual: 'nao',
+                  possuiBancoImagens: 'nao',
+                  linksRelevantes: '',
+              },
+              negociosPosicionamento: {},
+              publicoPersona: {},
+              concorrenciaMercado: {
+                  principaisConcorrentes: [],
+                  inspiracoesPerfis: [],
+              },
+              comunicacaoExpectativas: {},
+              metasObjetivos: {},
+              equipeMidiaSocial: {},
+              equipeTrafegoPago: {},
+          },
+          visualIdentity: {},
+          reports: [],
+          contentPlanner: [],
+      };
+
+      try {
+          await setDoc(doc(db, 'clients', newClientId), newClient);
+          toast({
+              title: "Cliente Pré-cadastrado!",
+              description: `${data.name} foi adicionado. Agora você pode completar o briefing.`,
+          });
+          reset();
+          setIsDialogOpen(false);
+          await fetchClients(); // Refresh the client list
+      } catch (error) {
+          console.error("Error creating client:", error);
+          toast({ title: "Erro ao criar cliente", variant: "destructive" });
+      }
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12">
@@ -92,11 +168,49 @@ export default function ClientDatabasePage() {
           </p>
         </header>
         <Card>
-          <CardHeader>
-            <CardTitle>Lista de Clientes</CardTitle>
-            <CardDescription>
-              {loading ? "Carregando..." : `Total de ${clients.length} clientes.`}
-            </CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+                <CardTitle>Lista de Clientes</CardTitle>
+                <CardDescription>
+                {loading ? "Carregando..." : `Total de ${clients.length} clientes.`}
+                </CardDescription>
+            </div>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                    <Button>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Adicionar Novo Cliente
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Pré-Cadastro de Cliente</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit(onPreRegisterSubmit)} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Nome do Cliente</Label>
+                            <Input id="name" {...register("name")} placeholder="Ex: Acme Inc."/>
+                            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="plan">Plano Contratado</Label>
+                            <Input id="plan" {...register("plan")} placeholder="Ex: Plano Performance"/>
+                            {errors.plan && <p className="text-sm text-destructive">{errors.plan.message}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="planDetails">Observações sobre o Plano</Label>
+                            <Textarea id="planDetails" {...register("planDetails")} placeholder="Detalhes, exceções ou acordos específicos..."/>
+                        </div>
+                        <DialogFooter>
+                            <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
+                            <Button type="submit" disabled={isSubmitting}>
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Salvar Cliente
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
           </CardHeader>
           <CardContent>
             <Table>

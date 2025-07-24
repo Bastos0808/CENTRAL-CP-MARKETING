@@ -1,3 +1,4 @@
+
 import BriefingForm from '@/components/briefing-form';
 
 export default function FormBriefingPage() {
@@ -9,7 +10,7 @@ export default function FormBriefingPage() {
             Briefing CP Marketing Digital
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Preencha o formulário abaixo para que possamos entender suas necessidades e iniciar o projeto.
+            Selecione um cliente para preencher ou atualizar o formulário de briefing.
           </p>
         </header>
         <BriefingForm />

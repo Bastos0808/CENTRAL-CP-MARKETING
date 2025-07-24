@@ -20,28 +20,28 @@ export default function Home() {
       <div className="w-full max-w-6xl grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
         <Card>
           <CardHeader>
-            <CardTitle>Formulário de Briefing</CardTitle>
-            <CardDescription>Crie um novo briefing de projeto para clientes.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/form-briefing" passHref>
-              <Button className="w-full" variant="outline">
-                Acessar Formulário
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
             <CardTitle>Base de Dados de Clientes</CardTitle>
-            <CardDescription>Visualize e gerencie todos os clientes.</CardDescription>
+            <CardDescription>Adicione novos clientes e gerencie seus dossiês.</CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/base-de-dados" passHref>
               <Button className="w-full" variant="outline">
                 Acessar Base de Dados
                 <Database className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Formulário de Briefing</CardTitle>
+            <CardDescription>Preencha os briefings de clientes pendentes.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/form-briefing" passHref>
+              <Button className="w-full" variant="outline">
+                Preencher Briefing
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </CardContent>
