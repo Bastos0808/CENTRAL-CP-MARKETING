@@ -48,20 +48,21 @@ export default function PodcastManager() {
     const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
     const [scheduleDate, setScheduleDate] = useState<Date | undefined>(new Date());
     const [scheduleTime, setScheduleTime] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
 
     const { toast } = useToast();
 
-    // Fetch all clients with a podcast plan
+    // Fetch all clients
     const fetchClients = async () => {
         setLoadingClients(true);
         try {
-            const q = query(collection(db, "clients"), where("podcastPlan", "!=", null));
-            const querySnapshot = await getDocs(q);
+            const querySnapshot = await getDocs(collection(db, "clients"));
             const clientsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
             setClients(clientsData);
         } catch (error) {
             console.error("Error fetching clients:", error);
-            toast({ title: "Erro ao carregar clientes de podcast", variant: "destructive" });
+            toast({ title: "Erro ao carregar clientes", variant: "destructive" });
         } finally {
             setLoadingClients(false);
         }
@@ -70,6 +71,37 @@ export default function PodcastManager() {
     useEffect(() => {
         fetchClients();
     }, []);
+
+    const handleCreateClient = async () => {
+        if (!newClientName.trim()) {
+            toast({ title: "Nome inválido", description: "O nome do cliente não pode estar em branco.", variant: "destructive"});
+            return;
+        }
+        setIsSubmitting(true);
+        const newClientId = crypto.randomUUID();
+        try {
+            const newClientData = { 
+                id: newClientId, 
+                name: newClientName, 
+                status: 'pending',
+                startDate: format(new Date(), 'yyyy-MM-dd'),
+                briefing: {},
+                reports: [],
+                contentPlanner: [],
+            };
+            await setDoc(doc(db, 'clients', newClientId), newClientData);
+            toast({ title: "Cliente Adicionado!", description: `${newClientName} foi adicionado à base de dados.`});
+            setIsClientDialogOpen(false);
+            setNewClientName('');
+            await fetchClients(); // Refresh list
+        } catch (error) {
+            console.error("Error creating client:", error);
+            toast({ title: "Erro ao criar cliente", variant: "destructive" });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
 
     // Function to update accumulated recordings based on the current month
     const updateAccumulatedRecordings = async (client: Client): Promise<Client> => {
@@ -108,8 +140,12 @@ export default function PodcastManager() {
         }
         const clientData = clients.find(c => c.id === clientId);
         if (clientData) {
-            const updatedClient = await updateAccumulatedRecordings(clientData);
-            setSelectedClient(updatedClient);
+            if (clientData.podcastPlan) {
+                const updatedClient = await updateAccumulatedRecordings(clientData);
+                setSelectedClient(updatedClient);
+            } else {
+                 setSelectedClient(clientData);
+            }
         }
     };
 
@@ -190,11 +226,11 @@ export default function PodcastManager() {
                 <CardContent className="flex gap-4 items-center">
                     {loadingClients ? (<Skeleton className="h-10 flex-1" />) : (
                         <Select onValueChange={handleClientChange} value={selectedClient?.id || ''}>
-                            <SelectTrigger className="flex-1"><SelectValue placeholder="Escolha um cliente de podcast..." /></SelectTrigger>
+                            <SelectTrigger className="flex-1"><SelectValue placeholder="Escolha um cliente..." /></SelectTrigger>
                             <SelectContent>{clients.map(client => (<SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>))}</SelectContent>
                         </Select>
                     )}
-                    {/* <Button variant="outline" onClick={() => setIsClientDialogOpen(true)}><PlusCircle className="mr-2"/> Adicionar Cliente</Button> */}
+                    <Button variant="outline" onClick={() => setIsClientDialogOpen(true)}><PlusCircle className="mr-2"/> Adicionar Cliente</Button>
                 </CardContent>
             </Card>
 
@@ -205,7 +241,7 @@ export default function PodcastManager() {
                             <CardHeader>
                                 <CardTitle className="flex justify-between items-center">
                                     <span>Plano do Cliente</span>
-                                    <Button variant="ghost" size="sm" onClick={handleOpenPlanDialog}>Editar</Button>
+                                    <Button variant="ghost" size="sm" onClick={handleOpenPlanDialog}>{selectedClient.podcastPlan ? 'Editar' : 'Criar Plano'}</Button>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
@@ -242,6 +278,31 @@ export default function PodcastManager() {
                     </div>
                 </div>
             )}
+
+             {/* Dialog to add new client */}
+            <Dialog open={isClientDialogOpen} onOpenChange={setIsClientDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Adicionar Novo Cliente para Podcast</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4 space-y-2">
+                        <Label htmlFor="new-client-name">Nome do Cliente</Label>
+                        <Input 
+                            id="new-client-name" 
+                            value={newClientName} 
+                            onChange={(e) => setNewClientName(e.target.value)}
+                            placeholder="Ex: Podcast de Sucesso"
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setIsClientDialogOpen(false)}>Cancelar</Button>
+                        <Button onClick={handleCreateClient} disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                            Adicionar Cliente
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Dialog to set/edit plan */}
             <Dialog open={isPlanDialogOpen} onOpenChange={setIsPlanDialogOpen}>
