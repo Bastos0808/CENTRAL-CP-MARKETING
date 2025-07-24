@@ -16,7 +16,9 @@ import { Label } from './ui/label';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
 import { format, startOfMonth } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Badge } from './ui/badge';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
 interface PodcastPlan {
     recordingsPerMonth: number;
@@ -43,10 +45,9 @@ export default function PodcastManager() {
     const [podcastClients, setPodcastClients] = useState<Client[]>([]);
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [loadingClients, setLoadingClients] = useState(true);
-    const [isClientDialogOpen, setIsClientDialogOpen] = useState(false);
-    const [newClientName, setNewClientName] = useState('');
     const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
     const [recordingsPerMonth, setRecordingsPerMonth] = useState(0);
+    const [canRecordAtNight, setCanRecordAtNight] = useState<'sim' | 'nao'>('nao');
     const [schedules, setSchedules] = useState<Schedule[]>([]);
     const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
     const [scheduleDate, setScheduleDate] = useState<Date | undefined>(new Date());
@@ -60,11 +61,10 @@ export default function PodcastManager() {
     const fetchClients = async () => {
         setLoadingClients(true);
         try {
-            const querySnapshot = await getDocs(collection(db, "clients"));
+            const q = query(collection(db, "clients"), where("podcastPlan", "!=", null));
+            const querySnapshot = await getDocs(q);
             const clientsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
-            setClients(clientsData);
-            const clientsWithPodcast = clientsData.filter(c => c.podcastPlan);
-            setPodcastClients(clientsWithPodcast);
+            setPodcastClients(clientsData);
         } catch (error) {
             console.error("Error fetching clients:", error);
             toast({ title: "Erro ao carregar clientes", variant: "destructive" });
@@ -73,41 +73,21 @@ export default function PodcastManager() {
         }
     };
 
-    useEffect(() => {
-        fetchClients();
-    }, []);
-
-    const handleCreateClient = async () => {
-        if (!newClientName.trim()) {
-            toast({ title: "Nome inválido", description: "O nome do cliente não pode estar em branco.", variant: "destructive"});
-            return;
-        }
-        setIsSubmitting(true);
-        const newClientId = crypto.randomUUID();
+    const fetchSchedules = async () => {
         try {
-            const newClientData = { 
-                id: newClientId, 
-                name: newClientName, 
-                status: 'pending',
-                plan: 'Podcast',
-                startDate: format(new Date(), 'yyyy-MM-dd'),
-                briefing: {},
-                reports: [],
-                contentPlanner: [],
-            };
-            await setDoc(doc(db, 'clients', newClientId), newClientData);
-            toast({ title: "Cliente Adicionado!", description: `${newClientName} foi adicionado à base de dados.`});
-            setIsClientDialogOpen(false);
-            setNewClientName('');
-            await fetchClients(); // Refresh list
+            const querySnapshot = await getDocs(collection(db, "schedules"));
+            const schedulesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Schedule));
+            setSchedules(schedulesData);
         } catch (error) {
-            console.error("Error creating client:", error);
-            toast({ title: "Erro ao criar cliente", variant: "destructive" });
-        } finally {
-            setIsSubmitting(false);
+            console.error("Error fetching schedules:", error);
+            toast({ title: "Erro ao carregar agendamentos", variant: "destructive" });
         }
     };
 
+    useEffect(() => {
+        fetchClients();
+        fetchSchedules();
+    }, []);
 
     // Function to update accumulated recordings based on the current month
     const updateAccumulatedRecordings = async (client: Client): Promise<Client> => {
@@ -144,22 +124,27 @@ export default function PodcastManager() {
           setSelectedClient(null);
           return;
         }
-        const clientData = clients.find(c => c.id === clientId);
-        if (clientData) {
-            if (clientData.podcastPlan) {
+        setLoadingClients(true);
+        const clientDoc = await getDoc(doc(db, 'clients', clientId));
+        if (clientDoc.exists()) {
+            const clientData = { id: clientDoc.id, ...clientDoc.data() } as Client;
+             if (clientData.podcastPlan) {
                 const updatedClient = await updateAccumulatedRecordings(clientData);
                 setSelectedClient(updatedClient);
             } else {
                  setSelectedClient(clientData);
             }
         }
+        setLoadingClients(false);
     };
 
     const handleOpenPlanDialog = () => {
         if(selectedClient?.podcastPlan) {
             setRecordingsPerMonth(selectedClient.podcastPlan.recordingsPerMonth);
+            setCanRecordAtNight(selectedClient.podcastPlan.canRecordAtNight);
         } else {
             setRecordingsPerMonth(0);
+            setCanRecordAtNight('nao');
         }
         setIsPlanDialogOpen(true);
     };
@@ -169,27 +154,32 @@ export default function PodcastManager() {
             toast({ title: "Dados inválidos", description: "Selecione um cliente e um número de gravações válido.", variant: "destructive" });
             return;
         }
+        setIsSubmitting(true);
+        try {
+            const newPlan: PodcastPlan = {
+                recordingsPerMonth: recordingsPerMonth,
+                accumulatedRecordings: selectedClient.podcastPlan?.accumulatedRecordings ?? recordingsPerMonth, // Use existing balance or new value
+                lastUpdated: selectedClient.podcastPlan?.lastUpdated ?? startOfMonth(new Date()).toISOString(),
+                canRecordAtNight: canRecordAtNight,
+            };
+            
+            const clientDocRef = doc(db, 'clients', selectedClient.id);
+            await updateDoc(clientDocRef, { podcastPlan: newPlan });
 
-        const newPlan: PodcastPlan = {
-            recordingsPerMonth: recordingsPerMonth,
-            accumulatedRecordings: selectedClient.podcastPlan?.accumulatedRecordings || recordingsPerMonth,
-            lastUpdated: startOfMonth(new Date()).toISOString(),
-            canRecordAtNight: selectedClient.podcastPlan?.canRecordAtNight || 'nao',
-        };
-        
-        const clientDocRef = doc(db, 'clients', selectedClient.id);
-        await updateDoc(clientDocRef, { podcastPlan: newPlan });
+            const updatedClient = { ...selectedClient, podcastPlan: newPlan };
+            setSelectedClient(updatedClient);
+            
+            // Update client in the local list
+            setPodcastClients(prev => prev.map(c => c.id === selectedClient.id ? updatedClient : c));
 
-        const updatedClient = { ...selectedClient, podcastPlan: newPlan };
-        setSelectedClient(updatedClient);
-        setClients(prev => prev.map(c => c.id === selectedClient.id ? updatedClient : c));
-        if (!podcastClients.find(pc => pc.id === updatedClient.id)) {
-            setPodcastClients(prev => [...prev, updatedClient]);
+            toast({ title: "Plano Salvo!", description: `Plano de podcast para ${selectedClient.name} foi atualizado.` });
+            setIsPlanDialogOpen(false);
+        } catch (error) {
+             console.error("Error saving plan:", error);
+             toast({ title: "Erro ao salvar plano", variant: "destructive" });
+        } finally {
+            setIsSubmitting(false);
         }
-
-
-        toast({ title: "Plano Salvo!", description: `Plano de podcast para ${selectedClient.name} foi salvo.` });
-        setIsPlanDialogOpen(false);
     };
 
     const handleSaveSchedule = async () => {
@@ -204,16 +194,15 @@ export default function PodcastManager() {
         setIsSubmitting(true);
 
         try {
-            // Create new schedule and deduct from accumulated
-            const newSchedule: Omit<Schedule, 'id'> = {
+            const newScheduleData: Omit<Schedule, 'id'> = {
                 clientId: selectedClient.id,
                 clientName: selectedClient.name,
                 date: format(scheduleDate, 'yyyy-MM-dd'),
                 time: scheduleTime,
             };
 
-            const docRef = await addDoc(collection(db, "schedules"), newSchedule);
-            setSchedules(prev => [...prev, { id: docRef.id, ...newSchedule }]);
+            const docRef = await addDoc(collection(db, "schedules"), newScheduleData);
+            setSchedules(prev => [...prev, { id: docRef.id, ...newScheduleData }]);
 
             const newAccumulated = selectedClient.podcastPlan.accumulatedRecordings - 1;
             const clientDocRef = doc(db, 'clients', selectedClient.id);
@@ -230,6 +219,7 @@ export default function PodcastManager() {
             setScheduleDate(new Date());
             setScheduleTime('');
         } catch(e) {
+             console.error("Error creating schedule:", e);
              toast({ title: "Erro ao agendar", variant: "destructive" });
         } finally {
             setIsSubmitting(false);
@@ -298,6 +288,7 @@ export default function PodcastManager() {
                              <CardContent>
                                 <Calendar
                                     mode="month"
+                                    locale={ptBR}
                                     className="rounded-md border"
                                 />
                              </CardContent>
@@ -306,50 +297,41 @@ export default function PodcastManager() {
                 </div>
             )}
 
-             {/* Dialog to add new client */}
-            <Dialog open={isClientDialogOpen} onOpenChange={setIsClientDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Adicionar Novo Cliente para Podcast</DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4 space-y-2">
-                        <Label htmlFor="new-client-name">Nome do Cliente</Label>
-                        <Input 
-                            id="new-client-name" 
-                            value={newClientName} 
-                            onChange={(e) => setNewClientName(e.target.value)}
-                            placeholder="Ex: Podcast de Sucesso"
-                        />
-                    </div>
-                    <DialogFooter>
-                        <Button variant="ghost" onClick={() => setIsClientDialogOpen(false)}>Cancelar</Button>
-                        <Button onClick={handleCreateClient} disabled={isSubmitting}>
-                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                            Adicionar Cliente
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
             {/* Dialog to set/edit plan */}
             <Dialog open={isPlanDialogOpen} onOpenChange={setIsPlanDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Definir Plano de Podcast para {selectedClient?.name}</DialogTitle>
                     </DialogHeader>
-                    <div className="py-4 space-y-2">
-                        <Label htmlFor="recordings">Gravações por Mês</Label>
-                        <Input 
-                            id="recordings" 
-                            type="number" 
-                            value={recordingsPerMonth} 
-                            onChange={(e) => setRecordingsPerMonth(Number(e.target.value))}
-                            placeholder="Ex: 4"
-                        />
+                    <div className="py-4 space-y-4">
+                        <div className='space-y-2'>
+                            <Label htmlFor="recordings">Gravações por Mês</Label>
+                            <Input 
+                                id="recordings" 
+                                type="number" 
+                                value={recordingsPerMonth} 
+                                onChange={(e) => setRecordingsPerMonth(Number(e.target.value))}
+                                placeholder="Ex: 4"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label>Pode gravar à noite?</Label>
+                            <RadioGroup 
+                                onValueChange={(value: 'sim' | 'nao') => setCanRecordAtNight(value)} 
+                                value={canRecordAtNight}
+                                className="flex items-center gap-4"
+                            >
+                                <div className='flex items-center space-x-2'><RadioGroupItem value="sim" id="night-yes" /><Label htmlFor="night-yes">Sim</Label></div>
+                                <div className='flex items-center space-x-2'><RadioGroupItem value="nao" id="night-no" /><Label htmlFor="night-no">Não</Label></div>
+                            </RadioGroup>
+                        </div>
                     </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setIsPlanDialogOpen(false)}>Cancelar</Button>
-                        <Button onClick={handleSavePlan}>Salvar Plano</Button>
+                        <Button onClick={handleSavePlan} disabled={isSubmitting}>
+                           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                           Salvar Plano
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -367,11 +349,11 @@ export default function PodcastManager() {
                                 <PopoverTrigger asChild>
                                     <Button variant="outline" className="w-full justify-start text-left font-normal">
                                         <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {scheduleDate ? format(scheduleDate, "PPP") : <span>Escolha uma data</span>}
+                                        {scheduleDate ? format(scheduleDate, "PPP", { locale: ptBR }) : <span>Escolha uma data</span>}
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-auto p-0">
-                                    <Calendar mode="single" selected={scheduleDate} onSelect={setScheduleDate} initialFocus/>
+                                    <Calendar mode="single" selected={scheduleDate} onSelect={setScheduleDate} initialFocus locale={ptBR} />
                                 </PopoverContent>
                             </Popover>
                         </div>
