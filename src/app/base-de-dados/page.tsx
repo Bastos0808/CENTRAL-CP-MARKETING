@@ -28,6 +28,7 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Loader2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { BackButton } from '@/components/ui/back-button';
 
 interface PodcastPlan {
     recordingsPerMonth: number;
@@ -192,8 +193,9 @@ export default function ClientDatabasePage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12">
-      <div className="w-full max-w-6xl">
+    <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
+      <div className="w-full">
+        <BackButton />
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
             Base de Dados de Clientes

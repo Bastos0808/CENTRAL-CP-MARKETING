@@ -1,9 +1,12 @@
+
+import { BackButton } from "@/components/ui/back-button";
 import ReportGenerator from "@/components/report-generator";
 
 export default function ReportGeneratorPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12">
-      <div className="w-full max-w-4xl">
+    <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
+      <div className="w-full">
+        <BackButton />
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
             Gerador de Relatórios com IA
@@ -12,9 +15,9 @@ export default function ReportGeneratorPage() {
             Selecione um cliente, forneça os dados e deixe a IA criar uma análise de desempenho.
           </p>
         </header>
-
-        <ReportGenerator />
-
+        <div className="max-w-4xl mx-auto">
+         <ReportGenerator />
+        </div>
       </div>
     </main>
   );

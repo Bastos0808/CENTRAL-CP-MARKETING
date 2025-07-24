@@ -64,6 +64,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { BackButton } from '@/components/ui/back-button';
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
 const markdownToHtml = (markdown: string) => {
@@ -431,8 +432,9 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12">
-      <div className="w-full max-w-6xl">
+    <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
+      <div className="w-full">
+        <BackButton />
         <header className="mb-10 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
             {client.name}
