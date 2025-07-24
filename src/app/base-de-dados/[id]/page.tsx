@@ -426,6 +426,10 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
   const StatusInfo = statusMap[client.status];
   const sortedReports = client.reports?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  
+  // A client is considered "podcast-only" if they have a podcast plan but no detailed briefing info.
+  // We check for a key field in the briefing that would only be filled in a full briefing.
+  const isPodcastOnly = !!client.podcastPlan && !client.briefing.negociosPosicionamento?.descricao;
 
 
   return (
@@ -496,332 +500,336 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                 </Card>
             </section>
         )}
-
-        <section className="mb-8">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Identidade Visual</CardTitle>
-                    <CardDescription>Logo, cores e fontes que definem a marca do cliente.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8">
-                    <Carousel className="w-full max-w-lg mx-auto">
-                        <CarouselContent>
-                            <CarouselItem>
-                                <div className="p-1">
-                                    <div className="space-y-2">
-                                        <Label className="flex items-center gap-2 text-md font-semibold text-primary justify-center"><ImageIcon className="h-5 w-5" /> Logo Primário</Label>
-                                        <div className="relative group">
-                                            <div 
-                                                className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
-                                                onClick={() => fileInputRef1.current?.click()}
-                                            >
-                                                {visualIdentity.logoUrl ? (
-                                                    <Image src={visualIdentity.logoUrl} alt="Preview do Logo Primário" layout="fill" objectFit="contain" className="p-2" />
-                                                ) : (
-                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
-                                                        <Upload className="w-8 h-8 mb-4" />
-                                                        <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
-                                                        <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
-                                                    </div>
-                                                )}
-                                                <input ref={fileInputRef1} id="logo-upload-1" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'logoUrl')} />
-                                            </div>
-                                            {visualIdentity.logoUrl && (
-                                                <Button
-                                                    variant="destructive"
-                                                    size="icon"
-                                                    className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    onClick={(e) => { e.stopPropagation(); handleRemoveLogo('logoUrl'); }}
+        
+        {!isPodcastOnly && (
+         <>
+            <section className="mb-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Identidade Visual</CardTitle>
+                        <CardDescription>Logo, cores e fontes que definem a marca do cliente.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-8">
+                        <Carousel className="w-full max-w-lg mx-auto">
+                            <CarouselContent>
+                                <CarouselItem>
+                                    <div className="p-1">
+                                        <div className="space-y-2">
+                                            <Label className="flex items-center gap-2 text-md font-semibold text-primary justify-center"><ImageIcon className="h-5 w-5" /> Logo Primário</Label>
+                                            <div className="relative group">
+                                                <div 
+                                                    className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
+                                                    onClick={() => fileInputRef1.current?.click()}
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            )}
+                                                    {visualIdentity.logoUrl ? (
+                                                        <Image src={visualIdentity.logoUrl} alt="Preview do Logo Primário" layout="fill" objectFit="contain" className="p-2" />
+                                                    ) : (
+                                                        <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
+                                                            <Upload className="w-8 h-8 mb-4" />
+                                                            <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
+                                                            <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
+                                                        </div>
+                                                    )}
+                                                    <input ref={fileInputRef1} id="logo-upload-1" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'logoUrl')} />
+                                                </div>
+                                                {visualIdentity.logoUrl && (
+                                                    <Button
+                                                        variant="destructive"
+                                                        size="icon"
+                                                        className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        onClick={(e) => { e.stopPropagation(); handleRemoveLogo('logoUrl'); }}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </CarouselItem>
-                            <CarouselItem>
-                                <div className="p-1">
-                                    <div className="space-y-2">
-                                        <Label className="flex items-center gap-2 text-md font-semibold text-primary justify-center"><ImageIcon className="h-5 w-5" /> Logo Secundário</Label>
-                                         <div className="relative group">
-                                            <div 
-                                                className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
-                                                onClick={() => fileInputRef2.current?.click()}
-                                            >
-                                                {visualIdentity.secondaryLogoUrl ? (
-                                                    <Image src={visualIdentity.secondaryLogoUrl} alt="Preview do Logo Secundário" layout="fill" objectFit="contain" className="p-2" />
-                                                ) : (
-                                                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
-                                                        <Upload className="w-8 h-8 mb-4" />
-                                                        <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
-                                                        <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
-                                                    </div>
-                                                )}
-                                                <input ref={fileInputRef2} id="logo-upload-2" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'secondaryLogoUrl')} />
-                                            </div>
-                                            {visualIdentity.secondaryLogoUrl && (
-                                                <Button
-                                                    variant="destructive"
-                                                    size="icon"
-                                                    className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    onClick={(e) => { e.stopPropagation(); handleRemoveLogo('secondaryLogoUrl'); }}
+                                </CarouselItem>
+                                <CarouselItem>
+                                    <div className="p-1">
+                                        <div className="space-y-2">
+                                            <Label className="flex items-center gap-2 text-md font-semibold text-primary justify-center"><ImageIcon className="h-5 w-5" /> Logo Secundário</Label>
+                                             <div className="relative group">
+                                                <div 
+                                                    className="relative flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
+                                                    onClick={() => fileInputRef2.current?.click()}
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            )}
+                                                    {visualIdentity.secondaryLogoUrl ? (
+                                                        <Image src={visualIdentity.secondaryLogoUrl} alt="Preview do Logo Secundário" layout="fill" objectFit="contain" className="p-2" />
+                                                    ) : (
+                                                        <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
+                                                            <Upload className="w-8 h-8 mb-4" />
+                                                            <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
+                                                            <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
+                                                        </div>
+                                                    )}
+                                                    <input ref={fileInputRef2} id="logo-upload-2" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'secondaryLogoUrl')} />
+                                                </div>
+                                                {visualIdentity.secondaryLogoUrl && (
+                                                    <Button
+                                                        variant="destructive"
+                                                        size="icon"
+                                                        className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                        onClick={(e) => { e.stopPropagation(); handleRemoveLogo('secondaryLogoUrl'); }}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </CarouselItem>
-                        </CarouselContent>
-                        <CarouselPrevious className="-left-10" />
-                        <CarouselNext className="-right-10" />
-                    </Carousel>
+                                </CarouselItem>
+                            </CarouselContent>
+                            <CarouselPrevious className="-left-10" />
+                            <CarouselNext className="-right-10" />
+                        </Carousel>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
-                      <div className="space-y-4">
-                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Palette className="h-5 w-5" /> Cores da Marca</Label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6">
                           <div className="space-y-4">
-                              <div className="space-y-1">
-                                  <Label htmlFor="primaryColor">Cor Primária (Hex)</Label>
-                                  <div className="flex items-center gap-2">
-                                    <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)} className="flex-1"/>
-                                    <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.primaryColor || 'transparent' }} />
+                              <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Palette className="h-5 w-5" /> Cores da Marca</Label>
+                              <div className="space-y-4">
+                                  <div className="space-y-1">
+                                      <Label htmlFor="primaryColor">Cor Primária (Hex)</Label>
+                                      <div className="flex items-center gap-2">
+                                        <Input id="primaryColor" placeholder="#FFFFFF" value={visualIdentity.primaryColor || ''} onChange={(e) => handleVisualIdentityChange('primaryColor', e.target.value)} className="flex-1"/>
+                                        <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.primaryColor || 'transparent' }} />
+                                      </div>
                                   </div>
-                              </div>
-                              <div className="space-y-1">
-                                  <Label htmlFor="secondaryColor">Cor Secundária (Hex)</Label>
-                                  <div className="flex items-center gap-2">
-                                    <Input id="secondaryColor" placeholder="#000000" value={visualIdentity.secondaryColor || ''} onChange={(e) => handleVisualIdentityChange('secondaryColor', e.target.value)} className="flex-1"/>
-                                    <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.secondaryColor || 'transparent' }} />
+                                  <div className="space-y-1">
+                                      <Label htmlFor="secondaryColor">Cor Secundária (Hex)</Label>
+                                      <div className="flex items-center gap-2">
+                                        <Input id="secondaryColor" placeholder="#000000" value={visualIdentity.secondaryColor || ''} onChange={(e) => handleVisualIdentityChange('secondaryColor', e.target.value)} className="flex-1"/>
+                                        <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.secondaryColor || 'transparent' }} />
+                                      </div>
                                   </div>
-                              </div>
-                              <div className="space-y-1">
-                                  <Label htmlFor="accentColor">Cor de Destaque (Hex)</Label>
-                                  <div className="flex items-center gap-2">
-                                    <Input id="accentColor" placeholder="#FF5733" value={visualIdentity.accentColor || ''} onChange={(e) => handleVisualIdentityChange('accentColor', e.target.value)} className="flex-1"/>
-                                    <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.accentColor || 'transparent' }} />
+                                  <div className="space-y-1">
+                                      <Label htmlFor="accentColor">Cor de Destaque (Hex)</Label>
+                                      <div className="flex items-center gap-2">
+                                        <Input id="accentColor" placeholder="#FF5733" value={visualIdentity.accentColor || ''} onChange={(e) => handleVisualIdentityChange('accentColor', e.target.value)} className="flex-1"/>
+                                        <div className="h-8 w-8 rounded-md border" style={{ backgroundColor: visualIdentity.accentColor || 'transparent' }} />
+                                      </div>
                                   </div>
                               </div>
                           </div>
-                      </div>
-                      <div className="space-y-4">
-                          <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Type className="h-5 w-5" /> Fontes da Marca</Label>
                           <div className="space-y-4">
-                              <div className="space-y-1">
-                                  <Label htmlFor="primaryFont">Fonte Primária</Label>
-                                  <Input id="primaryFont" placeholder="Ex: Montserrat" value={visualIdentity.primaryFont || ''} onChange={(e) => handleVisualIdentityChange('primaryFont', e.target.value)}/>
-                              </div>
-                              <div className="space-y-1">
-                                  <Label htmlFor="secondaryFont">Fonte Secundária</Label>
-                                  <Input id="secondaryFont" placeholder="Ex: Lato" value={visualIdentity.secondaryFont || ''} onChange={(e) => handleVisualIdentityChange('secondaryFont', e.target.value)}/>
+                              <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Type className="h-5 w-5" /> Fontes da Marca</Label>
+                              <div className="space-y-4">
+                                  <div className="space-y-1">
+                                      <Label htmlFor="primaryFont">Fonte Primária</Label>
+                                      <Input id="primaryFont" placeholder="Ex: Montserrat" value={visualIdentity.primaryFont || ''} onChange={(e) => handleVisualIdentityChange('primaryFont', e.target.value)}/>
+                                  </div>
+                                  <div className="space-y-1">
+                                      <Label htmlFor="secondaryFont">Fonte Secundária</Label>
+                                      <Input id="secondaryFont" placeholder="Ex: Lato" value={visualIdentity.secondaryFont || ''} onChange={(e) => handleVisualIdentityChange('secondaryFont', e.target.value)}/>
+                                  </div>
                               </div>
                           </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-end pt-4">
-                        <Button onClick={handleVisualIdentityUpdate} disabled={isSavingVisual}>
-                            {isSavingVisual ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                            {isSavingVisual ? 'Salvando...' : 'Salvar Identidade Visual'}
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
-        </section>
+                        </div>
+                        <div className="flex justify-end pt-4">
+                            <Button onClick={handleVisualIdentityUpdate} disabled={isSavingVisual}>
+                                {isSavingVisual ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                {isSavingVisual ? 'Salvando...' : 'Salvar Identidade Visual'}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </section>
 
-        <section className="mb-8">
-          <Card>
-            <CardHeader>
-                <CardTitle>Briefing Detalhado</CardTitle>
-                <CardDescription>Respostas fornecidas no formulário de briefing inicial.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-                <Accordion type="multiple" className="w-full space-y-4" defaultValue={['item-1']}>
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Building className="h-5 w-5" />Informações Operacionais</h3></AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-4">
-                            <InfoCard title="Observações sobre o Plano" value={client.briefing.informacoesOperacionais?.observacoesPlano} icon={StickyNote} />
-                            <InfoCard title="Website" value={client.briefing.informacoesOperacionais?.website} icon={Info} />
-                            <InfoCard title="Telefone" value={client.briefing.informacoesOperacionais?.telefone} icon={Info} />
-                            <InfoCard title="Email de Contato" value={client.briefing.informacoesOperacionais?.emailContato} icon={Info} />
-                            <InfoCard title="Possui Identidade Visual?" value={client.briefing.informacoesOperacionais?.possuiIdentidadeVisual} icon={ImageIcon} />
-                            <InfoCard title="Possui Banco de Imagens?" value={client.briefing.informacoesOperacionais?.possuiBancoImagens} icon={ImageIcon} />
-                            <InfoCard title="Links Relevantes" value={client.briefing.informacoesOperacionais?.linksRelevantes} icon={Info} />
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="item-2">
-                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Briefcase className="h-5 w-5" />Negócio e Posicionamento</h3></AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-4">
-                            <InfoCard title="O que a empresa faz?" value={client.briefing.negociosPosicionamento?.descricao} icon={Megaphone} />
-                            <InfoCard title="Principal diferencial competitivo" value={client.briefing.negociosPosicionamento?.diferencial} icon={Target} />
-                            <InfoCard title="Missão, Visão e Valores" value={client.briefing.negociosPosicionamento?.missaoValores} icon={Goal} />
-                            <InfoCard title="Maior desafio do negócio" value={client.briefing.negociosPosicionamento?.maiorDesafio} icon={Target} />
-                            <InfoCard title="Maior erro que o mercado comete" value={client.briefing.negociosPosicionamento?.erroMercado} icon={Target} />
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="item-3">
-                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Target className="h-5 w-5" />Público e Persona</h3></AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-4">
-                            <InfoCard title="Público-alvo" value={client.briefing.publicoPersona?.publicoAlvo} icon={Users} />
-                            <InfoCard title="Persona ideal" value={client.briefing.publicoPersona?.persona} icon={User} />
-                            <InfoCard title="Dores que resolve" value={client.briefing.publicoPersona?.dores} icon={Frown} />
-                            <InfoCard title="Dúvidas e Objeções" value={client.briefing.publicoPersona?.duvidasObjecoes} icon={Info} />
-                            <InfoCard title="Impedimento de Compra" value={client.briefing.publicoPersona?.impedimentoCompra} icon={Info} />
-                            <InfoCard title="Canais Utilizados" value={client.briefing.publicoPersona?.canaisUtilizados} icon={Megaphone} />
-                        </AccordionContent>
-                    </AccordionItem>
-                     <AccordionItem value="item-4">
-                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Goal className="h-5 w-5" />Metas e Objetivos</h3></AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-4">
-                           <InfoCard title="Objetivo Principal (Próximos 3 meses)" value={client.briefing.metasObjetivos?.objetivoPrincipal} icon={Target} />
-                           <InfoCard title="Metas Específicas" value={client.briefing.metasObjetivos?.metasEspecificas} icon={CheckCircle} />
-                           <InfoCard title="Sazonalidade / Campanhas Importantes" value={client.briefing.metasObjetivos?.sazonalidade} icon={Calendar} />
-                           <InfoCard title="Verba para Tráfego Pago" value={client.briefing.metasObjetivos?.verbaTrafego} icon={Users} />
-                        </AccordionContent>
-                    </AccordionItem>
-                     <AccordionItem value="item-5">
-                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Users className="h-5 w-5" />Equipe de Mídia Social</h3></AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-4">
-                           <InfoCard title="Formato de Conteúdo Preferido" value={client.briefing.equipeMidiaSocial?.formatoConteudo} icon={Info} />
-                           <InfoCard title="Temas Obrigatórios ou a Evitar" value={client.briefing.equipeMidiaSocial?.temasObrigatorios} icon={Info} />
-                           <InfoCard title="Disponibilidade para Gravação" value={client.briefing.equipeMidiaSocial?.disponibilidadeGravacao} icon={Camera} />
-                           <InfoCard title="Responsável pela Gravação" value={client.briefing.equipeMidiaSocial?.responsavelGravacao} icon={User} />
-                           <InfoCard title="Principais Gatilhos a Explorar" value={client.briefing.equipeMidiaSocial?.principaisGatilhos} icon={Target} />
-                        </AccordionContent>
-                    </AccordionItem>
-                    <AccordionItem value="item-6">
-                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><DollarSign className="h-5 w-5" />Equipe de Tráfego Pago</h3></AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-4">
-                           <InfoCard title="Principal Produto/Serviço a Anunciar" value={client.briefing.equipeTrafegoPago?.principalProdutoAnunciar} icon={Info} />
-                           <InfoCard title="Objetivo das Campanhas" value={client.briefing.equipeTrafegoPago?.objetivoCampanhas} icon={Target} />
-                           <InfoCard title="Promoção ou Condição Especial" value={client.briefing.equipeTrafegoPago?.promocaoCondicao} icon={Info} />
-                           <InfoCard title="Local de Veiculação" value={client.briefing.equipeTrafegoPago?.localVeiculacao} icon={Info} />
-                           <InfoCard title="Limite de Verba / Ajustes" value={client.briefing.equipeTrafegoPago?.limiteVerba} icon={Info} />
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
-            </CardContent>
-          </Card>
-        </section>
-
-        <section className="mb-8">
-            <Card>
+            <section className="mb-8">
+              <Card>
                 <CardHeader>
-                    <CardTitle>Análise Estratégica (Interno)</CardTitle>
-                    <CardDescription>Principais dores da persona e análise de concorrentes. Editável pela equipe.</CardDescription>
+                    <CardTitle>Briefing Detalhado</CardTitle>
+                    <CardDescription>Respostas fornecidas no formulário de briefing inicial.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                        <Label htmlFor="personaPains" className="flex items-center gap-2 text-md font-semibold text-primary"><Frown className="h-5 w-5" /> Principais Dores da Persona (Compilado)</Label>
-                        <Textarea
-                            id="personaPains"
-                            placeholder="Ex: Dificuldade em encontrar fornecedores confiáveis, falta de tempo para gerenciar redes sociais, baixo retorno sobre o investimento em marketing..."
-                            value={personaPains}
-                            onChange={(e) => setPersonaPains(e.target.value)}
-                            className="min-h-[120px]"
-                        />
-                    </div>
-
-                    <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
-                        <AccordionItem value="item-0">
-                            <AccordionTrigger>
-                                <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Users className="h-5 w-5" /> Análise de Concorrentes</Label>
-                            </AccordionTrigger>
-                            <AccordionContent className="space-y-6 pt-4">
-                                {competitors.map((competitor, index) => (
-                                    <div key={index} className="p-4 border rounded-lg space-y-4 bg-muted/20">
-                                        <h4 className="font-semibold text-foreground">Concorrente {index + 1}</h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-1">
-                                                <Label htmlFor={`competitor-name-${index}`}>Nome do Concorrente</Label>
-                                                <Input id={`competitor-name-${index}`} value={competitor.name} onChange={(e) => handleCompetitorChange(index, 'name', e.target.value)} placeholder="Nome da empresa concorrente" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <Label htmlFor={`competitor-perfil-${index}`}>@ ou Link</Label>
-                                                <Input id={`competitor-perfil-${index}`} value={competitor.perfil} onChange={(e) => handleCompetitorChange(index, 'perfil', e.target.value)} placeholder="@concorrente" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                    <Accordion type="multiple" className="w-full space-y-4" defaultValue={['item-1']}>
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Building className="h-5 w-5" />Informações Operacionais</h3></AccordionTrigger>
+                            <AccordionContent className="space-y-4 pt-4">
+                                <InfoCard title="Observações sobre o Plano" value={client.briefing.informacoesOperacionais?.observacoesPlano} icon={StickyNote} />
+                                <InfoCard title="Website" value={client.briefing.informacoesOperacionais?.website} icon={Info} />
+                                <InfoCard title="Telefone" value={client.briefing.informacoesOperacionais?.telefone} icon={Info} />
+                                <InfoCard title="Email de Contato" value={client.briefing.informacoesOperacionais?.emailContato} icon={Info} />
+                                <InfoCard title="Possui Identidade Visual?" value={client.briefing.informacoesOperacionais?.possuiIdentidadeVisual} icon={ImageIcon} />
+                                <InfoCard title="Possui Banco de Imagens?" value={client.briefing.informacoesOperacionais?.possuiBancoImagens} icon={ImageIcon} />
+                                <InfoCard title="Links Relevantes" value={client.briefing.informacoesOperacionais?.linksRelevantes} icon={Info} />
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="item-2">
+                            <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Briefcase className="h-5 w-5" />Negócio e Posicionamento</h3></AccordionTrigger>
+                            <AccordionContent className="space-y-4 pt-4">
+                                <InfoCard title="O que a empresa faz?" value={client.briefing.negociosPosicionamento?.descricao} icon={Megaphone} />
+                                <InfoCard title="Principal diferencial competitivo" value={client.briefing.negociosPosicionamento?.diferencial} icon={Target} />
+                                <InfoCard title="Missão, Visão e Valores" value={client.briefing.negociosPosicionamento?.missaoValores} icon={Goal} />
+                                <InfoCard title="Maior desafio do negócio" value={client.briefing.negociosPosicionamento?.maiorDesafio} icon={Target} />
+                                <InfoCard title="Maior erro que o mercado comete" value={client.briefing.negociosPosicionamento?.erroMercado} icon={Target} />
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="item-3">
+                            <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Target className="h-5 w-5" />Público e Persona</h3></AccordionTrigger>
+                            <AccordionContent className="space-y-4 pt-4">
+                                <InfoCard title="Público-alvo" value={client.briefing.publicoPersona?.publicoAlvo} icon={Users} />
+                                <InfoCard title="Persona ideal" value={client.briefing.publicoPersona?.persona} icon={User} />
+                                <InfoCard title="Dores que resolve" value={client.briefing.publicoPersona?.dores} icon={Frown} />
+                                <InfoCard title="Dúvidas e Objeções" value={client.briefing.publicoPersona?.duvidasObjecoes} icon={Info} />
+                                <InfoCard title="Impedimento de Compra" value={client.briefing.publicoPersona?.impedimentoCompra} icon={Info} />
+                                <InfoCard title="Canais Utilizados" value={client.briefing.publicoPersona?.canaisUtilizados} icon={Megaphone} />
+                            </AccordionContent>
+                        </AccordionItem>
+                         <AccordionItem value="item-4">
+                            <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Goal className="h-5 w-5" />Metas e Objetivos</h3></AccordionTrigger>
+                            <AccordionContent className="space-y-4 pt-4">
+                               <InfoCard title="Objetivo Principal (Próximos 3 meses)" value={client.briefing.metasObjetivos?.objetivoPrincipal} icon={Target} />
+                               <InfoCard title="Metas Específicas" value={client.briefing.metasObjetivos?.metasEspecificas} icon={CheckCircle} />
+                               <InfoCard title="Sazonalidade / Campanhas Importantes" value={client.briefing.metasObjetivos?.sazonalidade} icon={Calendar} />
+                               <InfoCard title="Verba para Tráfego Pago" value={client.briefing.metasObjetivos?.verbaTrafego} icon={Users} />
+                            </AccordionContent>
+                        </AccordionItem>
+                         <AccordionItem value="item-5">
+                            <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Users className="h-5 w-5" />Equipe de Mídia Social</h3></AccordionTrigger>
+                            <AccordionContent className="space-y-4 pt-4">
+                               <InfoCard title="Formato de Conteúdo Preferido" value={client.briefing.equipeMidiaSocial?.formatoConteudo} icon={Info} />
+                               <InfoCard title="Temas Obrigatórios ou a Evitar" value={client.briefing.equipeMidiaSocial?.temasObrigatorios} icon={Info} />
+                               <InfoCard title="Disponibilidade para Gravação" value={client.briefing.equipeMidiaSocial?.disponibilidadeGravacao} icon={Camera} />
+                               <InfoCard title="Responsável pela Gravação" value={client.briefing.equipeMidiaSocial?.responsavelGravacao} icon={User} />
+                               <InfoCard title="Principais Gatilhos a Explorar" value={client.briefing.equipeMidiaSocial?.principaisGatilhos} icon={Target} />
+                            </AccordionContent>
+                        </AccordionItem>
+                        <AccordionItem value="item-6">
+                            <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><DollarSign className="h-5 w-5" />Equipe de Tráfego Pago</h3></AccordionTrigger>
+                            <AccordionContent className="space-y-4 pt-4">
+                               <InfoCard title="Principal Produto/Serviço a Anunciar" value={client.briefing.equipeTrafegoPago?.principalProdutoAnunciar} icon={Info} />
+                               <InfoCard title="Objetivo das Campanhas" value={client.briefing.equipeTrafegoPago?.objetivoCampanhas} icon={Target} />
+                               <InfoCard title="Promoção ou Condição Especial" value={client.briefing.equipeTrafegoPago?.promocaoCondicao} icon={Info} />
+                               <InfoCard title="Local de Veiculação" value={client.briefing.equipeTrafegoPago?.localVeiculacao} icon={Info} />
+                               <InfoCard title="Limite de Verba / Ajustes" value={client.briefing.equipeTrafegoPago?.limiteVerba} icon={Info} />
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
-
-
-                    <div className="flex justify-end">
-                        <Button onClick={handleStrategicUpdate} disabled={isSaving}>
-                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                            {isSaving ? 'Salvando...' : 'Salvar Análise'}
-                        </Button>
-                    </div>
                 </CardContent>
-            </Card>
-        </section>
+              </Card>
+            </section>
 
+            <section className="mb-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Análise Estratégica (Interno)</CardTitle>
+                        <CardDescription>Principais dores da persona e análise de concorrentes. Editável pela equipe.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="personaPains" className="flex items-center gap-2 text-md font-semibold text-primary"><Frown className="h-5 w-5" /> Principais Dores da Persona (Compilado)</Label>
+                            <Textarea
+                                id="personaPains"
+                                placeholder="Ex: Dificuldade em encontrar fornecedores confiáveis, falta de tempo para gerenciar redes sociais, baixo retorno sobre o investimento em marketing..."
+                                value={personaPains}
+                                onChange={(e) => setPersonaPains(e.target.value)}
+                                className="min-h-[120px]"
+                            />
+                        </div>
 
-        <section className="mb-8">
-          <Card>
-            <CardHeader>
-                <CardTitle>Relatórios Gerados</CardTitle>
-                <CardDescription>Histórico de relatórios de desempenho gerados para este cliente.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {sortedReports && sortedReports.length > 0 ? (
-                    <Accordion type="single" collapsible className="w-full">
-                        {sortedReports.map((report) => (
-                            <AccordionItem value={report.id} key={report.id}>
-                                <div className="flex items-center justify-between w-full group pr-4">
-                                    <AccordionTrigger className="flex-1 py-4">
-                                        <div className="flex items-center gap-4">
-                                            <span className="font-semibold">Relatório de {format(new Date(report.createdAt), 'dd/MM/yyyy')}</span>
-                                            <span className="text-sm text-muted-foreground group-hover:hidden [.group:not(:hover)]:[data-state=closed]:inline [.group:not(:hover)]:[data-state=open]:hidden">Clique para expandir</span>
+                        <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
+                            <AccordionItem value="item-0">
+                                <AccordionTrigger>
+                                    <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Users className="h-5 w-5" /> Análise de Concorrentes</Label>
+                                </AccordionTrigger>
+                                <AccordionContent className="space-y-6 pt-4">
+                                    {competitors.map((competitor, index) => (
+                                        <div key={index} className="p-4 border rounded-lg space-y-4 bg-muted/20">
+                                            <h4 className="font-semibold text-foreground">Concorrente {index + 1}</h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <Label htmlFor={`competitor-name-${index}`}>Nome do Concorrente</Label>
+                                                    <Input id={`competitor-name-${index}`} value={competitor.name} onChange={(e) => handleCompetitorChange(index, 'name', e.target.value)} placeholder="Nome da empresa concorrente" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <Label htmlFor={`competitor-perfil-${index}`}>@ ou Link</Label>
+                                                    <Input id={`competitor-perfil-${index}`} value={competitor.perfil} onChange={(e) => handleCompetitorChange(index, 'perfil', e.target.value)} placeholder="@concorrente" />
+                                                </div>
+                                            </div>
                                         </div>
-                                    </AccordionTrigger>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Esta ação não pode ser desfeita. Isso excluirá permanentemente o relatório
-                                                    de <span className="font-semibold">{format(new Date(report.createdAt), 'dd/MM/yyyy')}</span> do dossiê de {client.name}.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={() => handleDeleteReport(report.id)}
-                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                >
-                                                    Sim, excluir relatório
-                                                </AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </div>
-                                <AccordionContent>
-                                    <div 
-                                      className="prose dark:prose-invert max-w-none p-4 border rounded-md bg-muted/20"
-                                      dangerouslySetInnerHTML={{ __html: markdownToHtml(report.analysis) }} 
-                                    />
+                                    ))}
                                 </AccordionContent>
                             </AccordionItem>
-                        ))}
-                    </Accordion>
-                ) : (
-                    <div className="text-center text-muted-foreground py-8">
-                        <FileText className="mx-auto h-12 w-12" />
-                        <p className="mt-4">Nenhum relatório gerado ainda.</p>
-                    </div>
-                )}
-            </CardContent>
-          </Card>
-        </section>
+                        </Accordion>
+
+
+                        <div className="flex justify-end">
+                            <Button onClick={handleStrategicUpdate} disabled={isSaving}>
+                                {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                {isSaving ? 'Salvando...' : 'Salvar Análise'}
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </section>
+
+            <section className="mb-8">
+              <Card>
+                <CardHeader>
+                    <CardTitle>Relatórios Gerados</CardTitle>
+                    <CardDescription>Histórico de relatórios de desempenho gerados para este cliente.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {sortedReports && sortedReports.length > 0 ? (
+                        <Accordion type="single" collapsible className="w-full">
+                            {sortedReports.map((report) => (
+                                <AccordionItem value={report.id} key={report.id}>
+                                    <div className="flex items-center justify-between w-full group pr-4">
+                                        <AccordionTrigger className="flex-1 py-4">
+                                            <div className="flex items-center gap-4">
+                                                <span className="font-semibold">Relatório de {format(new Date(report.createdAt), 'dd/MM/yyyy')}</span>
+                                                <span className="text-sm text-muted-foreground group-hover:hidden [.group:not(:hover)]:[data-state=closed]:inline [.group:not(:hover)]:[data-state=open]:hidden">Clique para expandir</span>
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Esta ação não pode ser desfeita. Isso excluirá permanentemente o relatório
+                                                        de <span className="font-semibold">{format(new Date(report.createdAt), 'dd/MM/yyyy')}</span> do dossiê de {client.name}.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={() => handleDeleteReport(report.id)}
+                                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                    >
+                                                        Sim, excluir relatório
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
+                                    <AccordionContent>
+                                        <div 
+                                          className="prose dark:prose-invert max-w-none p-4 border rounded-md bg-muted/20"
+                                          dangerouslySetInnerHTML={{ __html: markdownToHtml(report.analysis) }} 
+                                        />
+                                    </AccordionContent>
+                                </AccordionItem>
+                            ))}
+                        </Accordion>
+                    ) : (
+                        <div className="text-center text-muted-foreground py-8">
+                            <FileText className="mx-auto h-12 w-12" />
+                            <p className="mt-4">Nenhum relatório gerado ainda.</p>
+                        </div>
+                    )}
+                </CardContent>
+              </Card>
+            </section>
+        </>
+        )}
+        
 
         {client.status === 'inactive' && (
           <section className="mb-8">
@@ -866,3 +874,5 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
+
+    
