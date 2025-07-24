@@ -99,6 +99,7 @@ export default function ClientDatabasePage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [planFilter, setPlanFilter] = useState("");
   const router = useRouter();
   const { toast } = useToast();
 
@@ -144,13 +145,17 @@ export default function ClientDatabasePage() {
         if (statusFilter !== 'all' && client.status !== statusFilter) {
           return false;
         }
-        // Search term filter
+        // Search term filter (name)
         if (searchTerm && !client.name.toLowerCase().includes(searchTerm.toLowerCase())) {
           return false;
         }
+        // Search term filter (plan)
+        if (planFilter && !client.plan.toLowerCase().includes(planFilter.toLowerCase())) {
+            return false;
+        }
         return true;
       });
-  }, [clients, searchTerm, statusFilter]);
+  }, [clients, searchTerm, statusFilter, planFilter]);
 
 
   const onPreRegisterSubmit = async (data: PreRegisterFormValues) => {
@@ -233,13 +238,22 @@ export default function ClientDatabasePage() {
                     {loading ? "Carregando..." : `Total de ${filteredClients.length} clientes encontrados.`}
                     </CardDescription>
                 </div>
-                 <div className="flex sm:justify-end items-center gap-2">
+                 <div className="flex flex-col sm:flex-row sm:justify-end items-center gap-2">
                     <div className="relative w-full sm:max-w-xs">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input 
                             placeholder="Buscar por nome..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10"
+                        />
+                    </div>
+                     <div className="relative w-full sm:max-w-xs">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                            placeholder="Buscar por plano..."
+                            value={planFilter}
+                            onChange={(e) => setPlanFilter(e.target.value)}
                             className="pl-10"
                         />
                     </div>
