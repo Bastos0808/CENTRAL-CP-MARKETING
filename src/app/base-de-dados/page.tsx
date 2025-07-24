@@ -31,11 +31,15 @@ import { Switch } from '@/components/ui/switch';
 import { BackButton } from '@/components/ui/back-button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+interface Recording {
+    id: string;
+    date: string; // YYYY-MM-DD
+}
 interface PodcastPlan {
     recordingsPerMonth: number;
     accumulatedRecordings: number;
     paymentDay: number;
-    lastCreditUpdate: string; // ISO string
+    recordingHistory?: Recording[];
 }
 
 interface Client {
@@ -198,7 +202,7 @@ export default function ClientDatabasePage() {
               recordingsPerMonth: data.recordingsPerMonth,
               accumulatedRecordings: data.recordingsPerMonth,
               paymentDay: data.paymentDay,
-              lastCreditUpdate: new Date(1970, 0, 1).toISOString(), // Set to epoch to force first update
+              recordingHistory: [],
           }
       }
 
@@ -329,7 +333,7 @@ export default function ClientDatabasePage() {
                                                 {errors.recordingsPerMonth && <p className="text-sm text-destructive">{errors.recordingsPerMonth.message}</p>}
                                             </div>
                                              <div className="space-y-2">
-                                                <Label htmlFor="paymentDay">Dia do Pagamento</Label>
+                                                <Label htmlFor="paymentDay">Dia do Pagamento (Referência)</Label>
                                                 <Input 
                                                 id="paymentDay" 
                                                 type="number"
@@ -411,3 +415,5 @@ export default function ClientDatabasePage() {
     </main>
   );
 }
+
+    

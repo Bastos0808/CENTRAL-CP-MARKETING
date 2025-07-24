@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -7,12 +8,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Loader2, Mic, Package, Calendar, DollarSign, RefreshCw } from "lucide-react";
+import { PlusCircle, Loader2, Mic, Package, Calendar, DollarSign, RefreshCw, BookMarked } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { startOfToday, isBefore } from 'date-fns';
+import { format } from 'date-fns';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,11 +34,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+interface Recording {
+    id: string;
+    date: string; // YYYY-MM-DD
+}
 interface PodcastPlan {
     recordingsPerMonth: number;
     accumulatedRecordings: number;
     paymentDay: number;
-    lastCreditUpdate: string; // ISO string
+    recordingHistory?: Recording[];
 }
 interface Client {
   id: string;
@@ -43,6 +56,9 @@ export default function PodcastManager() {
     const [loadingClients, setLoadingClients] = useState(true);
     const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
     const [isAdvancePaymentDialogOpen, setIsAdvancePaymentDialogOpen] = useState(false);
+    const [isRegisterRecordingDialogOpen, setIsRegisterRecordingDialogOpen] = useState(false);
+    
+    const [recordingDate, setRecordingDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const [advanceCredits, setAdvanceCredits] = useState(0);
     const [recordingsPerMonth, setRecordingsPerMonth] = useState(0);
     const [paymentDay, setPaymentDay] = useState(1);
@@ -50,7 +66,6 @@ export default function PodcastManager() {
 
     const { toast } = useToast();
 
-    // Fetch all clients with podcastPlan
     const fetchClients = async () => {
         setLoadingClients(true);
         try {
@@ -70,43 +85,6 @@ export default function PodcastManager() {
         fetchClients();
     }, [toast]);
 
-    // Function to update accumulated recordings based on the current month
-    const updateAccumulatedRecordings = async (client: Client): Promise<Client> => {
-        if (!client.podcastPlan) return client;
-
-        const { paymentDay, lastCreditUpdate, recordingsPerMonth } = client.podcastPlan;
-        const today = startOfToday();
-        const lastUpdateDate = new Date(lastCreditUpdate);
-        
-        let renewalDate;
-        if (today.getDate() >= paymentDay) {
-            renewalDate = new Date(today.getFullYear(), today.getMonth(), paymentDay);
-        } else {
-            renewalDate = new Date(today.getFullYear(), today.getMonth() - 1, paymentDay);
-        }
-
-        if (isBefore(lastUpdateDate, renewalDate)) {
-             const newAccumulated = (client.podcastPlan.accumulatedRecordings || 0) + recordingsPerMonth;
-            
-            const updatedClient = {
-                ...client,
-                podcastPlan: {
-                    ...client.podcastPlan,
-                    accumulatedRecordings: newAccumulated,
-                    lastCreditUpdate: today.toISOString(),
-                }
-            };
-
-            const clientDocRef = doc(db, 'clients', client.id);
-            await updateDoc(clientDocRef, { podcastPlan: updatedClient.podcastPlan });
-            
-            toast({ title: "Saldo atualizado!", description: `Créditos de ${client.name} foram renovados para o ciclo atual.`});
-            return updatedClient;
-        }
-
-        return client;
-    };
-
 
     const handleClientChange = async (clientId: string) => {
         if (!clientId) {
@@ -117,12 +95,7 @@ export default function PodcastManager() {
         const clientDoc = await getDoc(doc(db, 'clients', clientId));
         if (clientDoc.exists()) {
             const clientData = { id: clientDoc.id, ...clientDoc.data() } as Client;
-             if (clientData.podcastPlan) {
-                const updatedClient = await updateAccumulatedRecordings(clientData);
-                setSelectedClient(updatedClient);
-            } else {
-                 setSelectedClient(clientData);
-            }
+            setSelectedClient(clientData);
         }
         setLoadingClients(false);
     };
@@ -149,7 +122,7 @@ export default function PodcastManager() {
                 recordingsPerMonth: recordingsPerMonth,
                 accumulatedRecordings: selectedClient.podcastPlan?.accumulatedRecordings ?? recordingsPerMonth,
                 paymentDay: paymentDay,
-                lastCreditUpdate: selectedClient.podcastPlan?.lastCreditUpdate ?? new Date(1970, 0, 1).toISOString(),
+                recordingHistory: selectedClient.podcastPlan?.recordingHistory ?? [],
             };
             
             const clientDocRef = doc(db, 'clients', selectedClient.id);
@@ -175,19 +148,32 @@ export default function PodcastManager() {
             toast({ title: "Saldo Insuficiente", description: "O cliente não tem créditos de gravação disponíveis.", variant: "destructive"});
             return;
         }
+        if (!recordingDate) {
+             toast({ title: "Data Inválida", description: "Por favor, selecione a data da gravação.", variant: "destructive"});
+            return;
+        }
+
         setIsSubmitting(true);
         try {
             const newAccumulated = selectedClient.podcastPlan.accumulatedRecordings - 1;
-            const updatedPlan = { ...selectedClient.podcastPlan, accumulatedRecordings: newAccumulated };
+            const newRecording: Recording = { id: crypto.randomUUID(), date: recordingDate };
+            const updatedHistory = [...(selectedClient.podcastPlan.recordingHistory || []), newRecording];
+            
+            const updatedPlan = { 
+                ...selectedClient.podcastPlan, 
+                accumulatedRecordings: newAccumulated,
+                recordingHistory: updatedHistory,
+            };
 
             const clientDocRef = doc(db, 'clients', selectedClient.id);
-            await updateDoc(clientDocRef, { "podcastPlan.accumulatedRecordings": newAccumulated });
+            await updateDoc(clientDocRef, { "podcastPlan": updatedPlan });
 
             const updatedClient = { ...selectedClient, podcastPlan: updatedPlan };
             setSelectedClient(updatedClient);
             setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
 
             toast({ title: "Gravação Registrada!", description: `Um crédito foi debitado do saldo de ${selectedClient.name}.`});
+            setIsRegisterRecordingDialogOpen(false);
         } catch(error) {
              console.error("Error registering recording:", error);
              toast({ title: "Erro ao registrar gravação", variant: "destructive" });
@@ -224,7 +210,7 @@ export default function PodcastManager() {
         }
     };
 
-    const handleForceRenewal = async () => {
+    const handleManualPayment = async () => {
         if (!selectedClient?.podcastPlan) {
              toast({ title: "Cliente sem plano", description: "Este cliente não possui um plano de podcast para renovar.", variant: "destructive"});
             return;
@@ -233,12 +219,10 @@ export default function PodcastManager() {
         try {
             const { accumulatedRecordings, recordingsPerMonth } = selectedClient.podcastPlan;
             const newAccumulated = accumulatedRecordings + recordingsPerMonth;
-            const today = new Date().toISOString();
             
             const updatedPlan = { 
                 ...selectedClient.podcastPlan, 
                 accumulatedRecordings: newAccumulated,
-                lastCreditUpdate: today,
             };
 
             const clientDocRef = doc(db, 'clients', selectedClient.id);
@@ -248,10 +232,10 @@ export default function PodcastManager() {
             setSelectedClient(updatedClient);
             setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
             
-            toast({ title: "Renovação Forçada!", description: `Créditos de ${selectedClient.name} renovados com sucesso.`});
+            toast({ title: "Pagamento Registrado!", description: `Créditos de ${selectedClient.name} renovados com sucesso.`});
         } catch(error) {
-            console.error("Error forcing renewal:", error);
-            toast({ title: "Erro ao forçar renovação", variant: "destructive" });
+            console.error("Error on manual payment:", error);
+            toast({ title: "Erro ao registrar pagamento", variant: "destructive" });
         } finally {
             setIsSubmitting(false);
         }
@@ -276,6 +260,7 @@ export default function PodcastManager() {
             </Card>
 
             {selectedClient && (
+             <>
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex justify-between items-center">
@@ -286,34 +271,14 @@ export default function PodcastManager() {
                                 </Button>
                                 <Button variant="outline" size="sm" onClick={() => setIsAdvancePaymentDialogOpen(true)}>
                                     <DollarSign className='mr-2 h-4 w-4' />
-                                    Adicionar Créditos
+                                    Adicionar Créditos Avulsos
                                 </Button>
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="outline" size="sm" disabled={!selectedClient.podcastPlan}>
-                                            <RefreshCw className='mr-2 h-4 w-4' />
-                                            Adiantar Renovação
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Adiantar renovação do ciclo?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                Esta ação adicionará os créditos mensais ({selectedClient.podcastPlan?.recordingsPerMonth}) ao saldo de {selectedClient.name} e marcará o ciclo atual como pago. Isso não afetará a data de pagamento para os próximos meses.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                            <AlertDialogAction onClick={handleForceRenewal}>Confirmar Renovação</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
                             </div>
                         </CardTitle>
                         <CardDescription>Gerencie o plano mensal e o saldo de gravações do cliente.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="flex justify-between items-baseline p-4 rounded-lg bg-muted border">
                                 <Label className="flex items-center gap-2"><Mic/> Gravações / Mês</Label>
                                 <span className="text-2xl font-bold">{selectedClient.podcastPlan?.recordingsPerMonth || 0}</span>
@@ -322,15 +287,32 @@ export default function PodcastManager() {
                                 <Label className="flex items-center gap-2"><Package/> Saldo de Gravações</Label>
                                 <span className="text-2xl font-bold">{selectedClient.podcastPlan?.accumulatedRecordings || 0}</span>
                             </div>
-                             <div className="flex justify-between items-baseline p-4 rounded-lg bg-muted border">
-                                <Label className="flex items-center gap-2"><Calendar/> Dia de Renovação</Label>
-                                <span className="text-2xl font-bold">{selectedClient.podcastPlan ? `Todo dia ${selectedClient.podcastPlan.paymentDay}` : 'N/A'}</span>
-                            </div>
                         </div>
-                        <div className="flex justify-end pt-4">
+                        <div className="flex justify-end pt-4 gap-2">
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button size="lg" variant="outline" disabled={isSubmitting || !selectedClient.podcastPlan}>
+                                        <RefreshCw className="mr-2 h-4 w-4" />
+                                        Registrar Pagamento Mensal
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Registrar Pagamento do Ciclo?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Esta ação adicionará os créditos mensais ({selectedClient.podcastPlan?.recordingsPerMonth}) ao saldo de {selectedClient.name}. Confirme que o pagamento deste ciclo foi recebido.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction onClick={handleManualPayment}>Confirmar Pagamento</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+
                              <Button 
                                 size="lg" 
-                                onClick={handleRegisterRecording} 
+                                onClick={() => setIsRegisterRecordingDialogOpen(true)} 
                                 disabled={isSubmitting || !selectedClient.podcastPlan || selectedClient.podcastPlan.accumulatedRecordings <= 0}
                             >
                                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
@@ -339,6 +321,44 @@ export default function PodcastManager() {
                         </div>
                     </CardContent>
                 </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <BookMarked />
+                            Histórico de Gravações
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                         <Table>
+                            <TableHeader>
+                                <TableRow>
+                                <TableHead>Data da Gravação</TableHead>
+                                <TableHead className="text-right">ID da Gravação</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {selectedClient.podcastPlan?.recordingHistory && selectedClient.podcastPlan.recordingHistory.length > 0 ? (
+                                    selectedClient.podcastPlan.recordingHistory
+                                    .sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                                    .map((rec) => (
+                                        <TableRow key={rec.id}>
+                                            <TableCell className="font-medium">{format(new Date(`${rec.date}T00:00:00`), 'dd/MM/yyyy')}</TableCell>
+                                            <TableCell className="text-right font-mono text-xs">{rec.id}</TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={2} className="h-24 text-center">
+                                        Nenhuma gravação registrada ainda.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </>
             )}
 
             {/* Dialog to set/edit plan */}
@@ -359,7 +379,7 @@ export default function PodcastManager() {
                             />
                         </div>
                         <div className='space-y-2'>
-                            <Label htmlFor="paymentDay">Dia do Pagamento para Renovação dos Créditos</Label>
+                            <Label htmlFor="paymentDay">Dia do Pagamento para Renovação (Referência)</Label>
                             <Input 
                                 id="paymentDay" 
                                 type="number"
@@ -399,7 +419,7 @@ export default function PodcastManager() {
                             />
                         </div>
                          <CardDescription>
-                            Esta ação adiciona créditos ao saldo atual sem afetar o ciclo de renovação mensal.
+                            Esta ação adiciona créditos ao saldo atual sem afetar o ciclo de renovação mensal. Ideal para pagamentos de pacotes extras.
                         </CardDescription>
                     </div>
                     <DialogFooter>
@@ -412,6 +432,38 @@ export default function PodcastManager() {
                 </DialogContent>
             </Dialog>
 
+             {/* Dialog to register recording */}
+            <Dialog open={isRegisterRecordingDialogOpen} onOpenChange={setIsRegisterRecordingDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Registrar Gravação para {selectedClient?.name}</DialogTitle>
+                    </DialogHeader>
+                    <div className="py-4 space-y-4">
+                        <div className='space-y-2'>
+                            <Label htmlFor="recording-date">Data da Gravação</Label>
+                            <Input 
+                                id="recording-date" 
+                                type="date"
+                                value={recordingDate}
+                                onChange={(e) => setRecordingDate(e.target.value)}
+                            />
+                        </div>
+                         <CardDescription>
+                            Selecionar a data da gravação utilizada irá debitar 1 crédito do saldo do cliente.
+                        </CardDescription>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setIsRegisterRecordingDialogOpen(false)}>Cancelar</Button>
+                        <Button onClick={handleRegisterRecording} disabled={isSubmitting}>
+                           {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                           Confirmar Registro
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 }
+
+    

@@ -105,11 +105,15 @@ interface VisualIdentity {
     secondaryFont?: string;
 }
 
+interface Recording {
+    id: string;
+    date: string; // YYYY-MM-DD
+}
 interface PodcastPlan {
     recordingsPerMonth: number;
     accumulatedRecordings: number;
     paymentDay: number;
-    lastCreditUpdate: string; // ISO string
+    recordingHistory?: Recording[];
 }
 
 interface Client {
@@ -489,7 +493,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                     <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <InfoCard title="Gravações por Mês" value={client.podcastPlan.recordingsPerMonth.toString()} icon={Mic} />
                         <InfoCard title="Saldo de Gravações" value={client.podcastPlan.accumulatedRecordings.toString()} icon={Package} />
-                        <InfoCard title="Dia de Renovação" value={`Todo dia ${client.podcastPlan.paymentDay}`} icon={Calendar} />
+                        <InfoCard title="Dia de Pagamento (Referência)" value={`${client.podcastPlan.paymentDay}`} icon={Calendar} />
                     </CardContent>
                 </Card>
             </section>
@@ -868,3 +872,5 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
+
+    
