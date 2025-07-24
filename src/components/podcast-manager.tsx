@@ -7,12 +7,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Loader2, Mic, Package, Calendar, DollarSign } from "lucide-react";
+import { PlusCircle, Loader2, Mic, Package, Calendar, DollarSign, RefreshCw } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { startOfToday, isBefore } from 'date-fns';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface PodcastPlan {
     recordingsPerMonth: number;
@@ -67,18 +78,13 @@ export default function PodcastManager() {
         const today = startOfToday();
         const lastUpdateDate = new Date(lastCreditUpdate);
         
-        // Determine the renewal date for the current month.
-        // If today is before the payment day, the renewal date is for last month.
-        // If today is on or after the payment day, the renewal date is for this month.
         let renewalDate;
         if (today.getDate() >= paymentDay) {
             renewalDate = new Date(today.getFullYear(), today.getMonth(), paymentDay);
         } else {
-            // Check renewal for last month
             renewalDate = new Date(today.getFullYear(), today.getMonth() - 1, paymentDay);
         }
 
-        // Check if the last update was before this cycle's renewal date
         if (isBefore(lastUpdateDate, renewalDate)) {
              const newAccumulated = (client.podcastPlan.accumulatedRecordings || 0) + recordingsPerMonth;
             
@@ -216,7 +222,40 @@ export default function PodcastManager() {
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
+
+    const handleForceRenewal = async () => {
+        if (!selectedClient?.podcastPlan) {
+             toast({ title: "Cliente sem plano", description: "Este cliente não possui um plano de podcast para renovar.", variant: "destructive"});
+            return;
+        }
+        setIsSubmitting(true);
+        try {
+            const { accumulatedRecordings, recordingsPerMonth } = selectedClient.podcastPlan;
+            const newAccumulated = accumulatedRecordings + recordingsPerMonth;
+            const today = new Date().toISOString();
+            
+            const updatedPlan = { 
+                ...selectedClient.podcastPlan, 
+                accumulatedRecordings: newAccumulated,
+                lastCreditUpdate: today,
+            };
+
+            const clientDocRef = doc(db, 'clients', selectedClient.id);
+            await updateDoc(clientDocRef, { "podcastPlan": updatedPlan });
+
+            const updatedClient = { ...selectedClient, podcastPlan: updatedPlan };
+            setSelectedClient(updatedClient);
+            setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+            
+            toast({ title: "Renovação Forçada!", description: `Créditos de ${selectedClient.name} renovados com sucesso.`});
+        } catch(error) {
+            console.error("Error forcing renewal:", error);
+            toast({ title: "Erro ao forçar renovação", variant: "destructive" });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
 
     return (
@@ -249,6 +288,26 @@ export default function PodcastManager() {
                                     <DollarSign className='mr-2 h-4 w-4' />
                                     Adicionar Créditos
                                 </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="outline" size="sm" disabled={!selectedClient.podcastPlan}>
+                                            <RefreshCw className='mr-2 h-4 w-4' />
+                                            Adiantar Renovação
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Adiantar renovação do ciclo?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Esta ação adicionará os créditos mensais ({selectedClient.podcastPlan?.recordingsPerMonth}) ao saldo de {selectedClient.name} e marcará o ciclo atual como pago. Isso não afetará a data de pagamento para os próximos meses.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleForceRenewal}>Confirmar Renovação</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                         </CardTitle>
                         <CardDescription>Gerencie o plano mensal e o saldo de gravações do cliente.</CardDescription>
@@ -326,7 +385,7 @@ export default function PodcastManager() {
             <Dialog open={isAdvancePaymentDialogOpen} onOpenChange={setIsAdvancePaymentDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Adicionar Créditos Antecipados para {selectedClient?.name}</DialogTitle>
+                        <DialogTitle>Adicionar Créditos Avulsos para {selectedClient?.name}</DialogTitle>
                     </DialogHeader>
                     <div className="py-4 space-y-4">
                         <div className='space-y-2'>
@@ -339,6 +398,9 @@ export default function PodcastManager() {
                                 placeholder="Ex: 10"
                             />
                         </div>
+                         <CardDescription>
+                            Esta ação adiciona créditos ao saldo atual sem afetar o ciclo de renovação mensal.
+                        </CardDescription>
                     </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => { setIsAdvancePaymentDialogOpen(false); setAdvanceCredits(0); }}>Cancelar</Button>
