@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Loader2, Calendar as CalendarIcon, Users, Package, CalendarPlus, ChevronsUpDown } from "lucide-react";
+import { PlusCircle, Loader2, Calendar as CalendarIcon, Users, Package, CalendarPlus, ChevronsUpDown, Mic, Moon, Sun } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from './ui/input';
@@ -16,11 +16,13 @@ import { Label } from './ui/label';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
 import { format, startOfMonth } from 'date-fns';
+import { Badge } from './ui/badge';
 
 interface PodcastPlan {
     recordingsPerMonth: number;
     accumulatedRecordings: number;
     lastUpdated: string; // ISO string for the month this was last updated
+    canRecordAtNight: 'sim' | 'nao';
 }
 interface Client {
   id: string;
@@ -38,6 +40,7 @@ interface Schedule {
 
 export default function PodcastManager() {
     const [clients, setClients] = useState<Client[]>([]);
+    const [podcastClients, setPodcastClients] = useState<Client[]>([]);
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [loadingClients, setLoadingClients] = useState(true);
     const [isClientDialogOpen, setIsClientDialogOpen] = useState(false);
@@ -60,6 +63,8 @@ export default function PodcastManager() {
             const querySnapshot = await getDocs(collection(db, "clients"));
             const clientsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
             setClients(clientsData);
+            const clientsWithPodcast = clientsData.filter(c => c.podcastPlan);
+            setPodcastClients(clientsWithPodcast);
         } catch (error) {
             console.error("Error fetching clients:", error);
             toast({ title: "Erro ao carregar clientes", variant: "destructive" });
@@ -84,6 +89,7 @@ export default function PodcastManager() {
                 id: newClientId, 
                 name: newClientName, 
                 status: 'pending',
+                plan: 'Podcast',
                 startDate: format(new Date(), 'yyyy-MM-dd'),
                 briefing: {},
                 reports: [],
@@ -167,7 +173,8 @@ export default function PodcastManager() {
         const newPlan: PodcastPlan = {
             recordingsPerMonth: recordingsPerMonth,
             accumulatedRecordings: selectedClient.podcastPlan?.accumulatedRecordings || recordingsPerMonth,
-            lastUpdated: startOfMonth(new Date()).toISOString()
+            lastUpdated: startOfMonth(new Date()).toISOString(),
+            canRecordAtNight: selectedClient.podcastPlan?.canRecordAtNight || 'nao',
         };
         
         const clientDocRef = doc(db, 'clients', selectedClient.id);
@@ -176,6 +183,10 @@ export default function PodcastManager() {
         const updatedClient = { ...selectedClient, podcastPlan: newPlan };
         setSelectedClient(updatedClient);
         setClients(prev => prev.map(c => c.id === selectedClient.id ? updatedClient : c));
+        if (!podcastClients.find(pc => pc.id === updatedClient.id)) {
+            setPodcastClients(prev => [...prev, updatedClient]);
+        }
+
 
         toast({ title: "Plano Salvo!", description: `Plano de podcast para ${selectedClient.name} foi salvo.` });
         setIsPlanDialogOpen(false);
@@ -190,29 +201,39 @@ export default function PodcastManager() {
              toast({ title: "Saldo insuficiente", description: `${selectedClient.name} não possui gravações disponíveis.`, variant: "destructive" });
             return;
         }
+        setIsSubmitting(true);
 
-        // TODO: Add logic to check for schedule conflicts
+        try {
+            // Create new schedule and deduct from accumulated
+            const newSchedule: Omit<Schedule, 'id'> = {
+                clientId: selectedClient.id,
+                clientName: selectedClient.name,
+                date: format(scheduleDate, 'yyyy-MM-dd'),
+                time: scheduleTime,
+            };
 
-        // Create new schedule and deduct from accumulated
-        const newSchedule: Omit<Schedule, 'id'> = {
-            clientId: selectedClient.id,
-            clientName: selectedClient.name,
-            date: format(scheduleDate, 'yyyy-MM-dd'),
-            time: scheduleTime,
-        };
+            const docRef = await addDoc(collection(db, "schedules"), newSchedule);
+            setSchedules(prev => [...prev, { id: docRef.id, ...newSchedule }]);
 
-        const docRef = await addDoc(collection(db, "schedules"), newSchedule);
-        setSchedules(prev => [...prev, { id: docRef.id, ...newSchedule }]);
+            const newAccumulated = selectedClient.podcastPlan.accumulatedRecordings - 1;
+            const clientDocRef = doc(db, 'clients', selectedClient.id);
+            await updateDoc(clientDocRef, { "podcastPlan.accumulatedRecordings": newAccumulated });
+            
+            const updatedClient = {...selectedClient, podcastPlan: {...selectedClient.podcastPlan!, accumulatedRecordings: newAccumulated}};
 
-        const newAccumulated = selectedClient.podcastPlan.accumulatedRecordings - 1;
-        const clientDocRef = doc(db, 'clients', selectedClient.id);
-        await updateDoc(clientDocRef, { "podcastPlan.accumulatedRecordings": newAccumulated });
-        setSelectedClient(prev => prev ? {...prev, podcastPlan: {...prev.podcastPlan!, accumulatedRecordings: newAccumulated}} : null);
+            setSelectedClient(updatedClient);
+            setPodcastClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
 
-        toast({ title: "Agendamento Criado!", description: `Uma gravação foi agendada e debitada do saldo de ${selectedClient.name}.` });
-        setIsScheduleDialogOpen(false);
-        setScheduleDate(new Date());
-        setScheduleTime('');
+
+            toast({ title: "Agendamento Criado!", description: `Uma gravação foi agendada e debitada do saldo de ${selectedClient.name}.` });
+            setIsScheduleDialogOpen(false);
+            setScheduleDate(new Date());
+            setScheduleTime('');
+        } catch(e) {
+             toast({ title: "Erro ao agendar", variant: "destructive" });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
 
@@ -221,16 +242,15 @@ export default function PodcastManager() {
             <Card>
                 <CardHeader>
                     <CardTitle>Seleção de Cliente</CardTitle>
-                    <CardDescription>Escolha um cliente para gerenciar ou adicione um novo cliente de podcast.</CardDescription>
+                    <CardDescription>Escolha um cliente de podcast para gerenciar.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex gap-4 items-center">
                     {loadingClients ? (<Skeleton className="h-10 flex-1" />) : (
                         <Select onValueChange={handleClientChange} value={selectedClient?.id || ''}>
-                            <SelectTrigger className="flex-1"><SelectValue placeholder="Escolha um cliente..." /></SelectTrigger>
-                            <SelectContent>{clients.map(client => (<SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>))}</SelectContent>
+                            <SelectTrigger className="flex-1"><SelectValue placeholder="Escolha um cliente com plano de podcast..." /></SelectTrigger>
+                            <SelectContent>{podcastClients.map(client => (<SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>))}</SelectContent>
                         </Select>
                     )}
-                    <Button variant="outline" onClick={() => setIsClientDialogOpen(true)}><PlusCircle className="mr-2"/> Adicionar Cliente</Button>
                 </CardContent>
             </Card>
 
@@ -246,12 +266,19 @@ export default function PodcastManager() {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex justify-between items-baseline p-3 rounded-lg bg-muted">
-                                    <Label className="flex items-center gap-2"><Users/> Gravações / Mês</Label>
+                                    <Label className="flex items-center gap-2"><Mic/> Gravações / Mês</Label>
                                     <span className="text-2xl font-bold">{selectedClient.podcastPlan?.recordingsPerMonth || 0}</span>
                                 </div>
                                  <div className="flex justify-between items-baseline p-3 rounded-lg bg-muted">
                                     <Label className="flex items-center gap-2"><Package/> Saldo Acumulado</Label>
                                     <span className="text-2xl font-bold">{selectedClient.podcastPlan?.accumulatedRecordings || 0}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-3 rounded-lg bg-muted">
+                                    <Label className="flex items-center gap-2">Pode Gravar à Noite?</Label>
+                                    <Badge variant={selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? 'default' : 'secondary'}>
+                                        {selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? <Moon className='mr-2' /> : <Sun className='mr-2' />}
+                                        {selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? 'Sim' : 'Não'}
+                                    </Badge>
                                 </div>
                                 <Button className="w-full" onClick={() => setIsScheduleDialogOpen(true)} disabled={!selectedClient.podcastPlan || selectedClient.podcastPlan.accumulatedRecordings <= 0}>
                                     <CalendarPlus className="mr-2"/> Agendar Gravação
@@ -355,7 +382,10 @@ export default function PodcastManager() {
                     </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setIsScheduleDialogOpen(false)}>Cancelar</Button>
-                        <Button onClick={handleSaveSchedule}>Confirmar Agendamento</Button>
+                        <Button onClick={handleSaveSchedule} disabled={isSubmitting}>
+                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Confirmar Agendamento
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

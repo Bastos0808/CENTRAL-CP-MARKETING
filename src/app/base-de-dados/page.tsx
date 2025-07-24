@@ -15,23 +15,26 @@ import { Badge } from "@/components/ui/badge";
 import { db } from '@/lib/firebase';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { format } from 'date-fns';
+import { format, startOfMonth } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Loader2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface PodcastPlan {
     recordingsPerMonth: number;
     accumulatedRecordings: number;
     lastUpdated: string; // ISO string for the month this was last updated
+    canRecordAtNight: 'sim' | 'nao';
 }
 
 interface Client {
@@ -48,7 +51,19 @@ const preRegisterSchema = z.object({
     name: z.string().min(1, "O nome do cliente é obrigatório."),
     plan: z.string().min(1, "O plano é obrigatório."),
     planDetails: z.string().optional(),
+    hasPodcast: z.boolean().default(false),
+    recordingsPerMonth: z.number().optional(),
+    canRecordAtNight: z.enum(['sim', 'nao']).optional(),
+}).refine(data => {
+    if (data.hasPodcast) {
+        return data.recordingsPerMonth !== undefined && data.recordingsPerMonth > 0 && data.canRecordAtNight !== undefined;
+    }
+    return true;
+}, {
+    message: "Se o cliente tem podcast, a quantidade de gravações e a permissão para gravar à noite são obrigatórias.",
+    path: ['recordingsPerMonth'] // You can choose which field to attach the error to
 });
+
 
 type PreRegisterFormValues = z.infer<typeof preRegisterSchema>;
 
@@ -82,9 +97,14 @@ export default function ClientDatabasePage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<PreRegisterFormValues>({
-      resolver: zodResolver(preRegisterSchema)
+  const { register, handleSubmit, reset, control, watch, formState: { errors, isSubmitting } } = useForm<PreRegisterFormValues>({
+      resolver: zodResolver(preRegisterSchema),
+      defaultValues: {
+          hasPodcast: false,
+      }
   });
+
+  const hasPodcast = watch('hasPodcast');
 
   const fetchClients = async () => {
     setLoading(true);
@@ -114,7 +134,7 @@ export default function ClientDatabasePage() {
 
   const onPreRegisterSubmit = async (data: PreRegisterFormValues) => {
       const newClientId = crypto.randomUUID();
-      const newClient = {
+      const newClient: Client = {
           id: newClientId,
           name: data.name,
           plan: data.plan,
@@ -126,7 +146,6 @@ export default function ClientDatabasePage() {
                   nomeNegocio: data.name,
                   planoContratado: data.plan,
                   observacoesPlano: data.planDetails || '',
-                  // Initialize other briefing fields as empty
                   redesSociaisAcesso: [],
                   possuiIdentidadeVisual: 'nao',
                   possuiBancoImagens: 'nao',
@@ -147,6 +166,15 @@ export default function ClientDatabasePage() {
           reports: [],
           contentPlanner: [],
       };
+
+      if (data.hasPodcast && data.recordingsPerMonth && data.canRecordAtNight) {
+          newClient.podcastPlan = {
+              recordingsPerMonth: data.recordingsPerMonth,
+              accumulatedRecordings: data.recordingsPerMonth,
+              lastUpdated: startOfMonth(new Date()).toISOString(),
+              canRecordAtNight: data.canRecordAtNight,
+          }
+      }
 
       try {
           await setDoc(doc(db, 'clients', newClientId), newClient);
@@ -189,7 +217,7 @@ export default function ClientDatabasePage() {
                         Adicionar Novo Cliente
                     </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Pré-Cadastro de Cliente</DialogTitle>
                     </DialogHeader>
@@ -208,6 +236,56 @@ export default function ClientDatabasePage() {
                             <Label htmlFor="planDetails">Observações sobre o Plano</Label>
                             <Textarea id="planDetails" {...register("planDetails")} placeholder="Detalhes, exceções ou acordos específicos..."/>
                         </div>
+
+                        <div className='p-4 border rounded-md space-y-4'>
+                           <Controller
+                                control={control}
+                                name="hasPodcast"
+                                render={({ field }) => (
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="has-podcast" className='font-semibold'>Cliente possui plano de podcast?</Label>
+                                        <Switch
+                                            id="has-podcast"
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </div>
+                                )}
+                            />
+                            {hasPodcast && (
+                                <div className='space-y-4 pt-2 border-t'>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="recordingsPerMonth">Gravações por Mês</Label>
+                                        <Input 
+                                          id="recordingsPerMonth" 
+                                          type="number" 
+                                          {...register("recordingsPerMonth", { valueAsNumber: true })} 
+                                          placeholder="Ex: 4"
+                                        />
+                                        {errors.recordingsPerMonth && <p className="text-sm text-destructive">{errors.recordingsPerMonth.message}</p>}
+                                    </div>
+                                    <Controller
+                                        control={control}
+                                        name="canRecordAtNight"
+                                        render={({ field }) => (
+                                            <div className="space-y-2">
+                                                <Label>Pode gravar à noite?</Label>
+                                                <RadioGroup 
+                                                  onValueChange={field.onChange} 
+                                                  defaultValue={field.value}
+                                                  className="flex items-center gap-4"
+                                                >
+                                                    <div className='flex items-center space-x-2'><RadioGroupItem value="sim" id="night-yes" /><Label htmlFor="night-yes">Sim</Label></div>
+                                                    <div className='flex items-center space-x-2'><RadioGroupItem value="nao" id="night-no" /><Label htmlFor="night-no">Não</Label></div>
+                                                </RadioGroup>
+                                                {errors.canRecordAtNight && <p className="text-sm text-destructive">{errors.canRecordAtNight.message}</p>}
+                                            </div>
+                                        )}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
                         <DialogFooter>
                             <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
                             <Button type="submit" disabled={isSubmitting}>

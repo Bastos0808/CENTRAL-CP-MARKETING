@@ -60,9 +60,6 @@ export default function Home() {
             </Link>
           </CardContent>
         </Card>
-      </div>
-      
-      <div className="w-full max-w-6xl grid gap-8 mb-12">
         <Card>
           <CardHeader>
             <CardTitle>Planner de Conteúdo</CardTitle>

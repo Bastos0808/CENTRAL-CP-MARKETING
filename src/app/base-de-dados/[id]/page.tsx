@@ -35,7 +35,11 @@ import {
   Upload,
   StickyNote,
   DollarSign,
-  Camera
+  Camera,
+  Mic,
+  Package,
+  Moon,
+  Sun,
 } from "lucide-react";
 import {
   Select,
@@ -102,6 +106,13 @@ interface VisualIdentity {
     secondaryFont?: string;
 }
 
+interface PodcastPlan {
+    recordingsPerMonth: number;
+    accumulatedRecordings: number;
+    lastUpdated: string;
+    canRecordAtNight: 'sim' | 'nao';
+}
+
 interface Client {
   id: string;
   name: string;
@@ -112,6 +123,7 @@ interface Client {
   briefing: any; 
   reports?: Report[];
   visualIdentity?: VisualIdentity;
+  podcastPlan?: PodcastPlan;
 }
 
 const statusMap: { 
@@ -144,12 +156,14 @@ const formatDate = (dateString: string) => {
   }
 };
 
-const InfoCard = ({ title, value, icon: Icon }: { title: string; value?: string; icon: LucideIcon }) => (
+const InfoCard = ({ title, value, icon: Icon, children }: { title: string; value?: string; icon: LucideIcon, children?: React.ReactNode }) => (
     <div className="flex items-start gap-4 rounded-lg bg-background p-4 border">
         <Icon className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
         <div>
             <p className="text-sm text-muted-foreground">{title}</p>
-            <p className="text-md font-semibold text-foreground break-words">{value || "Não informado"}</p>
+            {value && <p className="text-md font-semibold text-foreground break-words">{value}</p>}
+            {children && <div className="text-md font-semibold text-foreground">{children}</div>}
+            {!value && !children && <p className="text-md font-semibold text-foreground">Não informado</p>}
         </div>
     </div>
 );
@@ -460,6 +474,28 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                 </CardContent>
             </Card>
         </section>
+
+        {client.podcastPlan && (
+            <section className="mb-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Plano de Podcast</CardTitle>
+                        <CardDescription>Informações sobre o plano de podcast contratado.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <InfoCard title="Gravações por Mês" value={client.podcastPlan.recordingsPerMonth.toString()} icon={Mic} />
+                        <InfoCard title="Saldo de Gravações" value={client.podcastPlan.accumulatedRecordings.toString()} icon={Package} />
+                         <InfoCard title="Pode Gravar à Noite?" icon={client.podcastPlan.canRecordAtNight === 'sim' ? Moon : Sun}>
+                            <div className='flex items-center gap-2'>
+                                <Badge variant={client.podcastPlan.canRecordAtNight === 'sim' ? 'default' : 'secondary'}>
+                                    {client.podcastPlan.canRecordAtNight === 'sim' ? "Sim" : "Não"}
+                                </Badge>
+                            </div>
+                        </InfoCard>
+                    </CardContent>
+                </Card>
+            </section>
+        )}
 
         <section className="mb-8">
             <Card>
