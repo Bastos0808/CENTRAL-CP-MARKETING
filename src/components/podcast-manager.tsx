@@ -1,32 +1,25 @@
 
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, doc, getDoc, updateDoc, setDoc, addDoc, query, where, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, updateDoc, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Loader2, Calendar as CalendarIcon, Users, Package, CalendarPlus, ChevronsUpDown, Mic, Moon, Sun, Trash2 } from "lucide-react";
+import { PlusCircle, Loader2, Mic, Package, Calendar } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Calendar } from './ui/calendar';
-import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
-import { format, startOfMonth, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Badge } from './ui/badge';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
-import { ScrollArea } from './ui/scroll-area';
+import { startOfToday, startOfMonth, isBefore } from 'date-fns';
 
 interface PodcastPlan {
     recordingsPerMonth: number;
     accumulatedRecordings: number;
-    lastUpdated: string; // ISO string for the month this was last updated
-    canRecordAtNight: 'sim' | 'nao';
+    paymentDay: number;
+    lastCreditUpdate: string; // ISO string
 }
 interface Client {
   id: string;
@@ -34,40 +27,25 @@ interface Client {
   podcastPlan?: PodcastPlan;
 }
 
-interface Schedule {
-    id: string;
-    clientId: string;
-    clientName: string;
-    date: string; // YYYY-MM-DD
-    time: string; // HH:MM
-}
-
 export default function PodcastManager() {
     const [clients, setClients] = useState<Client[]>([]);
-    const [podcastClients, setPodcastClients] = useState<Client[]>([]);
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [loadingClients, setLoadingClients] = useState(true);
     const [isPlanDialogOpen, setIsPlanDialogOpen] = useState(false);
     const [recordingsPerMonth, setRecordingsPerMonth] = useState(0);
-    const [canRecordAtNight, setCanRecordAtNight] = useState<'sim' | 'nao'>('nao');
-    const [schedules, setSchedules] = useState<Schedule[]>([]);
-    const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
-    const [isClientScheduleDialogOpen, setIsClientScheduleDialogOpen] = useState(false);
-    const [scheduleDate, setScheduleDate] = useState<Date | undefined>(new Date());
-    const [scheduleTime, setScheduleTime] = useState('');
+    const [paymentDay, setPaymentDay] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
-
 
     const { toast } = useToast();
 
-    // Fetch all clients
+    // Fetch all clients with podcastPlan
     const fetchClients = async () => {
         setLoadingClients(true);
         try {
             const q = query(collection(db, "clients"), where("podcastPlan", "!=", null));
             const querySnapshot = await getDocs(q);
             const clientsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Client));
-            setPodcastClients(clientsData);
+            setClients(clientsData);
         } catch (error) {
             console.error("Error fetching clients:", error);
             toast({ title: "Erro ao carregar clientes", variant: "destructive" });
@@ -75,68 +53,40 @@ export default function PodcastManager() {
             setLoadingClients(false);
         }
     };
-
-    const fetchSchedules = async () => {
-        try {
-            const querySnapshot = await getDocs(collection(db, "schedules"));
-            const schedulesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Schedule));
-            setSchedules(schedulesData);
-        } catch (error) {
-            console.error("Error fetching schedules:", error);
-            toast({ title: "Erro ao carregar agendamentos", variant: "destructive" });
-        }
-    };
-
+    
     useEffect(() => {
         fetchClients();
-        fetchSchedules();
     }, []);
-    
-    const schedulesByDate = useMemo(() => {
-        const postsMap: { [key: string]: Schedule[] } = {};
-        schedules.forEach(schedule => {
-            if (!postsMap[schedule.date]) {
-                postsMap[schedule.date] = [];
-            }
-            postsMap[schedule.date].push(schedule);
-        });
-        return postsMap;
-    }, [schedules]);
-
-    const clientSchedules = useMemo(() => {
-        if (!selectedClient) return [];
-        return schedules
-            .filter(s => s.clientId === selectedClient.id)
-            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    }, [schedules, selectedClient]);
-
 
     // Function to update accumulated recordings based on the current month
     const updateAccumulatedRecordings = async (client: Client): Promise<Client> => {
         if (!client.podcastPlan) return client;
 
-        const lastUpdatedMonth = startOfMonth(new Date(client.podcastPlan.lastUpdated));
-        const currentMonth = startOfMonth(new Date());
+        const { paymentDay, lastCreditUpdate, recordingsPerMonth } = client.podcastPlan;
+        const today = startOfToday();
+        const lastUpdateDate = new Date(lastCreditUpdate);
+        const thisMonthCreditCycleDate = new Date(today.getFullYear(), today.getMonth(), paymentDay);
 
-        if (currentMonth > lastUpdatedMonth) {
-            const monthsDiff = (currentMonth.getFullYear() - lastUpdatedMonth.getFullYear()) * 12 + (currentMonth.getMonth() - lastUpdatedMonth.getMonth());
-            const newAccumulated = client.podcastPlan.accumulatedRecordings + (client.podcastPlan.recordingsPerMonth * monthsDiff);
+        // Check if today is past the payment day for this month, and if the last update was before this month's cycle date
+        if (isBefore(thisMonthCreditCycleDate, today) && isBefore(lastUpdateDate, thisMonthCreditCycleDate)) {
+             const newAccumulated = client.podcastPlan.accumulatedRecordings + recordingsPerMonth;
             
             const updatedClient = {
                 ...client,
                 podcastPlan: {
                     ...client.podcastPlan,
                     accumulatedRecordings: newAccumulated,
-                    lastUpdated: currentMonth.toISOString(),
+                    lastCreditUpdate: today.toISOString(),
                 }
             };
 
             const clientDocRef = doc(db, 'clients', client.id);
             await updateDoc(clientDocRef, { podcastPlan: updatedClient.podcastPlan });
             
-            toast({ title: "Saldo atualizado!", description: `O saldo de ${client.name} foi atualizado para o mês atual.`});
+            toast({ title: "Saldo atualizado!", description: `Créditos de ${client.name} foram renovados para o ciclo atual.`});
             return updatedClient;
         }
+
         return client;
     };
 
@@ -163,26 +113,26 @@ export default function PodcastManager() {
     const handleOpenPlanDialog = () => {
         if(selectedClient?.podcastPlan) {
             setRecordingsPerMonth(selectedClient.podcastPlan.recordingsPerMonth);
-            setCanRecordAtNight(selectedClient.podcastPlan.canRecordAtNight);
+            setPaymentDay(selectedClient.podcastPlan.paymentDay);
         } else {
             setRecordingsPerMonth(0);
-            setCanRecordAtNight('nao');
+            setPaymentDay(1);
         }
         setIsPlanDialogOpen(true);
     };
 
     const handleSavePlan = async () => {
-        if (!selectedClient || recordingsPerMonth <= 0) {
-            toast({ title: "Dados inválidos", description: "Selecione um cliente e um número de gravações válido.", variant: "destructive" });
+        if (!selectedClient || recordingsPerMonth <= 0 || paymentDay < 1 || paymentDay > 31) {
+            toast({ title: "Dados inválidos", description: "Selecione um cliente, gravações e dia de pagamento válidos.", variant: "destructive" });
             return;
         }
         setIsSubmitting(true);
         try {
             const newPlan: PodcastPlan = {
                 recordingsPerMonth: recordingsPerMonth,
-                accumulatedRecordings: selectedClient.podcastPlan?.accumulatedRecordings ?? recordingsPerMonth, // Use existing balance or new value
-                lastUpdated: selectedClient.podcastPlan?.lastUpdated ?? startOfMonth(new Date()).toISOString(),
-                canRecordAtNight: canRecordAtNight,
+                accumulatedRecordings: selectedClient.podcastPlan?.accumulatedRecordings ?? recordingsPerMonth,
+                paymentDay: paymentDay,
+                lastCreditUpdate: selectedClient.podcastPlan?.lastCreditUpdate ?? new Date(1970, 0, 1).toISOString(),
             };
             
             const clientDocRef = doc(db, 'clients', selectedClient.id);
@@ -191,8 +141,7 @@ export default function PodcastManager() {
             const updatedClient = { ...selectedClient, podcastPlan: newPlan };
             setSelectedClient(updatedClient);
             
-            // Update client in the local list
-            setPodcastClients(prev => prev.map(c => c.id === selectedClient.id ? updatedClient : c));
+            setClients(prev => prev.map(c => c.id === selectedClient.id ? updatedClient : c));
 
             toast({ title: "Plano Salvo!", description: `Plano de podcast para ${selectedClient.name} foi atualizado.` });
             setIsPlanDialogOpen(false);
@@ -203,114 +152,31 @@ export default function PodcastManager() {
             setIsSubmitting(false);
         }
     };
-
-    const handleSaveSchedule = async () => {
-        if (!selectedClient || !scheduleDate || !scheduleTime) {
-             toast({ title: "Dados inválidos", description: "Preencha todos os campos para agendar.", variant: "destructive" });
-            return;
-        }
-        if (!selectedClient.podcastPlan || selectedClient.podcastPlan.accumulatedRecordings <= 0) {
-             toast({ title: "Saldo insuficiente", description: `${selectedClient.name} não possui gravações disponíveis.`, variant: "destructive" });
+    
+    const handleRegisterRecording = async () => {
+        if (!selectedClient?.podcastPlan || selectedClient.podcastPlan.accumulatedRecordings <= 0) {
+            toast({ title: "Saldo Insuficiente", description: "O cliente não tem créditos de gravação disponíveis.", variant: "destructive"});
             return;
         }
         setIsSubmitting(true);
-
         try {
-            const newScheduleData: Omit<Schedule, 'id'> = {
-                clientId: selectedClient.id,
-                clientName: selectedClient.name,
-                date: format(scheduleDate, 'yyyy-MM-dd'),
-                time: scheduleTime,
-            };
-
-            const docRef = await addDoc(collection(db, "schedules"), newScheduleData);
-            setSchedules(prev => [...prev, { id: docRef.id, ...newScheduleData }]);
-
             const newAccumulated = selectedClient.podcastPlan.accumulatedRecordings - 1;
+            const updatedPlan = { ...selectedClient.podcastPlan, accumulatedRecordings: newAccumulated };
+
             const clientDocRef = doc(db, 'clients', selectedClient.id);
-            await updateDoc(clientDocRef, { "podcastPlan.accumulatedRecordings": newAccumulated });
-            
-            const updatedClient = {...selectedClient, podcastPlan: {...selectedClient.podcastPlan!, accumulatedRecordings: newAccumulated}};
+            await updateDoc(clientDocRef, { podcastPlan: updatedPlan });
 
+            const updatedClient = { ...selectedClient, podcastPlan: updatedPlan };
             setSelectedClient(updatedClient);
-            setPodcastClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+            setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
 
-
-            toast({ title: "Agendamento Criado!", description: `Uma gravação foi agendada e debitada do saldo de ${selectedClient.name}.` });
-            setIsScheduleDialogOpen(false);
-            setScheduleDate(new Date());
-            setScheduleTime('');
-        } catch(e) {
-             console.error("Error creating schedule:", e);
-             toast({ title: "Erro ao agendar", variant: "destructive" });
+            toast({ title: "Gravação Registrada!", description: `Um crédito foi debitado do saldo de ${selectedClient.name}.`});
+        } catch(error) {
+             console.error("Error registering recording:", error);
+             toast({ title: "Erro ao registrar gravação", variant: "destructive" });
         } finally {
             setIsSubmitting(false);
         }
-    };
-    
-    const handleDeleteSchedule = async (scheduleId: string) => {
-        if(!selectedClient || !selectedClient.podcastPlan) return;
-        
-        try {
-            // Delete schedule from DB
-            await deleteDoc(doc(db, "schedules", scheduleId));
-            setSchedules(prev => prev.filter(s => s.id !== scheduleId));
-
-            // Refund credit to client
-            const newAccumulated = selectedClient.podcastPlan.accumulatedRecordings + 1;
-            const clientDocRef = doc(db, 'clients', selectedClient.id);
-            await updateDoc(clientDocRef, { "podcastPlan.accumulatedRecordings": newAccumulated });
-            
-            const updatedClient = {...selectedClient, podcastPlan: {...selectedClient.podcastPlan!, accumulatedRecordings: newAccumulated}};
-
-            setSelectedClient(updatedClient);
-            setPodcastClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
-
-            toast({ title: "Agendamento Cancelado!", description: "A gravação foi removida e o crédito devolvido."});
-
-        } catch (error) {
-             console.error("Error deleting schedule:", error);
-             toast({ title: "Erro ao cancelar agendamento", variant: "destructive" });
-        }
-
-    }
-    
-    const DayContent = ({ date }: { date: Date }) => {
-        const formattedDate = format(date, 'yyyy-MM-dd');
-        const daySchedules = schedulesByDate[formattedDate];
-        const hasSchedules = daySchedules && daySchedules.length > 0;
-
-        return (
-            <Popover>
-                <PopoverTrigger asChild disabled={!hasSchedules}>
-                    <div className="h-full w-full p-1 text-center cursor-pointer rounded-md hover:bg-accent relative">
-                        {format(date, 'd')}
-                        {hasSchedules && (
-                          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex space-x-1">
-                              {daySchedules.slice(0, 3).map(schedule => (
-                                  <div key={schedule.id} className="h-1.5 w-1.5 rounded-full bg-primary" />
-                              ))}
-                          </div>
-                        )}
-                    </div>
-                </PopoverTrigger>
-                {hasSchedules && (
-                    <PopoverContent className="w-80">
-                        <div className="space-y-4">
-                            <h4 className="font-semibold">Agenda de {format(date, 'dd/MM/yyyy', { locale: ptBR })}</h4>
-                            <div className="space-y-3">
-                                {daySchedules.map(schedule => (
-                                    <div key={schedule.id} className="p-3 border rounded-md bg-muted/30">
-                                        <p className="font-semibold text-sm">{schedule.clientName}</p>
-                                        <p className="text-xs text-muted-foreground">Horário: {schedule.time}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </PopoverContent>
-                )}
-            </Popover>
-        );
     };
 
 
@@ -319,73 +185,56 @@ export default function PodcastManager() {
             <Card>
                 <CardHeader>
                     <CardTitle>Seleção de Cliente</CardTitle>
-                    <CardDescription>Escolha um cliente de podcast para gerenciar.</CardDescription>
+                    <CardDescription>Escolha um cliente de podcast para gerenciar os créditos de gravação.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex gap-4 items-center">
                     {loadingClients ? (<Skeleton className="h-10 flex-1" />) : (
                         <Select onValueChange={handleClientChange} value={selectedClient?.id || ''}>
                             <SelectTrigger className="flex-1"><SelectValue placeholder="Escolha um cliente com plano de podcast..." /></SelectTrigger>
-                            <SelectContent>{podcastClients.map(client => (<SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>))}</SelectContent>
+                            <SelectContent>{clients.map(client => (<SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>))}</SelectContent>
                         </Select>
                     )}
                 </CardContent>
             </Card>
 
             {selectedClient && (
-                <div className='grid md:grid-cols-3 gap-8 items-start'>
-                    <div className='md:col-span-1 space-y-8'>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex justify-between items-center">
-                                    <span>Plano do Cliente</span>
-                                    <Button variant="ghost" size="sm" onClick={handleOpenPlanDialog}>{selectedClient.podcastPlan ? 'Editar' : 'Criar Plano'}</Button>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="flex justify-between items-baseline p-3 rounded-lg bg-muted">
-                                    <Label className="flex items-center gap-2"><Mic/> Gravações / Mês</Label>
-                                    <span className="text-2xl font-bold">{selectedClient.podcastPlan?.recordingsPerMonth || 0}</span>
-                                </div>
-                                 <div className="flex justify-between items-baseline p-3 rounded-lg bg-muted">
-                                    <Label className="flex items-center gap-2"><Package/> Saldo Acumulado</Label>
-                                    <span className="text-2xl font-bold">{selectedClient.podcastPlan?.accumulatedRecordings || 0}</span>
-                                </div>
-                                <div className="flex justify-between items-center p-3 rounded-lg bg-muted">
-                                    <Label className="flex items-center gap-2">Pode Gravar à Noite?</Label>
-                                    <Badge variant={selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? 'default' : 'secondary'}>
-                                        {selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? <Moon className='mr-2 h-3 w-3' /> : <Sun className='mr-2 h-3 w-3' />}
-                                        {selectedClient.podcastPlan?.canRecordAtNight === 'sim' ? 'Sim' : 'Não'}
-                                    </Badge>
-                                </div>
-                                <Button className="w-full" onClick={() => setIsScheduleDialogOpen(true)} disabled={!selectedClient.podcastPlan || selectedClient.podcastPlan.accumulatedRecordings <= 0}>
-                                    <CalendarPlus className="mr-2"/> Agendar Gravação
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    </div>
-                    <div className='md:col-span-2'>
-                        <Card>
-                             <CardHeader>
-                                <CardTitle className="flex justify-between items-center">
-                                    <span>Agenda Geral de Podcasts</span>
-                                     <Button variant="outline" size="sm" onClick={() => setIsClientScheduleDialogOpen(true)} disabled={!clientSchedules.length}>
-                                        <ChevronsUpDown className="mr-2 h-4 w-4"/>Ver Agenda do Cliente
-                                    </Button>
-                                </CardTitle>
-                                <CardDescription>Visão geral de todos os agendamentos para evitar conflitos.</CardDescription>
-                            </CardHeader>
-                             <CardContent>
-                                <Calendar
-                                    mode="single"
-                                    locale={ptBR}
-                                    className="rounded-md border p-0"
-                                    components={{ Day: DayContent }}
-                                    classNames={{ day_cell: "h-12 w-12" }}
-                                />
-                             </CardContent>
-                        </Card>
-                    </div>
-                </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex justify-between items-center">
+                            <span>Plano e Créditos de {selectedClient.name}</span>
+                            <Button variant="outline" size="sm" onClick={handleOpenPlanDialog}>
+                                {selectedClient.podcastPlan ? 'Editar Plano' : 'Criar Plano'}
+                            </Button>
+                        </CardTitle>
+                        <CardDescription>Gerencie o plano mensal e o saldo de gravações do cliente.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="flex justify-between items-baseline p-4 rounded-lg bg-muted border">
+                                <Label className="flex items-center gap-2"><Mic/> Gravações / Mês</Label>
+                                <span className="text-2xl font-bold">{selectedClient.podcastPlan?.recordingsPerMonth || 0}</span>
+                            </div>
+                            <div className="flex justify-between items-baseline p-4 rounded-lg bg-muted border">
+                                <Label className="flex items-center gap-2"><Package/> Saldo de Gravações</Label>
+                                <span className="text-2xl font-bold">{selectedClient.podcastPlan?.accumulatedRecordings || 0}</span>
+                            </div>
+                             <div className="flex justify-between items-baseline p-4 rounded-lg bg-muted border">
+                                <Label className="flex items-center gap-2"><Calendar/> Dia de Renovação</Label>
+                                <span className="text-2xl font-bold">{selectedClient.podcastPlan ? `Todo dia ${selectedClient.podcastPlan.paymentDay}` : 'N/A'}</span>
+                            </div>
+                        </div>
+                        <div className="flex justify-end pt-4">
+                             <Button 
+                                size="lg" 
+                                onClick={handleRegisterRecording} 
+                                disabled={isSubmitting || !selectedClient.podcastPlan || selectedClient.podcastPlan.accumulatedRecordings <= 0}
+                            >
+                                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                                Registrar Gravação Utilizada
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Dialog to set/edit plan */}
@@ -405,16 +254,17 @@ export default function PodcastManager() {
                                 placeholder="Ex: 4"
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label>Pode gravar à noite?</Label>
-                            <RadioGroup 
-                                onValueChange={(value: 'sim' | 'nao') => setCanRecordAtNight(value)} 
-                                value={canRecordAtNight}
-                                className="flex items-center gap-4"
-                            >
-                                <div className='flex items-center space-x-2'><RadioGroupItem value="sim" id="night-yes" /><Label htmlFor="night-yes">Sim</Label></div>
-                                <div className='flex items-center space-x-2'><RadioGroupItem value="nao" id="night-no" /><Label htmlFor="night-no">Não</Label></div>
-                            </RadioGroup>
+                        <div className='space-y-2'>
+                            <Label htmlFor="paymentDay">Dia do Pagamento para Renovação dos Créditos</Label>
+                            <Input 
+                                id="paymentDay" 
+                                type="number"
+                                min="1"
+                                max="31"
+                                value={paymentDay} 
+                                onChange={(e) => setPaymentDay(Number(e.target.value))}
+                                placeholder="Ex: 10"
+                            />
                         </div>
                     </div>
                     <DialogFooter>
@@ -426,93 +276,6 @@ export default function PodcastManager() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-
-             {/* Dialog to create schedule */}
-            <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Agendar Gravação para {selectedClient?.name}</DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4 space-y-4">
-                        <div className="space-y-2">
-                            <Label>Data</Label>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button variant="outline" className="w-full justify-start text-left font-normal">
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {scheduleDate ? format(scheduleDate, "PPP", { locale: ptBR }) : <span>Escolha uma data</span>}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar mode="single" selected={scheduleDate} onSelect={setScheduleDate} initialFocus locale={ptBR} />
-                                </PopoverContent>
-                            </Popover>
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="time">Horário</Label>
-                            <Input id="time" type="time" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button variant="ghost" onClick={() => setIsScheduleDialogOpen(false)}>Cancelar</Button>
-                        <Button onClick={handleSaveSchedule} disabled={isSubmitting}>
-                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Confirmar Agendamento
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-             {/* Dialog to show client schedule */}
-            <Dialog open={isClientScheduleDialogOpen} onOpenChange={setIsClientScheduleDialogOpen}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Agenda de {selectedClient?.name}</DialogTitle>
-                        <CardDescription>Lista de gravações agendadas para este cliente.</CardDescription>
-                    </DialogHeader>
-                    <ScrollArea className="max-h-96 pr-4">
-                        <div className="py-4 space-y-3">
-                            {clientSchedules.length > 0 ? clientSchedules.map(schedule => (
-                                <div key={schedule.id} className="flex items-center justify-between p-3 rounded-lg bg-muted">
-                                    <div>
-                                        <p className='font-medium'>{format(parseISO(schedule.date), 'PPP', { locale: ptBR })}</p>
-                                        <p className='text-sm text-muted-foreground'>Horário: {schedule.time}</p>
-                                    </div>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="text-destructive">
-                                                <Trash2 className="h-4 w-4"/>
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Cancelar Agendamento?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Esta ação não pode ser desfeita. O agendamento será removido e o crédito de gravação será devolvido ao saldo do cliente.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Voltar</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleDeleteSchedule(schedule.id)} className="bg-destructive hover:bg-destructive/90">Confirmar</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </div>
-                            )) : (
-                                <p className='text-center text-muted-foreground py-8'>Nenhum agendamento encontrado.</p>
-                            )}
-                        </div>
-                    </ScrollArea>
-                    <DialogFooter>
-                        <DialogClose asChild>
-                             <Button type="button" variant="outline">Fechar</Button>
-                        </DialogClose>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
         </div>
     );
 }
-
-    

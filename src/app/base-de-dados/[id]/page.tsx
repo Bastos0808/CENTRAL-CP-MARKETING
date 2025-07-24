@@ -38,8 +38,6 @@ import {
   Camera,
   Mic,
   Package,
-  Moon,
-  Sun,
 } from "lucide-react";
 import {
   Select,
@@ -109,8 +107,8 @@ interface VisualIdentity {
 interface PodcastPlan {
     recordingsPerMonth: number;
     accumulatedRecordings: number;
-    lastUpdated: string;
-    canRecordAtNight: 'sim' | 'nao';
+    paymentDay: number;
+    lastCreditUpdate: string; // ISO string
 }
 
 interface Client {
@@ -489,13 +487,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                     <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <InfoCard title="Gravações por Mês" value={client.podcastPlan.recordingsPerMonth.toString()} icon={Mic} />
                         <InfoCard title="Saldo de Gravações" value={client.podcastPlan.accumulatedRecordings.toString()} icon={Package} />
-                         <InfoCard title="Pode Gravar à Noite?" icon={client.podcastPlan.canRecordAtNight === 'sim' ? Moon : Sun}>
-                            <div className='flex items-center gap-2'>
-                                <Badge variant={client.podcastPlan.canRecordAtNight === 'sim' ? 'default' : 'secondary'}>
-                                    {client.podcastPlan.canRecordAtNight === 'sim' ? "Sim" : "Não"}
-                                </Badge>
-                            </div>
-                        </InfoCard>
+                        <InfoCard title="Dia de Renovação" value={`Todo dia ${client.podcastPlan.paymentDay}`} icon={Calendar} />
                     </CardContent>
                 </Card>
             </section>
@@ -874,5 +866,3 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
-
-    

@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { db } from '@/lib/firebase';
 import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { format, startOfMonth } from 'date-fns';
+import { format } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
@@ -28,13 +28,12 @@ import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, Loader2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface PodcastPlan {
     recordingsPerMonth: number;
     accumulatedRecordings: number;
-    lastUpdated: string; // ISO string for the month this was last updated
-    canRecordAtNight: 'sim' | 'nao';
+    paymentDay: number;
+    lastCreditUpdate: string; // ISO string
 }
 
 interface Client {
@@ -52,16 +51,17 @@ const preRegisterSchema = z.object({
     plan: z.string().min(1, "O plano é obrigatório."),
     planDetails: z.string().optional(),
     hasPodcast: z.boolean().default(false),
-    recordingsPerMonth: z.number().optional(),
-    canRecordAtNight: z.enum(['sim', 'nao']).optional(),
+    recordingsPerMonth: z.coerce.number().optional(),
+    paymentDay: z.coerce.number().optional(),
 }).refine(data => {
     if (data.hasPodcast) {
-        return data.recordingsPerMonth !== undefined && data.recordingsPerMonth > 0 && data.canRecordAtNight !== undefined;
+        return (data.recordingsPerMonth !== undefined && data.recordingsPerMonth > 0) &&
+               (data.paymentDay !== undefined && data.paymentDay >= 1 && data.paymentDay <= 31);
     }
     return true;
 }, {
-    message: "Se o cliente tem podcast, a quantidade de gravações e a permissão para gravar à noite são obrigatórias.",
-    path: ['recordingsPerMonth'] // You can choose which field to attach the error to
+    message: "Se o cliente tem podcast, as gravações por mês e o dia do pagamento são obrigatórios.",
+    path: ['recordingsPerMonth']
 });
 
 
@@ -134,7 +134,7 @@ export default function ClientDatabasePage() {
 
   const onPreRegisterSubmit = async (data: PreRegisterFormValues) => {
       const newClientId = crypto.randomUUID();
-      const newClient: Client = {
+      const newClient: any = {
           id: newClientId,
           name: data.name,
           plan: data.plan,
@@ -167,12 +167,12 @@ export default function ClientDatabasePage() {
           contentPlanner: [],
       };
 
-      if (data.hasPodcast && data.recordingsPerMonth && data.canRecordAtNight) {
+      if (data.hasPodcast && data.recordingsPerMonth && data.paymentDay) {
           newClient.podcastPlan = {
               recordingsPerMonth: data.recordingsPerMonth,
               accumulatedRecordings: data.recordingsPerMonth,
-              lastUpdated: startOfMonth(new Date()).toISOString(),
-              canRecordAtNight: data.canRecordAtNight,
+              paymentDay: data.paymentDay,
+              lastCreditUpdate: new Date(1970, 0, 1).toISOString(), // Set to epoch to force first update
           }
       }
 
@@ -254,34 +254,30 @@ export default function ClientDatabasePage() {
                             />
                             {hasPodcast && (
                                 <div className='space-y-4 pt-2 border-t'>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="recordingsPerMonth">Gravações por Mês</Label>
-                                        <Input 
-                                          id="recordingsPerMonth" 
-                                          type="number" 
-                                          {...register("recordingsPerMonth", { valueAsNumber: true })} 
-                                          placeholder="Ex: 4"
-                                        />
-                                        {errors.recordingsPerMonth && <p className="text-sm text-destructive">{errors.recordingsPerMonth.message}</p>}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="recordingsPerMonth">Gravações por Mês</Label>
+                                            <Input 
+                                            id="recordingsPerMonth" 
+                                            type="number" 
+                                            {...register("recordingsPerMonth")} 
+                                            placeholder="Ex: 4"
+                                            />
+                                            {errors.recordingsPerMonth && <p className="text-sm text-destructive">{errors.recordingsPerMonth.message}</p>}
+                                        </div>
+                                         <div className="space-y-2">
+                                            <Label htmlFor="paymentDay">Dia do Pagamento</Label>
+                                            <Input 
+                                            id="paymentDay" 
+                                            type="number"
+                                            min="1" max="31"
+                                            {...register("paymentDay")} 
+                                            placeholder="Ex: 10"
+                                            />
+                                            {errors.paymentDay && <p className="text-sm text-destructive">{errors.paymentDay.message}</p>}
+                                        </div>
                                     </div>
-                                    <Controller
-                                        control={control}
-                                        name="canRecordAtNight"
-                                        render={({ field }) => (
-                                            <div className="space-y-2">
-                                                <Label>Pode gravar à noite?</Label>
-                                                <RadioGroup 
-                                                  onValueChange={field.onChange} 
-                                                  defaultValue={field.value}
-                                                  className="flex items-center gap-4"
-                                                >
-                                                    <div className='flex items-center space-x-2'><RadioGroupItem value="sim" id="night-yes" /><Label htmlFor="night-yes">Sim</Label></div>
-                                                    <div className='flex items-center space-x-2'><RadioGroupItem value="nao" id="night-no" /><Label htmlFor="night-no">Não</Label></div>
-                                                </RadioGroup>
-                                                {errors.canRecordAtNight && <p className="text-sm text-destructive">{errors.canRecordAtNight.message}</p>}
-                                            </div>
-                                        )}
-                                    />
+                                    {errors.root && <p className="text-sm text-destructive">{errors.root.message}</p>}
                                 </div>
                             )}
                         </div>
