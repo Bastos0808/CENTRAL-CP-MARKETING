@@ -102,6 +102,7 @@ const formSchema = z.object({
     formatoConteudo: z.string().optional(),
     temasObrigatorios: z.string().optional(),
     disponibilidadeGravacao: z.string().optional(),
+    responsavelGravacao: z.string().optional(),
     principaisGatilhos: z.string().optional(),
   }),
   equipeTrafegoPago: z.object({
@@ -167,6 +168,7 @@ export default function BriefingForm() {
         formatoConteudo: '',
         temasObrigatorios: '',
         disponibilidadeGravacao: '',
+        responsavelGravacao: '',
         principaisGatilhos: '',
       },
       equipeTrafegoPago: {
@@ -514,6 +516,7 @@ export default function BriefingForm() {
                    <FormField control={form.control} name="equipeMidiaSocial.formatoConteudo" render={({ field }) => (<FormItem><FormLabel>Qual formato de conteúdo o cliente mais gostaria de trabalhar? (Reels, Carrossel, Story, Live, etc)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="equipeMidiaSocial.temasObrigatorios" render={({ field }) => (<FormItem><FormLabel>Há temas que o cliente considera obrigatórios ou que não quer abordar?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="equipeMidiaSocial.disponibilidadeGravacao" render={({ field }) => (<FormItem><FormLabel>O cliente tem disponibilidade de gravar conteúdos? Quantos por semana?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                   <FormField control={form.control} name="equipeMidiaSocial.responsavelGravacao" render={({ field }) => (<FormItem><FormLabel>Quem será o responsável pelas gravações/captações de imagem? (Proprietário, funcionário específico, etc.)</FormLabel><FormControl><Textarea placeholder="Descreva quem fará as gravações e se há alguma limitação." {...field} /></FormControl><FormMessage /></FormItem>)} />
                    <FormField control={form.control} name="equipeMidiaSocial.principaisGatilhos" render={({ field }) => (<FormItem><FormLabel>Quais são os principais gatilhos ou diferenças que o social media deve explorar?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </AccordionContent>
               </AccordionItem>

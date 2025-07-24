@@ -34,6 +34,8 @@ import {
   ImageIcon,
   Upload,
   StickyNote,
+  DollarSign,
+  Camera
 } from "lucide-react";
 import {
   Select,
@@ -640,6 +642,26 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                            <InfoCard title="Metas Específicas" value={client.briefing.metasObjetivos?.metasEspecificas} icon={CheckCircle} />
                            <InfoCard title="Sazonalidade / Campanhas Importantes" value={client.briefing.metasObjetivos?.sazonalidade} icon={Calendar} />
                            <InfoCard title="Verba para Tráfego Pago" value={client.briefing.metasObjetivos?.verbaTrafego} icon={Users} />
+                        </AccordionContent>
+                    </AccordionItem>
+                     <AccordionItem value="item-5">
+                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Users className="h-5 w-5" />Equipe de Mídia Social</h3></AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-4">
+                           <InfoCard title="Formato de Conteúdo Preferido" value={client.briefing.equipeMidiaSocial?.formatoConteudo} icon={Info} />
+                           <InfoCard title="Temas Obrigatórios ou a Evitar" value={client.briefing.equipeMidiaSocial?.temasObrigatorios} icon={Info} />
+                           <InfoCard title="Disponibilidade para Gravação" value={client.briefing.equipeMidiaSocial?.disponibilidadeGravacao} icon={Camera} />
+                           <InfoCard title="Responsável pela Gravação" value={client.briefing.equipeMidiaSocial?.responsavelGravacao} icon={User} />
+                           <InfoCard title="Principais Gatilhos a Explorar" value={client.briefing.equipeMidiaSocial?.principaisGatilhos} icon={Target} />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="item-6">
+                        <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><DollarSign className="h-5 w-5" />Equipe de Tráfego Pago</h3></AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-4">
+                           <InfoCard title="Principal Produto/Serviço a Anunciar" value={client.briefing.equipeTrafegoPago?.principalProdutoAnunciar} icon={Info} />
+                           <InfoCard title="Objetivo das Campanhas" value={client.briefing.equipeTrafegoPago?.objetivoCampanhas} icon={Target} />
+                           <InfoCard title="Promoção ou Condição Especial" value={client.briefing.equipeTrafegoPago?.promocaoCondicao} icon={Info} />
+                           <InfoCard title="Local de Veiculação" value={client.briefing.equipeTrafegoPago?.localVeiculacao} icon={Info} />
+                           <InfoCard title="Limite de Verba / Ajustes" value={client.briefing.equipeTrafegoPago?.limiteVerba} icon={Info} />
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
