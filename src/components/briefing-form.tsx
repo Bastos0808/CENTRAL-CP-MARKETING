@@ -225,9 +225,37 @@ export default function BriefingForm() {
                   ...existingBriefing,
                   informacoesOperacionais: {
                       ...defaultFormValues.informacoesOperacionais,
-                      ...existingBriefing.informacoesOperacionais,
+                      ...(existingBriefing.informacoesOperacionais || {}),
                       nomeNegocio: clientData.name || '',
                       planoContratado: clientData.plan || '',
+                  },
+                   negociosPosicionamento: {
+                      ...defaultFormValues.negociosPosicionamento,
+                      ...(existingBriefing.negociosPosicionamento || {}),
+                  },
+                  publicoPersona: {
+                      ...defaultFormValues.publicoPersona,
+                      ...(existingBriefing.publicoPersona || {}),
+                  },
+                  concorrenciaMercado: {
+                      ...defaultFormValues.concorrenciaMercado,
+                      ...(existingBriefing.concorrenciaMercado || {}),
+                  },
+                  comunicacaoExpectativas: {
+                      ...defaultFormValues.comunicacaoExpectativas,
+                      ...(existingBriefing.comunicacaoExpectativas || {}),
+                  },
+                  metasObjetivos: {
+                      ...defaultFormValues.metasObjetivos,
+                      ...(existingBriefing.metasObjetivos || {}),
+                  },
+                   equipeMidiaSocial: {
+                      ...defaultFormValues.equipeMidiaSocial,
+                      ...(existingBriefing.equipeMidiaSocial || {}),
+                  },
+                  equipeTrafegoPago: {
+                        ...defaultFormValues.equipeTrafegoPago,
+                        ...(existingBriefing.equipeTrafegoPago || {}),
                   }
               };
               form.reset(initialData);

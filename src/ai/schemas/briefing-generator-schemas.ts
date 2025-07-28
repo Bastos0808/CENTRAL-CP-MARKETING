@@ -16,7 +16,7 @@ const formSchema = z.object({
     possuiIdentidadeVisual: z.enum(['sim', 'nao']).optional(),
     possuiBancoImagens: z.enum(['sim', 'nao']).optional(),
     linksRelevantes: z.string().optional(),
-  }),
+  }).optional(),
   negociosPosicionamento: z.object({
     descricao: z.string().optional(),
     diferencial: z.string().optional(),
@@ -24,7 +24,7 @@ const formSchema = z.object({
     ticketMedio: z.string().optional(),
     maiorDesafio: z.string().optional(),
     erroMercado: z.string().optional(),
-  }),
+  }).optional(),
   publicoPersona: z.object({
     publicoAlvo: z.string().optional(),
     persona: z.string().optional(),
@@ -32,7 +32,7 @@ const formSchema = z.object({
     duvidasObjecoes: z.string().optional(),
     impedimentoCompra: z.string().optional(),
     canaisUtilizados: z.string().optional(),
-  }),
+  }).optional(),
   concorrenciaMercado: z.object({
     principaisConcorrentes: z.array(z.object({
         name: z.string(),
@@ -42,33 +42,33 @@ const formSchema = z.object({
         nome: z.string(),
         perfil: z.string(),
     })).optional(),
-  }),
+  }).optional(),
   comunicacaoExpectativas: z.object({
     investimentoAnterior: z.string().optional(),
     conteudosPreferidos: z.string().optional(),
     naoFazer: z.string().optional(),
     tomDeVoz: z.string().optional(),
-  }),
+  }).optional(),
   metasObjetivos: z.object({
     objetivoPrincipal: z.string().optional(),
     metasEspecificas: z.string().optional(),
     sazonalidade: z.string().optional(),
     verbaTrafego: z.string().optional(),
-  }),
+  }).optional(),
   equipeMidiaSocial: z.object({
     formatoConteudo: z.string().optional(),
     temasObrigatorios: z.string().optional(),
     disponibilidadeGravacao: z.string().optional(),
     responsavelGravacao: z.string().optional(),
     principaisGatilhos: z.string().optional(),
-  }),
+  }).optional(),
   equipeTrafegoPago: z.object({
     principalProdutoAnunciar: z.string().optional(),
     objetivoCampanhas: z.string().optional(),
     promocaoCondicao: z.string().optional(),
     localVeiculacao: z.string().optional(),
     limiteVerba: z.string().optional(),
-  }),
+  }).optional(),
 }).describe('A estrutura completa do formulário de briefing.');
 
 
