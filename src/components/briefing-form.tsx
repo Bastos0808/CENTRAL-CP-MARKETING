@@ -124,6 +124,64 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+const defaultFormValues: FormValues = {
+  informacoesOperacionais: {
+    nomeNegocio: "",
+    planoContratado: "",
+    observacoesPlano: "",
+    redesSociaisAcesso: [],
+    possuiIdentidadeVisual: "nao",
+    possuiBancoImagens: "nao",
+    linksRelevantes: "",
+  },
+  negociosPosicionamento: {
+    descricao: "",
+    diferencial: "",
+    missaoValores: "",
+    ticketMedio: "",
+    maiorDesafio: "",
+    erroMercado: "",
+  },
+  publicoPersona: {
+    publicoAlvo: "",
+    persona: "",
+    dores: "",
+    duvidasObjecoes: "",
+    impedimentoCompra: "",
+    canaisUtilizados: "",
+  },
+  concorrenciaMercado: {
+    principaisConcorrentes: [],
+    inspiracoesPerfis: [],
+  },
+  comunicacaoExpectativas: {
+    investimentoAnterior: "",
+    conteudosPreferidos: "",
+    naoFazer: "",
+    tomDeVoz: "",
+  },
+  metasObjetivos: {
+    objetivoPrincipal: "",
+    metasEspecificas: "",
+    sazonalidade: "",
+    verbaTrafego: "",
+  },
+  equipeMidiaSocial: {
+    formatoConteudo: "",
+    temasObrigatorios: "",
+    disponibilidadeGravacao: "",
+    responsavelGravacao: "",
+    principaisGatilhos: "",
+  },
+  equipeTrafegoPago: {
+    principalProdutoAnunciar: "",
+    objetivoCampanhas: "",
+    promocaoCondicao: "",
+    localVeiculacao: "",
+    limiteVerba: "",
+  },
+};
+
 
 export default function BriefingForm() {
   const { toast } = useToast();
@@ -135,7 +193,7 @@ export default function BriefingForm() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {}, // Will be populated when a client is selected
+    defaultValues: defaultFormValues,
   });
   
   useEffect(() => {
@@ -161,16 +219,21 @@ export default function BriefingForm() {
           if (clientSnap.exists()) {
               const clientData = clientSnap.data();
               // Populate form with existing briefing data or defaults
-              form.reset(clientData.briefing || {
-                  informacoesOperacionais: { 
-                      nomeNegocio: clientData.name, 
-                      planoContratado: clientData.plan, 
-                      observacoesPlano: clientData.briefing?.informacoesOperacionais?.observacoesPlano || '' 
-                    },
-              });
+              const existingBriefing = clientData.briefing || {};
+              const initialData = {
+                  ...defaultFormValues,
+                  ...existingBriefing,
+                  informacoesOperacionais: {
+                      ...defaultFormValues.informacoesOperacionais,
+                      ...existingBriefing.informacoesOperacionais,
+                      nomeNegocio: clientData.name || '',
+                      planoContratado: clientData.plan || '',
+                  }
+              };
+              form.reset(initialData);
           }
       } else {
-          form.reset({});
+          form.reset(defaultFormValues);
       }
   };
 
@@ -183,7 +246,13 @@ export default function BriefingForm() {
       setIsGenerating(true);
       try {
           const result = await generateBriefingFromTranscript({ transcript });
-          form.reset(result.briefing);
+          const generatedBriefing = result.briefing || {};
+          // Ensure all fields have a value to prevent uncontrolled -> controlled error
+          const completeBriefing = {
+              ...defaultFormValues,
+              ...generatedBriefing,
+          };
+          form.reset(completeBriefing);
           toast({ title: "Briefing Preenchido!", description: "A IA analisou a transcrição e preencheu o formulário." });
       } catch (error) {
           console.error("Error generating briefing from transcript:", error);
@@ -365,7 +434,7 @@ export default function BriefingForm() {
                     <FormField control={form.control} name="informacoesOperacionais.possuiIdentidadeVisual" render={({ field }) => (
                       <FormItem className="space-y-3"><FormLabel>Cliente possui identidade visual?</FormLabel>
                         <FormControl>
-                          <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex items-center gap-6">
+                          <RadioGroup onValueChange={field.onChange} value={field.value} className="flex items-center gap-6">
                             <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="sim" /></FormControl><FormLabel className="font-normal">Sim</FormLabel></FormItem>
                             <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="nao" /></FormControl><FormLabel className="font-normal">Não</FormLabel></FormItem>
                           </RadioGroup>
@@ -377,7 +446,7 @@ export default function BriefingForm() {
                     <FormField control={form.control} name="informacoesOperacionais.possuiBancoImagens" render={({ field }) => (
                       <FormItem className="space-y-3"><FormLabel>O cliente possui banco de imagens próprio?</FormLabel>
                         <FormControl>
-                          <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex items-center gap-6">
+                          <RadioGroup onValueChange={field.onChange} value={field.value} className="flex items-center gap-6">
                             <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="sim" /></FormControl><FormLabel className="font-normal">Sim</FormLabel></FormItem>
                             <FormItem className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value="nao" /></FormControl><FormLabel className="font-normal">Não</FormLabel></FormItem>
                           </RadioGroup>
