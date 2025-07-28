@@ -12,6 +12,7 @@ import {
   ClientChatOutput,
   ClientChatOutputSchema,
 } from '@/ai/schemas/client-chat-schemas';
+import { z } from 'zod';
 
 export async function chatWithClientData(
   input: ClientChatInput
@@ -31,23 +32,27 @@ Você receberá os dados completos do cliente (briefing e relatórios) e o hist�
 5.  **Responda em Markdown:** Formate suas respostas usando Markdown para facilitar a leitura (listas, negrito, etc.).
 
 **Dados do Cliente:**
-- **Nome:** {{client.name}}
-- **Briefing:**
-  - **Descrição do Negócio:** {{client.briefing.negociosPosicionamento.descricao}}
-  - **Diferencial:** {{client.briefing.negociosPosicionamento.diferencial}}
-  - **Maior Desafio:** {{client.briefing.negociosPosicionamento.maiorDesafio}}
-  - **Público Alvo:** {{client.briefing.publicoPersona.publicoAlvo}}
-  - **Persona:** {{client.briefing.publicoPersona.persona}}
-  - **Dores da Persona:** {{client.briefing.publicoPersona.dores}}
-  - **Objetivo Principal:** {{client.briefing.metasObjetivos.objetivoPrincipal}}
-- **Histórico de Relatórios:**
-  {{#if client.reports}}
-    {{#each client.reports}}
-    - **Relatório de {{createdAt}}:** {{analysis}}
-    {{/each}}
-  {{else}}
-    Nenhum relatório anterior.
-  {{/if}}
+---
+**Nome:** {{client.name}}
+
+**Briefing:**
+- **Descrição do Negócio:** {{client.briefing.negociosPosicionamento.descricao}}
+- **Diferencial:** {{client.briefing.negociosPosicionamento.diferencial}}
+- **Maior Desafio:** {{client.briefing.negociosPosicionamento.maiorDesafio}}
+- **Público Alvo:** {{client.briefing.publicoPersona.publicoAlvo}}
+- **Persona:** {{client.briefing.publicoPersona.persona}}
+- **Dores da Persona:** {{client.briefing.publicoPersona.dores}}
+- **Objetivo Principal:** {{client.briefing.metasObjetivos.objetivoPrincipal}}
+
+**Histórico de Relatórios:**
+{{#if client.reports}}
+  {{#each client.reports}}
+  - **Relatório de {{createdAt}}:** {{analysis}}
+  {{/each}}
+{{else}}
+  Nenhum relatório anterior.
+{{/if}}
+---
 `;
 
 const clientChatFlow = ai.defineFlow(
@@ -58,27 +63,44 @@ const clientChatFlow = ai.defineFlow(
   },
   async (input) => {
     const { history, client } = input;
-    const userMessage = history.pop();
-
-    if (!userMessage || userMessage.role !== 'user') {
-      throw new Error('A última mensagem do histórico deve ser do usuário.');
-    }
     
-    const finalSystemPrompt = systemPrompt.replace('{{client.name}}', client.name)
-        .replace('{{client.briefing.negociosPosicionamento.descricao}}', client.briefing?.negociosPosicionamento?.descricao || 'N/A')
-        .replace('{{client.briefing.negociosPosicionamento.diferencial}}', client.briefing?.negociosPosicionamento?.diferencial || 'N/A')
-        .replace('{{client.briefing.negociosPosicionamento.maiorDesafio}}', client.briefing?.negociosPosicionamento?.maiorDesafio || 'N/A')
-        .replace('{{client.briefing.publicoPersona.publicoAlvo}}', client.briefing?.publicoPersona?.publicoAlvo || 'N/A')
-        .replace('{{client.briefing.publicoPersona.persona}}', client.briefing?.publicoPersona?.persona || 'N/A')
-        .replace('{{client.briefing.publicoPersona.dores}}', client.briefing?.publicoPersona?.dores || 'N/A')
-        .replace('{{client.briefing.metasObjetivos.objetivoPrincipal}}', client.briefing?.metasObjetivos?.objetivoPrincipal || 'N/A')
-        .replace('{{#if client.reports}}...{{/if}}', client.reports ? client.reports.map(r => `- Relatório de ${r.createdAt}: ${r.analysis}`).join('\n') : 'Nenhum relatório anterior.');
+    // Extract the last user message
+    const userMessage = history[history.length - 1];
+    if (!userMessage || userMessage.role !== 'user') {
+        throw new Error('A última mensagem do histórico deve ser do usuário.');
+    }
 
+    // The rest of the history
+    const conversationHistory = history.slice(0, -1);
 
     const llmResponse = await ai.generate({
-      prompt: userMessage.content,
-      system: finalSystemPrompt,
-      history,
+      system: systemPrompt,
+      prompt: {
+        ...userMessage,
+        // Provide the client data to the template
+        context: {
+            client: {
+                ...client,
+                briefing: {
+                    negociosPosicionamento: {
+                        descricao: client.briefing?.negociosPosicionamento?.descricao || 'N/A',
+                        diferencial: client.briefing?.negociosPosicionamento?.diferencial || 'N/A',
+                        maiorDesafio: client.briefing?.negociosPosicionamento?.maiorDesafio || 'N/A',
+                    },
+                    publicoPersona: {
+                        publicoAlvo: client.briefing?.publicoPersona?.publicoAlvo || 'N/A',
+                        persona: client.briefing?.publicoPersona?.persona || 'N/A',
+                        dores: client.briefing?.publicoPersona?.dores || 'N/A',
+                    },
+                    metasObjetivos: {
+                        objetivoPrincipal: client.briefing?.metasObjetivos?.objetivoPrincipal || 'N/A',
+                    },
+                },
+                reports: client.reports || [],
+            }
+        }
+      },
+      history: conversationHistory,
     });
 
     return { response: llmResponse.text };

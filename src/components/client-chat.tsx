@@ -62,14 +62,16 @@ export default function ClientChat({ client }: { client: Client }) {
     if (!input.trim() || isLoading) return;
 
     const userMessage: Message = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
+    const newMessages: Message[] = [...messages, userMessage];
+    
+    setMessages(newMessages);
     setInput('');
     setIsLoading(true);
 
     try {
       const result = await chatWithClientData({
         client,
-        history: [...messages, userMessage],
+        history: newMessages,
       });
       const aiMessage: Message = { role: 'model', content: result.response };
       setMessages((prev) => [...prev, aiMessage]);
