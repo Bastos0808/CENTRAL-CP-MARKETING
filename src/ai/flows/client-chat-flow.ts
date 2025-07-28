@@ -58,20 +58,27 @@ const clientChatFlow = ai.defineFlow(
   },
   async (input) => {
     const { history, client } = input;
+    const userMessage = history.pop();
+
+    if (!userMessage || userMessage.role !== 'user') {
+      throw new Error('A última mensagem do histórico deve ser do usuário.');
+    }
+    
+    const finalSystemPrompt = systemPrompt.replace('{{client.name}}', client.name)
+        .replace('{{client.briefing.negociosPosicionamento.descricao}}', client.briefing?.negociosPosicionamento?.descricao || 'N/A')
+        .replace('{{client.briefing.negociosPosicionamento.diferencial}}', client.briefing?.negociosPosicionamento?.diferencial || 'N/A')
+        .replace('{{client.briefing.negociosPosicionamento.maiorDesafio}}', client.briefing?.negociosPosicionamento?.maiorDesafio || 'N/A')
+        .replace('{{client.briefing.publicoPersona.publicoAlvo}}', client.briefing?.publicoPersona?.publicoAlvo || 'N/A')
+        .replace('{{client.briefing.publicoPersona.persona}}', client.briefing?.publicoPersona?.persona || 'N/A')
+        .replace('{{client.briefing.publicoPersona.dores}}', client.briefing?.publicoPersona?.dores || 'N/A')
+        .replace('{{client.briefing.metasObjetivos.objetivoPrincipal}}', client.briefing?.metasObjetivos?.objetivoPrincipal || 'N/A')
+        .replace('{{#if client.reports}}...{{/if}}', client.reports ? client.reports.map(r => `- Relatório de ${r.createdAt}: ${r.analysis}`).join('\n') : 'Nenhum relatório anterior.');
+
 
     const llmResponse = await ai.generate({
-      prompt: {
-        system: systemPrompt.replace('{{client.name}}', client.name)
-                            .replace('{{client.briefing.negociosPosicionamento.descricao}}', client.briefing.negociosPosicionamento.descricao || 'N/A')
-                            .replace('{{client.briefing.negociosPosicionamento.diferencial}}', client.briefing.negociosPosicionamento.diferencial || 'N/A')
-                            .replace('{{client.briefing.negociosPosicionamento.maiorDesafio}}', client.briefing.negociosPosicionamento.maiorDesafio || 'N/A')
-                            .replace('{{client.briefing.publicoPersona.publicoAlvo}}', client.briefing.publicoPersona.publicoAlvo || 'N/A')
-                            .replace('{{client.briefing.publicoPersona.persona}}', client.briefing.publicoPersona.persona || 'N/A')
-                            .replace('{{client.briefing.publicoPersona.dores}}', client.briefing.publicoPersona.dores || 'N/A')
-                            .replace('{{client.briefing.metasObjetivos.objetivoPrincipal}}', client.briefing.metasObjetivos.objetivoPrincipal || 'N/A')
-                            .replace('{{#if client.reports}}...{{/if}}', client.reports ? client.reports.map(r => `- Relatório de ${r.createdAt}: ${r.analysis}`).join('\n') : 'Nenhum relatório anterior.'),
-        history,
-      },
+      prompt: userMessage.content,
+      system: finalSystemPrompt,
+      history,
     });
 
     return { response: llmResponse.text };
