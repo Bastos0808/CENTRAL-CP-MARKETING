@@ -38,6 +38,7 @@ import {
   Camera,
   Mic,
   Package,
+  Wand2,
 } from "lucide-react";
 import {
   Select,
@@ -65,6 +66,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { BackButton } from '@/components/ui/back-button';
+import { generateSummary } from '@/ai/flows/summary-generator-flow';
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
 const markdownToHtml = (markdown: string) => {
@@ -205,6 +207,10 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const [isSavingVisual, setIsSavingVisual] = useState(false);
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
+  
+  // AI Summary State
+  const [summary, setSummary] = useState<string | null>(null);
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
 
 
   useEffect(() => {
@@ -276,6 +282,26 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   
   const handleRemoveLogo = (fieldName: 'logoUrl' | 'secondaryLogoUrl') => {
     setVisualIdentity(prevState => ({...prevState, [fieldName]: undefined}));
+  };
+
+  const handleGenerateSummary = async () => {
+      if (!client) return;
+      setIsGeneratingSummary(true);
+      setSummary(null);
+      try {
+          const clientData = JSON.stringify(client);
+          const result = await generateSummary({ clientData });
+          setSummary(result.summary);
+      } catch (error) {
+          console.error("Error generating summary:", error);
+          toast({
+              title: "Erro ao Gerar Análise",
+              description: "A IA não conseguiu gerar a análise. Tente novamente.",
+              variant: "destructive",
+          });
+      } finally {
+          setIsGeneratingSummary(false);
+      }
   };
 
 
@@ -430,8 +456,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const StatusInfo = statusMap[client.status];
   const sortedReports = client.reports?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   
-  // A client is considered "podcast-only" if they have a podcast plan but no detailed briefing info.
-  // We check for a key field in the briefing that would only be filled in a full briefing.
   const isPodcastOnly = !!client.podcastPlan && !client.briefing.negociosPosicionamento?.descricao;
 
 
@@ -482,6 +506,38 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                 </CardContent>
             </Card>
         </section>
+        
+        {!isPodcastOnly && (
+            <section className="mb-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Análise Rápida com IA</CardTitle>
+                        <CardDescription>Um resumo estratégico gerado com base nos dados completos do cliente.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {isGeneratingSummary ? (
+                            <div className="space-y-3">
+                                <Skeleton className="h-5 w-3/4" />
+                                <Skeleton className="h-5 w-full" />
+                                <Skeleton className="h-5 w-5/6" />
+                            </div>
+                        ) : summary ? (
+                            <div
+                                className="prose prose-sm dark:prose-invert max-w-none"
+                                dangerouslySetInnerHTML={{ __html: markdownToHtml(summary) }}
+                            />
+                        ) : (
+                            <div className="text-center py-4">
+                                <Button onClick={handleGenerateSummary}>
+                                    <Wand2 className="mr-2 h-4 w-4" />
+                                    Gerar Análise Rápida
+                                </Button>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </section>
+        )}
 
         {client.podcastPlan && (
             <section className="mb-8">
