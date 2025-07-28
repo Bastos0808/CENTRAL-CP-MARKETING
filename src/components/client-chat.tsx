@@ -90,7 +90,7 @@ export default function ClientChat({ client }: { client: Client }) {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-[calc(100svh-5rem)]">
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-6">
           {messages.map((message, index) => (
