@@ -3,3 +3,4 @@ import './flows/report-generator-flow';
 import './flows/idea-generator-flow';
 import './flows/summary-generator-flow';
 import './flows/briefing-generator-flow';
+import './flows/client-chat-flow';

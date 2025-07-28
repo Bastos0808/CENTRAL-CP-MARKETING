@@ -39,6 +39,7 @@ import {
   Mic,
   Package,
   Wand2,
+  MessageCircle,
 } from "lucide-react";
 import {
   Select,
@@ -58,6 +59,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
@@ -67,6 +76,8 @@ import { Input } from '@/components/ui/input';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { BackButton } from '@/components/ui/back-button';
 import { generateSummary } from '@/ai/flows/summary-generator-flow';
+import ClientChat from '@/components/client-chat';
+
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
 const markdownToHtml = (markdown: string) => {
@@ -460,6 +471,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
 
   return (
+    <>
     <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
       <div className="w-full">
         <BackButton />
@@ -926,5 +938,25 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
       </div>
     </main>
+
+    <Sheet>
+        <SheetTrigger asChild>
+            <Button
+                variant="default"
+                size="icon"
+                className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
+            >
+                <MessageCircle className="h-7 w-7" />
+                <span className="sr-only">Abrir Chat</span>
+            </Button>
+        </SheetTrigger>
+        <SheetContent className="w-full max-w-lg p-0">
+            <SheetHeader className="p-4 border-b">
+                <SheetTitle>Assistente de IA para {client.name}</SheetTitle>
+            </SheetHeader>
+            <ClientChat client={client} />
+        </SheetContent>
+    </Sheet>
+    </>
   );
 }
