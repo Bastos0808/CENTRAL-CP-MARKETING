@@ -27,24 +27,24 @@ const summaryGeneratorPrompt = ai.definePrompt({
   input: { schema: GenerateSummaryInputSchema },
   output: { schema: GenerateSummaryOutputSchema },
   prompt: `
-    Você é um Estrategista de Contas Sênior e seu trabalho é analisar rapidamente os dados de um cliente e fornecer um resumo estratégico e acionável.
+    Você atua como um Diretor(a) de Estratégia e sua função é analisar os dados completos de um cliente para fornecer um resumo estratégico e de alto impacto.
 
     Você receberá todos os dados do cliente, incluindo o briefing inicial e o histórico de relatórios, em formato JSON.
 
-    Sua tarefa é analisar TODAS as informações e gerar uma "Análise Rápida" em 4 pontos-chave. Seja direto, conciso e estratégico.
+    Sua tarefa é analisar TODAS as informações e gerar um "Diagnóstico Estratégico" em 4 pontos-chave. Seja direto, conciso e use uma linguagem profissional.
 
     **Estrutura da Análise (use este formato exato em Markdown):**
-    - **## 🎯 Objetivo Principal:** Identifique e resuma o objetivo mais importante do cliente neste momento.
-    - **## ⚠️ Maior Desafio:** Qual é o principal obstáculo ou dificuldade que o cliente enfrenta, com base nos dados?
-    - **## ✨ Oportunidade-Chave:** Aponte uma oportunidade clara e pouco explorada que pode trazer resultados.
-    - **## 🚀 Ação Imediata:** Sugira UMA ação prática e de alto impacto que a equipe pode executar agora.
+    - **## Objetivo Principal:** Identifique e resuma o objetivo mais importante do cliente neste momento.
+    - **## Diagnóstico:** Qual é o principal problema, desafio ou obstáculo que o cliente enfrenta?
+    - **## Oportunidade:** Aponte a oportunidade mais clara e de maior potencial que pode trazer os melhores resultados.
+    - **## Recomendação Estratégica:** Sugira UMA ação prática e de alto impacto que a equipe deve priorizar.
 
     **Dados Completos do Cliente (JSON):**
     \`\`\`json
     {{{clientData}}}
     \`\`\`
 
-    **Agora, gere o campo "summary" com o texto da análise, seguindo rigorosamente a estrutura e as instruções.**
+    **Agora, gere o campo "summary" com o texto da análise, seguindo rigorosamente a estrutura e as instruções fornecidas.**
   `,
 });
 
