@@ -41,10 +41,13 @@ const reportGeneratorPrompt = ai.definePrompt({
 
     **Dados para Análise:**
 
-    **1. Dossiê do Cliente (Briefing completo em JSON):**
-    \`\`\`json
-    {{{clientBriefing}}}
-    \`\`\`
+    **1. Dossiê do Cliente (Briefing):**
+    - **O que a empresa faz?** {{briefing.negociosPosicionamento.descricao}}
+    - **Diferencial:** {{briefing.negociosPosicionamento.diferencial}}
+    - **Público-alvo:** {{briefing.publicoPersona.publicoAlvo}}
+    - **Persona:** {{briefing.publicoPersona.persona}}
+    - **Dores da Persona:** {{briefing.publicoPersona.dores}}
+    - **Objetivo Principal:** {{briefing.metasObjetivos.objetivoPrincipal}}
 
     **2. Dados de Desempenho (Visão Geral):**
     - Seguidores: {{performanceData.seguidores}} (Variação: {{performanceData.seguidoresVariacao}})

@@ -24,6 +24,7 @@ import GeneratedReport from './generated-report';
 interface Client {
   id: string;
   name: string;
+  briefing?: any;
 }
 
 const reportSchema = z.object({
@@ -170,18 +171,18 @@ export default function ReportGenerator() {
     setIsGenerating(true);
     setGeneratedReport(null);
     try {
-      const clientDocRef = doc(db, 'clients', data.clientId);
-      const clientSnap = await getDoc(clientDocRef);
-      if (!clientSnap.exists()) {
+      const client = clients.find(c => c.id === data.clientId);
+      if (!client) {
         toast({ title: "Erro", description: "Cliente não encontrado.", variant: "destructive" });
         setIsGenerating(false);
         return;
       }
-      const clientData = clientSnap.data();
+      
       const input: GenerateReportInput = {
-        clientBriefing: JSON.stringify(clientData.briefing, null, 2),
+        briefing: client.briefing,
         performanceData: data.performanceData,
       };
+      
       const report = await generateReport(input);
       setGeneratedReport(report.analysis);
     } catch (error) {

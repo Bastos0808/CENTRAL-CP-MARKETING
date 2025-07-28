@@ -160,10 +160,11 @@ export default function ContentPlanner() {
       if (!selectedClient) return;
       setIsGeneratingIdea(true);
       try {
-          const clientBriefing = JSON.stringify(selectedClient.briefing || {}, null, 2);
-          const clientReports = JSON.stringify(selectedClient.reports || [], null, 2);
-
-          const result = await generateIdeas({ clientBriefing, clientReports, postType });
+          const result = await generateIdeas({
+            briefing: selectedClient.briefing,
+            reports: selectedClient.reports,
+            postType,
+          });
 
           setValue('title', result.idea.title);
           setValue('description', result.idea.description);

@@ -289,8 +289,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       setIsGeneratingSummary(true);
       setSummary(null);
       try {
-          const clientData = JSON.stringify(client);
-          const result = await generateSummary({ clientData });
+          const result = await generateSummary({ client });
           setSummary(result.summary);
       } catch (error) {
           console.error("Error generating summary:", error);
@@ -431,8 +430,9 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
   if (loading) {
     return (
-        <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12">
-            <div className="w-full max-w-6xl">
+        <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
+            <div className="w-full">
+                 <Skeleton className="h-10 w-24 mb-4" />
                  <Skeleton className="h-12 w-3/4 mx-auto mb-4" />
                  <Skeleton className="h-6 w-1/2 mx-auto mb-10" />
                  <Card>
@@ -928,5 +928,3 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
-
-    

@@ -29,20 +29,34 @@ const summaryGeneratorPrompt = ai.definePrompt({
   prompt: `
     Você atua como um Diretor(a) de Estratégia e sua função é analisar os dados completos de um cliente para fornecer um resumo estratégico e de alto impacto.
 
-    Você receberá todos os dados do cliente, incluindo o briefing inicial e o histórico de relatórios, em formato JSON.
+    Você receberá todos os dados do cliente, incluindo o briefing inicial e o histórico de relatórios.
 
-    Sua tarefa é analisar TODAS as informações e gerar um "Diagnóstico Estratégico" em 4 pontos-chave. Seja direto, conciso e use uma linguagem profissional.
+    Sua tarefa é analisar TODAS as informações e gerar um "Diagnóstico Estratégico" em 4 pontos-chave. Seja direto, conciso e use uma linguagem profissional. Foque nos pontos mais críticos para o negócio: o desafio principal, a dor da persona e o objetivo.
 
     **Estrutura da Análise (use este formato exato em Markdown):**
-    - **## Objetivo Principal:** Identifique e resuma o objetivo mais importante do cliente neste momento.
-    - **## Diagnóstico:** Qual é o principal problema, desafio ou obstáculo que o cliente enfrenta?
-    - **## Oportunidade:** Aponte a oportunidade mais clara e de maior potencial que pode trazer os melhores resultados.
-    - **## Recomendação Estratégica:** Sugira UMA ação prática e de alto impacto que a equipe deve priorizar.
+    - **## Objetivo Principal:** Identifique e resuma o objetivo mais importante do cliente neste momento. Baseie-se em '{{client.briefing.metasObjetivos.objetivoPrincipal}}'.
+    - **## Diagnóstico:** Qual é o principal problema ou desafio que o cliente enfrenta? Baseie-se em '{{client.briefing.negociosPosicionamento.maiorDesafio}}'.
+    - **## Oportunidade:** Aponte a oportunidade mais clara e de maior potencial que pode trazer os melhores resultados, considerando as dores da persona ('{{client.briefing.publicoPersona.dores}}') e os relatórios passados.
+    - **## Recomendação Estratégica:** Sugira UMA ação prática e de alto impacto que a equipe deve priorizar para atacar a oportunidade e alcançar o objetivo.
 
-    **Dados Completos do Cliente (JSON):**
-    \`\`\`json
-    {{{clientData}}}
-    \`\`\`
+    **Dados Completos do Cliente:**
+    - **Nome:** {{client.name}}
+    - **Briefing:**
+      - **Descrição do Negócio:** {{client.briefing.negociosPosicionamento.descricao}}
+      - **Diferencial:** {{client.briefing.negociosPosicionamento.diferencial}}
+      - **Maior Desafio:** {{client.briefing.negociosPosicionamento.maiorDesafio}}
+      - **Público Alvo:** {{client.briefing.publicoPersona.publicoAlvo}}
+      - **Persona:** {{client.briefing.publicoPersona.persona}}
+      - **Dores da Persona:** {{client.briefing.publicoPersona.dores}}
+      - **Objetivo Principal:** {{client.briefing.metasObjetivos.objetivoPrincipal}}
+    - **Histórico de Relatórios:**
+      {{#if client.reports}}
+        {{#each client.reports}}
+        - **Relatório de {{createdAt}}:** {{analysis}}
+        {{/each}}
+      {{else}}
+        Nenhum relatório anterior.
+      {{/if}}
 
     **Agora, gere o campo "summary" com o texto da análise, seguindo rigorosamente a estrutura e as instruções fornecidas.**
   `,

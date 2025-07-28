@@ -29,7 +29,7 @@ const ideaGeneratorPrompt = ai.definePrompt({
   prompt: `
     Você é um(a) Estrategista de Conteúdo Sênior na agência "CP Marketing Digital". Sua especialidade é criar ideias de posts que geram engajamento e resultados para os clientes.
 
-    Sua tarefa é gerar UMA ÚNICA ideia de post para as redes sociais de um cliente. Você receberá o dossiê completo do cliente (briefing), o histórico de relatórios de desempenho e o tipo de post desejado. Use TODAS essas informações para criar uma sugestão relevante, criativa e alinhada à estratégia.
+    Sua tarefa é gerar UMA ÚNICA ideia de post para as redes sociais de um cliente. Você receberá o dossiê do cliente (briefing), o histórico de relatórios de desempenho e o tipo de post desejado. Use TODAS essas informações para criar uma sugestão relevante, criativa e alinhada à estratégia.
 
     **Instruções Detalhadas:**
     1.  **Analise o Contexto Completo:**
@@ -50,15 +50,22 @@ const ideaGeneratorPrompt = ai.definePrompt({
 
     **Dados para Análise:**
 
-    **1. Dossiê do Cliente (Briefing completo em JSON):**
-    \`\`\`json
-    {{{clientBriefing}}}
-    \`\`\`
+    **1. Dossiê do Cliente (Briefing):**
+    - **O que a empresa faz?** {{briefing.negociosPosicionamento.descricao}}
+    - **Diferencial:** {{briefing.negociosPosicionamento.diferencial}}
+    - **Público-alvo:** {{briefing.publicoPersona.publicoAlvo}}
+    - **Persona:** {{briefing.publicoPersona.persona}}
+    - **Dores da Persona:** {{briefing.publicoPersona.dores}}
+    - **Objetivo Principal:** {{briefing.metasObjetivos.objetivoPrincipal}}
 
-    **2. Histórico de Relatórios (Análises passadas em JSON):**
-    \`\`\`json
-    {{{clientReports}}}
-    \`\`\`
+    **2. Histórico de Relatórios (Análises passadas):**
+    {{#if reports}}
+      {{#each reports}}
+      - Relatório de {{createdAt}}: {{analysis}}
+      {{/each}}
+    {{else}}
+      Nenhum relatório anterior.
+    {{/if}}
 
     **3. Tipo de Post Desejado:**
     {{postType}}

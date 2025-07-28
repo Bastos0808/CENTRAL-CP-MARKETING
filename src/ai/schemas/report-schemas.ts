@@ -55,10 +55,25 @@ export const performanceSchema = z.object({
 
 }).describe('Os dados de desempenho do período.');
 
+const briefingSchema = z.object({
+    negociosPosicionamento: z.object({
+        descricao: z.string().optional(),
+        diferencial: z.string().optional(),
+    }).optional(),
+    publicoPersona: z.object({
+        publicoAlvo: z.string().optional(),
+        persona: z.string().optional(),
+        dores: z.string().optional(),
+    }).optional(),
+    metasObjetivos: z.object({
+        objetivoPrincipal: z.string().optional(),
+    }).optional(),
+}).describe('O conteúdo do briefing do cliente.');
+
 
 // Define o schema de entrada para o fluxo
 export const GenerateReportInputSchema = z.object({
-  clientBriefing: z.string().describe('O conteúdo completo do briefing do cliente em formato JSON.'),
+  briefing: briefingSchema.optional(),
   performanceData: performanceSchema,
 });
 export type GenerateReportInput = z.infer<typeof GenerateReportInputSchema>;
