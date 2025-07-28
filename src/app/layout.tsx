@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import AuthGuard from '@/components/auth-guard';
+import SmoothScroll from '@/components/smooth-scroll';
 
 export const metadata: Metadata = {
   title: 'Briefing CP Marketing Digital',
@@ -21,9 +22,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></link>
       </head>
       <body className="font-body antialiased">
-        <AuthGuard>
-          {children}
-        </AuthGuard>
+        <SmoothScroll>
+          <AuthGuard>
+            {children}
+          </AuthGuard>
+        </SmoothScroll>
         <Toaster />
       </body>
     </html>
