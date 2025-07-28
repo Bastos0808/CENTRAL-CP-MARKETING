@@ -701,63 +701,63 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                         <AccordionItem value="item-1">
                             <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Building className="h-5 w-5" />Informações Operacionais</h3></AccordionTrigger>
                             <AccordionContent className="space-y-4 pt-4">
-                                <InfoCard title="Observações sobre o Plano" value={client.briefing.informacoesOperacionais?.observacoesPlano} icon={StickyNote} />
-                                <InfoCard title="Website" value={client.briefing.informacoesOperacionais?.website} icon={Info} />
-                                <InfoCard title="Telefone" value={client.briefing.informacoesOperacionais?.telefone} icon={Info} />
-                                <InfoCard title="Email de Contato" value={client.briefing.informacoesOperacionais?.emailContato} icon={Info} />
-                                <InfoCard title="Possui Identidade Visual?" value={client.briefing.informacoesOperacionais?.possuiIdentidadeVisual} icon={ImageIcon} />
-                                <InfoCard title="Possui Banco de Imagens?" value={client.briefing.informacoesOperacionais?.possuiBancoImagens} icon={ImageIcon} />
-                                <InfoCard title="Links Relevantes" value={client.briefing.informacoesOperacionais?.linksRelevantes} icon={Info} />
+                                {client.briefing.informacoesOperacionais?.observacoesPlano && <InfoCard title="Observações sobre o Plano" value={client.briefing.informacoesOperacionais.observacoesPlano} icon={StickyNote} />}
+                                {client.briefing.informacoesOperacionais?.website && <InfoCard title="Website" value={client.briefing.informacoesOperacionais.website} icon={Info} />}
+                                {client.briefing.informacoesOperacionais?.telefone && <InfoCard title="Telefone" value={client.briefing.informacoesOperacionais.telefone} icon={Info} />}
+                                {client.briefing.informacoesOperacionais?.emailContato && <InfoCard title="Email de Contato" value={client.briefing.informacoesOperacionais.emailContato} icon={Info} />}
+                                {client.briefing.informacoesOperacionais?.possuiIdentidadeVisual && <InfoCard title="Possui Identidade Visual?" value={client.briefing.informacoesOperacionais.possuiIdentidadeVisual} icon={ImageIcon} />}
+                                {client.briefing.informacoesOperacionais?.possuiBancoImagens && <InfoCard title="Possui Banco de Imagens?" value={client.briefing.informacoesOperacionais.possuiBancoImagens} icon={ImageIcon} />}
+                                {client.briefing.informacoesOperacionais?.linksRelevantes && <InfoCard title="Links Relevantes" value={client.briefing.informacoesOperacionais.linksRelevantes} icon={Info} />}
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-2">
                             <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Briefcase className="h-5 w-5" />Negócio e Posicionamento</h3></AccordionTrigger>
                             <AccordionContent className="space-y-4 pt-4">
-                                <InfoCard title="O que a empresa faz?" value={client.briefing.negociosPosicionamento?.descricao} icon={Megaphone} />
-                                <InfoCard title="Principal diferencial competitivo" value={client.briefing.negociosPosicionamento?.diferencial} icon={Target} />
-                                <InfoCard title="Missão, Visão e Valores" value={client.briefing.negociosPosicionamento?.missaoValores} icon={Goal} />
-                                <InfoCard title="Maior desafio do negócio" value={client.briefing.negociosPosicionamento?.maiorDesafio} icon={Target} />
-                                <InfoCard title="Maior erro que o mercado comete" value={client.briefing.negociosPosicionamento?.erroMercado} icon={Target} />
+                                {client.briefing.negociosPosicionamento?.descricao && <InfoCard title="O que a empresa faz?" value={client.briefing.negociosPosicionamento.descricao} icon={Megaphone} />}
+                                {client.briefing.negociosPosicionamento?.diferencial && <InfoCard title="Principal diferencial competitivo" value={client.briefing.negociosPosicionamento.diferencial} icon={Target} />}
+                                {client.briefing.negociosPosicionamento?.missaoValores && <InfoCard title="Missão, Visão e Valores" value={client.briefing.negociosPosicionamento.missaoValores} icon={Goal} />}
+                                {client.briefing.negociosPosicionamento?.maiorDesafio && <InfoCard title="Maior desafio do negócio" value={client.briefing.negociosPosicionamento.maiorDesafio} icon={Target} />}
+                                {client.briefing.negociosPosicionamento?.erroMercado && <InfoCard title="Maior erro que o mercado comete" value={client.briefing.negociosPosicionamento.erroMercado} icon={Target} />}
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-3">
                             <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Target className="h-5 w-5" />Público e Persona</h3></AccordionTrigger>
                             <AccordionContent className="space-y-4 pt-4">
-                                <InfoCard title="Público-alvo" value={client.briefing.publicoPersona?.publicoAlvo} icon={Users} />
-                                <InfoCard title="Persona ideal" value={client.briefing.publicoPersona?.persona} icon={User} />
-                                <InfoCard title="Dores que resolve" value={client.briefing.publicoPersona?.dores} icon={Frown} />
-                                <InfoCard title="Dúvidas e Objeções" value={client.briefing.publicoPersona?.duvidasObjecoes} icon={Info} />
-                                <InfoCard title="Impedimento de Compra" value={client.briefing.publicoPersona?.impedimentoCompra} icon={Info} />
-                                <InfoCard title="Canais Utilizados" value={client.briefing.publicoPersona?.canaisUtilizados} icon={Megaphone} />
+                                {client.briefing.publicoPersona?.publicoAlvo && <InfoCard title="Público-alvo" value={client.briefing.publicoPersona.publicoAlvo} icon={Users} />}
+                                {client.briefing.publicoPersona?.persona && <InfoCard title="Persona ideal" value={client.briefing.publicoPersona.persona} icon={User} />}
+                                {client.briefing.publicoPersona?.dores && <InfoCard title="Dores que resolve" value={client.briefing.publicoPersona.dores} icon={Frown} />}
+                                {client.briefing.publicoPersona?.duvidasObjecoes && <InfoCard title="Dúvidas e Objeções" value={client.briefing.publicoPersona.duvidasObjecoes} icon={Info} />}
+                                {client.briefing.publicoPersona?.impedimentoCompra && <InfoCard title="Impedimento de Compra" value={client.briefing.publicoPersona.impedimentoCompra} icon={Info} />}
+                                {client.briefing.publicoPersona?.canaisUtilizados && <InfoCard title="Canais Utilizados" value={client.briefing.publicoPersona.canaisUtilizados} icon={Megaphone} />}
                             </AccordionContent>
                         </AccordionItem>
                          <AccordionItem value="item-4">
                             <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Goal className="h-5 w-5" />Metas e Objetivos</h3></AccordionTrigger>
                             <AccordionContent className="space-y-4 pt-4">
-                               <InfoCard title="Objetivo Principal (Próximos 3 meses)" value={client.briefing.metasObjetivos?.objetivoPrincipal} icon={Target} />
-                               <InfoCard title="Metas Específicas" value={client.briefing.metasObjetivos?.metasEspecificas} icon={CheckCircle} />
-                               <InfoCard title="Sazonalidade / Campanhas Importantes" value={client.briefing.metasObjetivos?.sazonalidade} icon={Calendar} />
-                               <InfoCard title="Verba para Tráfego Pago" value={client.briefing.metasObjetivos?.verbaTrafego} icon={Users} />
+                               {client.briefing.metasObjetivos?.objetivoPrincipal && <InfoCard title="Objetivo Principal (Próximos 3 meses)" value={client.briefing.metasObjetivos.objetivoPrincipal} icon={Target} />}
+                               {client.briefing.metasObjetivos?.metasEspecificas && <InfoCard title="Metas Específicas" value={client.briefing.metasObjetivos.metasEspecificas} icon={CheckCircle} />}
+                               {client.briefing.metasObjetivos?.sazonalidade && <InfoCard title="Sazonalidade / Campanhas Importantes" value={client.briefing.metasObjetivos.sazonalidade} icon={Calendar} />}
+                               {client.briefing.metasObjetivos?.verbaTrafego && <InfoCard title="Verba para Tráfego Pago" value={client.briefing.metasObjetivos.verbaTrafego} icon={Users} />}
                             </AccordionContent>
                         </AccordionItem>
                          <AccordionItem value="item-5">
                             <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Users className="h-5 w-5" />Equipe de Mídia Social</h3></AccordionTrigger>
                             <AccordionContent className="space-y-4 pt-4">
-                               <InfoCard title="Formato de Conteúdo Preferido" value={client.briefing.equipeMidiaSocial?.formatoConteudo} icon={Info} />
-                               <InfoCard title="Temas Obrigatórios ou a Evitar" value={client.briefing.equipeMidiaSocial?.temasObrigatorios} icon={Info} />
-                               <InfoCard title="Disponibilidade para Gravação" value={client.briefing.equipeMidiaSocial?.disponibilidadeGravacao} icon={Camera} />
-                               <InfoCard title="Responsável pela Gravação" value={client.briefing.equipeMidiaSocial?.responsavelGravacao} icon={User} />
-                               <InfoCard title="Principais Gatilhos a Explorar" value={client.briefing.equipeMidiaSocial?.principaisGatilhos} icon={Target} />
+                               {client.briefing.equipeMidiaSocial?.formatoConteudo && <InfoCard title="Formato de Conteúdo Preferido" value={client.briefing.equipeMidiaSocial.formatoConteudo} icon={Info} />}
+                               {client.briefing.equipeMidiaSocial?.temasObrigatorios && <InfoCard title="Temas Obrigatórios ou a Evitar" value={client.briefing.equipeMidiaSocial.temasObrigatorios} icon={Info} />}
+                               {client.briefing.equipeMidiaSocial?.disponibilidadeGravacao && <InfoCard title="Disponibilidade para Gravação" value={client.briefing.equipeMidiaSocial.disponibilidadeGravacao} icon={Camera} />}
+                               {client.briefing.equipeMidiaSocial?.responsavelGravacao && <InfoCard title="Responsável pela Gravação" value={client.briefing.equipeMidiaSocial.responsavelGravacao} icon={User} />}
+                               {client.briefing.equipeMidiaSocial?.principaisGatilhos && <InfoCard title="Principais Gatilhos a Explorar" value={client.briefing.equipeMidiaSocial.principaisGatilhos} icon={Target} />}
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-6">
                             <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><DollarSign className="h-5 w-5" />Equipe de Tráfego Pago</h3></AccordionTrigger>
                             <AccordionContent className="space-y-4 pt-4">
-                               <InfoCard title="Principal Produto/Serviço a Anunciar" value={client.briefing.equipeTrafegoPago?.principalProdutoAnunciar} icon={Info} />
-                               <InfoCard title="Objetivo das Campanhas" value={client.briefing.equipeTrafegoPago?.objetivoCampanhas} icon={Target} />
-                               <InfoCard title="Promoção ou Condição Especial" value={client.briefing.equipeTrafegoPago?.promocaoCondicao} icon={Info} />
-                               <InfoCard title="Local de Veiculação" value={client.briefing.equipeTrafegoPago?.localVeiculacao} icon={Info} />
-                               <InfoCard title="Limite de Verba / Ajustes" value={client.briefing.equipeTrafegoPago?.limiteVerba} icon={Info} />
+                               {client.briefing.equipeTrafegoPago?.principalProdutoAnunciar && <InfoCard title="Principal Produto/Serviço a Anunciar" value={client.briefing.equipeTrafegoPago.principalProdutoAnunciar} icon={Info} />}
+                               {client.briefing.equipeTrafegoPago?.objetivoCampanhas && <InfoCard title="Objetivo das Campanhas" value={client.briefing.equipeTrafegoPago.objetivoCampanhas} icon={Target} />}
+                               {client.briefing.equipeTrafegoPago?.promocaoCondicao && <InfoCard title="Promoção ou Condição Especial" value={client.briefing.equipeTrafegoPago.promocaoCondicao} icon={Info} />}
+                               {client.briefing.equipeTrafegoPago?.localVeiculacao && <InfoCard title="Local de Veiculação" value={client.briefing.equipeTrafegoPago.localVeiculacao} icon={Info} />}
+                               {client.briefing.equipeTrafegoPago?.limiteVerba && <InfoCard title="Limite de Verba / Ajustes" value={client.briefing.equipeTrafegoPago.limiteVerba} icon={Info} />}
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
