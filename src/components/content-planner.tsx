@@ -458,7 +458,7 @@ export default function ContentPlanner() {
                         </div>
                     )} />
                 </div>
-                <DialogFooter>
+                <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
                     <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
                     <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

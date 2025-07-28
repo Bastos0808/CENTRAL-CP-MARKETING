@@ -250,7 +250,7 @@ export default function ReportGenerator() {
                 </Card>
                 <Card className="p-4 bg-muted/20">
                   <Label className="flex items-center text-sm text-muted-foreground gap-2 mb-2"><BarChartHorizontal className="h-5 w-5" /> Faixa Etária (Seguidores)</Label>
-                   <div className="grid grid-cols-1 sm:grid-cols-4 md:grid-cols-7 gap-2">
+                   <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
                     {ageRangeFields.map(({ name, label }) => (<Controller key={name} name={`performanceData.${name}`} control={control} render={({ field }) => (<div className="space-y-1"><Label htmlFor={name} className="text-xs">{label}</Label><Input id={name} placeholder="0" {...field} className="font-mono" /></div>)} />))}
                   </div>
                 </Card>

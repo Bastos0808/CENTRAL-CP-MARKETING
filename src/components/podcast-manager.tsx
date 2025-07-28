@@ -263,9 +263,9 @@ export default function PodcastManager() {
              <>
                 <Card>
                     <CardHeader>
-                        <CardTitle className="flex justify-between items-center">
+                        <CardTitle className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <span>Plano e Créditos de {selectedClient.name}</span>
-                             <div className='flex items-center gap-2'>
+                             <div className='flex items-center gap-2 self-end sm:self-center'>
                                 <Button variant="outline" size="sm" onClick={handleOpenPlanDialog}>
                                     {selectedClient.podcastPlan ? 'Editar Plano' : 'Criar Plano'}
                                 </Button>
@@ -288,7 +288,7 @@ export default function PodcastManager() {
                                 <span className="text-2xl font-bold">{selectedClient.podcastPlan?.accumulatedRecordings || 0}</span>
                             </div>
                         </div>
-                        <div className="flex justify-end pt-4 gap-2">
+                        <div className="flex flex-col sm:flex-row justify-end pt-4 gap-2">
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button size="lg" variant="outline" disabled={isSubmitting || !selectedClient.podcastPlan}>
@@ -391,7 +391,7 @@ export default function PodcastManager() {
                             />
                         </div>
                     </div>
-                    <DialogFooter>
+                    <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
                         <Button variant="ghost" onClick={() => setIsPlanDialogOpen(false)}>Cancelar</Button>
                         <Button onClick={handleSavePlan} disabled={isSubmitting}>
                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
@@ -422,7 +422,7 @@ export default function PodcastManager() {
                             Esta ação adiciona créditos ao saldo atual sem afetar o ciclo de renovação mensal. Ideal para pagamentos de pacotes extras.
                         </CardDescription>
                     </div>
-                    <DialogFooter>
+                    <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
                         <Button variant="ghost" onClick={() => { setIsAdvancePaymentDialogOpen(false); setAdvanceCredits(0); }}>Cancelar</Button>
                         <Button onClick={handleAddAdvanceCredits} disabled={isSubmitting}>
                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
@@ -452,7 +452,7 @@ export default function PodcastManager() {
                             Selecionar a data da gravação utilizada irá debitar 1 crédito do saldo do cliente.
                         </CardDescription>
                     </div>
-                    <DialogFooter>
+                    <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
                         <Button variant="ghost" onClick={() => setIsRegisterRecordingDialogOpen(false)}>Cancelar</Button>
                         <Button onClick={handleRegisterRecording} disabled={isSubmitting}>
                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
@@ -465,5 +465,3 @@ export default function PodcastManager() {
         </div>
     );
 }
-
-    
