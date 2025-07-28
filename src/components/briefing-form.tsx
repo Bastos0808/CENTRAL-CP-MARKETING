@@ -17,6 +17,8 @@ import {
   Trash2,
   Camera,
   Loader2,
+  Wand2,
+  FileText,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -45,6 +47,7 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Skeleton } from "./ui/skeleton";
+import { generateBriefingFromTranscript } from "@/ai/flows/briefing-generator-flow";
 
 interface Client {
     id: string;
@@ -127,6 +130,8 @@ export default function BriefingForm() {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [loadingClients, setLoadingClients] = useState(true);
+  const [transcript, setTranscript] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -169,6 +174,24 @@ export default function BriefingForm() {
       }
   };
 
+
+  const handleGenerateFromTranscript = async () => {
+      if (!transcript.trim()) {
+          toast({ title: "Transcrição vazia", description: "Por favor, cole a transcrição da reunião.", variant: "destructive" });
+          return;
+      }
+      setIsGenerating(true);
+      try {
+          const result = await generateBriefingFromTranscript({ transcript });
+          form.reset(result.briefing);
+          toast({ title: "Briefing Preenchido!", description: "A IA analisou a transcrição e preencheu o formulário." });
+      } catch (error) {
+          console.error("Error generating briefing from transcript:", error);
+          toast({ title: "Erro ao gerar briefing", description: "A IA não conseguiu processar a transcrição. Tente novamente.", variant: "destructive" });
+      } finally {
+          setIsGenerating(false);
+      }
+  }
 
   const { fields: redesSociaisFields, append: appendRedeSocial, remove: removeRedeSocial } = useFieldArray({
     control: form.control,
@@ -240,6 +263,27 @@ export default function BriefingForm() {
 
             {selectedClientId && (
              <>
+              <div className="space-y-4 rounded-lg border p-4 bg-muted/30">
+                <div className="space-y-2">
+                    <FormLabel htmlFor="transcript" className="flex items-center gap-2 text-md font-semibold text-primary"><FileText className="h-5 w-5" />Preenchimento com IA</FormLabel>
+                    <FormDescription>Cole a transcrição da reunião abaixo e clique no botão para a IA preencher o briefing automaticamente.</FormDescription>
+                    <Textarea 
+                        id="transcript"
+                        placeholder="Cole aqui a transcrição completa da sua reunião..."
+                        className="min-h-[150px] bg-background"
+                        value={transcript}
+                        onChange={(e) => setTranscript(e.target.value)}
+                    />
+                </div>
+                <div className="flex justify-end">
+                    <Button type="button" onClick={handleGenerateFromTranscript} disabled={isGenerating}>
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                        {isGenerating ? 'Analisando Transcrição...' : 'Preencher com IA'}
+                    </Button>
+                </div>
+              </div>
+
+
               <Accordion type="multiple" defaultValue={['informacoesOperacionais']} className="w-full">
                 
                 {/* INFORMAÇÕES OPERACIONAIS */}
