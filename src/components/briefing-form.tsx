@@ -45,7 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { doc, updateDoc, collection, getDocs, getDoc } from "firebase/firestore";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Skeleton } from "./ui/skeleton";
 import { generateBriefingFromTranscript } from "@/ai/flows/briefing-generator-flow";
@@ -58,6 +58,8 @@ import { cn } from "@/lib/utils";
 interface Client {
     id: string;
     name: string;
+    plan?: string;
+    briefing?: FormValues;
 }
 
 const formSchema = z.object({
@@ -196,6 +198,7 @@ export default function BriefingForm() {
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [loadingClients, setLoadingClients] = useState(true);
+  const [isFetchingBriefing, setIsFetchingBriefing] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -207,6 +210,21 @@ export default function BriefingForm() {
     defaultValues: defaultFormValues,
   });
   
+  const populateForm = useCallback((data: Partial<FormValues>) => {
+      Object.keys(data).forEach((sectionKey) => {
+          const section = data[sectionKey as keyof FormValues];
+          if(section) {
+              Object.keys(section).forEach((fieldKey) => {
+                  const fieldName = `${sectionKey}.${fieldKey}` as any;
+                  const value = section[fieldKey as keyof typeof section];
+                   if (value !== undefined && value !== null) {
+                      form.setValue(fieldName, value, { shouldValidate: true, shouldDirty: true });
+                   }
+              });
+          }
+      });
+  }, [form]);
+
   useEffect(() => {
       const fetchClients = async () => {
           try {
@@ -221,60 +239,73 @@ export default function BriefingForm() {
       };
       fetchClients();
   }, [toast]);
-
-  const handleClientChange = async (clientId: string) => {
-      setSelectedClientId(clientId);
-      if (clientId) {
-          const clientDocRef = doc(db, 'clients', clientId);
-          const clientSnap = await getDoc(clientDocRef);
-          if (clientSnap.exists()) {
-              const clientData = clientSnap.data();
-              // Populate form with existing briefing data or defaults
-              const existingBriefing = clientData.briefing || {};
-              const initialData = {
-                  ...defaultFormValues,
-                  ...existingBriefing,
-                  informacoesOperacionais: {
-                      ...defaultFormValues.informacoesOperacionais,
-                      ...(existingBriefing.informacoesOperacionais || {}),
-                      nomeNegocio: clientData.name || '',
-                      planoContratado: clientData.plan || '',
-                  },
-                   negociosPosicionamento: {
-                      ...defaultFormValues.negociosPosicionamento,
-                      ...(existingBriefing.negociosPosicionamento || {}),
-                  },
-                  publicoPersona: {
-                      ...defaultFormValues.publicoPersona,
-                      ...(existingBriefing.publicoPersona || {}),
-                  },
-                  concorrenciaMercado: {
-                      ...defaultFormValues.concorrenciaMercado,
-                      ...(existingBriefing.concorrenciaMercado || { principaisConcorrentes: [], inspiracoesPerfis: [] }),
-                  },
-                  comunicacaoExpectativas: {
-                      ...defaultFormValues.comunicacaoExpectativas,
-                      ...(existingBriefing.comunicacaoExpectativas || {}),
-                  },
-                  metasObjetivos: {
-                      ...defaultFormValues.metasObjetivos,
-                      ...(existingBriefing.metasObjetivos || {}),
-                  },
-                   equipeMidiaSocial: {
-                      ...defaultFormValues.equipeMidiaSocial,
-                      ...(existingBriefing.equipeMidiaSocial || {}),
-                  },
-                  equipeTrafegoPago: {
-                        ...defaultFormValues.equipeTrafegoPago,
-                        ...(existingBriefing.equipeTrafegoPago || {}),
-                  }
-              };
-              form.reset(initialData);
-          }
-      } else {
+  
+  useEffect(() => {
+    const fetchAndSetBriefing = async () => {
+      if (!selectedClientId) {
           form.reset(defaultFormValues);
+          return;
+      };
+
+      setIsFetchingBriefing(true);
+      try {
+        const clientDocRef = doc(db, 'clients', selectedClientId);
+        const clientSnap = await getDoc(clientDocRef);
+        if (clientSnap.exists()) {
+            const clientData = clientSnap.data() as Client;
+            
+            const existingBriefing = clientData.briefing || {};
+
+            const initialData: FormValues = {
+              ...defaultFormValues,
+              ...existingBriefing,
+              informacoesOperacionais: {
+                ...defaultFormValues.informacoesOperacionais,
+                ...(existingBriefing.informacoesOperacionais || {}),
+                nomeNegocio: clientData.name || '',
+                planoContratado: clientData.plan || '',
+              },
+               negociosPosicionamento: {
+                  ...defaultFormValues.negociosPosicionamento,
+                  ...(existingBriefing.negociosPosicionamento || {}),
+              },
+              publicoPersona: {
+                  ...defaultFormValues.publicoPersona,
+                  ...(existingBriefing.publicoPersona || {}),
+              },
+              concorrenciaMercado: {
+                  ...defaultFormValues.concorrenciaMercado,
+                  ...(existingBriefing.concorrenciaMercado || { principaisConcorrentes: [], inspiracoesPerfis: [] }),
+              },
+              comunicacaoExpectativas: {
+                  ...defaultFormValues.comunicacaoExpectativas,
+                  ...(existingBriefing.comunicacaoExpectativas || {}),
+              },
+              metasObjetivos: {
+                  ...defaultFormValues.metasObjetivos,
+                  ...(existingBriefing.metasObjetivos || {}),
+              },
+               equipeMidiaSocial: {
+                  ...defaultFormValues.equipeMidiaSocial,
+                  ...(existingBriefing.equipeMidiaSocial || {}),
+              },
+              equipeTrafegoPago: {
+                    ...defaultFormValues.equipeTrafegoPago,
+                    ...(existingBriefing.equipeTrafegoPago || {}),
+              }
+            };
+            
+            populateForm(initialData);
+
+        }
+      } catch (error) {
+         toast({ title: "Erro ao buscar briefing", variant: "destructive" });
+      } finally {
+        setIsFetchingBriefing(false);
       }
-  };
+    };
+    fetchAndSetBriefing();
+  }, [selectedClientId, toast, populateForm, form]);
 
 
   const handleGenerateFromTranscript = async () => {
@@ -318,8 +349,8 @@ export default function BriefingForm() {
                 planoContratado: currentValues.informacoesOperacionais?.planoContratado || '',
               },
           };
-
-          form.reset(updatedBriefing);
+          
+          populateForm(updatedBriefing);
           toast({ title: "Briefing Preenchido!", description: "A IA analisou a transcrição e preencheu o formulário." });
       } catch (error) {
           if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
@@ -411,7 +442,7 @@ export default function BriefingForm() {
             <div className="space-y-2">
                 <FormLabel>Selecione o Cliente para o Briefing</FormLabel>
                 {loadingClients ? <Skeleton className="h-10 w-full" /> : (
-                    <Select onValueChange={handleClientChange} value={selectedClientId || ''}>
+                    <Select onValueChange={setSelectedClientId} value={selectedClientId || ''}>
                         <SelectTrigger>
                             <SelectValue placeholder="Escolha um cliente..." />
                         </SelectTrigger>
@@ -424,7 +455,13 @@ export default function BriefingForm() {
                 )}
             </div>
 
-            {selectedClientId && (
+            {isFetchingBriefing && (
+                <div className="flex items-center justify-center p-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+            )}
+
+            {selectedClientId && !isFetchingBriefing && (
              <>
               <div className="space-y-4 rounded-lg border p-4 bg-muted/30">
                 <div className="space-y-2">
