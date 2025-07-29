@@ -25,7 +25,7 @@ export async function generateIdeas(
 // Define the prompt the AI will use
 const ideaGeneratorPrompt = ai.definePrompt({
   name: 'ideaGeneratorPrompt',
-  model: googleAI.model('gemini-1.5-flash-latest'),
+  model: googleAI.model('gemini-1.5-pro-latest'),
   input: { schema: IdeaGeneratorInputSchema },
   output: { schema: IdeaGeneratorOutputSchema },
   prompt: `
