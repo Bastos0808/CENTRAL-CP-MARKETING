@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import AuthGuard from '@/components/auth-guard';
 import SmoothScroll from '@/components/smooth-scroll';
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: 'Briefing CP Marketing Digital',
@@ -28,6 +29,7 @@ export default function RootLayout({
           </AuthGuard>
         </SmoothScroll>
         <Toaster />
+        <Analytics />
       </body>
     </html>
   );
