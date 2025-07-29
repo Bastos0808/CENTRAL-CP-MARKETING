@@ -29,17 +29,24 @@ const summaryGeneratorPrompt = ai.definePrompt({
   input: { schema: GenerateSummaryInputSchema },
   output: { schema: GenerateSummaryOutputSchema },
   prompt: `
-    Você atua como um Diretor(a) de Estratégia e sua função é analisar os dados completos de um cliente para fornecer um resumo estratégico e de alto impacto.
+    Você atua como um(a) Estrategista de Marketing Sênior da agência "CP Marketing Digital". Sua tarefa é criar um "Diagnóstico Estratégico" para um cliente, com base em seu briefing e histórico de relatórios. A análise deve ser rica, profunda e oferecer insights valiosos.
 
-    Você receberá todos os dados do cliente, incluindo o briefing inicial e o histórico de relatórios.
+    **Instruções de Formato e Tom:**
+    - **Formato:** Gere a resposta como um texto corrido. Use **negrito** para os títulos das seções. NÃO use cabeçalhos de markdown (como # ou ##).
+    - **Tom:** Profissional, analítico e direto. Vá além do óbvio, conectando as informações para revelar o cenário real.
+    - **Profundidade:** Elabore cada seção com 2-3 frases, criando parágrafos coesos e informativos.
 
-    Sua tarefa é analisar TODAS as informações e gerar um "Diagnóstico Estratégico" em 4 pontos-chave. Seja direto, conciso e use uma linguagem profissional. Foque nos pontos mais críticos para o negócio: o desafio principal, a dor da persona e o objetivo.
+    **Estrutura da Análise (Siga esta ordem):**
 
-    **Estrutura da Análise (use este formato exato em Markdown):**
-    - **## Objetivo Principal:** Identifique e resuma o objetivo mais importante do cliente neste momento. Baseie-se em '{{client.briefing.metasObjetivos.objetivoPrincipal}}'.
-    - **## Diagnóstico:** Qual é o principal problema ou desafio que o cliente enfrenta? Baseie-se em '{{client.briefing.negociosPosicionamento.maiorDesafio}}'.
-    - **## Oportunidade:** Aponte a oportunidade mais clara e de maior potencial que pode trazer os melhores resultados, considerando as dores da persona ('{{client.briefing.publicoPersona.dores}}') e os relatórios passados.
-    - **## Recomendação Estratégica:** Sugira UMA ação prática e de alto impacto que a equipe deve priorizar para atacar a oportunidade e alcançar o objetivo.
+    **Diagnóstico Estratégico:** Comece com uma visão geral do desafio principal do cliente. Conecte o 'maior desafio' com o 'objetivo principal' para definir o problema central a ser resolvido.
+    *   Baseie-se em: '{{client.briefing.negociosPosicionamento.maiorDesafio}}' e '{{client.briefing.metasObjetivos.objetivoPrincipal}}'.
+
+    **Público e Posicionamento:** Analise como o posicionamento atual da empresa se conecta (ou não) com as dores da persona. Avalie se o 'diferencial' da empresa é uma solução clara para as 'dores' do público.
+    *   Baseie-se em: '{{client.briefing.negociosPosicionamento.diferencial}}' e '{{client.briefing.publicoPersona.dores}}'.
+
+    **Oportunidade Central:** Com base no diagnóstico e na análise do público, identifique a oportunidade mais significativa. Onde está o maior potencial de crescimento? Que ângulo ou tema ainda não foi explorado e que dialoga diretamente com a persona? Considere os relatórios passados para identificar o que já ressoou com o público.
+
+    **Recomendação Estratégica:** Finalize com UMA recomendação clara e acionável. A sugestão deve ser uma ação de marketing ou conteúdo de alto impacto que ataque a 'Oportunidade Central' e impulsione o 'Objetivo Principal'. Seja específico.
 
     **Dados Completos do Cliente:**
     - **Nome:** {{client.name}}
@@ -60,7 +67,7 @@ const summaryGeneratorPrompt = ai.definePrompt({
         Nenhum relatório anterior.
       {{/if}}
 
-    **Agora, gere o campo "summary" com o texto da análise, seguindo rigorosamente a estrutura e as instruções fornecidas.**
+    **Agora, gere o campo "summary" com o texto da análise, seguindo rigorosamente a estrutura, o formato e as instruções fornecidas.**
   `,
 });
 
