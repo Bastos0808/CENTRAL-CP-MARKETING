@@ -1,14 +1,47 @@
 
+"use client";
+
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, CalendarCheck, Mic } from 'lucide-react';
+import { ArrowRight, Database, FileText, CalendarCheck, Mic, LogOut } from 'lucide-react';
 import MindMap from '@/components/mind-map';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Home() {
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Logout realizado com sucesso!",
+        description: "Você foi desconectado e será redirecionado.",
+      });
+      router.push('/login');
+    } catch (error) {
+      toast({
+        title: "Erro ao fazer logout",
+        description: "Ocorreu um problema ao tentar desconectar. Tente novamente.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12">
-      <div className="w-full max-w-6xl text-center mb-12">
+    <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 relative">
+      <div className="absolute top-4 right-4">
+        <Button variant="outline" onClick={handleLogout}>
+          <LogOut className="mr-2 h-4 w-4" />
+          Logout
+        </Button>
+      </div>
+      
+      <div className="w-full max-w-6xl text-center mb-12 mt-16 sm:mt-0">
         <h1 className="text-5xl font-bold tracking-tight text-primary sm:text-6xl">
           Bem-vindo à Central Mödus
         </h1>
