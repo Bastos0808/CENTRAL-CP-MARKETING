@@ -25,7 +25,7 @@ export async function generateSummary(
 // Define the prompt the AI will use
 const summaryGeneratorPrompt = ai.definePrompt({
   name: 'summaryGeneratorPrompt',
-  model: googleAI.model('gemini-1.5-pro-latest'),
+  model: googleAI.model('gemini-1.5-flash-latest'),
   input: { schema: GenerateSummaryInputSchema },
   output: { schema: GenerateSummaryOutputSchema },
   prompt: `
