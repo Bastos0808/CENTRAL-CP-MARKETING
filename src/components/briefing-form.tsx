@@ -293,17 +293,28 @@ export default function BriefingForm() {
 
       try {
           const result = await generateBriefingFromTranscript({ transcript });
-          const generatedBriefing = result.briefing || {};
-          
           if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
           setProgress(100);
 
-          // Ensure all fields have a value to prevent uncontrolled -> controlled error
-          const completeBriefing = {
-              ...defaultFormValues,
-              ...generatedBriefing,
+          const generatedBriefing = result.briefing || {};
+          
+          // Get current form values to preserve name and plan
+          const currentValues = form.getValues();
+          
+          // Merge generated data with existing data, ensuring name and plan are not overwritten
+          const updatedBriefing = {
+              ...currentValues, // Start with current values
+              ...generatedBriefing, // Overwrite with generated data
+              informacoesOperacionais: { // Ensure this section is handled correctly
+                  ...currentValues.informacoesOperacionais,
+                  ...generatedBriefing.informacoesOperacionais,
+                  // Explicitly preserve name and plan from current values
+                  nomeNegocio: currentValues.informacoesOperacionais?.nomeNegocio || '',
+                  planoContratado: currentValues.informacoesOperacionais?.planoContratado || '',
+              },
           };
-          form.reset(completeBriefing);
+
+          form.reset(updatedBriefing);
           toast({ title: "Briefing Preenchido!", description: "A IA analisou a transcrição e preencheu o formulário." });
       } catch (error) {
           if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);

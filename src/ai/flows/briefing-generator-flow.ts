@@ -27,25 +27,21 @@ const briefingGeneratorPrompt = ai.definePrompt({
   input: { schema: GenerateBriefingInputSchema },
   output: { schema: GenerateBriefingOutputSchema },
   prompt: `
-    Você é um Estrategista de Marketing Sênior e sua tarefa é preencher um formulário de briefing detalhado com base na transcrição de uma reunião com um novo cliente.
+    Você é um Estrategista de Marketing Sênior e sua tarefa é preencher um formulário de briefing detalhado com base na transcrição de uma reunião com um novo cliente. Sua análise deve ser profunda e profissional.
 
-    Sua análise deve ser profunda e profissional. Leia toda a transcrição, identifique as informações mais relevantes e organize-as nos campos corretos do formulário. Seja claro, conciso e use uma linguagem profissional. Se uma informação não estiver explícita na transcrição, deixe o campo correspondente vazio.
-
-    Para concorrentes e inspirações, além do nome e perfil, forneça uma análise detalhada no campo "detalhes" sobre os pontos fortes, fracos e a estratégia geral observada.
-
-    **Instruções Detalhadas:**
-    1.  **Analise a Transcrição:** Leia atentamente a transcrição da reunião fornecida.
-    2.  **Extraia as Informações:** Identifique os pontos-chave que correspondem a cada seção e campo do briefing. Preste atenção aos detalhes sobre o negócio, público-alvo, dores, objetivos, concorrentes e expectativas.
-    3.  **Preencha a Estrutura:** Preencha o objeto de saída com as informações extraídas. Siga rigorosamente a estrutura e os nomes dos campos.
-    4.  **Seja Profissional:** Resuma as informações de forma clara e profissional. Evite gírias ou linguagem informal da transcrição, a menos que seja para descrever o tom de voz da marca.
-    5.  **Campos Vazios:** Se uma informação específica não for mencionada na transcrição, deixe o campo como uma string vazia (""). Não invente dados.
+    **Instruções Críticas:**
+    1.  **Não Altere o Nome e Plano:** Você NÃO deve alterar o nome do negócio nem o plano contratado. Esses dados são fixos.
+    2.  **Não Preencha Links de Perfil:** Para concorrentes e inspirações, preencha apenas os campos 'name' e 'detalhes'. Deixe o campo 'perfil' (onde vai o @ ou link) como uma string vazia (""). O usuário preencherá isso manualmente.
+    3.  **Análise Profunda:** Leia toda a transcrição, identifique as informações mais relevantes e organize-as nos campos corretos do formulário. Seja claro, conciso e use uma linguagem profissional.
+    4.  **Inferência Inteligente:** Se uma informação não estiver explícita na transcrição, use sua expertise para inferir a resposta com base no contexto geral da reunião. O objetivo é preencher o máximo de campos de análise e descrição possíveis, evitando deixar campos em branco, exceto os de perfil.
+    5.  **Análise de Concorrentes:** No campo "detalhes" dos concorrentes e inspirações, forneça uma análise sobre os pontos fortes, fracos e a estratégia geral observada.
 
     **Transcrição da Reunião:**
     ---
     {{transcript}}
     ---
 
-    Agora, preencha o objeto de saída 'briefing' com base na análise da transcrição.
+    Agora, preencha o objeto de saída 'briefing' com base na análise da transcrição, seguindo rigorosamente as instruções. Lembre-se: não preencha o campo 'perfil' de concorrentes e inspirações.
   `,
 });
 
