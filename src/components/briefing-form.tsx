@@ -308,14 +308,14 @@ export default function BriefingForm() {
           
           // Merge generated data with existing data, ensuring name and plan are not overwritten
           const updatedBriefing = {
-              ...currentValues, // Start with current values
-              ...generatedBriefing, // Overwrite with generated data
-              informacoesOperacionais: { // Ensure this section is handled correctly
-                  ...currentValues.informacoesOperacionais,
-                  ...generatedBriefing.informacoesOperacionais,
-                  // Explicitly preserve name and plan from current values
-                  nomeNegocio: currentValues.informacoesOperacionais?.nomeNegocio || '',
-                  planoContratado: currentValues.informacoesOperacionais?.planoContratado || '',
+              ...currentValues,
+              ...generatedBriefing,
+              informacoesOperacionais: {
+                ...(currentValues.informacoesOperacionais ?? {}),
+                ...(generatedBriefing.informacoesOperacionais ?? {}),
+                // Explicitly preserve pre-registration data
+                nomeNegocio: currentValues.informacoesOperacionais?.nomeNegocio || '',
+                planoContratado: currentValues.informacoesOperacionais?.planoContratado || '',
               },
           };
 

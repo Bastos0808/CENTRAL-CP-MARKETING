@@ -32,7 +32,7 @@ const briefingGeneratorPrompt = ai.definePrompt({
     Você é um Estrategista de Marketing Sênior e sua tarefa é preencher um formulário de briefing detalhado com base na transcrição de uma reunião com um novo cliente. Sua análise deve ser profunda e profissional.
 
     **Instruções Críticas:**
-    1.  **Não Altere o Nome e Plano:** Você NÃO deve alterar o nome do negócio nem o plano contratado. Esses dados são fixos.
+    1.  **Não Altere o Nome e Plano:** Você NÃO deve alterar o nome do negócio nem o plano contratado. Esses dados são fixos e já foram pré-cadastrados.
     2.  **Não Preencha Links de Perfil:** Para concorrentes e inspirações, preencha apenas os campos 'name' e 'detalhes'. Deixe o campo 'perfil' (onde vai o @ ou link) como uma string vazia (""). O usuário preencherá isso manualmente.
     3.  **Análise Profunda:** Leia toda a transcrição, identifique as informações mais relevantes e organize-as nos campos corretos do formulário. Seja claro, conciso e use uma linguagem profissional.
     4.  **Inferência Inteligente:** Se uma informação não estiver explícita na transcrição, use sua expertise para inferir a resposta com base no contexto geral da reunião. O objetivo é preencher o máximo de campos de análise e descrição possíveis, evitando deixar campos em branco, exceto os de perfil.
@@ -45,7 +45,7 @@ const briefingGeneratorPrompt = ai.definePrompt({
     {{{transcript}}}
     ---
 
-    Agora, preencha o objeto de saída 'briefing' com base na análise da transcrição, seguindo rigorosamente as instruções. Lembre-se: não preencha o campo 'perfil' de concorrentes e inspirações.
+    Agora, preencha o objeto de saída 'briefing' com base na análise da transcrição, seguindo rigorosamente as instruções. Lembre-se: não altere 'nomeNegocio' e 'planoContratado' e não preencha o campo 'perfil' de concorrentes e inspirações.
   `,
 });
 
