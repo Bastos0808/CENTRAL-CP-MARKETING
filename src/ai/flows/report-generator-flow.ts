@@ -20,7 +20,7 @@ export async function generateReport(input: GenerateReportInput): Promise<Genera
 // Define o prompt que a IA usará
 const reportGeneratorPrompt = ai.definePrompt({
   name: 'reportGeneratorPrompt',
-  model: googleAI.model('gemini-pro'),
+  model: googleAI.model('gemini-1.5-flash-latest'),
   input: { schema: GenerateReportInputSchema },
   output: { schema: GenerateReportOutputSchema },
   prompt: `

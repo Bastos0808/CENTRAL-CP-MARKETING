@@ -6,6 +6,7 @@
  * - chatWithClientData: Handles the conversational interaction.
  */
 import { ai } from '@/ai/genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import {
   ClientChatInput,
   ClientChatInputSchema,
@@ -74,6 +75,7 @@ const clientChatFlow = ai.defineFlow(
     const conversationHistory = history.slice(0, -1);
 
     const llmResponse = await ai.generate({
+      model: googleAI.model('gemini-1.5-flash-latest'),
       system: systemPrompt,
       prompt: {
         ...userMessage,

@@ -25,7 +25,7 @@ export async function generateBriefingFromTranscript(
 // Define the prompt the AI will use
 const briefingGeneratorPrompt = ai.definePrompt({
   name: 'briefingGeneratorPrompt',
-  model: googleAI.model('gemini-pro'),
+  model: googleAI.model('gemini-1.5-flash-latest'),
   input: { schema: GenerateBriefingInputSchema },
   output: { schema: GenerateBriefingOutputSchema },
   prompt: `
