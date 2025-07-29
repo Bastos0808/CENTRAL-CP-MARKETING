@@ -2,7 +2,6 @@ import type {Metadata} from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import AuthGuard from '@/components/auth-guard';
-import SmoothScroll from '@/components/smooth-scroll';
 import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
@@ -23,11 +22,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></link>
       </head>
       <body className="font-body antialiased">
-        <SmoothScroll>
-          <AuthGuard>
-            {children}
-          </AuthGuard>
-        </SmoothScroll>
+        <AuthGuard>
+          {children}
+        </AuthGuard>
         <Toaster />
         <Analytics />
       </body>
