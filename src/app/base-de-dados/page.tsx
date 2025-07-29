@@ -194,7 +194,6 @@ export default function ClientDatabasePage() {
           },
           visualIdentity: {},
           reports: [],
-          contentPlanner: [],
       };
 
       if (data.hasPodcast && data.recordingsPerMonth && data.paymentDay) {
