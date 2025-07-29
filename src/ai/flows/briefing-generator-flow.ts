@@ -40,7 +40,7 @@ const briefingGeneratorPrompt = ai.definePrompt({
 
     **Transcrição da Reunião:**
     ---
-    {{transcript}}
+    {{{transcript}}}
     ---
 
     Agora, preencha o objeto de saída 'briefing' com base na análise da transcrição, seguindo rigorosamente as instruções. Lembre-se: não preencha o campo 'perfil' de concorrentes e inspirações.
