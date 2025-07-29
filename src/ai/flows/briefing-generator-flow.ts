@@ -7,6 +7,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import {
   GenerateBriefingInput,
   GenerateBriefingInputSchema,
@@ -24,7 +25,7 @@ export async function generateBriefingFromTranscript(
 // Define the prompt the AI will use
 const briefingGeneratorPrompt = ai.definePrompt({
   name: 'briefingGeneratorPrompt',
-  model: 'gemini-pro',
+  model: googleAI.model('gemini-pro'),
   input: { schema: GenerateBriefingInputSchema },
   output: { schema: GenerateBriefingOutputSchema },
   prompt: `

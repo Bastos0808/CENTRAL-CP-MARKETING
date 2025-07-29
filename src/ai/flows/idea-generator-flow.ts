@@ -7,6 +7,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import {
   IdeaGeneratorInput,
   IdeaGeneratorInputSchema,
@@ -24,6 +25,7 @@ export async function generateIdeas(
 // Define the prompt the AI will use
 const ideaGeneratorPrompt = ai.definePrompt({
   name: 'ideaGeneratorPrompt',
+  model: googleAI.model('gemini-pro'),
   input: { schema: IdeaGeneratorInputSchema },
   output: { schema: IdeaGeneratorOutputSchema },
   prompt: `

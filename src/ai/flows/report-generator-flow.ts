@@ -7,6 +7,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import { GenerateReportInput, GenerateReportInputSchema, GenerateReportOutput, GenerateReportOutputSchema } from '@/ai/schemas/report-schemas';
 
 
@@ -19,6 +20,7 @@ export async function generateReport(input: GenerateReportInput): Promise<Genera
 // Define o prompt que a IA usará
 const reportGeneratorPrompt = ai.definePrompt({
   name: 'reportGeneratorPrompt',
+  model: googleAI.model('gemini-pro'),
   input: { schema: GenerateReportInputSchema },
   output: { schema: GenerateReportOutputSchema },
   prompt: `
