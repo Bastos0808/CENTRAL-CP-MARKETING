@@ -40,8 +40,13 @@ const markdownToHtml = (markdown: string) => {
     return html.replace(/\\n/g, '<br />');
 };
 
+const initialMessage: Message = {
+    role: 'model',
+    content: "Olá! Sou seu assistente de IA. Como posso ajudar com os dados deste cliente hoje? Você pode pedir para eu gerar ideias de conteúdo, resumir o desafio principal ou fazer perguntas sobre o briefing."
+}
+
 export default function ClientChat({ client }: { client: Client }) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([initialMessage]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -50,10 +55,15 @@ export default function ClientChat({ client }: { client: Client }) {
   useEffect(() => {
     // Scroll to bottom when messages change
     if (scrollAreaRef.current) {
-        scrollAreaRef.current.scrollTo({
-            top: scrollAreaRef.current.scrollHeight,
-            behavior: 'smooth'
-        });
+        // Use a small timeout to allow the DOM to update before scrolling
+        setTimeout(() => {
+            if (scrollAreaRef.current) {
+                scrollAreaRef.current.scrollTo({
+                    top: scrollAreaRef.current.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        }, 100);
     }
   }, [messages]);
 
@@ -69,9 +79,12 @@ export default function ClientChat({ client }: { client: Client }) {
     setIsLoading(true);
 
     try {
+      // Pass the message history without the initial welcome message
+      const historyForAI = newMessages.slice(1);
+      
       const result = await chatWithClientData({
         client,
-        history: newMessages,
+        history: historyForAI,
       });
       const aiMessage: Message = { role: 'model', content: result.response };
       setMessages((prev) => [...prev, aiMessage]);
@@ -82,8 +95,9 @@ export default function ClientChat({ client }: { client: Client }) {
         description: 'A IA não conseguiu responder. Tente novamente.',
         variant: 'destructive',
       });
-       // Remove the user's message if the AI fails
+       // Remove the user's message if the AI fails and restore input
        setMessages(prev => prev.slice(0, -1));
+       setInput(input);
     } finally {
       setIsLoading(false);
     }

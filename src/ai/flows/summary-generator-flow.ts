@@ -7,6 +7,7 @@
  */
 
 import { ai } from '@/ai/genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import {
   GenerateSummaryInput,
   GenerateSummaryInputSchema,
@@ -24,6 +25,7 @@ export async function generateSummary(
 // Define the prompt the AI will use
 const summaryGeneratorPrompt = ai.definePrompt({
   name: 'summaryGeneratorPrompt',
+  model: googleAI.model('gemini-1.5-flash-latest'),
   input: { schema: GenerateSummaryInputSchema },
   output: { schema: GenerateSummaryOutputSchema },
   prompt: `
