@@ -35,6 +35,8 @@ const briefingGeneratorPrompt = ai.definePrompt({
     3.  **Análise Profunda:** Leia toda a transcrição, identifique as informações mais relevantes e organize-as nos campos corretos do formulário. Seja claro, conciso e use uma linguagem profissional.
     4.  **Inferência Inteligente:** Se uma informação não estiver explícita na transcrição, use sua expertise para inferir a resposta com base no contexto geral da reunião. O objetivo é preencher o máximo de campos de análise e descrição possíveis, evitando deixar campos em branco, exceto os de perfil.
     5.  **Análise de Concorrentes:** No campo "detalhes" dos concorrentes e inspirações, forneça uma análise sobre os pontos fortes, fracos e a estratégia geral observada.
+    6.  **Mapeamento de Campos:** Preste muita atenção em qual campo está preenchendo. Por exemplo, o campo "O que a empresa faz?" deve descrever produtos/serviços, enquanto o campo "Missão, Visão e Valores" deve conter os princípios e propósito da marca. Não confunda os campos.
+
 
     **Transcrição da Reunião:**
     ---
