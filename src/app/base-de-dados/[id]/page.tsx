@@ -39,6 +39,7 @@ import {
   Mic,
   Package,
   Lightbulb,
+  Bot,
 } from "lucide-react";
 import {
   Select,
@@ -58,6 +59,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -67,6 +76,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { BackButton } from '@/components/ui/back-button';
+import ClientChat from '@/components/client-chat';
 
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
@@ -462,7 +472,26 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   return (
     <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
       <div className="w-full">
-        <BackButton />
+        <div className="flex justify-between items-center mb-4">
+            <BackButton />
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="outline">
+                        <Bot className="mr-2 h-4 w-4"/>
+                        Conversar com IA
+                    </Button>
+                </SheetTrigger>
+                <SheetContent className="w-full sm:max-w-xl p-0">
+                    <SheetHeader className="p-4 border-b">
+                        <SheetTitle>Assistente de IA</SheetTitle>
+                        <SheetDescription>
+                            Faça perguntas sobre o dossiê de {client.name}.
+                        </SheetDescription>
+                    </SheetHeader>
+                    <ClientChat client={client}/>
+                </SheetContent>
+            </Sheet>
+        </div>
         <header className="mb-10 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
             {client.name}
