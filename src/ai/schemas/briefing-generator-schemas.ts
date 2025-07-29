@@ -35,13 +35,13 @@ const formSchema = z.object({
   }).optional(),
   concorrenciaMercado: z.object({
     principaisConcorrentes: z.array(z.object({
-        name: z.string(),
-        perfil: z.string(),
+        name: z.string().optional(),
+        perfil: z.string().optional(),
         detalhes: z.string().optional(),
     })).optional(),
     inspiracoesPerfis: z.array(z.object({
-        nome: z.string(),
-        perfil: z.string(),
+        nome: z.string().optional(),
+        perfil: z.string().optional(),
         detalhes: z.string().optional(),
     })).optional(),
   }).optional(),
