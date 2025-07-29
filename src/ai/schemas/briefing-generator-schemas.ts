@@ -37,10 +37,12 @@ const formSchema = z.object({
     principaisConcorrentes: z.array(z.object({
         name: z.string(),
         perfil: z.string(),
+        detalhes: z.string().optional(),
     })).optional(),
     inspiracoesPerfis: z.array(z.object({
         nome: z.string(),
         perfil: z.string(),
+        detalhes: z.string().optional(),
     })).optional(),
   }).optional(),
   comunicacaoExpectativas: z.object({

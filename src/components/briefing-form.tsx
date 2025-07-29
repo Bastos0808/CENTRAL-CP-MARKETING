@@ -89,10 +89,12 @@ const formSchema = z.object({
     principaisConcorrentes: z.array(z.object({
         name: z.string(),
         perfil: z.string(),
+        detalhes: z.string().optional(),
     })).optional(),
     inspiracoesPerfis: z.array(z.object({
         nome: z.string(),
         perfil: z.string(),
+        detalhes: z.string().optional(),
     })).optional(),
   }).optional(),
   comunicacaoExpectativas: z.object({
@@ -553,42 +555,57 @@ export default function BriefingForm() {
                         <FormLabel>Perfis de Inspiração</FormLabel>
                         <div className="space-y-4 rounded-md border p-4">
                             {inspiracoesFields.map((field, index) => (
-                              <div key={field.id} className="flex flex-col md:flex-row gap-4 items-end">
+                              <div key={field.id} className="flex flex-col gap-4">
+                                <div className="flex flex-col md:flex-row gap-4 items-start">
+                                    <FormField
+                                    control={form.control}
+                                    name={`concorrenciaMercado.inspiracoesPerfis.${index}.nome`}
+                                    render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                        <FormLabel>Nome da Marca/Perfil</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Ex: Nike, Apple" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                    />
+                                    <FormField
+                                    control={form.control}
+                                    name={`concorrenciaMercado.inspiracoesPerfis.${index}.perfil`}
+                                    render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                        <FormLabel>@ ou Link do Perfil</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="@nome_do_perfil" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                    />
+                                    <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-muted-foreground hover:text-destructive mt-7"
+                                    onClick={() => removeInspiracao(index)}
+                                    >
+                                    <Trash2 className="h-5 w-5" />
+                                    </Button>
+                                </div>
                                 <FormField
                                   control={form.control}
-                                  name={`concorrenciaMercado.inspiracoesPerfis.${index}.nome`}
+                                  name={`concorrenciaMercado.inspiracoesPerfis.${index}.detalhes`}
                                   render={({ field }) => (
                                     <FormItem className="flex-1">
-                                      <FormLabel>Nome da Marca/Perfil</FormLabel>
+                                      <FormLabel>Detalhes</FormLabel>
                                       <FormControl>
-                                        <Input placeholder="Ex: Nike, Apple" {...field} />
+                                        <Textarea placeholder="O que você admira? O que podemos aprender com este perfil?" {...field} />
                                       </FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )}
                                 />
-                                <FormField
-                                  control={form.control}
-                                  name={`concorrenciaMercado.inspiracoesPerfis.${index}.perfil`}
-                                  render={({ field }) => (
-                                    <FormItem className="flex-1">
-                                      <FormLabel>@ ou Link do Perfil</FormLabel>
-                                      <FormControl>
-                                        <Input placeholder="@nome_do_perfil" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="text-muted-foreground hover:text-destructive"
-                                  onClick={() => removeInspiracao(index)}
-                                >
-                                  <Trash2 className="h-5 w-5" />
-                                </Button>
                               </div>
                             ))}
                             <Button
@@ -596,7 +613,7 @@ export default function BriefingForm() {
                               variant="outline"
                               size="sm"
                               className="w-full"
-                              onClick={() => appendInspiracao({ nome: "", perfil: "" })}
+                              onClick={() => appendInspiracao({ nome: "", perfil: "", detalhes: "" })}
                             >
                               <PlusCircle className="mr-2 h-4 w-4" />
                               Adicionar Inspiração
@@ -608,42 +625,57 @@ export default function BriefingForm() {
                         <FormLabel>Principais Concorrentes</FormLabel>
                         <div className="space-y-4 rounded-md border p-4">
                             {concorrentesFields.map((field, index) => (
-                              <div key={field.id} className="flex flex-col md:flex-row gap-4 items-end">
+                              <div key={field.id} className="flex flex-col gap-4">
+                                <div className="flex flex-col md:flex-row gap-4 items-start">
+                                    <FormField
+                                    control={form.control}
+                                    name={`concorrenciaMercado.principaisConcorrentes.${index}.name`}
+                                    render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                        <FormLabel>Nome do Concorrente</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Nome da empresa concorrente" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                    />
+                                    <FormField
+                                    control={form.control}
+                                    name={`concorrenciaMercado.principaisConcorrentes.${index}.perfil`}
+                                    render={({ field }) => (
+                                        <FormItem className="flex-1">
+                                        <FormLabel>@ ou Link do Perfil</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="@nome_do_concorrente" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                    />
+                                    <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-muted-foreground hover:text-destructive mt-7"
+                                    onClick={() => removeConcorrente(index)}
+                                    >
+                                    <Trash2 className="h-5 w-5" />
+                                    </Button>
+                                </div>
                                 <FormField
                                   control={form.control}
-                                  name={`concorrenciaMercado.principaisConcorrentes.${index}.name`}
+                                  name={`concorrenciaMercado.principaisConcorrentes.${index}.detalhes`}
                                   render={({ field }) => (
                                     <FormItem className="flex-1">
-                                      <FormLabel>Nome do Concorrente</FormLabel>
+                                      <FormLabel>Detalhes</FormLabel>
                                       <FormControl>
-                                        <Input placeholder="Nome da empresa concorrente" {...field} />
+                                        <Textarea placeholder="Pontos fortes, fracos, estratégia observada..." {...field} />
                                       </FormControl>
                                       <FormMessage />
                                     </FormItem>
                                   )}
                                 />
-                                <FormField
-                                  control={form.control}
-                                  name={`concorrenciaMercado.principaisConcorrentes.${index}.perfil`}
-                                  render={({ field }) => (
-                                    <FormItem className="flex-1">
-                                      <FormLabel>@ ou Link do Perfil</FormLabel>
-                                      <FormControl>
-                                        <Input placeholder="@nome_do_concorrente" {...field} />
-                                      </FormControl>
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="text-muted-foreground hover:text-destructive"
-                                  onClick={() => removeConcorrente(index)}
-                                >
-                                  <Trash2 className="h-5 w-5" />
-                                </Button>
                               </div>
                             ))}
                             <Button
@@ -651,7 +683,7 @@ export default function BriefingForm() {
                               variant="outline"
                               size="sm"
                               className="w-full"
-                              onClick={() => appendConcorrente({ name: "", perfil: "" })}
+                              onClick={() => appendConcorrente({ name: "", perfil: "", detalhes: "" })}
                             >
                               <PlusCircle className="mr-2 h-4 w-4" />
                               Adicionar Concorrente

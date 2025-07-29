@@ -31,6 +31,8 @@ const briefingGeneratorPrompt = ai.definePrompt({
 
     Sua análise deve ser profunda e profissional. Leia toda a transcrição, identifique as informações mais relevantes e organize-as nos campos corretos do formulário. Seja claro, conciso e use uma linguagem profissional. Se uma informação não estiver explícita na transcrição, deixe o campo correspondente vazio.
 
+    Para concorrentes e inspirações, além do nome e perfil, forneça uma análise detalhada no campo "detalhes" sobre os pontos fortes, fracos e a estratégia geral observada.
+
     **Instruções Detalhadas:**
     1.  **Analise a Transcrição:** Leia atentamente a transcrição da reunião fornecida.
     2.  **Extraia as Informações:** Identifique os pontos-chave que correspondem a cada seção e campo do briefing. Preste atenção aos detalhes sobre o negócio, público-alvo, dores, objetivos, concorrentes e expectativas.
