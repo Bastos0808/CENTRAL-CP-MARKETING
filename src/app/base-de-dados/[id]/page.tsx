@@ -38,8 +38,6 @@ import {
   Camera,
   Mic,
   Package,
-  Wand2,
-  MessageCircle,
 } from "lucide-react";
 import {
   Select,
@@ -59,13 +57,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -75,8 +66,6 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { BackButton } from '@/components/ui/back-button';
-import { generateSummary } from '@/ai/flows/summary-generator-flow';
-import ClientChat from '@/components/client-chat';
 
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
@@ -219,10 +208,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
   
-  // AI Summary State
-  const [summary, setSummary] = useState<string | null>(null);
-  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
-
 
   useEffect(() => {
     if (!clientId) return;
@@ -293,25 +278,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   
   const handleRemoveLogo = (fieldName: 'logoUrl' | 'secondaryLogoUrl') => {
     setVisualIdentity(prevState => ({...prevState, [fieldName]: undefined}));
-  };
-
-  const handleGenerateSummary = async () => {
-      if (!client) return;
-      setIsGeneratingSummary(true);
-      setSummary(null);
-      try {
-          const result = await generateSummary({ briefing: client.briefing, reports: client.reports });
-          setSummary(result.summary);
-      } catch (error) {
-          console.error("Error generating summary:", error);
-          toast({
-              title: "Erro ao Gerar Análise",
-              description: "A IA não conseguiu gerar a análise. Tente novamente.",
-              variant: "destructive",
-          });
-      } finally {
-          setIsGeneratingSummary(false);
-      }
   };
 
 
@@ -471,7 +437,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
 
   return (
-    <>
     <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
       <div className="w-full">
         <BackButton />
@@ -519,38 +484,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
             </Card>
         </section>
         
-        {!isPodcastOnly && (
-            <section className="mb-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Análise Rápida com IA</CardTitle>
-                        <CardDescription>Um resumo estratégico gerado com base nos dados completos do cliente.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {isGeneratingSummary ? (
-                            <div className="space-y-3">
-                                <Skeleton className="h-5 w-3/4" />
-                                <Skeleton className="h-5 w-full" />
-                                <Skeleton className="h-5 w-5/6" />
-                            </div>
-                        ) : summary ? (
-                            <div
-                                className="prose prose-sm dark:prose-invert max-w-none"
-                                dangerouslySetInnerHTML={{ __html: markdownToHtml(summary) }}
-                            />
-                        ) : (
-                            <div className="text-center py-4">
-                                <Button onClick={handleGenerateSummary}>
-                                    <Wand2 className="mr-2 h-4 w-4" />
-                                    Gerar Análise Rápida
-                                </Button>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            </section>
-        )}
-
         {client.podcastPlan && (
             <section className="mb-8">
                 <Card>
@@ -938,25 +871,5 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
       </div>
     </main>
-
-    <Sheet>
-        <SheetTrigger asChild>
-            <Button
-                variant="default"
-                size="icon"
-                className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
-            >
-                <MessageCircle className="h-7 w-7" />
-                <span className="sr-only">Abrir Chat</span>
-            </Button>
-        </SheetTrigger>
-        <SheetContent className="w-full max-w-lg p-0">
-            <SheetHeader className="p-4 border-b">
-                <SheetTitle>Assistente de IA para {client.name}</SheetTitle>
-            </SheetHeader>
-            <ClientChat client={client} />
-        </SheetContent>
-    </Sheet>
-    </>
   );
 }

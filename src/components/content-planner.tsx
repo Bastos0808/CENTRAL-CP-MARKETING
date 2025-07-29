@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Loader2, CalendarIcon, Edit, Trash2, CalendarDays, Wand2 } from "lucide-react";
+import { PlusCircle, Loader2, CalendarIcon, Edit, Trash2, CalendarDays } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from './ui/textarea';
@@ -22,7 +22,6 @@ import { ptBR } from 'date-fns/locale';
 import { Calendar } from './ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
-import { generateIdeas } from '@/ai/flows/idea-generator-flow';
 
 
 interface Client {
@@ -80,20 +79,18 @@ export default function ContentPlanner() {
   const [editingPost, setEditingPost] = useState<ContentPost | null>(null);
   const [draggedPost, setDraggedPost] = useState<ContentPost | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<PostStatus | null>(null);
-  const [isGeneratingIdea, setIsGeneratingIdea] = useState(false);
   
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
 
   const { toast } = useToast();
-  const { control, handleSubmit, reset, setValue, watch } = useForm<PostFormValues>({
+  const { control, handleSubmit, reset } = useForm<PostFormValues>({
     resolver: zodResolver(postSchema),
     defaultValues: {
       title: "", description: "", postDate: format(new Date(), 'yyyy-MM-dd'), type: "arte", status: 'idea',
     }
   });
 
-  const postType = watch('type');
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -155,30 +152,6 @@ export default function ContentPlanner() {
       reset({ title: "", description: "", postDate: format(new Date(), 'yyyy-MM-dd'), type: "arte", status: status });
       setIsDialogOpen(true);
   }
-
-  const handleGenerateIdea = async () => {
-      if (!selectedClient) return;
-      setIsGeneratingIdea(true);
-      try {
-          const result = await generateIdeas({
-            briefing: selectedClient.briefing,
-            reports: selectedClient.reports,
-            postType,
-          });
-
-          setValue('title', result.idea.title);
-          setValue('description', result.idea.description);
-
-          toast({ title: "Ideia Gerada!", description: "Os campos de título e descrição foram preenchidos." });
-
-      } catch (error) {
-          console.error(error);
-          toast({ title: "Erro ao gerar ideia", description: "A IA não conseguiu gerar a ideia. Tente novamente.", variant: "destructive" });
-      } finally {
-          setIsGeneratingIdea(false);
-      }
-  };
-
 
   const onSubmit = async (data: PostFormValues) => {
     if (!selectedClient) return;
@@ -424,12 +397,7 @@ export default function ContentPlanner() {
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
                 <Controller name="title" control={control} render={({ field }) => (<div><Label>Título</Label><Input {...field} placeholder="Ex: Lançamento da nova coleção"/></div>)} />
                 <Controller name="description" control={control} render={({ field }) => (<div><Label>Descrição</Label><Textarea {...field} placeholder="Detalhes do post, texto da legenda, etc."/></div>)} />
-                <div className="flex justify-end -mt-2">
-                    <Button type="button" variant="ghost" size="sm" onClick={handleGenerateIdea} disabled={isGeneratingIdea}>
-                       {isGeneratingIdea ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                       Gerar com IA
-                    </Button>
-                </div>
+                
                 <Controller name="postDate" control={control} render={({ field }) => (<div><Label>Data de Postagem</Label><Input type="date" {...field} /></div>)} />
                 <div className='grid grid-cols-2 gap-4'>
                     <Controller name="type" control={control} render={({ field }) => (
