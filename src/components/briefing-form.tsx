@@ -44,10 +44,11 @@ import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { doc, updateDoc, collection, getDocs, getDoc } from "firebase/firestore";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Skeleton } from "./ui/skeleton";
 import { generateBriefingFromTranscript } from "@/ai/flows/briefing-generator-flow";
+import { Progress } from "./ui/progress";
 
 interface Client {
     id: string;
@@ -64,10 +65,10 @@ const formSchema = z.object({
         login: z.string().min(1, "Login é obrigatório"),
         senha: z.string().min(1, "Senha é obrigatória"),
     })).optional(),
-    possuiIdentidadeVisual: z.enum(['sim', 'nao'], { required_error: "Selecione uma opção." }),
-    possuiBancoImagens: z.enum(['sim', 'nao'], { required_error: "Selecione uma opção." }),
+    possuiIdentidadeVisual: z.enum(['sim', 'nao'], { required_error: "Selecione uma opção." }).optional(),
+    possuiBancoImagens: z.enum(['sim', 'nao'], { required_error: "Selecione uma opção." }).optional(),
     linksRelevantes: z.string().optional(),
-  }),
+  }).optional(),
   negociosPosicionamento: z.object({
     descricao: z.string().optional(),
     diferencial: z.string().optional(),
@@ -75,7 +76,7 @@ const formSchema = z.object({
     ticketMedio: z.string().optional(),
     maiorDesafio: z.string().optional(),
     erroMercado: z.string().optional(),
-  }),
+  }).optional(),
   publicoPersona: z.object({
     publicoAlvo: z.string().optional(),
     persona: z.string().optional(),
@@ -83,7 +84,7 @@ const formSchema = z.object({
     duvidasObjecoes: z.string().optional(),
     impedimentoCompra: z.string().optional(),
     canaisUtilizados: z.string().optional(),
-  }),
+  }).optional(),
   concorrenciaMercado: z.object({
     principaisConcorrentes: z.array(z.object({
         name: z.string(),
@@ -93,33 +94,33 @@ const formSchema = z.object({
         nome: z.string(),
         perfil: z.string(),
     })).optional(),
-  }),
+  }).optional(),
   comunicacaoExpectativas: z.object({
     investimentoAnterior: z.string().optional(),
     conteudosPreferidos: z.string().optional(),
     naoFazer: z.string().optional(),
     tomDeVoz: z.string().optional(),
-  }),
+  }).optional(),
   metasObjetivos: z.object({
     objetivoPrincipal: z.string().optional(),
     metasEspecificas: z.string().optional(),
     sazonalidade: z.string().optional(),
     verbaTrafego: z.string().optional(),
-  }),
+  }).optional(),
   equipeMidiaSocial: z.object({
     formatoConteudo: z.string().optional(),
     temasObrigatorios: z.string().optional(),
     disponibilidadeGravacao: z.string().optional(),
     responsavelGravacao: z.string().optional(),
     principaisGatilhos: z.string().optional(),
-  }),
+  }).optional(),
   equipeTrafegoPago: z.object({
     principalProdutoAnunciar: z.string().optional(),
     objetivoCampanhas: z.string().optional(),
     promocaoCondicao: z.string().optional(),
     localVeiculacao: z.string().optional(),
     limiteVerba: z.string().optional(),
-  }),
+  }).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -190,6 +191,9 @@ export default function BriefingForm() {
   const [loadingClients, setLoadingClients] = useState(true);
   const [transcript, setTranscript] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const progressIntervalRef = useRef<number | null>(null);
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -272,9 +276,26 @@ export default function BriefingForm() {
           return;
       }
       setIsGenerating(true);
+      setProgress(0);
+      
+      // Simulate progress
+      progressIntervalRef.current = window.setInterval(() => {
+        setProgress(prev => {
+            if (prev >= 95) {
+                if(progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+                return 95;
+            }
+            return prev + 5;
+        });
+      }, 500);
+
       try {
           const result = await generateBriefingFromTranscript({ transcript });
           const generatedBriefing = result.briefing || {};
+          
+          if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+          setProgress(100);
+
           // Ensure all fields have a value to prevent uncontrolled -> controlled error
           const completeBriefing = {
               ...defaultFormValues,
@@ -283,10 +304,15 @@ export default function BriefingForm() {
           form.reset(completeBriefing);
           toast({ title: "Briefing Preenchido!", description: "A IA analisou a transcrição e preencheu o formulário." });
       } catch (error) {
+          if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+          setProgress(0);
           console.error("Error generating briefing from transcript:", error);
           toast({ title: "Erro ao gerar briefing", description: "A IA não conseguiu processar a transcrição. Tente novamente.", variant: "destructive" });
       } finally {
+        setTimeout(() => {
           setIsGenerating(false);
+          setProgress(0);
+        }, 1000);
       }
   }
 
@@ -317,13 +343,13 @@ export default function BriefingForm() {
           await updateDoc(clientDocRef, {
               briefing: values,
               status: "active", // Change status to active after briefing is submitted
-              name: values.informacoesOperacionais.nomeNegocio,
-              plan: values.informacoesOperacionais.planoContratado,
+              name: values.informacoesOperacionais?.nomeNegocio,
+              plan: values.informacoesOperacionais?.planoContratado,
           });
       
           toast({
               title: "Briefing Salvo com Sucesso!",
-              description: `As informações de ${values.informacoesOperacionais.nomeNegocio} foram atualizadas.`,
+              description: `As informações de ${values.informacoesOperacionais?.nomeNegocio} foram atualizadas.`,
           });
 
       } catch (error) {
@@ -372,6 +398,12 @@ export default function BriefingForm() {
                         onChange={(e) => setTranscript(e.target.value)}
                     />
                 </div>
+                {isGenerating && (
+                    <div className="space-y-2">
+                        <Progress value={progress} />
+                        <p className="text-sm text-muted-foreground text-center">A IA está analisando a transcrição, isso pode levar um momento...</p>
+                    </div>
+                )}
                 <div className="flex justify-end">
                     <Button type="button" onClick={handleGenerateFromTranscript} disabled={isGenerating}>
                         {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
