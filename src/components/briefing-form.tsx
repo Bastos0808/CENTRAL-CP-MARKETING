@@ -97,7 +97,7 @@ const formSchema = z.object({
         detalhes: z.string().optional(),
     })).optional(),
     inspiracoesPerfis: z.array(z.object({
-        nome: z.string(),
+        name: z.string(),
         perfil: z.string(),
         detalhes: z.string().optional(),
     })).optional(),
@@ -250,7 +250,7 @@ export default function BriefingForm() {
                   },
                   concorrenciaMercado: {
                       ...defaultFormValues.concorrenciaMercado,
-                      ...(existingBriefing.concorrenciaMercado || {}),
+                      ...(existingBriefing.concorrenciaMercado || { principaisConcorrentes: [], inspiracoesPerfis: [] }),
                   },
                   comunicacaoExpectativas: {
                       ...defaultFormValues.comunicacaoExpectativas,
@@ -615,7 +615,7 @@ export default function BriefingForm() {
                                 <div className="flex flex-col md:flex-row gap-4 items-start">
                                     <FormField
                                     control={form.control}
-                                    name={`concorrenciaMercado.inspiracoesPerfis.${index}.nome`}
+                                    name={`concorrenciaMercado.inspiracoesPerfis.${index}.name`}
                                     render={({ field }) => (
                                         <FormItem className="flex-1">
                                         <FormLabel>Nome da Marca/Perfil</FormLabel>
@@ -669,7 +669,7 @@ export default function BriefingForm() {
                               variant="outline"
                               size="sm"
                               className="w-full"
-                              onClick={() => appendInspiracao({ nome: "", perfil: "", detalhes: "" })}
+                              onClick={() => appendInspiracao({ name: "", perfil: "", detalhes: "" })}
                             >
                               <PlusCircle className="mr-2 h-4 w-4" />
                               Adicionar Inspiração

@@ -38,6 +38,7 @@ import {
   Camera,
   Mic,
   Package,
+  Lightbulb,
 } from "lucide-react";
 import {
   Select,
@@ -92,9 +93,10 @@ interface Report {
     analysis: string;
 }
 
-interface Competitor {
+interface AnalyzedProfile {
   name: string;
   perfil: string;
+  detalhes?: string;
 }
 
 interface VisualIdentity {
@@ -199,7 +201,8 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const { toast } = useToast();
   
   const [personaPains, setPersonaPains] = useState('');
-  const [competitors, setCompetitors] = useState<Competitor[]>(Array(3).fill({ name: '', perfil: '' }));
+  const [competitors, setCompetitors] = useState<AnalyzedProfile[]>(Array(3).fill({ name: '', perfil: '', detalhes: '' }));
+  const [inspirations, setInspirations] = useState<AnalyzedProfile[]>(Array(3).fill({ name: '', perfil: '', detalhes: '' }));
   const [isSaving, setIsSaving] = useState(false);
   
   // Visual Identity State
@@ -223,16 +226,21 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
           setPersonaPains(clientData.briefing.publicoPersona?.dores || '');
           setVisualIdentity(clientData.visualIdentity || {});
           
-          const savedCompetitors = clientData.briefing.concorrenciaMercado?.principaisConcorrentes;
-          if (Array.isArray(savedCompetitors) && savedCompetitors.length > 0) {
-              const filledCompetitors = savedCompetitors.slice(0, 3);
-              while (filledCompetitors.length < 3) {
-                  filledCompetitors.push({ name: '', perfil: '' });
+          const fillProfiles = (profiles: any[] | undefined, setProfiles: (p: AnalyzedProfile[]) => void) => {
+              if (Array.isArray(profiles) && profiles.length > 0) {
+                  const filled = profiles.slice(0, 3);
+                  while (filled.length < 3) {
+                      filled.push({ name: '', perfil: '', detalhes: '' });
+                  }
+                  setProfiles(filled);
+              } else {
+                  setProfiles(Array(3).fill({ name: '', perfil: '', detalhes: '' }));
               }
-              setCompetitors(filledCompetitors);
-          } else {
-              setCompetitors(Array(3).fill({ name: '', perfil: '' }));
-          }
+          };
+
+          fillProfiles(clientData.briefing.concorrenciaMercado?.principaisConcorrentes, setCompetitors);
+          fillProfiles(clientData.briefing.concorrenciaMercado?.inspiracoesPerfis, setInspirations);
+
 
         } else {
           notFound();
@@ -247,10 +255,21 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     fetchClient();
   }, [clientId]);
   
-  const handleCompetitorChange = (index: number, field: keyof Competitor, value: string) => {
-    const updatedCompetitors = [...competitors];
-    updatedCompetitors[index] = { ...updatedCompetitors[index], [field]: value };
-    setCompetitors(updatedCompetitors);
+  const handleProfileChange = (
+    index: number, 
+    field: keyof AnalyzedProfile, 
+    value: string, 
+    type: 'competitor' | 'inspiration'
+  ) => {
+    if (type === 'competitor') {
+        const updated = [...competitors];
+        updated[index] = { ...updated[index], [field]: value };
+        setCompetitors(updated);
+    } else {
+        const updated = [...inspirations];
+        updated[index] = { ...updated[index], [field]: value };
+        setInspirations(updated);
+    }
   };
   
   const handleVisualIdentityChange = (field: keyof VisualIdentity, value: string) => {
@@ -316,14 +335,18 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       if (!client) return;
       setIsSaving(true);
       const clientDocRef = doc(db, "clients", client.id);
+      
+      const filterEmpty = (p: AnalyzedProfile) => p.name || p.perfil || p.detalhes;
+
       try {
         await updateDoc(clientDocRef, {
             "briefing.publicoPersona.dores": personaPains,
-            "briefing.concorrenciaMercado.principaisConcorrentes": competitors.filter(c => c.name || c.perfil)
+            "briefing.concorrenciaMercado.principaisConcorrentes": competitors.filter(filterEmpty),
+            "briefing.concorrenciaMercado.inspiracoesPerfis": inspirations.filter(filterEmpty),
         });
         toast({
             title: "Análise Estratégica Salva!",
-            description: "As informações de dores e concorrentes foram atualizadas.",
+            description: "As informações estratégicas foram atualizadas.",
         });
       } catch (error) {
           console.error("Error updating strategic analysis: ", error);
@@ -676,6 +699,15 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                                 {client.briefing.publicoPersona?.canaisUtilizados && <InfoCard title="Canais Utilizados" value={client.briefing.publicoPersona.canaisUtilizados} icon={Megaphone} />}
                             </AccordionContent>
                         </AccordionItem>
+                        <AccordionItem value="item-7">
+                           <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Megaphone className="h-5 w-5" />Comunicação e Expectativas</h3></AccordionTrigger>
+                           <AccordionContent className="space-y-4 pt-4">
+                               {client.briefing.comunicacaoExpectativas?.investimentoAnterior && <InfoCard title="Investimento Anterior em Marketing" value={client.briefing.comunicacaoExpectativas.investimentoAnterior} icon={Info} />}
+                               {client.briefing.comunicacaoExpectativas?.conteudosPreferidos && <InfoCard title="Conteúdos Preferidos" value={client.briefing.comunicacaoExpectativas.conteudosPreferidos} icon={Info} />}
+                               {client.briefing.comunicacaoExpectativas?.naoFazer && <InfoCard title="O que não fazer" value={client.briefing.comunicacaoExpectativas.naoFazer} icon={Info} />}
+                               {client.briefing.comunicacaoExpectativas?.tomDeVoz && <InfoCard title="Tom de Voz" value={client.briefing.comunicacaoExpectativas.tomDeVoz} icon={Info} />}
+                           </AccordionContent>
+                       </AccordionItem>
                          <AccordionItem value="item-4">
                             <AccordionTrigger><h3 className="flex items-center gap-2 text-xl font-semibold text-primary"><Goal className="h-5 w-5" />Metas e Objetivos</h3></AccordionTrigger>
                             <AccordionContent className="space-y-4 pt-4">
@@ -728,8 +760,8 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                             />
                         </div>
 
-                        <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
-                            <AccordionItem value="item-0">
+                        <Accordion type="multiple" className="w-full space-y-4" defaultValue={['competitors']}>
+                            <AccordionItem value="competitors">
                                 <AccordionTrigger>
                                     <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Users className="h-5 w-5" /> Análise de Concorrentes</Label>
                                 </AccordionTrigger>
@@ -740,12 +772,43 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="space-y-1">
                                                     <Label htmlFor={`competitor-name-${index}`}>Nome do Concorrente</Label>
-                                                    <Input id={`competitor-name-${index}`} value={competitor.name} onChange={(e) => handleCompetitorChange(index, 'name', e.target.value)} placeholder="Nome da empresa concorrente" />
+                                                    <Input id={`competitor-name-${index}`} value={competitor.name} onChange={(e) => handleProfileChange(index, 'name', e.target.value, 'competitor')} placeholder="Nome da empresa concorrente" />
                                                 </div>
                                                 <div className="space-y-1">
                                                     <Label htmlFor={`competitor-perfil-${index}`}>@ ou Link</Label>
-                                                    <Input id={`competitor-perfil-${index}`} value={competitor.perfil} onChange={(e) => handleCompetitorChange(index, 'perfil', e.target.value)} placeholder="@concorrente" />
+                                                    <Input id={`competitor-perfil-${index}`} value={competitor.perfil} onChange={(e) => handleProfileChange(index, 'perfil', e.target.value, 'competitor')} placeholder="@concorrente" />
                                                 </div>
+                                            </div>
+                                             <div className="space-y-1">
+                                                <Label htmlFor={`competitor-detalhes-${index}`}>Detalhes</Label>
+                                                <Textarea id={`competitor-detalhes-${index}`} value={competitor.detalhes || ''} onChange={(e) => handleProfileChange(index, 'detalhes', e.target.value, 'competitor')} placeholder="Pontos fortes, fracos, estratégia observada..." />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </AccordionContent>
+                            </AccordionItem>
+
+                            <AccordionItem value="inspirations">
+                                <AccordionTrigger>
+                                    <Label className="flex items-center gap-2 text-md font-semibold text-primary"><Lightbulb className="h-5 w-5" /> Inspirações</Label>
+                                </AccordionTrigger>
+                                <AccordionContent className="space-y-6 pt-4">
+                                    {inspirations.map((inspiration, index) => (
+                                        <div key={index} className="p-4 border rounded-lg space-y-4 bg-muted/20">
+                                            <h4 className="font-semibold text-foreground">Inspiração {index + 1}</h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="space-y-1">
+                                                    <Label htmlFor={`inspiration-name-${index}`}>Nome do Perfil/Marca</Label>
+                                                    <Input id={`inspiration-name-${index}`} value={inspiration.name} onChange={(e) => handleProfileChange(index, 'name', e.target.value, 'inspiration')} placeholder="Nome do perfil" />
+                                                </div>
+                                                <div className="space-y-1">
+                                                    <Label htmlFor={`inspiration-perfil-${index}`}>@ ou Link</Label>
+                                                    <Input id={`inspiration-perfil-${index}`} value={inspiration.perfil} onChange={(e) => handleProfileChange(index, 'perfil', e.target.value, 'inspiration')} placeholder="@inspiracao" />
+                                                </div>
+                                            </div>
+                                             <div className="space-y-1">
+                                                <Label htmlFor={`inspiration-detalhes-${index}`}>Detalhes</Label>
+                                                <Textarea id={`inspiration-detalhes-${index}`} value={inspiration.detalhes || ''} onChange={(e) => handleProfileChange(index, 'detalhes', e.target.value, 'inspiration')} placeholder="O que você admira? O que podemos aprender?" />
                                             </div>
                                         </div>
                                     ))}
@@ -757,7 +820,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                         <div className="flex justify-end">
                             <Button onClick={handleStrategicUpdate} disabled={isSaving}>
                                 {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                                {isSaving ? 'Salvando...' : 'Salvar Análise'}
+                                {isSaving ? 'Salvando...' : 'Salvar Análise Estratégica'}
                             </Button>
                         </div>
                     </CardContent>
