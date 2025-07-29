@@ -39,10 +39,10 @@ const summaryGeneratorPrompt = ai.definePrompt({
     **Estrutura da Análise (Siga esta ordem):**
 
     **Diagnóstico Estratégico:** Comece com uma visão geral do desafio principal do cliente. Conecte o 'maior desafio' com o 'objetivo principal' para definir o problema central a ser resolvido.
-    *   Baseie-se em: '{{client.briefing.negociosPosicionamento.maiorDesafio}}' e '{{client.briefing.metasObjetivos.objetivoPrincipal}}'.
+    *   Baseie-se em: '{{#if client.briefing.negociosPosicionamento.maiorDesafio}}{{client.briefing.negociosPosicionamento.maiorDesafio}}{{else}}N/A{{/if}}' e '{{#if client.briefing.metasObjetivos.objetivoPrincipal}}{{client.briefing.metasObjetivos.objetivoPrincipal}}{{else}}N/A{{/if}}'.
 
     **Público e Posicionamento:** Analise como o posicionamento atual da empresa se conecta (ou não) com as dores da persona. Avalie se o 'diferencial' da empresa é uma solução clara para as 'dores' do público.
-    *   Baseie-se em: '{{client.briefing.negociosPosicionamento.diferencial}}' e '{{client.briefing.publicoPersona.dores}}'.
+    *   Baseie-se em: '{{#if client.briefing.negociosPosicionamento.diferencial}}{{client.briefing.negociosPosicionamento.diferencial}}{{else}}N/A{{/if}}' e '{{#if client.briefing.publicoPersona.dores}}{{client.briefing.publicoPersona.dores}}{{else}}N/A{{/if}}'.
 
     **Oportunidade Central:** Com base no diagnóstico e na análise do público, identifique a oportunidade mais significativa. Onde está o maior potencial de crescimento? Que ângulo ou tema ainda não foi explorado e que dialoga diretamente com a persona? Considere os relatórios passados para identificar o que já ressoou com o público.
 
@@ -51,13 +51,13 @@ const summaryGeneratorPrompt = ai.definePrompt({
     **Dados Completos do Cliente:**
     - **Nome:** {{client.name}}
     - **Briefing:**
-      - **Descrição do Negócio:** {{client.briefing.negociosPosicionamento.descricao}}
-      - **Diferencial:** {{client.briefing.negociosPosicionamento.diferencial}}
-      - **Maior Desafio:** {{client.briefing.negociosPosicionamento.maiorDesafio}}
-      - **Público Alvo:** {{client.briefing.publicoPersona.publicoAlvo}}
-      - **Persona:** {{client.briefing.publicoPersona.persona}}
-      - **Dores da Persona:** {{client.briefing.publicoPersona.dores}}
-      - **Objetivo Principal:** {{client.briefing.metasObjetivos.objetivoPrincipal}}
+      - **Descrição do Negócio:** {{#if client.briefing.negociosPosicionamento.descricao}}{{client.briefing.negociosPosicionamento.descricao}}{{else}}N/A{{/if}}
+      - **Diferencial:** {{#if client.briefing.negociosPosicionamento.diferencial}}{{client.briefing.negociosPosicionamento.diferencial}}{{else}}N/A{{/if}}
+      - **Maior Desafio:** {{#if client.briefing.negociosPosicionamento.maiorDesafio}}{{client.briefing.negociosPosicionamento.maiorDesafio}}{{else}}N/A{{/if}}
+      - **Público Alvo:** {{#if client.briefing.publicoPersona.publicoAlvo}}{{client.briefing.publicoPersona.publicoAlvo}}{{else}}N/A{{/if}}
+      - **Persona:** {{#if client.briefing.publicoPersona.persona}}{{client.briefing.publicoPersona.persona}}{{else}}N/A{{/if}}
+      - **Dores da Persona:** {{#if client.briefing.publicoPersona.dores}}{{client.briefing.publicoPersona.dores}}{{else}}N/A{{/if}}
+      - **Objetivo Principal:** {{#if client.briefing.metasObjetivos.objetivoPrincipal}}{{client.briefing.metasObjetivos.objetivoPrincipal}}{{else}}N/A{{/if}}
     - **Histórico de Relatórios:**
       {{#if client.reports}}
         {{#each client.reports}}
