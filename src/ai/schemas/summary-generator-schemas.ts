@@ -25,17 +25,11 @@ const reportSchema = z.object({
     analysis: z.string(),
 }).describe('Um relatório de desempenho passado.');
 
-const clientSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  briefing: briefingSchema.optional(),
-  reports: z.array(reportSchema).optional(),
-}).describe('Os dados completos do cliente');
-
 
 // Define the input schema for the flow
 export const GenerateSummaryInputSchema = z.object({
-  client: clientSchema,
+  briefing: briefingSchema.optional(),
+  reports: z.array(reportSchema).optional(),
 });
 export type GenerateSummaryInput = z.infer<typeof GenerateSummaryInputSchema>;
 

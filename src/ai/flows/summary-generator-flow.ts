@@ -39,28 +39,27 @@ const summaryGeneratorPrompt = ai.definePrompt({
     **Estrutura da Análise (Siga esta ordem):**
 
     **Diagnóstico Estratégico:** Comece com uma visão geral do desafio principal do cliente. Conecte o 'maior desafio' com o 'objetivo principal' para definir o problema central a ser resolvido.
-    *   Baseie-se em: '{{#if client.briefing.negociosPosicionamento.maiorDesafio}}{{client.briefing.negociosPosicionamento.maiorDesafio}}{{else}}N/A{{/if}}' e '{{#if client.briefing.metasObjetivos.objetivoPrincipal}}{{client.briefing.metasObjetivos.objetivoPrincipal}}{{else}}N/A{{/if}}'.
+    *   Baseie-se em: '{{#if briefing.negociosPosicionamento.maiorDesafio}}{{briefing.negociosPosicionamento.maiorDesafio}}{{else}}N/A{{/if}}' e '{{#if briefing.metasObjetivos.objetivoPrincipal}}{{briefing.metasObjetivos.objetivoPrincipal}}{{else}}N/A{{/if}}'.
 
     **Público e Posicionamento:** Analise como o posicionamento atual da empresa se conecta (ou não) com as dores da persona. Avalie se o 'diferencial' da empresa é uma solução clara para as 'dores' do público.
-    *   Baseie-se em: '{{#if client.briefing.negociosPosicionamento.diferencial}}{{client.briefing.negociosPosicionamento.diferencial}}{{else}}N/A{{/if}}' e '{{#if client.briefing.publicoPersona.dores}}{{client.briefing.publicoPersona.dores}}{{else}}N/A{{/if}}'.
+    *   Baseie-se em: '{{#if briefing.negociosPosicionamento.diferencial}}{{briefing.negociosPosicionamento.diferencial}}{{else}}N/A{{/if}}' e '{{#if briefing.publicoPersona.dores}}{{briefing.publicoPersona.dores}}{{else}}N/A{{/if}}'.
 
     **Oportunidade Central:** Com base no diagnóstico e na análise do público, identifique a oportunidade mais significativa. Onde está o maior potencial de crescimento? Que ângulo ou tema ainda não foi explorado e que dialoga diretamente com a persona? Considere os relatórios passados para identificar o que já ressoou com o público.
 
     **Recomendação Estratégica:** Finalize com UMA recomendação clara e acionável. A sugestão deve ser uma ação de marketing ou conteúdo de alto impacto que ataque a 'Oportunidade Central' e impulsione o 'Objetivo Principal'. Seja específico.
 
     **Dados Completos do Cliente:**
-    - **Nome:** {{client.name}}
     - **Briefing:**
-      - **Descrição do Negócio:** {{#if client.briefing.negociosPosicionamento.descricao}}{{client.briefing.negociosPosicionamento.descricao}}{{else}}N/A{{/if}}
-      - **Diferencial:** {{#if client.briefing.negociosPosicionamento.diferencial}}{{client.briefing.negociosPosicionamento.diferencial}}{{else}}N/A{{/if}}
-      - **Maior Desafio:** {{#if client.briefing.negociosPosicionamento.maiorDesafio}}{{client.briefing.negociosPosicionamento.maiorDesafio}}{{else}}N/A{{/if}}
-      - **Público Alvo:** {{#if client.briefing.publicoPersona.publicoAlvo}}{{client.briefing.publicoPersona.publicoAlvo}}{{else}}N/A{{/if}}
-      - **Persona:** {{#if client.briefing.publicoPersona.persona}}{{client.briefing.publicoPersona.persona}}{{else}}N/A{{/if}}
-      - **Dores da Persona:** {{#if client.briefing.publicoPersona.dores}}{{client.briefing.publicoPersona.dores}}{{else}}N/A{{/if}}
-      - **Objetivo Principal:** {{#if client.briefing.metasObjetivos.objetivoPrincipal}}{{client.briefing.metasObjetivos.objetivoPrincipal}}{{else}}N/A{{/if}}
+      - **Descrição do Negócio:** {{#if briefing.negociosPosicionamento.descricao}}{{briefing.negociosPosicionamento.descricao}}{{else}}N/A{{/if}}
+      - **Diferencial:** {{#if briefing.negociosPosicionamento.diferencial}}{{briefing.negociosPosicionamento.diferencial}}{{else}}N/A{{/if}}
+      - **Maior Desafio:** {{#if briefing.negociosPosicionamento.maiorDesafio}}{{briefing.negociosPosicionamento.maiorDesafio}}{{else}}N/A{{/if}}
+      - **Público Alvo:** {{#if briefing.publicoPersona.publicoAlvo}}{{briefing.publicoPersona.publicoAlvo}}{{else}}N/A{{/if}}
+      - **Persona:** {{#if briefing.publicoPersona.persona}}{{briefing.publicoPersona.persona}}{{else}}N/A{{/if}}
+      - **Dores da Persona:** {{#if briefing.publicoPersona.dores}}{{briefing.publicoPersona.dores}}{{else}}N/A{{/if}}
+      - **Objetivo Principal:** {{#if briefing.metasObjetivos.objetivoPrincipal}}{{briefing.metasObjetivos.objetivoPrincipal}}{{else}}N/A{{/if}}
     - **Histórico de Relatórios:**
-      {{#if client.reports}}
-        {{#each client.reports}}
+      {{#if reports}}
+        {{#each reports}}
         - **Relatório de {{createdAt}}:** {{analysis}}
         {{/each}}
       {{else}}

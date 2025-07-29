@@ -59,6 +59,7 @@ const briefingSchema = z.object({
     negociosPosicionamento: z.object({
         descricao: z.string().optional(),
         diferencial: z.string().optional(),
+        maiorDesafio: z.string().optional(),
     }).optional(),
     publicoPersona: z.object({
         publicoAlvo: z.string().optional(),

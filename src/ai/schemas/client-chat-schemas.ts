@@ -23,7 +23,7 @@ const briefingSchema = z.object({
   metasObjetivos: z.object({
     objetivoPrincipal: z.string().optional(),
   }).optional(),
-}).describe('O conteúdo do briefing do cliente.');
+}).describe('O conteúdo do briefing do cliente.').optional();
 
 const reportSchema = z.object({
     id: z.string(),
@@ -34,7 +34,7 @@ const reportSchema = z.object({
 const clientSchema = z.object({
   id: z.string(),
   name: z.string(),
-  briefing: briefingSchema.optional(),
+  briefing: briefingSchema,
   reports: z.array(reportSchema).optional(),
 }).describe('Os dados completos do cliente');
 

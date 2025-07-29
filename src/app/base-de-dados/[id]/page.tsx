@@ -300,7 +300,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       setIsGeneratingSummary(true);
       setSummary(null);
       try {
-          const result = await generateSummary({ client });
+          const result = await generateSummary({ briefing: client.briefing, reports: client.reports });
           setSummary(result.summary);
       } catch (error) {
           console.error("Error generating summary:", error);
