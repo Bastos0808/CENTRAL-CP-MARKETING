@@ -19,6 +19,7 @@ import {
   Loader2,
   Wand2,
   FileText,
+  Eye,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Skeleton } from "./ui/skeleton";
 import { generateBriefingFromTranscript } from "@/ai/flows/briefing-generator-flow";
 import { Progress } from "./ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { ScrollArea } from "./ui/scroll-area";
+import { cn } from "@/lib/utils";
+
 
 interface Client {
     id: string;
@@ -328,6 +333,28 @@ export default function BriefingForm() {
         }, 1000);
       }
   }
+  
+  const renderTranscriptAsChat = (text: string) => {
+    return text.split('\n').filter(line => line.trim() !== '').map((line, index) => {
+        const match = line.match(/^([^:]+):(.*)/);
+        if (match) {
+            const speaker = match[1].trim();
+            const message = match[2].trim();
+            const isEven = (speaker.toLowerCase().includes('cliente') || speaker.toLowerCase().includes('user'));
+            return (
+                <div key={index} className={cn("flex w-full mb-2", isEven ? "justify-end" : "justify-start")}>
+                    <div className="max-w-xl">
+                        <div className={cn("px-4 py-2 rounded-lg", isEven ? "bg-primary text-primary-foreground" : "bg-muted")}>
+                           <p className="font-semibold text-sm mb-1">{speaker}</p>
+                           <p className="text-sm">{message}</p>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        return <p key={index} className="text-sm mb-2">{line}</p>
+    })
+  }
 
   const { fields: redesSociaisFields, append: appendRedeSocial, remove: removeRedeSocial } = useFieldArray({
     control: form.control,
@@ -401,7 +428,25 @@ export default function BriefingForm() {
              <>
               <div className="space-y-4 rounded-lg border p-4 bg-muted/30">
                 <div className="space-y-2">
-                    <FormLabel htmlFor="transcript" className="flex items-center gap-2 text-md font-semibold text-primary"><FileText className="h-5 w-5" />Preenchimento com IA</FormLabel>
+                    <div className="flex justify-between items-center">
+                      <FormLabel htmlFor="transcript" className="flex items-center gap-2 text-md font-semibold text-primary"><FileText className="h-5 w-5" />Preenchimento com IA</FormLabel>
+                       <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" size="sm" disabled={!transcript}>
+                                  <Eye className="mr-2 h-4 w-4"/>
+                                  Ver Transcrição
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                <DialogTitle>Transcrição da Reunião</DialogTitle>
+                                </DialogHeader>
+                                <ScrollArea className="h-[60vh] p-4 border rounded-md">
+                                    {renderTranscriptAsChat(transcript)}
+                                </ScrollArea>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                     <FormDescription>Cole a transcrição da reunião abaixo e clique no botão para a IA preencher o briefing automaticamente.</FormDescription>
                     <Textarea 
                         id="transcript"
