@@ -1,16 +1,17 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, CheckSquare, Wand2 } from "lucide-react";
+import { Phone, CheckSquare, Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const checklist = [
-    { text: "Envie uma mensagem curta, direta e personalizada, usando o 'gancho' que você identificou na fase de pesquisa." },
-    { text: "A mensagem deve focar na DOR do prospect, não em listar os serviços da CP Marketing." },
-    { text: "Estrutura ideal: 'Olá [Nome], vi que [Problema/Oportunidade]. Muitos dos nossos clientes de [Setor] enfrentavam isso e conseguiram [Resultado]. Faz sentido conversarmos 15min sobre?'" },
-    { text: "Use nossa ferramenta de IA para gerar versões dessa mensagem e treinar sua escrita." },
-    { text: "O objetivo da mensagem é despertar curiosidade e conseguir uma resposta positiva para uma chamada, não vender a solução completa." }
+    { text: "O canal principal de contato é o telefone (ligação ou WhatsApp) fornecido no CRM ou obtido na prospecção." },
+    { text: "Use o 'gancho' que você identificou na Fase 1 para iniciar a conversa de forma personalizada." },
+    { text: "Seja breve e direto. Apresente-se, mencione o 'gancho' e conecte com a dor observada." },
+    { text: "Exemplo de abordagem: 'Olá [Nome], aqui é [Seu Nome] da CP. Vi que [Gancho/Problema]. Isso tem sido um desafio para vocês?'" },
+    { text: "O objetivo NUNCA é vender na primeira ligação. O objetivo é validar a dor e agendar uma reunião de diagnóstico." },
+    { text: "Se o lead demonstrar interesse, a única meta é levá-lo para a Fase 4: Agendamento." }
 ];
 
 export default function ContactPage() {
@@ -18,19 +19,19 @@ export default function ContactPage() {
     <div className="space-y-6">
       <div className="flex items-start gap-4">
         <div className="bg-primary/10 p-3 rounded-full">
-          <Mail className="h-10 w-10 text-primary" />
+          <Phone className="h-10 w-10 text-primary" />
         </div>
         <div>
-            <h1 className="text-3xl font-bold tracking-tight">Fase 3: Contato Direto (Mensagem)</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Fase 3: Contato Direto (Ligação ou WhatsApp)</h1>
             <p className="text-lg text-muted-foreground mt-1">
-                Este é o momento da verdade. Com a pesquisa feita e a conexão estabelecida, você tem a permissão para enviar uma mensagem. A qualidade da sua mensagem definirá o sucesso.
+                Este é o momento da verdade. Com a pesquisa feita, você tem o número do prospect e um motivo relevante para ligar. A qualidade da sua abordagem definirá o sucesso.
             </p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-            <CardTitle>Checklist de Ações</CardTitle>
+            <CardTitle>Checklist da Abordagem</CardTitle>
         </CardHeader>
         <CardContent>
              <ul className="space-y-4">
@@ -50,7 +51,7 @@ export default function ContactPage() {
           </CardHeader>
           <CardContent className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-muted-foreground flex-1">
-                Nossa ferramenta de IA foi treinada para criar mensagens de prospecção com base nos dados do prospect. Use-a para gerar ideias e aprimorar sua abordagem.
+                Nossa ferramenta de IA pode ajudar a criar o script inicial para sua ligação ou a mensagem de texto para o WhatsApp. Use-a para gerar ideias e aprimorar sua abordagem.
             </p>
             <Link href="/ferramentas">
                 <Button>
