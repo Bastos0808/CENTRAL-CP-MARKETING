@@ -2,3 +2,4 @@
 import './flows/report-generator-flow';
 import './flows/briefing-generator-flow';
 import './flows/client-chat-flow';
+import './flows/onboarding-sdr-flow';
