@@ -5,30 +5,30 @@ import { Handshake, CheckSquare, AlertTriangle, UserPlus, MessageSquare, Clock, 
 const connectionSteps = [
     {
         icon: UserPlus,
-        title: "O Convite Silencioso (LinkedIn)",
+        title: "Envio do Convite de Conexão",
         details: [
-            "Envie um convite de conexão para o decisor identificado.",
-            "<strong>CRÍTICO:</strong> Não envie uma mensagem junto com o convite. O objetivo é apenas a conexão, sem vender nada.",
-            "<strong>O Porquê:</strong> Um convite sem mensagem é percebido como menos 'vendedor' e tem uma taxa de aceitação muito maior. Você está apenas aparecendo no radar, não pedindo nada."
+            "Envie o convite de conexão para o decisor identificado no LinkedIn.",
+            "<strong>Ponto Crítico:</strong> Não envie uma mensagem junto ao convite. O objetivo inicial é estritamente a conexão.",
+            "<strong>Fundamento:</strong> Um convite sem mensagem tem maior taxa de aceitação, pois é percebido como menos comercial e estabelece um primeiro ponto de contato neutro."
         ]
     },
     {
         icon: MessageSquare,
-        title: "A Interação Estratégica",
+        title: "Interação Pós-Conexão",
         details: [
-            "Após a conexão ser aceita, espere o lead aparecer no seu feed ou visite o perfil dele.",
-            "Interaja com 1 ou 2 posts recentes do decisor ou da empresa.",
-            "<strong>A Melhor Prática:</strong> Um comentário genuíno que adiciona valor à discussão é muito mais poderoso do que uma simples curtida. Mostra que você leu e pensou sobre o assunto.",
-            "<strong>O Porquê:</strong> Isso gera uma segunda notificação e reforça a familiaridade. Ele vê seu nome novamente, agora associado a uma interação positiva."
+            "Após a aceitação do convite, monitore a atividade do lead ou visite seu perfil.",
+            "Interaja com 1 ou 2 publicações recentes do decisor ou da página da empresa.",
+            "<strong>Melhor Prática:</strong> Um comentário relevante que contribua para a discussão é superior a uma simples curtida. Demonstra interesse genuíno no conteúdo do lead.",
+            "<strong>Fundamento:</strong> Esta ação gera uma segunda notificação, reforçando o reconhecimento do seu nome e associando-o a uma interação profissional."
         ]
     },
     {
         icon: Clock,
-        title: "O Jogo da Paciência",
+        title: "Intervalo Estratégico",
         details: [
-            "Aguarde de 1 a 2 dias úteis após a sua interação antes de passar para a próxima fase (Contato Direto).",
-            "Não envie a mensagem de prospecção no mesmo dia em que ele aceitou o convite.",
-            "<strong>O Porquê:</strong> A paciência nesta fase não é passividade, é uma tática. Ela remove a percepção de desespero e torna sua abordagem na Fase 3 muito mais natural e bem-recebida."
+            "Aguarde de 1 a 2 dias úteis após a interação antes de iniciar o contato direto (Fase 3).",
+            "Não envie a mensagem de prospecção no mesmo dia da aceitação do convite.",
+            "<strong>Fundamento:</strong> O intervalo de tempo remove a percepção de urgência ou desespero, tornando a abordagem subsequente mais natural e profissional."
         ]
     }
 ];
@@ -43,7 +43,7 @@ export default function ConnectionPage() {
         <div>
             <h1 className="text-3xl font-bold tracking-tight">Fase 2: Conexão</h1>
             <p className="text-lg text-muted-foreground mt-1">
-                O objetivo aqui é simples: aparecer no radar do prospect de forma sutil e profissional. Pessoas compram de quem elas conhecem e confiam. Esta fase inicia o processo de familiaridade.
+                O objetivo desta fase é estabelecer familiaridade com o prospect de forma sutil e profissional. A prospecção é mais eficaz quando o lead já reconhece seu nome antes da abordagem direta.
             </p>
         </div>
       </div>
@@ -74,15 +74,15 @@ export default function ConnectionPage() {
 
        <Card className="border-yellow-500/50 bg-yellow-500/5">
           <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-yellow-700 dark:text-yellow-500"><AlertTriangle /> Plano B: E se não houver conexão?</CardTitle>
+              <CardTitle className="flex items-center gap-3 text-yellow-700 dark:text-yellow-500"><AlertTriangle /> Procedimento Alternativo: Falha na Conexão</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
               <p className="text-yellow-700/80 dark:text-yellow-500/80">
-                  Nem todo decisor é ativo no LinkedIn ou aceitará seu convite. Se após 3-4 dias úteis o convite não for aceito, não se desespere. É hora de mudar de canal.
+                  Se o convite no LinkedIn não for aceito em 3-4 dias úteis, ou se o decisor for inativo na plataforma, o plano de aquecimento deve ser adaptado.
               </p>
                <div className="flex items-start gap-3 text-yellow-700/80 dark:text-yellow-500/80">
                   <Mail className="h-5 w-5 mt-0.5 flex-shrink-0" />
-                  <span><strong>Ação:</strong> Abandone a estratégia de aquecimento no LinkedIn e parta para a Fase 3 (Contato Direto) usando o e-mail do prospect como canal principal. A pesquisa que você fez na Fase 1 continua sendo seu maior trunfo.</span>
+                  <span><strong>Ação Corretiva:</strong> Avance diretamente para a Fase 3 (Contato Direto), utilizando o e-mail do prospect como canal principal. A pesquisa da Fase 1 continua sendo o ativo mais importante para a personalização da mensagem.</span>
               </div>
           </CardContent>
       </Card>
