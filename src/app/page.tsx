@@ -4,12 +4,12 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, Mic, LogOut, Users, Wand2 } from 'lucide-react';
-import MindMap from '@/components/mind-map';
+import { ArrowRight, Database, FileText, Mic, LogOut, Users, Wand2, Briefcase, Podcast, Target } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Home() {
   const router = useRouter();
@@ -31,6 +31,51 @@ export default function Home() {
       });
     }
   };
+  
+  const strategicTools = [
+      {
+        title: "Base de Dados de Clientes",
+        description: "Adicione novos clientes e gerencie seus dossiês.",
+        href: "/base-de-dados",
+        icon: Database
+      },
+      {
+        title: "Formulário de Briefing",
+        description: "Preencha os briefings de clientes pendentes.",
+        href: "/form-briefing",
+        icon: FileText
+      },
+      {
+        title: "Gerador de Relatórios",
+        description: "Crie relatórios de desempenho com IA.",
+        href: "/relatorios",
+        icon: Wand2
+      }
+  ];
+  
+  const podcastTools = [
+       {
+        title: "Gerenciamento de Podcast",
+        description: "Gerencie clientes, saldos de gravações e agendamentos.",
+        href: "/podcast",
+        icon: Mic
+      }
+  ];
+  
+  const commercialTools = [
+      {
+        title: "Onboarding de SDRs",
+        description: "Jornada de integração guiada para novos vendedores.",
+        href: "/onboarding",
+        icon: Users
+      },
+      {
+        title: "Ferramentas de IA",
+        description: "Recursos para potencializar sua prospecção.",
+        href: "/ferramentas",
+        icon: Wand2
+      }
+  ]
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 relative">
@@ -46,110 +91,80 @@ export default function Home() {
           Bem-vindo à Central Mödus
         </h1>
         <p className="mt-6 text-lg text-muted-foreground">
-          Navegue pelo ecossistema Mödus e acesse as ferramentas abaixo.
+          Navegue pelas abas e acesse as ferramentas do seu setor.
         </p>
       </div>
 
-      <div className="w-full max-w-6xl grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
-        <Card>
-          <CardHeader>
-            <CardTitle>Base de Dados de Clientes</CardTitle>
-            <CardDescription>Adicione novos clientes e gerencie seus dossiês.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/base-de-dados" passHref>
-              <Button className="w-full" variant="outline">
-                Acessar Base de Dados
-                <Database className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Formulário de Briefing</CardTitle>
-            <CardDescription>Preencha os briefings de clientes pendentes.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/form-briefing" passHref>
-              <Button className="w-full" variant="outline">
-                Preencher Briefing
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Gerador de Relatórios</CardTitle>
-            <CardDescription>Crie relatórios de desempenho personalizados.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/relatorios" passHref>
-              <Button className="w-full" variant="outline">
-                Gerar Relatório
-                <FileText className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Gerenciamento de Podcast</CardTitle>
-            <CardDescription>Gerencie clientes, saldos de gravações e agendamentos de podcasts.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/podcast" passHref>
-              <Button className="w-full" variant="outline">
-                Gerenciar Podcasts
-                <Mic className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+      <div className="w-full max-w-4xl">
+         <Tabs defaultValue="strategy" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="strategy"><Briefcase className="mr-2"/> Estratégia</TabsTrigger>
+                <TabsTrigger value="podcast"><Podcast className="mr-2"/> Podcast</TabsTrigger>
+                <TabsTrigger value="commercial"><Target className="mr-2"/> Comercial</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="strategy" className="mt-6">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {strategicTools.map(tool => (
+                        <Card key={tool.title}>
+                            <CardHeader>
+                                <CardTitle className='flex items-center gap-2'><tool.icon /> {tool.title}</CardTitle>
+                                <CardDescription>{tool.description}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Link href={tool.href} passHref>
+                                <Button className="w-full" variant="outline">
+                                    Acessar <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </TabsContent>
+            
+            <TabsContent value="podcast" className="mt-6">
+                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 justify-center">
+                    {podcastTools.map(tool => (
+                        <Card key={tool.title} className="lg:col-start-2">
+                            <CardHeader>
+                                <CardTitle className='flex items-center gap-2'><tool.icon /> {tool.title}</CardTitle>
+                                <CardDescription>{tool.description}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Link href={tool.href} passHref>
+                                <Button className="w-full" variant="outline">
+                                    Acessar <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </TabsContent>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Onboarding de SDRs</CardTitle>
-            <CardDescription>Jornada de integração guiada para novos vendedores.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/onboarding" passHref>
-              <Button className="w-full" variant="outline">
-                Iniciar Jornada
-                <Users className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-         <Card>
-          <CardHeader>
-            <CardTitle>Ferramentas de IA</CardTitle>
-            <CardDescription>Recursos para potencializar sua prospecção.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/ferramentas" passHref>
-              <Button className="w-full" variant="outline">
-                Acessar Ferramentas
-                <Wand2 className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+            <TabsContent value="commercial" className="mt-6">
+                 <div className="grid gap-6 md:grid-cols-2">
+                    {commercialTools.map(tool => (
+                        <Card key={tool.title}>
+                            <CardHeader>
+                                <CardTitle className='flex items-center gap-2'><tool.icon /> {tool.title}</CardTitle>
+                                <CardDescription>{tool.description}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Link href={tool.href} passHref>
+                                <Button className="w-full" variant="outline">
+                                    Acessar <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </TabsContent>
+        </Tabs>
       </div>
 
-      <section className="w-full max-w-6xl">
-        <Card>
-          <CardHeader>
-            <CardTitle>Visão Geral do CP MÖDUS</CardTitle>
-            <CardDescription>O mapa mental estratégico que guia nossas operações.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <MindMap />
-          </CardContent>
-        </Card>
-      </section>
     </main>
   );
 }
