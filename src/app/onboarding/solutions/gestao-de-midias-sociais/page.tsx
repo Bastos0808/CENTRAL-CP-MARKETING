@@ -48,12 +48,42 @@ export default function GestaoMidiasPage() {
           <CardTitle>O Que Entregamos?</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-3 text-foreground">
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Planejamento Estratégico de Conteúdo:</strong> Definição de pilares, editoriais e calendário mensal alinhado aos seus objetivos.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Criação e Design de Posts:</strong> Produção de artes, carrosséis e vídeos (Reels/TikTok) com design profissional e copywriting persuasivo.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Agendamento e Publicação:</strong> Gerenciamos todo o fluxo de publicação para garantir consistência e os melhores horários.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Relacionamento e Engajamento:</strong> Interação estratégica nos stories, resposta a comentários e DMs para construir uma comunidade.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Análise e Relatórios Mensais:</strong> Apresentamos os resultados, o que funcionou e os planos para o próximo ciclo.</div></li>
+          <ul className="space-y-4 text-foreground">
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Planejamento Estratégico de Conteúdo</span>
+                    <p className="text-sm text-muted-foreground">Definição de pilares, editoriais e calendário mensal alinhado aos seus objetivos.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Criação e Design de Posts</span>
+                    <p className="text-sm text-muted-foreground">Produção de artes, carrosséis e vídeos (Reels/TikTok) com design profissional e copywriting persuasivo.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Agendamento e Publicação</span>
+                    <p className="text-sm text-muted-foreground">Gerenciamos todo o fluxo de publicação para garantir consistência e os melhores horários.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Relacionamento e Engajamento</span>
+                    <p className="text-sm text-muted-foreground">Interação estratégica nos stories, resposta a comentários e DMs para construir uma comunidade.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Análise e Relatórios Mensais</span>
+                    <p className="text-sm text-muted-foreground">Apresentamos os resultados, o que funcionou e os planos para o próximo ciclo.</p>
+                </div>
+            </li>
           </ul>
         </CardContent>
       </Card>

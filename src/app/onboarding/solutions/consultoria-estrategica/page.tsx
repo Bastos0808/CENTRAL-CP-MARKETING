@@ -48,11 +48,35 @@ export default function ConsultoriaPage() {
           <CardTitle>O Que Entregamos?</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-3 text-foreground">
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Diagnóstico Completo:</strong> Análise aprofundada da sua presença digital, concorrência e oportunidades de mercado.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Plano de Ação Detalhado:</strong> Um documento estratégico com pilares de conteúdo, funil de vendas, canais prioritários e cronograma para 90 dias.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Definição de KPIs:</strong> Estabelecimento de métricas claras para que sua equipe possa medir o sucesso das ações propostas.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Sessão de Apresentação:</strong> Uma reunião para apresentar o plano, tirar dúvidas e garantir que sua equipe esteja pronta para executar.</div></li>
+          <ul className="space-y-4 text-foreground">
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Diagnóstico Completo</span>
+                    <p className="text-sm text-muted-foreground">Análise aprofundada da sua presença digital, concorrência e oportunidades de mercado.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Plano de Ação Detalhado</span>
+                    <p className="text-sm text-muted-foreground">Um documento estratégico com pilares de conteúdo, funil de vendas, canais prioritários e cronograma para 90 dias.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Definição de KPIs</span>
+                    <p className="text-sm text-muted-foreground">Estabelecimento de métricas claras para que sua equipe possa medir o sucesso das ações propostas.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Sessão de Apresentação</span>
+                    <p className="text-sm text-muted-foreground">Uma reunião para apresentar o plano, tirar dúvidas e garantir que sua equipe esteja pronta para executar.</p>
+                </div>
+            </li>
           </ul>
         </CardContent>
       </Card>

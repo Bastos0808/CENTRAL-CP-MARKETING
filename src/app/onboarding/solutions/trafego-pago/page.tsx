@@ -48,12 +48,42 @@ export default function TrafegoPage() {
           <CardTitle>O Que Entregamos?</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-3 text-foreground">
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Planejamento e Estruturação de Campanhas:</strong> Mapeamento de público, definição de objetivos e estruturação completa no Gerenciador de Anúncios.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Criação de Anúncios (Criativos):</strong> Desenvolvimento de imagens, vídeos e textos (copy) otimizados para conversão em cada etapa do funil.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Gestão e Otimização Diária:</strong> Acompanhamento constante das métricas, testes A/B e ajustes para maximizar o retorno sobre o investimento (ROAS).</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Pixel e Rastreamento:</strong> Instalação e configuração correta das ferramentas de rastreamento para mensurar resultados com precisão.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Relatórios de Performance:</strong> Relatórios claros e objetivos que mostram o desempenho das campanhas, o custo por lead/venda e os próximos passos.</div></li>
+          <ul className="space-y-4 text-foreground">
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Planejamento e Estruturação de Campanhas</span>
+                    <p className="text-sm text-muted-foreground">Mapeamento de público, definição de objetivos e estruturação completa no Gerenciador de Anúncios.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Criação de Anúncios (Criativos)</span>
+                    <p className="text-sm text-muted-foreground">Desenvolvimento de imagens, vídeos e textos (copy) otimizados para conversão em cada etapa do funil.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Gestão e Otimização Diária</span>
+                    <p className="text-sm text-muted-foreground">Acompanhamento constante das métricas, testes A/B e ajustes para maximizar o retorno sobre o investimento (ROAS).</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Pixel e Rastreamento</span>
+                    <p className="text-sm text-muted-foreground">Instalação e configuração correta das ferramentas de rastreamento para mensurar resultados com precisão.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Relatórios de Performance</span>
+                    <p className="text-sm text-muted-foreground">Relatórios claros e objetivos que mostram o desempenho das campanhas, o custo por lead/venda e os próximos passos.</p>
+                </div>
+            </li>
           </ul>
         </CardContent>
       </Card>

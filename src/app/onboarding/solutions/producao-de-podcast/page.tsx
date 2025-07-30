@@ -48,12 +48,42 @@ export default function PodcastPage() {
           <CardTitle>O Que Entregamos?</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-3 text-foreground">
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Gravação Profissional:</strong> Equipamentos de ponta para garantir a melhor qualidade de áudio e vídeo.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Edição e Pós-produção:</strong> Cortes, limpeza de áudio, adição de trilhas e vinhetas para um acabamento profissional.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Criação de Cortes (Nuggets e Pills):</strong> Transformamos cada episódio em múltiplos clipes curtos e impactantes para as redes sociais.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Distribuição Estratégica:</strong> Publicamos seu podcast nas principais plataformas (Spotify, Apple Podcasts, etc.) e gerenciamos seu canal no YouTube.</div></li>
-            <li className="flex items-start gap-3"><CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" /><div><strong>Design e Identidade Visual:</strong> Criamos as capas e a identidade visual completa do seu programa.</div></li>
+          <ul className="space-y-4 text-foreground">
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Gravação Profissional</span>
+                    <p className="text-sm text-muted-foreground">Equipamentos de ponta para garantir a melhor qualidade de áudio e vídeo.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Edição e Pós-produção</span>
+                    <p className="text-sm text-muted-foreground">Cortes, limpeza de áudio, adição de trilhas e vinhetas para um acabamento profissional.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Criação de Cortes (Nuggets e Pills)</span>
+                    <p className="text-sm text-muted-foreground">Transformamos cada episódio em múltiplos clipes curtos e impactantes para as redes sociais.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Distribuição Estratégica</span>
+                    <p className="text-sm text-muted-foreground">Publicamos seu podcast nas principais plataformas (Spotify, Apple Podcasts, etc.) e gerenciamos seu canal no YouTube.</p>
+                </div>
+            </li>
+            <li className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                <div>
+                    <span className="font-semibold">Design e Identidade Visual</span>
+                    <p className="text-sm text-muted-foreground">Criamos as capas e a identidade visual completa do seu programa.</p>
+                </div>
+            </li>
           </ul>
         </CardContent>
       </Card>
