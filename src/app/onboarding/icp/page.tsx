@@ -1,32 +1,38 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building, MapPin, DollarSign, Target, Milestone } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Building, MapPin, DollarSign, Target, Milestone, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const icpCriteria = [
     {
         icon: Milestone,
         title: "Estágio do Negócio",
-        items: ["Empresas estabelecidas (mínimo 2 anos)", "Possuem faturamento recorrente", "Já têm uma base de clientes", "Buscam escalar e profissionalizar o marketing"],
+        description: "Focamos em empresas que já têm tração e estão prontas para escalar.",
+        href: "/onboarding/icp/business-stage"
     },
     {
         icon: Building,
         title: "Setores Prioritários",
-        items: ["Saúde e bem-estar (clínicas, médicos, dentistas)", "Serviços B2B (consultorias, agências, tecnologia)", "E-commerce com produto validado", "Negócios locais premium (restaurantes, estética)"],
+        description: "Nossas estratégias têm maior impacto em setores específicos.",
+        href: "/onboarding/icp/priority-sectors"
     },
     {
         icon: DollarSign,
         title: "Capacidade de Investimento",
-        items: ["Possuem orçamento dedicado para marketing", "Entendem que marketing é investimento, não custo", "Ticket médio que justifique o investimento em agência"],
+        description: "O cliente precisa entender o marketing como um investimento, não um custo.",
+        href: "/onboarding/icp/investment-capacity"
     },
     {
         icon: Target,
         title: "Mentalidade do Decisor",
-        items: ["Aberto a novas estratégias e inovação", "Busca uma parceria de longo prazo", "Valoriza o trabalho estratégico e não apenas 'posts bonitos'", "Delega e confia no trabalho da agência"],
+        description: "Buscamos parceiros que confiam no processo e miram o longo prazo.",
+        href: "/onboarding/icp/decision-maker-mindset"
     },
     {
         icon: MapPin,
         title: "Localização",
-        items: ["Atuação em todo o Brasil", "Foco principal em capitais e grandes centros urbanos"],
+        description: "Atendemos clientes em todo o Brasil, com foco em grandes centros.",
+        href: "/onboarding/icp/location"
     },
 ];
 
@@ -34,26 +40,25 @@ export default function IcpPage() {
   return (
     <div className="space-y-6">
         <p className="text-lg text-muted-foreground">
-            Não vendemos para todo mundo. Focamos em clientes que podemos genuinamente ajudar a crescer. Conheça nosso Perfil de Cliente Ideal (ICP).
+            Não vendemos para todo mundo. Focamos em clientes que podemos genuinamente ajudar a crescer. Clique em cada card para entender os critérios do nosso Perfil de Cliente Ideal (ICP).
         </p>
 
         <div className="space-y-4">
             {icpCriteria.map((criterion) => (
-                <Card key={criterion.title}>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-3">
-                            <criterion.icon className="h-6 w-6 text-primary" />
-                            {criterion.title}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-                            {criterion.items.map((item) => (
-                                <li key={item}>{item}</li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
+                 <Link href={criterion.href} key={criterion.title} className="group block">
+                    <Card className="transition-all duration-200 ease-in-out group-hover:border-primary group-hover:shadow-lg group-hover:-translate-y-1">
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <criterion.icon className="h-8 w-8 text-primary" />
+                                <CardTitle>{criterion.title}</CardTitle>
+                            </div>
+                             <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-hover:text-primary group-hover:translate-x-1" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{criterion.description}</p>
+                        </CardContent>
+                    </Card>
+                </Link>
             ))}
         </div>
     </div>
