@@ -23,10 +23,18 @@ export default function OnboardingLayout({
 }) {
   const pathname = usePathname();
 
-  const currentIndex = steps.findIndex(step => pathname.startsWith(step.path));
   const isWelcomePage = pathname === '/onboarding';
+  if (isWelcomePage) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center p-4 bg-background/30">
+          {children}
+      </div>
+    )
+  }
 
-  const prevStep = currentIndex > 0 ? steps[currentIndex - 1] : { path: "/onboarding/culture", name: "Cultura"};
+  const currentIndex = steps.findIndex(step => pathname.startsWith(step.path));
+
+  const prevStep = currentIndex > 0 ? steps[currentIndex - 1] : null;
   const nextStep = currentIndex < steps.length - 1 ? steps[currentIndex + 1] : null;
 
   return (
@@ -37,7 +45,7 @@ export default function OnboardingLayout({
                <BackButton />
             </div>
             
-            <header className={cn("my-8 text-center", isWelcomePage && "hidden")}>
+            <header className="my-8 text-center">
                 <nav className="flex justify-center items-center gap-4 sm:gap-8">
                     {steps.map((step, index) => {
                         const isActive = pathname.startsWith(step.path);
@@ -67,44 +75,42 @@ export default function OnboardingLayout({
             
             <main className="flex-1 flex flex-col">{children}</main>
 
-            {!isWelcomePage && (
-              <footer className="mt-12 border-t pt-6 flex items-center justify-between">
-                  <div>
-                      {currentIndex > 0 ? (
-                          <Link href={prevStep!.path} passHref>
-                              <Button variant="outline">
-                                  <ArrowLeft className="mr-2 h-4 w-4" />
-                                  Anterior
-                              </Button>
-                          </Link>
-                      ) : (
-                            <Link href="/onboarding" passHref>
-                              <Button variant="outline">
-                                  <Home className="mr-2 h-4 w-4" />
-                                  Início
-                              </Button>
-                          </Link>
-                      )}
-                  </div>
-                  <div>
-                      {nextStep ? (
-                          <Link href={nextStep.path} passHref>
-                              <Button>
-                                  Próximo
-                                  <ArrowRight className="ml-2 h-4 w-4" />
-                              </Button>
-                          </Link>
-                      ) : (
-                          <Link href="/ferramentas" passHref>
-                              <Button>
-                                  Ir para Ferramentas
-                                  <Wand2 className="ml-2 h-4 w-4" />
-                              </Button>
-                          </Link>
-                      )}
-                  </div>
-              </footer>
-            )}
+            <footer className="mt-12 border-t pt-6 flex items-center justify-between">
+                <div>
+                    {prevStep ? (
+                        <Link href={prevStep.path} passHref>
+                            <Button variant="outline">
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Anterior
+                            </Button>
+                        </Link>
+                    ) : (
+                          <Link href="/onboarding" passHref>
+                            <Button variant="outline">
+                                <Home className="mr-2 h-4 w-4" />
+                                Início do Onboarding
+                            </Button>
+                        </Link>
+                    )}
+                </div>
+                <div>
+                    {nextStep ? (
+                        <Link href={nextStep.path} passHref>
+                            <Button>
+                                Próximo
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
+                    ) : (
+                        <Link href="/ferramentas" passHref>
+                            <Button>
+                                Ir para Ferramentas
+                                <Wand2 className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
+                    )}
+                </div>
+            </footer>
         </div>
     </div>
   );

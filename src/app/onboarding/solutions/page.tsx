@@ -1,47 +1,33 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lightbulb, Megaphone, Mic, Palette } from "lucide-react";
+import { Lightbulb, Megaphone, Mic, Palette, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-const solutions = [
+
+const solutionsData = [
     {
         icon: Palette,
         title: "Gestão de Mídias Sociais",
-        description: "Criamos e gerenciamos conteúdo estratégico para construir autoridade, engajar a audiência e transformar seguidores em clientes.",
-        hooks: [
-            "Seu perfil não reflete a qualidade do seu trabalho?",
-            "Posta, posta, posta e não vê resultado em vendas?",
-            "Sem tempo ou criatividade para manter a consistência?",
-        ]
+        description: "Construa autoridade, engaje a audiência e transforme seguidores em clientes.",
+        href: "/onboarding/solutions/gestao-de-midias-sociais"
     },
     {
         icon: Megaphone,
         title: "Tráfego Pago (Ads)",
-        description: "Desenvolvemos e otimizamos campanhas de anúncios para alcançar o público certo, gerar leads qualificados e acelerar as vendas.",
-        hooks: [
-            "Sente que está 'queimando dinheiro' com anúncios sem retorno?",
-            "Seus concorrentes aparecem para todos, menos você?",
-            "Precisa de mais clientes chegando todos os dias?",
-        ]
+        description: "Alcance o público certo, gere leads qualificados e acelere as vendas.",
+        href: "/onboarding/solutions/trafego-pago"
     },
     {
         icon: Mic,
         title: "Produção de Podcast",
-        description: "Oferecemos uma solução completa de produção de podcast, desde a gravação até a distribuição, para transformar seu conhecimento em um ativo de autoridade.",
-        hooks: [
-            "Quer construir autoridade e se tornar uma referência no seu mercado?",
-            "Tem muito conhecimento para compartilhar, mas não sabe como começar?",
-            "Busca um formato de conteúdo profundo para se conectar com sua audiência?",
-        ]
+        description: "Transforme seu conhecimento em um ativo de autoridade e conexão.",
+        href: "/onboarding/solutions/producao-de-podcast"
     },
     {
         icon: Lightbulb,
         title: "Consultoria Estratégica",
-        description: "Analisamos seu cenário atual e desenhamos um plano de ação de marketing digital claro e acionável para você executar com sua equipe.",
-        hooks: [
-            "Se sente perdido, sem saber qual o próximo passo no seu marketing?",
-            "Sua equipe interna precisa de uma direção estratégica clara?",
-            "Investe em várias ações, mas sente que falta uma estratégia unificada?",
-        ]
+        description: "Receba um plano de ação claro e acionável para sua equipe executar.",
+        href: "/onboarding/solutions/consultoria-estrategica"
     }
 ];
 
@@ -50,26 +36,25 @@ export default function SolutionsPage() {
     return (
         <div className="space-y-6">
             <p className="text-lg text-muted-foreground">
-                Agora que você conhece nossa cultura, entenda o que vendemos. Cada solução resolve um problema específico do nosso cliente. Seu trabalho é identificar essa dor e conectar com nossa solução.
+                Agora que você conhece nossa cultura, entenda o que vendemos. Cada solução resolve um problema específico do nosso cliente. Clique nos cards para ver os detalhes, entregáveis e ganchos de venda de cada um.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {solutions.map((solution) => (
-                    <Card key={solution.title}>
-                        <CardHeader>
-                            <div className="flex items-center gap-4 mb-2">
-                                <solution.icon className="h-8 w-8 text-primary" />
+                {solutionsData.map((solution) => (
+                    <Link href={solution.href} key={solution.title} className="group block">
+                        <Card className="transition-all duration-200 ease-in-out group-hover:border-primary group-hover:shadow-lg group-hover:-translate-y-1 h-full flex flex-col">
+                            <CardHeader className="flex-grow">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="bg-primary/10 p-3 rounded-full">
+                                    <solution.icon className="h-8 w-8 text-primary" />
+                                  </div>
+                                  <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-hover:text-primary group-hover:translate-x-1" />
+                                </div>
                                 <CardTitle>{solution.title}</CardTitle>
-                            </div>
-                            <CardDescription>{solution.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                           <h4 className="font-semibold text-foreground mb-2">Ganchos de Venda (Dores):</h4>
-                           <ul className="list-disc pl-5 space-y-1 text-muted-foreground text-sm">
-                                {solution.hooks.map(hook => <li key={hook}>{hook}</li>)}
-                           </ul>
-                        </CardContent>
-                    </Card>
+                                <CardDescription>{solution.description}</CardDescription>
+                            </CardHeader>
+                        </Card>
+                    </Link>
                 ))}
             </div>
         </div>
