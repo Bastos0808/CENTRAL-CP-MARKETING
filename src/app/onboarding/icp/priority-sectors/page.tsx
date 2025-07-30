@@ -1,6 +1,29 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building, CheckCircle } from "lucide-react";
+import { Building, CheckCircle, Heart, Stethoscope, Briefcase, ShoppingCart } from "lucide-react";
+
+const sectors = [
+    {
+        icon: Stethoscope,
+        title: "Saúde e Bem-Estar",
+        description: "Clínicas, médicos, dentistas, psicólogos e outros profissionais da saúde que precisam construir autoridade e atrair pacientes."
+    },
+    {
+        icon: Briefcase,
+        title: "Serviços B2B",
+        description: "Consultorias, agências de nicho, empresas de tecnologia e outros negócios que vendem para outras empresas e precisam de leads qualificados."
+    },
+    {
+        icon: ShoppingCart,
+        title: "E-commerce com Produto Validado",
+        description: "Lojas virtuais que já têm um produto testado e aprovado pelo mercado, e que agora precisam escalar as vendas de forma consistente."
+    },
+    {
+        icon: Heart,
+        title: "Negócios Locais Premium",
+        description: "Restaurantes, clínicas de estética, e outros serviços locais que atendem a um público de alto padrão e precisam de um posicionamento forte."
+    }
+]
 
 export default function PrioritySectorsPage() {
   return (
@@ -17,39 +40,21 @@ export default function PrioritySectorsPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Setores com Maior Afinidade</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Saúde e Bem-Estar:</strong> Clínicas, médicos, dentistas, psicólogos e outros profissionais da saúde que precisam construir autoridade.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Serviços B2B:</strong> Consultorias, agências de nicho, empresas de tecnologia e outros negócios que vendem para outras empresas.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>E-commerce com Produto Validado:</strong> Lojas virtuais que já têm um produto testado e aprovado pelo mercado, e que agora precisam escalar as vendas.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Negócios Locais Premium:</strong> Restaurantes, clínicas de estética, e outros serviços locais que atendem a um público de alto padrão.
-              </span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {sectors.map((sector) => (
+            <Card key={sector.title}>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                        <sector.icon className="h-7 w-7 text-primary" />
+                        {sector.title}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground">{sector.description}</p>
+                </CardContent>
+            </Card>
+        ))}
+      </div>
     </div>
   );
 }
