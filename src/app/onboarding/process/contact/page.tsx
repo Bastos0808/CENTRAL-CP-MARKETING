@@ -1,17 +1,17 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, CheckSquare, Wand2 } from "lucide-react";
+import { Phone, CheckSquare, Wand2, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const checklist = [
-    { text: "O canal principal de contato é o telefone (ligação ou WhatsApp) fornecido no CRM ou obtido na prospecção." },
+    { text: "O canal principal de contato é o telefone (ligação ou WhatsApp) ou e-mail, usando os dados do CRM." },
     { text: "Use o 'gancho' que você identificou na Fase 1 para iniciar a conversa de forma personalizada." },
     { text: "Seja breve e direto. Apresente-se, mencione o 'gancho' e conecte com a dor observada." },
-    { text: "Exemplo de abordagem: 'Olá [Nome], aqui é [Seu Nome] da CP. Vi que [Gancho/Problema]. Isso tem sido um desafio para vocês?'" },
-    { text: "O objetivo NUNCA é vender na primeira ligação. O objetivo é validar a dor e agendar uma reunião de diagnóstico." },
-    { text: "Se o lead demonstrar interesse, a única meta é levá-lo para a Fase 4: Agendamento." }
+    { text: "Exemplo de abordagem (e-mail ou whats): 'Olá [Nome], aqui é [Seu Nome] da CP. Vi que [Gancho/Problema]. Isso tem sido um desafio para vocês?'" },
+    { text: "O objetivo NUNCA é vender na primeira mensagem. O objetivo é validar a dor e agendar uma reunião de diagnóstico." },
+    { text: "Se o lead demonstrar interesse, a única meta é levá-lo para a Fase 3: Agendamento." }
 ];
 
 export default function ContactPage() {
@@ -19,12 +19,12 @@ export default function ContactPage() {
     <div className="space-y-6">
       <div className="flex items-start gap-4">
         <div className="bg-primary/10 p-3 rounded-full">
-          <Phone className="h-10 w-10 text-primary" />
+          <Mail className="h-10 w-10 text-primary" />
         </div>
         <div>
-            <h1 className="text-3xl font-bold tracking-tight">Fase 3: Contato Direto (Ligação ou WhatsApp)</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Fase 2: Contato Direto</h1>
             <p className="text-lg text-muted-foreground mt-1">
-                Este é o momento da verdade. Com a pesquisa feita, você tem o número do prospect e um motivo relevante para ligar. A qualidade da sua abordagem definirá o sucesso.
+                Este é o momento da verdade. Com a pesquisa feita, você tem os contatos do prospect e um motivo relevante para iniciar a conversa. A qualidade da sua abordagem definirá o sucesso.
             </p>
         </div>
       </div>
@@ -51,7 +51,7 @@ export default function ContactPage() {
           </CardHeader>
           <CardContent className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-muted-foreground flex-1">
-                Nossa ferramenta de IA pode ajudar a criar o script inicial para sua ligação ou a mensagem de texto para o WhatsApp. Use-a para gerar ideias e aprimorar sua abordagem.
+                Nossa ferramenta de IA pode ajudar a criar o script inicial para sua ligação ou a mensagem de texto para o WhatsApp/E-mail. Use-a para gerar ideias e aprimorar sua abordagem.
             </p>
             <Link href="/ferramentas">
                 <Button>

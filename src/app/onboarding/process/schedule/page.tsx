@@ -4,7 +4,7 @@ import { Calendar, CheckSquare, Trophy } from "lucide-react";
 
 const checklist = [
     { text: "Se o prospect responder positivamente ('sim', 'tenho interesse', 'como funciona?'), sua única missão é agendar a reunião." },
-    { text: "Seja rápido e objetivo. Não tente vender ou dar muitos detalhes pelo chat. Responda com: 'Ótimo! Para te explicar melhor, qual desses horários fica bom para uma chamada de 15min?'" },
+    { text: "Seja rápido e objetivo. Não tente vender ou dar muitos detalhes pelo chat/e-mail. Responda com: 'Ótimo! Para te explicar melhor, qual desses horários fica bom para uma chamada de 15min?'" },
     { text: "Ofereça 2 ou 3 opções de horários diretamente (ex: 'Amanhã às 10h ou 14h?'). Isso evita a fadiga de decisão." },
     { text: "Assim que o horário for confirmado, envie o convite na agenda (Google Calendar) com o link da chamada de vídeo." },
     { text: "Confirme o recebimento do convite e informe que um de nossos especialistas (Closer) conduzirá a conversa." },
@@ -18,7 +18,7 @@ export default function SchedulePage() {
           <Calendar className="h-10 w-10 text-primary" />
         </div>
         <div>
-            <h1 className="text-3xl font-bold tracking-tight">Fase 4: Agendamento da Reunião</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Fase 3: Agendamento da Reunião</h1>
             <p className="text-lg text-muted-foreground mt-1">
                 A etapa final do processo de SDR. O "sim" do prospect é o gatilho para uma transição rápida e eficiente para o time de vendas (Closers).
             </p>

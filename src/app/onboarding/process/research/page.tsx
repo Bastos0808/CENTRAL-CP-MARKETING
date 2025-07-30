@@ -14,7 +14,7 @@ const researchSteps = [
         instructions: [
             "<strong>Abra o ICP:</strong> Tenha a documentação do nosso <a href='/onboarding/icp' class='text-primary underline'>Perfil de Cliente Ideal</a> aberta em outra aba.",
             "<strong>Checklist de Critérios:</strong> Passe por cada um dos 5 critérios (Setor, Estágio do Negócio, etc.) e valide se a empresa se encaixa.",
-            "<strong>Análise do Site e LinkedIn:</strong> Use o site da empresa e seu perfil no LinkedIn para encontrar as informações necessárias para a qualificação.",
+            "<strong>Análise do Site e Mídias Sociais:</strong> Use o site da empresa e suas redes sociais para encontrar as informações necessárias para a qualificação.",
             "<strong>Seja Rigoroso:</strong> Um lead que não se encaixa no ICP tem poucas chances de fechar e menos ainda de ter sucesso com nossa metodologia. A qualificação rigorosa economiza tempo para todos."
         ]
     },
@@ -26,19 +26,17 @@ const researchSteps = [
             "<strong>Acesse o RD CRM:</strong> Esta é sua principal fonte de informações. Os leads são enviados para o CRM pela nossa ferramenta de prospecção, o Exact Spotter.",
             "<strong>Localize o Lead:</strong> Encontre a empresa e o contato que você irá trabalhar.",
             "<strong>Verifique o Cargo:</strong> Analise os dados do contato no CRM para identificar seu cargo. Busque por títulos como 'Sócio(a)', 'CEO', 'Diretor(a)', 'Gerente de Marketing'.",
-            "<strong>Validação Cruzada (se necessário):</strong> Se o cargo não estiver claro no CRM, use o LinkedIn (versão gratuita) para pesquisar o nome da pessoa e da empresa e confirmar sua posição atual. Isso garante que você está falando com a pessoa com poder de decisão.",
             "<strong>Foco no Decisor:</strong> Evite contatar analistas ou assistentes, a menos que seja uma empresa muito grande e essa seja a única porta de entrada. O objetivo é sempre alcançar o tomador de decisão."
         ]
     },
     { 
         icon: ZoomIn,
         title: "Análise da Presença Digital",
-        description: "Mergulhe no universo do prospect. Analise o site, o Instagram e o LinkedIn para entender como eles se comunicam hoje e encontrar brechas.",
+        description: "Mergulhe no universo do prospect. Analise o site, o Instagram e outras mídias para entender como eles se comunicam hoje e encontrar brechas.",
         instructions: [
             "<strong>Google:</strong> Pesquise o nome da empresa. Como ela aparece? Existem notícias, artigos ou avaliações no Google Meu Negócio? Avaliações negativas são uma dor explícita.",
             "<strong>Website:</strong> É moderno e otimizado para mobile? Possui blog? A comunicação é clara e profissional? Parece ter sido atualizado recentemente ou está abandonado?",
             "<strong>Instagram:</strong> Qual a frequência de posts? A identidade visual é profissional e consistente? Usam Reels? O engajamento é real ou parece baixo? Existem comentários de clientes reclamando?",
-            "<strong>LinkedIn (Empresa e Decisor):</strong> Eles postam com frequência? O conteúdo é sobre a empresa (vendas) ou sobre o setor (educativo)? Qual o nível de engajamento nos posts do decisor? Ele compartilha conteúdo de outros ou cria o seu próprio?",
             "<strong>Biblioteca de Anúncios do Meta:</strong> Pesquise na biblioteca de anúncios se a empresa ou seus concorrentes estão veiculando campanhas. A ausência de anúncios (ou anúncios de baixa qualidade) é uma grande oportunidade.",
             "<strong>YouTube e TikTok:</strong> Se for relevante para o setor, verifique se possuem canais ativos. A falta de presença em vídeo é uma dor para muitas marcas que querem construir autoridade."
         ]
@@ -48,10 +46,9 @@ const researchSteps = [
         title: "A Arte do Gancho: Encontrando a Brecha Perfeita",
         description: "Aqui você se torna um detetive. Sua missão é encontrar a deixa perfeita, um motivo relevante e personalizado para iniciar a conversa. Um bom gancho mostra que você fez sua lição de casa e transforma uma mensagem fria em uma conversa quente.",
         instructions: [
-            "<strong>A Pista Quente (Atividade Recente):</strong> O que a empresa ou o decisor fizeram nos últimos dias? Ex: 'Vi que vocês participaram do evento X...' ou 'Parabéns pelo artigo sobre Y, achei o ponto Z muito interessante'. É o gancho mais fácil e eficaz.",
+            "<strong>A Pista Quente (Atividade Recente):</strong> O que a empresa ou o decisor fizeram nos últimos dias? Ex: 'Vi que vocês participaram do evento X...' ou 'Parabéns pelo novo site, achei a seção de cases muito interessante'. É o gancho mais fácil e eficaz.",
             "<strong>O Grande Furo (Notícias e Expansão):</strong> A empresa saiu na mídia? Anunciou uma nova contratação, abertura de filial ou lançamento? Isso é um sinal de crescimento e uma deixa perfeita. Ex: 'Vi no portal ABC que vocês estão expandindo para a região Sul, parabéns!'",
-            "<strong>A Pista Oculta (Dor Evidente):</strong> Sua análise da presença digital revelou uma fraqueza óbvia? Use isso de forma sutil e consultiva. Ex: 'Notei que o último post no blog foi em 2022. Estão planejando reativar essa frente?' ou 'Vi que seus concorrentes estão fortes em anúncios de vídeo, mas não encontrei os seus. Existe uma razão estratégica para isso?'",
-            "<strong>O Contato Secreto (Conexões em Comum):</strong> Vocês têm conexões em comum no LinkedIn? Mencionar um nome conhecido (com permissão, se possível) pode abrir portas. Ex: 'Vi que temos o [Nome da Conexão] em comum, que mundo pequeno!'"
+            "<strong>A Pista Oculta (Dor Evidente):</strong> Sua análise da presença digital revelou uma fraqueza óbvia? Use isso de forma sutil e consultiva. Ex: 'Notei que o último post no blog foi em 2022. Estão planejando reativar essa frente?' ou 'Vi que seus concorrentes estão fortes em anúncios de vídeo, mas não encontrei os seus. Existe uma razão estratégica para isso?'"
         ]
     },
     {
@@ -59,8 +56,7 @@ const researchSteps = [
         title: "Sinais de Crescimento: O Indicador de Ouro",
         description: "Uma empresa que contrata, é uma empresa que investe. Aprenda a identificar esses sinais para abordar prospects no momento exato em que eles precisam de nós.",
         instructions: [
-            "<strong>LinkedIn Vagas:</strong> Na página da empresa no LinkedIn, procure pela aba 'Vagas'. Vagas para 'Vendedor', 'Executivo de Contas' ou 'Analista de Marketing' são excelentes indicadores.",
-            "<strong>Site da Empresa:</strong> Procure pela seção 'Trabalhe Conosco' ou 'Carreiras'. Muitas empresas publicam suas vagas diretamente lá.",
+            "<strong>Fontes de Vagas:</strong> Procure pela seção 'Trabalhe Conosco' ou 'Carreiras' no site da empresa. Vagas para 'Vendedor', 'Executivo de Contas' ou 'Analista de Marketing' são excelentes indicadores.",
             "<strong>Interpretação:</strong> Este é o pulo do gato. Uma empresa que está contratando para a área comercial (Vendas) precisa de mais leads. Uma empresa que contrata para Marketing está pronta para investir na área. Ambos os cenários são um sinal verde para a prospecção."
         ]
     }

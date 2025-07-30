@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckSquare, Search, Handshake, Calendar, Mail, Network, ArrowRight } from "lucide-react";
+import { CheckSquare, Search, Phone, Calendar, Mail, Network, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const processSteps = [
@@ -11,19 +11,13 @@ const processSteps = [
         href: "/onboarding/process/research"
     },
     {
-        title: "Fase 2: Conexão",
-        icon: Handshake,
-        description: "A arte de aparecer no radar do prospect de forma sutil e profissional, sem vender nada.",
-        href: "/onboarding/process/connection"
-    },
-    {
-        title: "Fase 3: Contato Direto",
+        title: "Fase 2: Contato Direto",
         icon: Mail,
         description: "O momento da abordagem. Como enviar uma mensagem personalizada que desperta curiosidade.",
         href: "/onboarding/process/contact"
     },
     {
-        title: "Fase 4: Agendamento",
+        title: "Fase 3: Agendamento",
         icon: Calendar,
         description: "A missão final do SDR. Converter o interesse em uma reunião qualificada para o time de Closers.",
         href: "/onboarding/process/schedule"
