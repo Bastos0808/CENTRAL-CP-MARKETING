@@ -6,22 +6,26 @@ const sectors = [
     {
         icon: Stethoscope,
         title: "Saúde e Bem-Estar",
-        description: "Clínicas, médicos, dentistas, psicólogos, nutricionistas e outros profissionais da saúde que precisam construir autoridade e atrair pacientes qualificados."
+        description: "Clínicas, médicos, dentistas, psicólogos e outros profissionais que precisam construir autoridade para atrair pacientes qualificados. O foco é em serviços de ticket médio/alto.",
+        filter: "Busque por perfis que parecem amadores ou desatualizados, mas o serviço oferecido é de alto valor. A dor principal é não saber comunicar a própria qualidade."
     },
     {
         icon: Briefcase,
         title: "Serviços B2B e Consultorias",
-        description: "Consultorias, agências de nicho, escritórios de advocacia, empresas de tecnologia (SaaS) e negócios que vendem para outras empresas, focando em geração de leads."
+        description: "Consultorias, agências de nicho, escritórios de advocacia, empresas de tecnologia (SaaS) e negócios que vendem para outras empresas, focando em geração de leads qualificados.",
+        filter: "Procure por empresas com sites institucionais antigos ou LinkedIn com baixa atividade. A dor é a dificuldade em gerar novas oportunidades de negócio de forma previsível."
     },
     {
         icon: ShoppingCart,
         title: "E-commerce com Produto Validado",
-        description: "Lojas virtuais que já têm um produto testado e aprovado pelo mercado, e que agora precisam escalar as vendas de forma consistente e lucrativa."
+        description: "Lojas virtuais que já têm um produto testado, aprovado pelo mercado e com faturamento recorrente. O objetivo aqui é escalar as vendas de forma consistente e lucrativa.",
+        filter: "Identifique e-commerces que investem em anúncios, mas de forma inconsistente ou com criativos de baixa qualidade. A dor é 'queimar dinheiro' sem ter um retorno claro sobre o investimento."
     },
     {
         icon: Heart,
         title: "Negócios Locais Premium",
-        description: "Restaurantes de alto padrão, clínicas de estética avançada, e outros serviços locais que atendem a um público exigente e precisam de um posicionamento forte na sua região."
+        description: "Restaurantes de alto padrão, clínicas de estética avançada, e outros serviços locais que atendem a um público exigente e precisam de um posicionamento forte na sua região.",
+        filter: "Analise a presença digital de negócios que são referência na cidade, mas cuja comunicação online não reflete seu status. A dor é a dependência de indicações e a falta de um canal digital forte."
     }
 ]
 
@@ -51,6 +55,10 @@ export default function PrioritySectorsPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground">{sector.description}</p>
+                    <div className="mt-4 pt-4 border-t border-dashed">
+                        <h4 className="font-semibold text-sm text-foreground mb-2">O que buscar:</h4>
+                        <p className="text-sm text-muted-foreground">{sector.filter}</p>
+                    </div>
                 </CardContent>
             </Card>
         ))}

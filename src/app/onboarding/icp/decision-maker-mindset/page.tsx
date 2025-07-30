@@ -6,22 +6,26 @@ const mindsets = [
     {
         icon: Lightbulb,
         title: "Aberto a inovação e novas ideias",
-        description: "Não está preso ao 'sempre fizemos assim'. Confia em nossa expertise para testar novas abordagens, formatos de conteúdo e estratégias que fujam do óbvio."
+        description: "Não está preso ao 'sempre fizemos assim'. Confia em nossa expertise para testar novas abordagens, formatos de conteúdo e estratégias que fujam do óbvio.",
+        filter: "Na conversa, apresente uma ideia contraintuitiva. Se ele se mostrar curioso em vez de defensivo, é um bom sinal."
     },
     {
         icon: Handshake,
         title: "Busca uma parceria de longo prazo",
-        description: "Entende que resultados sólidos em marketing são construídos com tempo e consistência, não com soluções mágicas ou resultados imediatos."
+        description: "Entende que resultados sólidos em marketing são construídos com tempo e consistência, não com soluções mágicas ou resultados imediatos de 30 dias.",
+        filter: "Pergunte sobre experiências passadas com outras agências. Se ele trocou de parceiro várias vezes em pouco tempo, pode ser um sinal de alerta de imediatismo."
     },
     {
         icon: Calendar,
         title: "Valoriza o trabalho estratégico",
-        description: "Não quer apenas 'posts bonitos', mas sim crescimento de negócio e autoridade. Pergunta sobre ROI e estratégia, não apenas sobre a quantidade de entregáveis."
+        description: "Não quer apenas 'posts bonitos', mas sim crescimento de negócio e autoridade. Pergunta sobre ROI e estratégia, não apenas sobre a quantidade de entregáveis.",
+        filter: "Observe as perguntas que ele faz. São sobre o 'como' (estratégia) ou apenas sobre o 'o quê' (entregáveis)? O cliente ideal quer entender o plano."
     },
     {
         icon: ShieldCheck,
         title: "Delega e confia no processo",
-        description: "Participa ativamente das decisões estratégicas, mas confia na agência para executar a operação, sem microgerenciamento ou mudanças constantes de rota."
+        description: "Participa ativamente das decisões estratégicas, mas confia na agência para executar a operação, sem microgerenciamento ou mudanças constantes de rota.",
+        filter: "Verifique se ele tem uma equipe interna de marketing. Se sim, entenda se o objetivo é colaborar ou controlar. A confiança na nossa execução é fundamental."
     }
 ]
 
@@ -52,6 +56,10 @@ export default function DecisionMakerMindsetPage() {
                 </CardHeader>
                 <CardContent>
                     <p className="text-muted-foreground">{item.description}</p>
+                    <div className="mt-4 pt-4 border-t border-dashed">
+                        <h4 className="font-semibold text-sm text-foreground mb-2">Como Validar:</h4>
+                        <p className="text-sm text-muted-foreground">{item.filter}</p>
+                    </div>
                 </CardContent>
             </Card>
         ))}
