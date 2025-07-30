@@ -3,10 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Handshake, CheckSquare, AlertTriangle } from "lucide-react";
 
 const checklist = [
-    { text: "Envie um convite de conexão para o decisor no LinkedIn." },
-    { text: "NÃO envie uma mensagem junto com o convite. O objetivo é apenas a conexão, sem vender nada." },
-    { text: "Após a conexão ser aceita, interaja com 1 ou 2 posts recentes do decisor ou da empresa. Uma curtida ou um comentário genuíno." },
-    { text: "Aguarde de 1 a 2 dias após a interação antes de passar para a próxima fase." }
+    { text: "Envie um convite de conexão para o decisor identificado no LinkedIn." },
+    { text: "NÃO envie uma mensagem junto com o convite. O objetivo é apenas a conexão, sem vender nada. Isso reduz a fricção e aumenta a chance de aceitação." },
+    { text: "Após a conexão ser aceita, interaja com 1 ou 2 posts recentes do decisor ou da empresa. Uma curtida ou um comentário genuíno mostra que você está prestando atenção." },
+    { text: "Aguarde de 1 a 2 dias após a interação antes de passar para a próxima fase (Contato Direto). Esse tempo é crucial para não parecer apressado ou desesperado." }
 ];
 
 export default function ConnectionPage() {
@@ -42,11 +42,11 @@ export default function ConnectionPage() {
 
        <Card className="border-yellow-500/50 bg-yellow-500/5">
           <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-yellow-700 dark:text-yellow-500"><AlertTriangle /> Ponto de Atenção</CardTitle>
+              <CardTitle className="flex items-center gap-3 text-yellow-700 dark:text-yellow-500"><AlertTriangle /> Ponto de Atenção: O Jogo da Paciência</CardTitle>
           </CardHeader>
           <CardContent>
               <p className="text-yellow-700/80 dark:text-yellow-500/80">
-                  A ansiedade para vender pode estragar tudo. Resista à tentação de enviar uma mensagem de venda imediata. A paciência nesta fase aumenta drasticamente suas chances de obter uma resposta na fase seguinte.
+                  A ansiedade para vender pode estragar todo o trabalho de pesquisa da Fase 1. Resista à tentação de enviar uma mensagem de venda imediata. A paciência nesta fase não é passividade, é uma tática que aumenta drasticamente suas chances de obter uma resposta na fase seguinte.
               </p>
           </CardContent>
       </Card>
