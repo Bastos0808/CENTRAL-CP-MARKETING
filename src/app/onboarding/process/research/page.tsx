@@ -54,12 +54,12 @@ const researchSteps = [
     },
     {
         icon: Briefcase,
-        title: "Sinais de Crescimento",
-        description: "Verifique se a empresa está contratando, especialmente em áreas de vendas ou marketing. Vagas abertas são um forte indicativo de que estão investindo em crescimento.",
+        title: "Sinais de Crescimento: O Indicador de Ouro",
+        description: "Uma empresa que contrata, é uma empresa que investe. Aprenda a identificar esses sinais para abordar prospects no momento exato em que eles precisam de nós.",
         instructions: [
             "<strong>LinkedIn Vagas:</strong> Na página da empresa no LinkedIn, procure pela aba 'Vagas'. Vagas para 'Vendedor', 'Executivo de Contas' ou 'Analista de Marketing' são excelentes indicadores.",
             "<strong>Site da Empresa:</strong> Procure pela seção 'Trabalhe Conosco' ou 'Carreiras'. Muitas empresas publicam suas vagas diretamente lá.",
-            "<strong>Interpretação:</strong> Uma empresa que está contratando para a área comercial precisa de mais leads. Uma empresa que contrata para marketing está pronta para investir na área. É um sinal verde para a prospecção."
+            "<strong>Interpretação:</strong> Este é o pulo do gato. Uma empresa que está contratando para a área comercial (Vendas) precisa de mais leads. Uma empresa que contrata para Marketing está pronta para investir na área. Ambos os cenários são um sinal verde para a prospecção."
         ]
     }
 ];
