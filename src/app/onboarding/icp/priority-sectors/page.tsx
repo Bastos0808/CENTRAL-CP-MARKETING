@@ -6,22 +6,22 @@ const sectors = [
     {
         icon: Stethoscope,
         title: "Saúde e Bem-Estar",
-        description: "Clínicas, médicos, dentistas, psicólogos e outros profissionais da saúde que precisam construir autoridade e atrair pacientes."
+        description: "Clínicas, médicos, dentistas, psicólogos, nutricionistas e outros profissionais da saúde que precisam construir autoridade e atrair pacientes qualificados."
     },
     {
         icon: Briefcase,
-        title: "Serviços B2B",
-        description: "Consultorias, agências de nicho, empresas de tecnologia e outros negócios que vendem para outras empresas e precisam de leads qualificados."
+        title: "Serviços B2B e Consultorias",
+        description: "Consultorias, agências de nicho, escritórios de advocacia, empresas de tecnologia (SaaS) e negócios que vendem para outras empresas, focando em geração de leads."
     },
     {
         icon: ShoppingCart,
         title: "E-commerce com Produto Validado",
-        description: "Lojas virtuais que já têm um produto testado e aprovado pelo mercado, e que agora precisam escalar as vendas de forma consistente."
+        description: "Lojas virtuais que já têm um produto testado e aprovado pelo mercado, e que agora precisam escalar as vendas de forma consistente e lucrativa."
     },
     {
         icon: Heart,
         title: "Negócios Locais Premium",
-        description: "Restaurantes, clínicas de estética, e outros serviços locais que atendem a um público de alto padrão e precisam de um posicionamento forte."
+        description: "Restaurantes de alto padrão, clínicas de estética avançada, e outros serviços locais que atendem a um público exigente e precisam de um posicionamento forte na sua região."
     }
 ]
 

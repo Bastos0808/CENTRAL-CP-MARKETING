@@ -5,23 +5,23 @@ import { Target, CheckCircle, Lightbulb, Handshake, Calendar, ShieldCheck } from
 const mindsets = [
     {
         icon: Lightbulb,
-        title: "Aberto a inovação",
-        description: "Não está preso ao 'sempre fizemos assim'. Confia em nossa expertise para testar novas abordagens e estratégias."
+        title: "Aberto a inovação e novas ideias",
+        description: "Não está preso ao 'sempre fizemos assim'. Confia em nossa expertise para testar novas abordagens, formatos de conteúdo e estratégias que fujam do óbvio."
     },
     {
         icon: Handshake,
-        title: "Busca parceria de longo prazo",
-        description: "Entende que resultados sólidos em marketing são construídos com tempo e consistência, não com soluções mágicas."
+        title: "Busca uma parceria de longo prazo",
+        description: "Entende que resultados sólidos em marketing são construídos com tempo e consistência, não com soluções mágicas ou resultados imediatos."
     },
     {
         icon: Calendar,
         title: "Valoriza o trabalho estratégico",
-        description: "Não quer apenas 'posts bonitos' ou 'mais seguidores', mas sim crescimento de negócio e construção de autoridade."
+        description: "Não quer apenas 'posts bonitos', mas sim crescimento de negócio e autoridade. Pergunta sobre ROI e estratégia, não apenas sobre a quantidade de entregáveis."
     },
     {
         icon: ShieldCheck,
         title: "Delega e confia no processo",
-        description: "Participa ativamente, mas confia na agência para executar a estratégia, sem microgerenciamento excessivo."
+        description: "Participa ativamente das decisões estratégicas, mas confia na agência para executar a operação, sem microgerenciamento ou mudanças constantes de rota."
     }
 ]
 

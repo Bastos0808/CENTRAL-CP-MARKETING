@@ -6,22 +6,22 @@ const stages = [
     {
         icon: History,
         title: "Mínimo de 2 anos de operação",
-        description: "Isso indica que o negócio já superou as fases iniciais de validação e possui um histórico de mercado."
+        description: "Isso indica que o negócio já superou as fases iniciais de validação, possui um histórico de mercado e um modelo de negócio minimamente testado. Nos dá uma base para analisar."
     },
     {
         icon: TrendingUp,
         title: "Faturamento recorrente",
-        description: "A empresa já possui um fluxo de caixa que pode suportar o investimento em marketing para escalar."
+        description: "A empresa já possui um fluxo de caixa que pode suportar o investimento em marketing de forma consistente para escalar, em vez de ações pontuais e sem continuidade."
     },
     {
         icon: Users,
         title: "Base de clientes estabelecida",
-        description: "Já existe um público para analisar e engajar, o que acelera a obtenção de resultados com nossas estratégias."
+        description: "Já existe um público para analisar, extrair dados e engajar. Isso acelera a obtenção de resultados, pois não estamos começando do zero absoluto."
     },
     {
         icon: CheckCircle,
-        title: "Busca por escala",
-        description: "O objetivo principal do cliente não é apenas 'existir' no digital, mas sim crescer, profissionalizar e dominar seu nicho."
+        title: "Busca clara por escala",
+        description: "O objetivo principal do cliente não é apenas 'existir' no digital, mas sim crescer, profissionalizar e dominar seu nicho. Ele está buscando um parceiro de crescimento."
     }
 ]
 

@@ -5,18 +5,18 @@ import { MapPin, CheckCircle, Globe, Building, Mic } from "lucide-react";
 const locations = [
     {
         icon: Globe,
-        title: "Atuação em todo o Brasil",
+        title: "Atendimento Remoto em todo o Brasil",
         description: "Estamos equipados para atender clientes em qualquer estado do país de forma 100% remota, usando ferramentas de comunicação eficientes."
     },
     {
         icon: Building,
-        title: "Foco em Capitais e Grandes Centros",
-        description: "Nossa prospecção ativa é direcionada principalmente para capitais e grandes cidades, onde a concentração de empresas do nosso ICP é maior."
+        title: "Foco de Prospecção em Capitais",
+        description: "Nossa prospecção ativa é direcionada principalmente para capitais e grandes cidades, onde a concentração de empresas do nosso ICP é maior e mais fácil de identificar."
     },
     {
         icon: Mic,
         title: "Podcast Studio Físico",
-        description: "Para clientes do serviço de podcast, a gravação presencial ocorre em nosso estúdio. Clientes de outras localidades podem ser atendidos remotamente."
+        description: "Para clientes do serviço de podcast, a gravação presencial ocorre em nosso estúdio. Clientes de outras localidades podem ser atendidos remotamente se tiverem estrutura própria."
     }
 ]
 
@@ -28,9 +28,9 @@ export default function LocationPage() {
           <MapPin className="h-10 w-10 text-primary" />
         </div>
         <div>
-            <h1 className="text-3xl font-bold tracking-tight">Localização</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Localização e Atendimento</h1>
             <p className="text-lg text-muted-foreground mt-1">
-                Nosso modelo de trabalho nos permite atender clientes em qualquer lugar, mas temos um foco geográfico estratégico para otimizar resultados.
+                Nosso modelo de trabalho é flexível, mas temos um foco geográfico estratégico para otimizar a prospecção e os serviços que exigem presença física.
             </p>
         </div>
       </div>

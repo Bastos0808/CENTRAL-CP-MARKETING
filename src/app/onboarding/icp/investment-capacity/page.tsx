@@ -6,22 +6,22 @@ const capacities = [
     {
         icon: PiggyBank,
         title: "Orçamento dedicado para marketing",
-        description: "A empresa já separa uma verba mensal ou trimestral para ações de marketing e anúncios, demonstrando compromisso."
+        description: "A empresa já separa uma verba mensal ou trimestral para ações de marketing e anúncios. Marketing não é o 'primeiro a ser cortado'."
     },
     {
         icon: TrendingUp,
-        title: "Mentalidade de investimento",
-        description: "O decisor não busca o 'mais barato', mas sim o maior retorno sobre o investimento (ROI), entendendo que marketing é um motor de crescimento."
+        title: "Mentalidade de investimento, não de custo",
+        description: "O decisor não busca o 'mais barato', mas sim o maior retorno sobre o investimento (ROI). Ele entende que marketing é um motor de crescimento."
     },
     {
         icon: Target,
-        title: "Ticket médio compatível",
-        description: "O valor do produto ou serviço do cliente justifica o investimento em uma agência, permitindo um ROI saudável e escalável."
+        title: "Ticket médio que justifica o investimento",
+        description: "O valor do produto ou serviço do cliente permite um ROI saudável e escalável. Um ticket muito baixo pode tornar a operação insustentável."
     },
     {
         icon: Handshake,
         title: "Disponibilidade para tráfego pago",
-        description: "O cliente entende a necessidade e tem capacidade de impulsionar o conteúdo para acelerar os resultados e atingir novos públicos."
+        description: "O cliente entende a necessidade de impulsionar o conteúdo para acelerar os resultados e não depende apenas do alcance orgânico."
     }
 ]
 
