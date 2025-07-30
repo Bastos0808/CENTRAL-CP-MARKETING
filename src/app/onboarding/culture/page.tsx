@@ -1,80 +1,55 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Target, Eye, Gem } from "lucide-react";
+import { Target, Eye, Gem, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const cultureData = [
     {
         icon: Target,
         title: "Nossa Missão",
-        description: "Transformar o potencial de negócios em performance de mercado. Fazemos isso através de estratégias digitais criativas e orientadas por dados, construindo marcas fortes e gerando resultados que os clientes podem ver e medir.",
+        description: "Transformar o potencial de negócios em performance de mercado. Entenda como aplicamos isso na prática.",
+        href: "/onboarding/culture/mission"
     },
     {
         icon: Eye,
         title: "Nossa Visão",
-        description: "Ser a agência de marketing digital reconhecida como a principal parceira de crescimento para empresas ambiciosas. Buscamos ser sinônimo de inovação estratégica e domínio de mercado, não apenas de presença online.",
+        description: "Ser a agência parceira de crescimento para empresas ambiciosas. Veja onde queremos chegar.",
+        href: "/onboarding/culture/vision"
     },
     {
         icon: Gem,
         title: "Nossos Valores",
-        points: [
-           { title: "Obsessão pelo resultado do cliente", detail: "O sucesso do nosso cliente é a nossa métrica principal. Pensamos como donos do negócio." },
-           { title: "Parceria e transparência radical", detail: "Construímos relações de confiança, com comunicação aberta sobre vitórias e desafios." },
-           { title: "Criatividade com propósito", detail: "Nossas ideias não são apenas bonitas; elas são desenhadas para atingir objetivos claros." },
-           { title: "Inovação como rotina", detail: "Estamos sempre aprendendo, testando e aplicando o que há de mais novo para manter nossos clientes à frente." },
-           { title: "Excelência em cada detalhe", detail: "Da estratégia ao post, buscamos o mais alto padrão de qualidade em tudo que entregamos." },
-        ]
+        description: "Os princípios que guiam cada decisão, projeto e interação. Conheça nosso código de conduta.",
+        href: "/onboarding/culture/values"
     }
 ];
 
 
 export default function CulturePage() {
-  const missionData = cultureData[0];
-  const visionData = cultureData[1];
-  const valuesData = cultureData[2];
-
   return (
     <div className="space-y-6">
         <p className="text-lg text-muted-foreground">
-            Para vender com convicção, você precisa entender o 'porquê' do nosso trabalho. A cultura da CP Marketing é a base de tudo que fazemos.
+            Para vender com convicção, você precisa entender o 'porquê' do nosso trabalho. A cultura da CP Marketing é a base de tudo que fazemos. Clique nos cards para explorar cada pilar.
         </p>
 
-        <div className="space-y-6">
-            <Card>
-                <CardHeader className="flex flex-row items-center gap-4">
-                    <missionData.icon className="h-8 w-8 text-primary" />
-                    <CardTitle>{missionData.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground">{missionData.description}</p>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader className="flex flex-row items-center gap-4">
-                    <visionData.icon className="h-8 w-8 text-primary" />
-                    <CardTitle>{visionData.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-muted-foreground">{visionData.description}</p>
-                </CardContent>
-            </Card>
-
-            <Card>
-                 <CardHeader className="flex flex-row items-center gap-4">
-                    <valuesData.icon className="h-8 w-8 text-primary" />
-                    <CardTitle>{valuesData.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <ul className="space-y-3">
-                        {valuesData.points.map((point) => (
-                          <li key={point.title}>
-                            <p className="font-semibold text-foreground">{point.title}</p>
-                            <p className="text-sm text-muted-foreground pl-2">{point.detail}</p>
-                          </li>
-                        ))}
-                    </ul>
-                </CardContent>
-            </Card>
+        <div className="space-y-4">
+            {cultureData.map((item) => (
+                <Link href={item.href} key={item.title} className="group block">
+                    <Card className="transition-all duration-200 ease-in-out group-hover:border-primary group-hover:shadow-lg group-hover:-translate-y-1">
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <item.icon className="h-8 w-8 text-primary" />
+                                <CardTitle>{item.title}</CardTitle>
+                            </div>
+                             <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-hover:text-primary group-hover:translate-x-1" />
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-muted-foreground">{item.description}</p>
+                        </CardContent>
+                    </Card>
+                </Link>
+            ))}
         </div>
     </div>
   );
