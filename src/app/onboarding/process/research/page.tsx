@@ -19,12 +19,13 @@ const researchSteps = [
     { 
         icon: Users,
         title: "Identificação do Decisor",
-        description: "Encontre a pessoa certa para contatar. Geralmente é o Sócio, CEO, Diretor de Marketing ou Gerente da área. Entrar em contato com a pessoa errada pode encerrar a oportunidade antes mesmo de começar.",
+        description: "Confirme se o contato associado ao lead é a pessoa certa para contatar. Geralmente é o Sócio, CEO, Diretor de Marketing ou Gerente da área. Contatar a pessoa errada pode encerrar a oportunidade antes mesmo de começar.",
         instructions: [
-            "<strong>LinkedIn Sales Navigator:</strong> É a ferramenta principal. Filtre a empresa alvo e procure por cargos como 'Sócio(a)', 'CEO', 'Fundador(a)', 'Diretor(a) de Marketing', 'CMO'.",
-            "<strong>Site da Empresa:</strong> Verifique as páginas 'Sobre Nós' ou 'Nossa Equipe'. Muitas vezes os decisores estão listados lá.",
-            "<strong>Plano B (LinkedIn Comum):</strong> Na página da empresa no LinkedIn, vá na aba 'Pessoas'. Filtre por palavras-chave relacionadas aos cargos de decisão.",
-            "<strong>Foco no Decisor:</strong> Evite contatar analistas ou assistentes, a menos que seja uma empresa muito grande e essa seja a única porta de entrada."
+            "<strong>Acesse o RD CRM:</strong> Esta é sua principal fonte de informações. Os leads são enviados para o CRM pela nossa ferramenta de prospecção, o Exact Spotter.",
+            "<strong>Localize o Lead:</strong> Encontre a empresa e o contato que você irá trabalhar.",
+            "<strong>Verifique o Cargo:</strong> Analise os dados do contato no CRM para identificar seu cargo. Busque por títulos como 'Sócio(a)', 'CEO', 'Diretor(a)', 'Gerente de Marketing'.",
+            "<strong>Validação Cruzada (se necessário):</strong> Se o cargo não estiver claro no CRM, use o LinkedIn (versão gratuita) para pesquisar o nome da pessoa e da empresa e confirmar sua posição atual. Isso garante que você está falando com a pessoa com poder de decisão.",
+            "<strong>Foco no Decisor:</strong> Evite contatar analistas ou assistentes, a menos que seja uma empresa muito grande e essa seja a única porta de entrada. O objetivo é sempre alcançar o tomador de decisão."
         ]
     },
     { 
@@ -32,9 +33,9 @@ const researchSteps = [
         title: "Análise da Presença Digital",
         description: "Mergulhe no universo do prospect. Analise o site, o Instagram e o LinkedIn para entender como eles se comunicam hoje e encontrar brechas.",
         instructions: [
-            "<strong>Website:</strong> É moderno e otimizado para mobile? Possui blog? A comunicação é clara? Parece ter sido atualizado recentemente?",
-            "<strong>Instagram:</strong> Qual a frequência de posts? A identidade visual é profissional e consistente? Usam Reels? O engajamento é real ou parece baixo?",
-            "<strong>LinkedIn (Empresa e Decisor):</strong> Eles postam com frequência? O conteúdo é sobre a empresa (vendas) ou sobre o setor (educativo)? Qual o nível de engajamento nos posts do decisor?"
+            "<strong>Website:</strong> É moderno e otimizado para mobile? Possui blog? A comunicação é clara e profissional? Parece ter sido atualizado recentemente ou está abandonado?",
+            "<strong>Instagram:</strong> Qual a frequência de posts? A identidade visual é profissional e consistente? Usam Reels? O engajamento é real ou parece baixo? Existem comentários de clientes reclamando?",
+            "<strong>LinkedIn (Empresa e Decisor):</strong> Eles postam com frequência? O conteúdo é sobre a empresa (vendas) ou sobre o setor (educativo)? Qual o nível de engajamento nos posts do decisor? Ele compartilha conteúdo de outros ou cria o seu próprio?"
         ]
     },
     { 
@@ -42,10 +43,10 @@ const researchSteps = [
         title: "Busca por 'Ganchos'",
         description: "Procure por um motivo relevante e personalizado para iniciar a conversa. Um bom gancho mostra que você fez sua lição de casa.",
         instructions: [
-            "<strong>Atividade Recente:</strong> O decisor ou a empresa postaram sobre um evento, um artigo, uma conquista? Use isso como ponto de partida.",
-            "<strong>Notícias e Expansão:</strong> A empresa foi mencionada na mídia? Anunciou uma nova contratação ou abertura de filial? Isso é um ótimo sinal de crescimento.",
-            "<strong>Dor Evidente:</strong> A análise da presença digital revelou uma dor óbvia? (ex: 'notei que seu último post no Instagram foi há 3 meses', 'vi que seus concorrentes estão fortes em anúncios, mas não encontrei os seus').",
-            "<strong>Conexões em Comum:</strong> Vocês têm conexões em comum no LinkedIn? Mencionar isso pode aquecer a abordagem."
+            "<strong>Atividade Recente:</strong> O decisor ou a empresa postaram sobre um evento, um artigo, uma conquista ou até uma dificuldade? Use isso como ponto de partida: 'Vi que vocês participaram do evento X...'",
+            "<strong>Notícias e Expansão:</strong> A empresa foi mencionada na mídia? Anunciou uma nova contratação, abertura de filial ou lançamento de produto? Isso é um ótimo sinal de crescimento e uma excelente abertura.",
+            "<strong>Dor Evidente:</strong> A análise da presença digital revelou uma dor óbvia? (ex: 'notei que seu último post no blog foi em 2022', 'vi que seus concorrentes estão fortes em anúncios de vídeo, mas não encontrei os seus').",
+            "<strong>Conexões em Comum:</strong> Vocês têm conexões em comum no LinkedIn? Mencionar um nome conhecido (com permissão, se possível) pode aquecer drasticamente a abordagem."
         ]
     },
     {
@@ -54,7 +55,7 @@ const researchSteps = [
         description: "Verifique se a empresa está contratando, especialmente em áreas de vendas ou marketing. Vagas abertas são um forte indicativo de que estão investindo em crescimento.",
         instructions: [
             "<strong>LinkedIn Vagas:</strong> Na página da empresa no LinkedIn, procure pela aba 'Vagas'. Vagas para 'Vendedor', 'Executivo de Contas' ou 'Analista de Marketing' são excelentes indicadores.",
-            "<strong>Site da Empresa:</strong> Procure pela seção 'Trabalhe Conosco' ou 'Carreiras'.",
+            "<strong>Site da Empresa:</strong> Procure pela seção 'Trabalhe Conosco' ou 'Carreiras'. Muitas empresas publicam suas vagas diretamente lá.",
             "<strong>Interpretação:</strong> Uma empresa que está contratando para a área comercial precisa de mais leads. Uma empresa que contrata para marketing está pronta para investir na área. É um sinal verde para a prospecção."
         ]
     }
