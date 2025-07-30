@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, ArrowRight, CheckCircle, Home } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, Home, Wand2 } from "lucide-react";
 import Link from "next/link";
 
 const steps = [
@@ -11,8 +11,6 @@ const steps = [
     { path: "/onboarding/solutions", name: "Soluções" },
     { path: "/onboarding/icp", name: "Cliente Ideal (ICP)" },
     { path: "/onboarding/process", name: "Processo SDR" },
-    { path: "/onboarding/schedule", name: "Rotina Diária" },
-    { path: "/onboarding/ai-tool", name: "Ferramenta de IA" },
 ];
 
 export default function OnboardingLayout({
@@ -75,10 +73,10 @@ export default function OnboardingLayout({
                         </Button>
                     </Link>
                 ) : (
-                    <Link href="/" passHref>
+                    <Link href="/ferramentas" passHref>
                         <Button>
-                            Finalizar
-                            <CheckCircle className="ml-2 h-4 w-4" />
+                            Ir para Ferramentas
+                            <Wand2 className="ml-2 h-4 w-4" />
                         </Button>
                     </Link>
                 )}

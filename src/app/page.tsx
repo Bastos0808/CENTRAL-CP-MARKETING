@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, Mic, LogOut, Users } from 'lucide-react';
+import { ArrowRight, Database, FileText, Mic, LogOut, Users, Wand2 } from 'lucide-react';
 import MindMap from '@/components/mind-map';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
@@ -119,6 +119,20 @@ export default function Home() {
               <Button className="w-full" variant="outline">
                 Iniciar Jornada
                 <Users className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+         <Card>
+          <CardHeader>
+            <CardTitle>Ferramentas de IA</CardTitle>
+            <CardDescription>Recursos para potencializar sua prospecção.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/ferramentas" passHref>
+              <Button className="w-full" variant="outline">
+                Acessar Ferramentas
+                <Wand2 className="ml-2 h-4 w-4" />
               </Button>
             </Link>
           </CardContent>
