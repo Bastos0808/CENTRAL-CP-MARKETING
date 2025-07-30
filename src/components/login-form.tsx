@@ -46,7 +46,7 @@ export default function LoginForm() {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
-      // No need to call toast or router.push here, AuthProvider will handle it
+      // On success, AuthProvider will redirect
     } catch (error: any) {
       console.error("Firebase Auth Error:", error);
       let description = "Ocorreu um erro desconhecido. Tente novamente.";
@@ -60,8 +60,6 @@ export default function LoginForm() {
       });
        setIsLoading(false);
     } 
-    // Do not set isLoading to false in the success case, 
-    // as the page will be redirected by the provider
   }
 
   return (

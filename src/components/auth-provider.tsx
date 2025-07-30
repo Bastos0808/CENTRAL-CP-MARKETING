@@ -3,17 +3,13 @@
 
 import { createContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut, type User as FirebaseAuthUser } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { usePathname, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
-import { doc, getDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { type User } from '@/lib/user';
-
 
 interface AuthContextType {
-    user: User | null;
-    firebaseUser: FirebaseAuthUser | null;
+    user: FirebaseAuthUser | null;
     loading: boolean;
     logout: () => void;
 }
@@ -21,29 +17,15 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [firebaseUser, setFirebaseUser] = useState<FirebaseAuthUser | null>(null);
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<FirebaseAuthUser | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
     const { toast } = useToast();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
-            setFirebaseUser(fbUser);
-            if (fbUser) {
-                // Fetch additional user data from Firestore
-                const userDocRef = doc(db, 'users', fbUser.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
-                    setUser({ uid: fbUser.uid, ...userDocSnap.data() } as User);
-                } else {
-                    // Handle case where user exists in Auth but not in Firestore
-                    setUser({ uid: fbUser.uid, email: fbUser.email } as User) // Default user object
-                }
-            } else {
-                setUser(null);
-            }
+        const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
+            setUser(fbUser);
             setLoading(false);
         });
 
@@ -81,12 +63,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     const value = {
         user,
-        firebaseUser,
         loading,
         logout: handleLogout
     };
     
-    if (loading) {
+    const isPublicPage = pathname === '/login';
+    if(loading && !isPublicPage){
         return (
             <div className="flex min-h-screen w-full items-center justify-center">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -94,15 +76,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         );
     }
     
-    const isLoginPage = pathname === '/login';
 
-    if (!user && isLoginPage) {
-        return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-    }
-    
-    if (user && !isLoginPage) {
-        return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    if ((!user && !isPublicPage)) {
+        return null; // or a loading indicator
     }
 
-    return null;
+    if (user && isPublicPage) {
+        return null; // or a loading indicator
+    }
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

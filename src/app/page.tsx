@@ -65,35 +65,23 @@ export default function Home() {
         )
     }
 
-    const isAdmin = user?.role === 'admin';
-    const userRole = user?.role;
-    
-    const availableTabs = [
-        { value: 'strategy', label: 'Estratégia', icon: Briefcase, content: strategicTools, roles: ['strategy', 'admin'] },
-        { value: 'podcast', label: 'Podcast', icon: Podcast, content: podcastTools, roles: ['podcast', 'admin'] },
-        { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, roles: ['commercial', 'admin'] }
-    ].filter(tab => isAdmin || tab.roles.includes(userRole as string));
-    
-    if (availableTabs.length === 0) {
-        return (
-            <div className="text-center text-muted-foreground py-10">
-                <p>Você não tem permissão para acessar nenhuma ferramenta.</p>
-                <p>Entre em contato com um administrador.</p>
-            </div>
-        )
-    }
+    const allTabs = [
+        { value: 'strategy', label: 'Estratégia', icon: Briefcase, content: strategicTools },
+        { value: 'podcast', label: 'Podcast', icon: Podcast, content: podcastTools },
+        { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools }
+    ];
 
     return (
-        <Tabs defaultValue={availableTabs[0].value} className="w-full">
-            <TabsList className={`grid w-full h-auto grid-cols-${availableTabs.length}`}>
-                {availableTabs.map(tab => (
+        <Tabs defaultValue={allTabs[0].value} className="w-full">
+            <TabsList className={`grid w-full h-auto grid-cols-${allTabs.length}`}>
+                {allTabs.map(tab => (
                     <TabsTrigger key={tab.value} value={tab.value} className="py-2.5">
                         <tab.icon className="mr-2"/> {tab.label}
                     </TabsTrigger>
                 ))}
             </TabsList>
             
-            {availableTabs.map(tab => (
+            {allTabs.map(tab => (
                 <TabsContent key={tab.value} value={tab.value} className="mt-8">
                      <div className={`grid gap-6 md:grid-cols-2 ${tab.content.length === 1 ? 'lg:grid-cols-3' : 'lg:grid-cols-3'}`}>
                         {tab.content.map(tool => (
@@ -124,10 +112,12 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 relative">
       <div className="absolute top-4 right-4">
-        <Button variant="outline" onClick={logout}>
-          <LogOut className="mr-2 h-4 w-4" />
-          Logout
-        </Button>
+        {user && (
+            <Button variant="outline" onClick={logout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+            </Button>
+        )}
       </div>
       
       <div className="w-full max-w-6xl text-center mb-12 mt-12 sm:mt-8">
