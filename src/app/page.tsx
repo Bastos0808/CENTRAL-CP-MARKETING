@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 // Define passwords for each tab
 const tabPasswords: Record<string, string> = {
   strategy: 'ESTRATEGIACP',
-  podcast: 'pass123',
+  podcast: 'PODCASTCP',
   commercial: 'pass123',
 };
 
