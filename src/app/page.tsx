@@ -4,33 +4,12 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic } from 'lucide-react';
-import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Home() {
-  const router = useRouter();
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast({
-        title: "Logout realizado com sucesso!",
-        description: "Você foi desconectado e será redirecionado.",
-      });
-      router.push('/login');
-    } catch (error) {
-      toast({
-        title: "Erro ao fazer logout",
-        description: "Ocorreu um problema ao tentar desconectar. Tente novamente.",
-        variant: "destructive",
-      });
-    }
-  };
+  const { user, logout, loading } = useAuth();
   
   const strategicTools = [
       {
@@ -76,11 +55,76 @@ export default function Home() {
         icon: Wand2
       }
   ]
+  
+  const renderTabs = () => {
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-40">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        )
+    }
+
+    const isAdmin = user?.role === 'admin';
+    const userRole = user?.role;
+    
+    const availableTabs = [
+        { value: 'strategy', label: 'Estratégia', icon: Briefcase, content: strategicTools, roles: ['strategy', 'admin'] },
+        { value: 'podcast', label: 'Podcast', icon: Podcast, content: podcastTools, roles: ['podcast', 'admin'] },
+        { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, roles: ['commercial', 'admin'] }
+    ].filter(tab => isAdmin || tab.roles.includes(userRole as string));
+    
+    if (availableTabs.length === 0) {
+        return (
+            <div className="text-center text-muted-foreground py-10">
+                <p>Você não tem permissão para acessar nenhuma ferramenta.</p>
+                <p>Entre em contato com um administrador.</p>
+            </div>
+        )
+    }
+
+    return (
+        <Tabs defaultValue={availableTabs[0].value} className="w-full">
+            <TabsList className={`grid w-full h-auto grid-cols-${availableTabs.length}`}>
+                {availableTabs.map(tab => (
+                    <TabsTrigger key={tab.value} value={tab.value} className="py-2.5">
+                        <tab.icon className="mr-2"/> {tab.label}
+                    </TabsTrigger>
+                ))}
+            </TabsList>
+            
+            {availableTabs.map(tab => (
+                <TabsContent key={tab.value} value={tab.value} className="mt-8">
+                     <div className={`grid gap-6 md:grid-cols-2 ${tab.content.length === 1 ? 'lg:grid-cols-3' : 'lg:grid-cols-3'}`}>
+                        {tab.content.map(tool => (
+                             <Card key={tool.title} className={`${tab.content.length === 1 ? 'lg:col-start-2' : ''} flex flex-col`}>
+                                <CardHeader className="flex-grow">
+                                    <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                                      <tool.icon className="h-7 w-7" />
+                                    </div>
+                                    <CardTitle>{tool.title}</CardTitle>
+                                    <CardDescription>{tool.description}</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Link href={tool.href} passHref>
+                                    <Button className="w-full">
+                                        Acessar <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                    </Link>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </TabsContent>
+            ))}
+        </Tabs>
+    )
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 relative">
       <div className="absolute top-4 right-4">
-        <Button variant="outline" onClick={handleLogout}>
+        <Button variant="outline" onClick={logout}>
           <LogOut className="mr-2 h-4 w-4" />
           Logout
         </Button>
@@ -96,82 +140,7 @@ export default function Home() {
       </div>
 
       <div className="w-full max-w-5xl">
-         <Tabs defaultValue="strategy" className="w-full">
-            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto">
-                <TabsTrigger value="strategy" className="py-2.5"><Briefcase className="mr-2"/> Estratégia</TabsTrigger>
-                <TabsTrigger value="podcast" className="py-2.5"><Podcast className="mr-2"/> Podcast</TabsTrigger>
-                <TabsTrigger value="commercial" className="py-2.5"><Target className="mr-2"/> Comercial</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="strategy" className="mt-8">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {strategicTools.map(tool => (
-                        <Card key={tool.title} className="flex flex-col">
-                            <CardHeader className="flex-grow">
-                                <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
-                                  <tool.icon className="h-7 w-7" />
-                                </div>
-                                <CardTitle>{tool.title}</CardTitle>
-                                <CardDescription>{tool.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Link href={tool.href} passHref>
-                                <Button className="w-full">
-                                    Acessar <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                                </Link>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </TabsContent>
-            
-            <TabsContent value="podcast" className="mt-8">
-                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 justify-center">
-                    {podcastTools.map(tool => (
-                        <Card key={tool.title} className="lg:col-start-2 flex flex-col">
-                            <CardHeader className="flex-grow">
-                                <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
-                                  <tool.icon className="h-7 w-7" />
-                                </div>
-                                <CardTitle>{tool.title}</CardTitle>
-                                <CardDescription>{tool.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Link href={tool.href} passHref>
-                                <Button className="w-full">
-                                    Acessar <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                                </Link>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </TabsContent>
-
-            <TabsContent value="commercial" className="mt-8">
-                 <div className="grid gap-6 md:grid-cols-2">
-                    {commercialTools.map(tool => (
-                        <Card key={tool.title} className="flex flex-col">
-                            <CardHeader className="flex-grow">
-                                <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
-                                  <tool.icon className="h-7 w-7" />
-                                </div>
-                                <CardTitle>{tool.title}</CardTitle>
-                                <CardDescription>{tool.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Link href={tool.href} passHref>
-                                <Button className="w-full">
-                                    Acessar <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
-                                </Link>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </TabsContent>
-        </Tabs>
+         {renderTabs()}
       </div>
 
     </main>
