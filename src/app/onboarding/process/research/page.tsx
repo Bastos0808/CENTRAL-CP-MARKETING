@@ -102,21 +102,6 @@ export default function ResearchPage() {
             </AccordionItem>
           ))}
       </Accordion>
-      
-       <Card className="bg-primary/5 border-primary/20">
-          <CardHeader>
-              <CardTitle>Ferramentas e Recursos Essenciais</CardTitle>
-          </CardHeader>
-          <CardContent>
-              <ul className="space-y-2 list-disc pl-5 text-muted-foreground">
-                  <li><strong>LinkedIn Sales Navigator:</strong> Para encontrar decisores e filtrar empresas por setor, tamanho e localização.</li>
-                  <li><strong>Exact Spotter:</strong> Nossa ferramenta interna para prospecção B2B. <Link href="/ferramentas" className="text-primary hover:underline">Acesse aqui.</Link></li>
-                  <li><strong>Biblioteca de Anúncios do Facebook:</strong> Para verificar se os concorrentes do seu prospect (e ele mesmo) estão anunciando.</li>
-                   <li><strong>Documentação do ICP:</strong> Use como seu guia principal. Se houver dúvida, consulte antes de avançar. <Link href="/onboarding/icp" className="text-primary hover:underline">Consulte aqui.</Link></li>
-              </ul>
-          </CardContent>
-      </Card>
-
     </div>
   );
 }
