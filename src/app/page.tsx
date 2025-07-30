@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, Mic, LogOut, Users, Wand2, Briefcase, Podcast, Target } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
@@ -86,34 +86,37 @@ export default function Home() {
         </Button>
       </div>
       
-      <div className="w-full max-w-6xl text-center mb-12 mt-16 sm:mt-0">
+      <div className="w-full max-w-6xl text-center mb-12 mt-12 sm:mt-8">
         <h1 className="text-5xl font-bold tracking-tight text-primary sm:text-6xl">
           Bem-vindo à Central Mödus
         </h1>
-        <p className="mt-6 text-lg text-muted-foreground">
-          Navegue pelas abas e acesse as ferramentas do seu setor.
+        <p className="mt-6 text-lg text-muted-foreground max-w-3xl mx-auto">
+          Navegue pelas abas abaixo para acessar as ferramentas e recursos específicos do seu setor de atuação.
         </p>
       </div>
 
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-5xl">
          <Tabs defaultValue="strategy" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="strategy"><Briefcase className="mr-2"/> Estratégia</TabsTrigger>
-                <TabsTrigger value="podcast"><Podcast className="mr-2"/> Podcast</TabsTrigger>
-                <TabsTrigger value="commercial"><Target className="mr-2"/> Comercial</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto">
+                <TabsTrigger value="strategy" className="py-2.5"><Briefcase className="mr-2"/> Estratégia</TabsTrigger>
+                <TabsTrigger value="podcast" className="py-2.5"><Podcast className="mr-2"/> Podcast</TabsTrigger>
+                <TabsTrigger value="commercial" className="py-2.5"><Target className="mr-2"/> Comercial</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="strategy" className="mt-6">
+            <TabsContent value="strategy" className="mt-8">
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {strategicTools.map(tool => (
-                        <Card key={tool.title}>
-                            <CardHeader>
-                                <CardTitle className='flex items-center gap-2'><tool.icon /> {tool.title}</CardTitle>
+                        <Card key={tool.title} className="flex flex-col">
+                            <CardHeader className="flex-grow">
+                                <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                                  <tool.icon className="h-7 w-7" />
+                                </div>
+                                <CardTitle>{tool.title}</CardTitle>
                                 <CardDescription>{tool.description}</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Link href={tool.href} passHref>
-                                <Button className="w-full" variant="outline">
+                                <Button className="w-full">
                                     Acessar <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                                 </Link>
@@ -123,17 +126,20 @@ export default function Home() {
                 </div>
             </TabsContent>
             
-            <TabsContent value="podcast" className="mt-6">
+            <TabsContent value="podcast" className="mt-8">
                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 justify-center">
                     {podcastTools.map(tool => (
-                        <Card key={tool.title} className="lg:col-start-2">
-                            <CardHeader>
-                                <CardTitle className='flex items-center gap-2'><tool.icon /> {tool.title}</CardTitle>
+                        <Card key={tool.title} className="lg:col-start-2 flex flex-col">
+                            <CardHeader className="flex-grow">
+                                <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                                  <tool.icon className="h-7 w-7" />
+                                </div>
+                                <CardTitle>{tool.title}</CardTitle>
                                 <CardDescription>{tool.description}</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Link href={tool.href} passHref>
-                                <Button className="w-full" variant="outline">
+                                <Button className="w-full">
                                     Acessar <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                                 </Link>
@@ -143,17 +149,20 @@ export default function Home() {
                 </div>
             </TabsContent>
 
-            <TabsContent value="commercial" className="mt-6">
+            <TabsContent value="commercial" className="mt-8">
                  <div className="grid gap-6 md:grid-cols-2">
                     {commercialTools.map(tool => (
-                        <Card key={tool.title}>
-                            <CardHeader>
-                                <CardTitle className='flex items-center gap-2'><tool.icon /> {tool.title}</CardTitle>
+                        <Card key={tool.title} className="flex flex-col">
+                            <CardHeader className="flex-grow">
+                                <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                                  <tool.icon className="h-7 w-7" />
+                                </div>
+                                <CardTitle>{tool.title}</CardTitle>
                                 <CardDescription>{tool.description}</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Link href={tool.href} passHref>
-                                <Button className="w-full" variant="outline">
+                                <Button className="w-full">
                                     Acessar <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
                                 </Link>
