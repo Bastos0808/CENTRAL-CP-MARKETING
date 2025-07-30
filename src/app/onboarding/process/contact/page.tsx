@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, CheckSquare, Wand2, Mail, MessageSquare, PhoneCall, ShieldQuestion, Users } from "lucide-react";
+import { Phone, CheckSquare, Wand2, Mail, MessageSquare, PhoneCall, ShieldQuestion, Users, Handshake } from "lucide-react";
 
 const checklist = [
     { text: "O objetivo NUNCA é vender na primeira mensagem. O objetivo é validar a dor e agendar uma reunião de diagnóstico." },
@@ -122,6 +122,27 @@ export default function ContactPage() {
                 </div>
             </CardContent>
         </Card>
+
+         <Card className="lg:col-span-2">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-3"><Handshake /> Como Passar pelo 'Gatekeeper' (Secretária, Assistente)</CardTitle>
+            </CardHeader>
+            <CardContent>
+                 <div className="p-4 bg-muted/50 rounded-lg w-full space-y-3">
+                    <p className="text-foreground"><strong>Mentalidade:</strong> O gatekeeper não é um inimigo, é um aliado em potencial. Seu objetivo é dar a ele um motivo claro para te passar para o decisor. Seja firme, educado e transmita importância.</p>
+                    <div className="space-y-2 pt-2 border-t mt-2">
+                        <p className="text-foreground font-semibold">Script da Ligação:</p>
+                        <p className="text-muted-foreground"><strong>Gatekeeper:</strong> "Empresa X, bom dia."</p>
+                        <p className="text-foreground"><strong>Você:</strong> "Bom dia, aqui é [Seu Nome] da CP Marketing. Gostaria de falar com o(a) [Nome do Decisor], por favor."</p>
+                        <p className="text-muted-foreground"><strong>Gatekeeper:</strong> "Qual seria o assunto?"</p>
+                        <p className="text-foreground"><strong>Você (com confiança):</strong> "É sobre um levantamento de posicionamento digital que fizemos sobre a [Nome da Empresa] e seus concorrentes. Acredito que o(a) [Nome do Decisor] terá interesse nos dados."</p>
+                        <p className="text-muted-foreground"><strong>Gatekeeper:</strong> "Ele(a) não está no momento. Quer deixar recado?"</p>
+                        <p className="text-foreground"><strong>Você:</strong> "Claro. Pode dizer que o(a) [Seu Nome], da CP Marketing, ligou sobre a análise de concorrência. Meu número é [Seu Número]. Ele(a) tem algum horário específico que seja melhor para retornar?"</p>
+                    </div>
+                 </div>
+            </CardContent>
+        </Card>
+
         <Card className="lg:col-span-2">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3"><ShieldQuestion /> Como Lidar com Objeções Iniciais</CardTitle>
