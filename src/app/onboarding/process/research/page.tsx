@@ -33,9 +33,12 @@ const researchSteps = [
         title: "Análise da Presença Digital",
         description: "Mergulhe no universo do prospect. Analise o site, o Instagram e o LinkedIn para entender como eles se comunicam hoje e encontrar brechas.",
         instructions: [
+            "<strong>Google:</strong> Pesquise o nome da empresa. Como ela aparece? Existem notícias, artigos ou avaliações no Google Meu Negócio? Avaliações negativas são uma dor explícita.",
             "<strong>Website:</strong> É moderno e otimizado para mobile? Possui blog? A comunicação é clara e profissional? Parece ter sido atualizado recentemente ou está abandonado?",
             "<strong>Instagram:</strong> Qual a frequência de posts? A identidade visual é profissional e consistente? Usam Reels? O engajamento é real ou parece baixo? Existem comentários de clientes reclamando?",
-            "<strong>LinkedIn (Empresa e Decisor):</strong> Eles postam com frequência? O conteúdo é sobre a empresa (vendas) ou sobre o setor (educativo)? Qual o nível de engajamento nos posts do decisor? Ele compartilha conteúdo de outros ou cria o seu próprio?"
+            "<strong>LinkedIn (Empresa e Decisor):</strong> Eles postam com frequência? O conteúdo é sobre a empresa (vendas) ou sobre o setor (educativo)? Qual o nível de engajamento nos posts do decisor? Ele compartilha conteúdo de outros ou cria o seu próprio?",
+            "<strong>Biblioteca de Anúncios do Meta:</strong> Pesquise na biblioteca de anúncios se a empresa ou seus concorrentes estão veiculando campanhas. A ausência de anúncios (ou anúncios de baixa qualidade) é uma grande oportunidade.",
+            "<strong>YouTube e TikTok:</strong> Se for relevante para o setor, verifique se possuem canais ativos. A falta de presença em vídeo é uma dor para muitas marcas que querem construir autoridade."
         ]
     },
     { 
