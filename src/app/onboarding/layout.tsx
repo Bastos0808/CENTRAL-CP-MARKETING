@@ -3,15 +3,17 @@
 
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, ArrowRight, Home, Wand2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Home, Wand2, CheckCircle, Circle } from "lucide-react";
 import Link from "next/link";
 import { BackButton } from "@/components/ui/back-button";
+import { cn } from "@/lib/utils";
 
 const steps = [
     { path: "/onboarding/culture", name: "Cultura" },
     { path: "/onboarding/solutions", name: "Soluções" },
     { path: "/onboarding/icp", name: "Cliente Ideal (ICP)" },
     { path: "/onboarding/process", name: "Processo SDR" },
+    { path: "/onboarding/modus", name: "Mödus" },
 ];
 
 export default function OnboardingLayout({
@@ -21,7 +23,7 @@ export default function OnboardingLayout({
 }) {
   const pathname = usePathname();
 
-  const currentIndex = steps.findIndex(step => step.path === pathname);
+  const currentIndex = steps.findIndex(step => pathname.startsWith(step.path));
   const isWelcomePage = pathname === '/onboarding';
 
   const prevStep = currentIndex > 0 ? steps[currentIndex - 1] : null;
@@ -42,16 +44,31 @@ export default function OnboardingLayout({
             ) : (
                 <>
                  <header className="my-8 text-center">
-                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-primary">
-                        Etapa {currentIndex + 1}: {steps[currentIndex].name}
-                    </h1>
-                    <p className="mt-2 text-muted-foreground">Siga as etapas para concluir a integração.</p>
-                    <div className="w-full bg-muted rounded-full h-2.5 mt-4 max-w-md mx-auto">
-                        <div 
-                            className="bg-primary h-2.5 rounded-full transition-all duration-500" 
-                            style={{ width: `${((currentIndex + 1) / steps.length) * 100}%` }}
-                        ></div>
-                    </div>
+                    <nav className="flex justify-center items-center gap-4 sm:gap-8">
+                       {steps.map((step, index) => {
+                           const isActive = pathname.startsWith(step.path);
+                           const isCompleted = currentIndex > index;
+
+                           return (
+                            <Link href={step.path} key={step.name} className="flex flex-col items-center gap-2 group">
+                                <div className={cn(
+                                    "h-8 w-8 rounded-full flex items-center justify-center border-2 transition-all",
+                                    isActive ? "border-primary bg-primary/10" : "border-muted-foreground/30 group-hover:border-primary/50",
+                                    isCompleted ? "border-green-500 bg-green-500/10 text-green-500" : ""
+                                )}>
+                                   {isCompleted ? <CheckCircle className="h-5 w-5"/> : <Circle className={cn("h-3 w-3 transition-all", isActive ? "text-primary fill-current" : "text-muted-foreground/30 group-hover:text-primary/50")}/>}
+                                </div>
+                                <span className={cn(
+                                    "text-xs sm:text-sm font-medium transition-all",
+                                    isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary",
+                                     isCompleted ? "text-green-500" : ""
+                                )}>
+                                    {step.name}
+                                </span>
+                            </Link>
+                           )
+                       })}
+                    </nav>
                 </header>
                 
                 <main className="flex-1 flex flex-col">{children}</main>

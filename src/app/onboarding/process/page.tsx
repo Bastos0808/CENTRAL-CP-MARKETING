@@ -1,6 +1,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckSquare, Search, Handshake, Calendar, Mail } from "lucide-react";
+import { CheckSquare, Search, Handshake, Calendar, Mail, Network, ArrowRight } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import Link from "next/link";
 
 const processSteps = [
     {
@@ -73,6 +75,27 @@ export default function ProcessPage() {
                     </Card>
                 ))}
             </div>
+
+            <Card className="bg-primary/5 border-primary/20">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                        <Network className="h-7 w-7 text-primary"/>
+                        Aprofunde no Mödus
+                    </CardTitle>
+                    <CardContent className="pt-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <p className="text-muted-foreground flex-1">
+                           As etapas acima são o fluxo prático. Para entender a estratégia por trás de cada ação, explore nosso mapa mental completo do Mödus.
+                        </p>
+                        <Link href="/onboarding/modus">
+                            <Button>
+                                Acessar o Mödus Completo
+                                <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                        </Link>
+                    </CardContent>
+                </CardHeader>
+            </Card>
+
         </div>
     );
 }
