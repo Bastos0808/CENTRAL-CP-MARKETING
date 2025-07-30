@@ -1,14 +1,34 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, CheckSquare } from "lucide-react";
+import { Search, UserCheck, Link as LinkIcon, Users, ZoomIn, Briefcase } from "lucide-react";
 import Link from "next/link";
 
-const checklist = [
-    { text: "Identificar potenciais clientes que se encaixam 100% no nosso ICP (Perfil de Cliente Ideal). Se houver dúvida, não avance." },
-    { text: "Analisar a presença digital atual do prospect: site, blog, e principalmente Instagram e LinkedIn. O que eles postam? Com que frequência?" },
-    { text: "Identificar o decisor correto (CEO, Diretor de Marketing, Sócio). Pesquise no LinkedIn ou na seção 'Sobre' do site da empresa." },
-    { text: "Procurar por 'ganchos' ou dores evidentes: posts antigos, comunicação que não reflete a qualidade do serviço, falta de engajamento, anúncios dos concorrentes, etc." },
-    { text: "Verificar se a empresa está contratando na área de marketing ou vendas, pois isso indica um desejo de crescimento." },
+const researchSteps = [
+    { 
+        icon: UserCheck,
+        title: "Qualificação com o ICP",
+        description: "A primeira e mais crítica etapa. Verifique se o prospect se encaixa em TODOS os critérios do nosso Perfil de Cliente Ideal (Setor, Estágio, Mentalidade, etc). Se um critério fundamental falhar, o prospect provavelmente não é um bom fit. Não perca tempo com leads desqualificados." 
+    },
+    { 
+        icon: Users,
+        title: "Identificação do Decisor",
+        description: "Encontre a pessoa certa para contatar. Geralmente é o Sócio, CEO, Diretor de Marketing ou Gerente da área. Use o LinkedIn Sales Navigator ou a seção 'Equipe/Sobre' do site da empresa. Entrar em contato com a pessoa errada pode encerrar a oportunidade antes mesmo de começar." 
+    },
+    { 
+        icon: ZoomIn,
+        title: "Análise da Presença Digital",
+        description: "Mergulhe no universo do prospect. Analise o site (está moderno?), o Instagram (frequência, qualidade, engajamento) e o LinkedIn (posts da empresa e do decisor). Entenda como eles se comunicam hoje para encontrar brechas e oportunidades." 
+    },
+    { 
+        icon: LinkIcon,
+        title: "Busca por 'Ganchos'",
+        description: "Procure por um motivo relevante para iniciar a conversa. Pode ser um post recente, um artigo que o decisor escreveu, uma contratação nova na empresa, ou uma dor evidente (ex: posts antigos, comunicação fraca, concorrentes anunciando forte)." 
+    },
+    {
+        icon: Briefcase,
+        title: "Sinais de Crescimento",
+        description: "Verifique se a empresa está contratando, especialmente em áreas de vendas ou marketing. Anúncios de vagas no LinkedIn ou no site da empresa são um forte indicativo de que eles estão investindo em crescimento e podem estar abertos a novas soluções."
+    }
 ];
 
 export default function ResearchPage() {
@@ -26,32 +46,32 @@ export default function ResearchPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-            <CardTitle>Checklist de Ações</CardTitle>
-        </CardHeader>
-        <CardContent>
-             <ul className="space-y-4">
-                {checklist.map((item, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                        <CheckSquare className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-muted-foreground">{item.text}</span>
-                    </li>
-                ))}
-            </ul>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+          {researchSteps.map((step) => (
+            <Card key={step.title}>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                        <step.icon className="h-6 w-6 text-primary" />
+                        {step.title}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground">{step.description}</p>
+                </CardContent>
+            </Card>
+          ))}
+      </div>
       
        <Card className="bg-primary/5 border-primary/20">
           <CardHeader>
-              <CardTitle>Ferramentas e Recursos</CardTitle>
+              <CardTitle>Ferramentas e Recursos Essenciais</CardTitle>
           </CardHeader>
           <CardContent>
               <ul className="space-y-2 list-disc pl-5 text-muted-foreground">
                   <li><strong>LinkedIn Sales Navigator:</strong> Para encontrar decisores e filtrar empresas por setor, tamanho e localização.</li>
                   <li><strong>Exact Spotter:</strong> Nossa ferramenta interna para prospecção B2B. <Link href="/ferramentas" className="text-primary hover:underline">Acesse aqui.</Link></li>
-                  <li><strong>Biblioteca de Anúncios do Facebook:</strong> Para verificar se os concorrentes do seu prospect estão anunciando.</li>
-                   <li><strong>Documentação do ICP:</strong> Use como seu guia principal. <Link href="/onboarding/icp" className="text-primary hover:underline">Consulte aqui.</Link></li>
+                  <li><strong>Biblioteca de Anúncios do Facebook:</strong> Para verificar se os concorrentes do seu prospect (e ele mesmo) estão anunciando.</li>
+                   <li><strong>Documentação do ICP:</strong> Use como seu guia principal. Se houver dúvida, consulte antes de avançar. <Link href="/onboarding/icp" className="text-primary hover:underline">Consulte aqui.</Link></li>
               </ul>
           </CardContent>
       </Card>
