@@ -125,6 +125,10 @@ export default function ContactPage() {
                         <p className="text-foreground font-semibold">"Me mande por e-mail."</p>
                         <p className="text-muted-foreground"><strong>Resposta:</strong> "Claro! Para não te enviar um material genérico, você se importa de me dizer qual é seu maior desafio em relação a [Dor Conectada] hoje? Assim eu consigo te mandar algo que realmente te ajude."</p>
                     </div>
+                    <div className="space-y-1 pt-2 border-t">
+                        <p className="text-foreground font-semibold">"Mande sua apresentação por e-mail."</p>
+                        <p className="text-muted-foreground"><strong>Resposta:</strong> "Nossa apresentação é focada em resultados, e seria um desserviço te enviar algo genérico sem antes entender seus desafios. Que tal uma conversa rápida de 15 minutos? Se não fizer sentido, não te incomodo mais. O que me diz?"</p>
+                    </div>
                  </div>
             </CardContent>
         </Card>
