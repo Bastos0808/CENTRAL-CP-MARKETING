@@ -46,10 +46,10 @@ const researchSteps = [
         title: "Busca por 'Ganchos'",
         description: "Procure por um motivo relevante e personalizado para iniciar a conversa. Um bom gancho mostra que você fez sua lição de casa.",
         instructions: [
-            "<strong>Atividade Recente:</strong> O decisor ou a empresa postaram sobre um evento, um artigo, uma conquista ou até uma dificuldade? Use isso como ponto de partida: 'Vi que vocês participaram do evento X...'",
-            "<strong>Notícias e Expansão:</strong> A empresa foi mencionada na mídia? Anunciou uma nova contratação, abertura de filial ou lançamento de produto? Isso é um ótimo sinal de crescimento e uma excelente abertura.",
-            "<strong>Dor Evidente:</strong> A análise da presença digital revelou uma dor óbvia? (ex: 'notei que seu último post no blog foi em 2022', 'vi que seus concorrentes estão fortes em anúncios de vídeo, mas não encontrei os seus').",
-            "<strong>Conexões em Comum:</strong> Vocês têm conexões em comum no LinkedIn? Mencionar um nome conhecido (com permissão, se possível) pode aquecer drasticamente a abordagem."
+            "<strong>Atividade Recente:</strong> O decisor ou a empresa postaram sobre um evento, um artigo, uma conquista ou até uma dificuldade? Use isso como ponto de partida: 'Vi que vocês participaram do evento X...' ou 'Parabéns pelo artigo sobre Y, achei o ponto Z muito interessante'.",
+            "<strong>Notícias e Expansão:</strong> A empresa foi mencionada na mídia? Anunciou uma nova contratação, abertura de filial ou lançamento de produto? Isso é um ótimo sinal de crescimento e uma excelente abertura. Ex: 'Vi no portal ABC que vocês estão expandindo para a região Sul, parabéns!'",
+            "<strong>Dor Evidente (da Análise Digital):</strong> A análise da presença digital revelou uma fraqueza óbvia? Use isso de forma sutil. Ex: 'Notei que seu último post no blog foi em 2022. Estão planejando reativar essa frente?' ou 'Vi que seus concorrentes estão fortes em anúncios de vídeo, mas não encontrei os seus. Existe uma razão estratégica para isso?'",
+            "<strong>Conexões em Comum:</strong> Vocês têm conexões em comum no LinkedIn? Mencionar um nome conhecido (com permissão, se possível) pode aquecer drasticamente a abordagem. Ex: 'Vi que temos o [Nome da Conexão] em comum, ele é um grande profissional'."
         ]
     },
     {
