@@ -27,6 +27,10 @@ const cultureData = [
 ];
 
 export default function CulturePage() {
+  const missionData = cultureData[0];
+  const visionData = cultureData[1];
+  const valuesData = cultureData[2];
+
   return (
     <div className="space-y-6">
         <p className="text-lg text-muted-foreground">
@@ -34,32 +38,32 @@ export default function CulturePage() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="flex flex-col">
+            <Card>
                 <CardHeader className="flex flex-row items-center gap-4">
-                    <cultureData[0].icon className="h-8 w-8 text-primary" />
-                    <CardTitle>{cultureData[0].title}</CardTitle>
+                    <missionData.icon className="h-8 w-8 text-primary" />
+                    <CardTitle>{missionData.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-grow">
-                    <p className="text-muted-foreground">{cultureData[0].description}</p>
+                <CardContent>
+                    <p className="text-muted-foreground">{missionData.description}</p>
                 </CardContent>
             </Card>
-            <Card className="flex flex-col">
+            <Card>
                 <CardHeader className="flex flex-row items-center gap-4">
-                    <cultureData[1].icon className="h-8 w-8 text-primary" />
-                    <CardTitle>{cultureData[1].title}</CardTitle>
+                    <visionData.icon className="h-8 w-8 text-primary" />
+                    <CardTitle>{visionData.title}</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-grow">
-                    <p className="text-muted-foreground">{cultureData[1].description}</p>
+                <CardContent>
+                    <p className="text-muted-foreground">{visionData.description}</p>
                 </CardContent>
             </Card>
             <Card className="md:col-span-2">
                  <CardHeader className="flex flex-row items-center gap-4">
-                    <cultureData[2].icon className="h-8 w-8 text-primary" />
-                    <CardTitle>{cultureData[2].title}</CardTitle>
+                    <valuesData.icon className="h-8 w-8 text-primary" />
+                    <CardTitle>{valuesData.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-3">
-                        {cultureData[2].points.map((point) => (
+                        {valuesData.points.map((point) => (
                           <li key={point.title}>
                             <p className="font-semibold text-foreground">{point.title}</p>
                             <p className="text-sm text-muted-foreground pl-2">{point.detail}</p>
