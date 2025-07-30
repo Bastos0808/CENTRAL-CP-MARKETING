@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Gem, HeartHand, Lightbulb, Search, Trophy } from "lucide-react";
+import { Gem, HeartHandshake, Lightbulb, Search, Trophy } from "lucide-react";
 
 const valuesData = [
   {
@@ -9,7 +9,7 @@ const valuesData = [
     detail: "O sucesso do nosso cliente é a nossa métrica principal. Pensamos como donos do negócio, e cada ação que tomamos deve estar alinhada a um objetivo claro de crescimento para quem confia em nosso trabalho. Se o cliente não ganha, nós não ganhamos."
   },
   {
-    icon: HeartHand,
+    icon: HeartHandshake,
     title: "Parceria e transparência radical",
     detail: "Construímos relações de confiança, com comunicação aberta sobre vitórias, desafios e até mesmo erros. O cliente não é um número; é um parceiro. Acreditamos que a honestidade radical acelera a resolução de problemas e fortalece a relação."
   },
