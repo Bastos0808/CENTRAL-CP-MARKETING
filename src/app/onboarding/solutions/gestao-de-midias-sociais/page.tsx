@@ -5,19 +5,17 @@ import { Palette, CheckCircle, UserCheck, AlertTriangle } from "lucide-react";
 export default function GestaoMidiasPage() {
   return (
     <div className="space-y-6">
-      <Card className="border-0 shadow-none">
-        <CardHeader>
-          <div className="flex items-center gap-4 mb-2">
+      <div className="space-y-2">
+          <div className="flex items-center gap-4">
              <div className="bg-primary/10 p-3 rounded-full">
                 <Palette className="h-10 w-10 text-primary" />
              </div>
-            <CardTitle className="text-3xl">Gestão de Mídias Sociais</CardTitle>
+            <h1 className="text-3xl font-bold tracking-tight">Gestão de Mídias Sociais</h1>
           </div>
-          <CardDescription className="text-lg pl-16">
+          <p className="text-lg text-muted-foreground pl-16">
             Criamos e gerenciamos conteúdo estratégico para construir autoridade, engajar a audiência e transformar seguidores em clientes.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+          </p>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -37,7 +35,7 @@ export default function GestaoMidiasPage() {
             <CardTitle className="flex items-center gap-2"><AlertTriangle /> Ganchos de Venda (Dores)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2 text-muted-foreground">
+            <ul className="space-y-2 text-muted-foreground list-disc pl-5">
               <li>"Seu perfil não reflete a qualidade do seu trabalho?"</li>
               <li>"Posta, posta, posta e não vê resultado em vendas?"</li>
               <li>"Sem tempo ou criatividade para manter a consistência?"</li>

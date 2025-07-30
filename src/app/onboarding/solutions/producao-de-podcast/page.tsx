@@ -5,19 +5,17 @@ import { Mic, CheckCircle, UserCheck, AlertTriangle } from "lucide-react";
 export default function PodcastPage() {
   return (
     <div className="space-y-6">
-      <Card className="border-0 shadow-none">
-        <CardHeader>
-          <div className="flex items-center gap-4 mb-2">
+      <div className="space-y-2">
+          <div className="flex items-center gap-4">
              <div className="bg-primary/10 p-3 rounded-full">
                 <Mic className="h-10 w-10 text-primary" />
              </div>
-            <CardTitle className="text-3xl">Produção de Podcast</CardTitle>
+            <h1 className="text-3xl font-bold tracking-tight">Produção de Podcast</h1>
           </div>
-          <CardDescription className="text-lg pl-16">
+          <p className="text-lg text-muted-foreground pl-16">
             Oferecemos uma solução completa de produção de podcast, desde a gravação até a distribuição, para transformar seu conhecimento em um ativo de autoridade.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+          </p>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -37,7 +35,7 @@ export default function PodcastPage() {
             <CardTitle className="flex items-center gap-2"><AlertTriangle /> Ganchos de Venda (Dores)</CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2 text-muted-foreground">
+            <ul className="space-y-2 text-muted-foreground list-disc pl-5">
               <li>"Quer construir autoridade e se tornar uma referência no seu mercado?"</li>
               <li>"Tem muito conhecimento para compartilhar, mas não sabe como começar?"</li>
               <li>"Busca um formato de conteúdo profundo para se conectar com sua audiência?"</li>
