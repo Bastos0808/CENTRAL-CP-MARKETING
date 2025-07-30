@@ -4,7 +4,7 @@ import { Megaphone, CheckCircle, UserCheck, AlertTriangle } from "lucide-react";
 
 export default function TrafegoPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="space-y-2">
           <div className="flex items-center gap-4">
              <div className="bg-primary/10 p-3 rounded-full">
@@ -17,32 +17,31 @@ export default function TrafegoPage() {
           </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><UserCheck /> Para Quem é?</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Empresas que sentem que estão "queimando dinheiro" com anúncios sem retorno.</span></li>
-                <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Negócios que veem seus concorrentes em todos os lugares, mas não conseguem o mesmo alcance.</span></li>
-                <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Profissionais que precisam de um fluxo constante de novos clientes (leads).</span></li>
-            </ul>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><AlertTriangle /> Ganchos de Venda (Dores)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-muted-foreground list-disc pl-5">
-              <li>"Sente que está 'queimando dinheiro' com anúncios sem retorno?"</li>
-              <li>"Seus concorrentes aparecem para todos, menos você?"</li>
-              <li>"Precisa de mais clientes chegando todos os dias?"</li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><UserCheck /> Para Quem é?</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-muted-foreground">
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Empresas que sentem que estão "queimando dinheiro" com anúncios sem retorno.</span></li>
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Negócios que veem seus concorrentes em todos os lugares, mas não conseguem o mesmo alcance.</span></li>
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Profissionais que precisam de um fluxo constante de novos clientes (leads).</span></li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><AlertTriangle /> Ganchos de Venda (Dores)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-muted-foreground list-disc pl-5">
+            <li>"Sente que está 'queimando dinheiro' com anúncios sem retorno?"</li>
+            <li>"Seus concorrentes aparecem para todos, menos você?"</li>
+            <li>"Precisa de mais clientes chegando todos os dias?"</li>
+          </ul>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

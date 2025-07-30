@@ -4,7 +4,7 @@ import { Palette, CheckCircle, UserCheck, AlertTriangle } from "lucide-react";
 
 export default function GestaoMidiasPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="space-y-2">
           <div className="flex items-center gap-4">
              <div className="bg-primary/10 p-3 rounded-full">
@@ -17,32 +17,31 @@ export default function GestaoMidiasPage() {
           </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><UserCheck /> Para Quem é?</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-muted-foreground">
-                <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Empresas cujo perfil não reflete a qualidade do seu trabalho.</span></li>
-                <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Negócios que postam conteúdo, mas não conseguem gerar vendas.</span></li>
-                <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Profissionais sem tempo ou criatividade para manter a consistência.</span></li>
-            </ul>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><AlertTriangle /> Ganchos de Venda (Dores)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-muted-foreground list-disc pl-5">
-              <li>"Seu perfil não reflete a qualidade do seu trabalho?"</li>
-              <li>"Posta, posta, posta e não vê resultado em vendas?"</li>
-              <li>"Sem tempo ou criatividade para manter a consistência?"</li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><UserCheck /> Para Quem é?</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-muted-foreground">
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Empresas cujo perfil não reflete a qualidade do seu trabalho.</span></li>
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Negócios que postam conteúdo, mas não conseguem gerar vendas.</span></li>
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Profissionais sem tempo ou criatividade para manter a consistência.</span></li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><AlertTriangle /> Ganchos de Venda (Dores)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2 text-muted-foreground list-disc pl-5">
+            <li>"Seu perfil não reflete a qualidade do seu trabalho?"</li>
+            <li>"Posta, posta, posta e não vê resultado em vendas?"</li>
+            <li>"Sem tempo ou criatividade para manter a consistência?"</li>
+          </ul>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
