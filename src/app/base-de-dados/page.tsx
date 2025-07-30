@@ -59,6 +59,10 @@ const preRegisterSchema = z.object({
     hasPodcast: z.boolean().default(false),
     recordingsPerMonth: z.coerce.number().optional(),
     paymentDay: z.coerce.number().optional(),
+    hoursPerEpisode: z.string().optional(),
+    pillsPerEpisode: z.string().optional(),
+    youtubeManagement: z.boolean().default(false),
+    recordingTime: z.string().optional(),
 }).refine(data => {
     if (data.hasPodcast) {
         return (data.recordingsPerMonth !== undefined && data.recordingsPerMonth > 0) &&
@@ -66,7 +70,7 @@ const preRegisterSchema = z.object({
     }
     return true;
 }, {
-    message: "Se o cliente tem podcast, as gravações por mês e o dia do pagamento são obrigatórios.",
+    message: "Se o cliente tem podcast, os episódios por mês e o dia do pagamento são obrigatórios.",
     path: ['recordingsPerMonth']
 });
 
@@ -202,6 +206,10 @@ export default function ClientDatabasePage() {
               accumulatedRecordings: data.recordingsPerMonth,
               paymentDay: data.paymentDay,
               recordingHistory: [],
+              hoursPerEpisode: data.hoursPerEpisode || '',
+              pillsPerEpisode: data.pillsPerEpisode || '',
+              youtubeManagement: data.youtubeManagement || false,
+              recordingTime: data.recordingTime || '',
           }
       }
 
@@ -322,7 +330,7 @@ export default function ClientDatabasePage() {
                                     <div className='space-y-4 pt-2 border-t'>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label htmlFor="recordingsPerMonth">Gravações por Mês</Label>
+                                                <Label htmlFor="recordingsPerMonth">Episódios por Mês</Label>
                                                 <Input 
                                                 id="recordingsPerMonth" 
                                                 type="number" 
@@ -332,7 +340,7 @@ export default function ClientDatabasePage() {
                                                 {errors.recordingsPerMonth && <p className="text-sm text-destructive">{errors.recordingsPerMonth.message}</p>}
                                             </div>
                                              <div className="space-y-2">
-                                                <Label htmlFor="paymentDay">Dia do Pagamento (Referência)</Label>
+                                                <Label htmlFor="paymentDay">Dia do Pagamento (Ref.)</Label>
                                                 <Input 
                                                 id="paymentDay" 
                                                 type="number"
@@ -342,7 +350,33 @@ export default function ClientDatabasePage() {
                                                 />
                                                 {errors.paymentDay && <p className="text-sm text-destructive">{errors.paymentDay.message}</p>}
                                             </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="hoursPerEpisode">Hora p/ Episódio</Label>
+                                                <Input id="hoursPerEpisode" {...register("hoursPerEpisode")} placeholder="Ex: 1h"/>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="pillsPerEpisode">Número de Pílulas</Label>
+                                                <Input id="pillsPerEpisode" {...register("pillsPerEpisode")} placeholder="Ex: 2 por episódio"/>
+                                            </div>
                                         </div>
+                                         <div className="space-y-2">
+                                            <Label htmlFor="recordingTime">Horário de Gravação</Label>
+                                            <Input id="recordingTime" {...register("recordingTime")} placeholder="Ex: Horário comercial"/>
+                                        </div>
+                                        <Controller
+                                            control={control}
+                                            name="youtubeManagement"
+                                            render={({ field }) => (
+                                                <div className="flex items-center justify-between pt-2">
+                                                    <Label htmlFor="youtube-management" className='font-normal'>Gestão de Youtube?</Label>
+                                                    <Switch
+                                                        id="youtube-management"
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </div>
+                                            )}
+                                        />
                                         {errors.root && <p className="text-sm text-destructive">{errors.root.message}</p>}
                                     </div>
                                 )}

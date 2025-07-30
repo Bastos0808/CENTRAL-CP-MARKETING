@@ -40,6 +40,10 @@ import {
   Package,
   Lightbulb,
   Bot,
+  Clock,
+  Youtube,
+  Film,
+  CalendarClock,
 } from "lucide-react";
 import {
   Select,
@@ -128,6 +132,10 @@ interface PodcastPlan {
     accumulatedRecordings: number;
     paymentDay: number;
     recordingHistory?: Recording[];
+    hoursPerEpisode?: string;
+    pillsPerEpisode?: string;
+    youtubeManagement?: boolean;
+    recordingTime?: string;
 }
 
 interface Client {
@@ -543,10 +551,14 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                         <CardTitle>Plano de Podcast</CardTitle>
                         <CardDescription>Informações sobre o plano de podcast contratado.</CardDescription>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <InfoCard title="Gravações por Mês" value={client.podcastPlan.recordingsPerMonth.toString()} icon={Mic} />
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <InfoCard title="Episódios por Mês" value={client.podcastPlan.recordingsPerMonth.toString()} icon={Mic} />
                         <InfoCard title="Saldo de Gravações" value={client.podcastPlan.accumulatedRecordings.toString()} icon={Package} />
                         <InfoCard title="Dia de Pagamento (Referência)" value={`${client.podcastPlan.paymentDay}`} icon={Calendar} />
+                        <InfoCard title="Horas por Episódio" value={client.podcastPlan.hoursPerEpisode} icon={Clock} />
+                        <InfoCard title="Pílulas por Episódio" value={client.podcastPlan.pillsPerEpisode} icon={Film} />
+                        <InfoCard title="Gestão de Youtube" value={client.podcastPlan.youtubeManagement ? "Sim" : "Não"} icon={Youtube} />
+                        <InfoCard title="Horário de Gravação" value={client.podcastPlan.recordingTime} icon={CalendarClock} />
                     </CardContent>
                 </Card>
             </section>
