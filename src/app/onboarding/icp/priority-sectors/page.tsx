@@ -7,13 +7,13 @@ const sectors = [
         icon: Stethoscope,
         title: "Saúde e Bem-Estar",
         description: "Clínicas, médicos, dentistas, psicólogos e outros profissionais que precisam construir autoridade para atrair pacientes qualificados. O foco é em serviços de ticket médio/alto.",
-        filter: "Busque por perfis que parecem amadores ou desatualizados, mas o serviço oferecido é de alto valor. A dor principal é não saber comunicar a própria qualidade."
+        filter: "Busque por perfis que parecem amadores ou desatualizados, mas o serviço oferecido é de alto valor. A dor principal é não saber comunicar a própria qualidade. A prospecção pode ser feita via pesquisa fria no Instagram e análise de tráfego pago dos concorrentes."
     },
     {
         icon: Briefcase,
         title: "Serviços B2B e Consultorias",
         description: "Consultorias, agências de nicho, escritórios de advocacia, empresas de tecnologia (SaaS) e negócios que vendem para outras empresas, focando em geração de leads qualificados.",
-        filter: "Procure por empresas com sites institucionais antigos ou LinkedIn com baixa atividade. A dor é a dificuldade em gerar novas oportunidades de negócio de forma previsível."
+        filter: "Use nossa ferramenta de prospecção, Exact Spotter, para encontrar empresas com sites institucionais antigos ou LinkedIn com baixa atividade. A dor é a dificuldade em gerar novas oportunidades de negócio de forma previsível."
     },
     {
         icon: ShoppingCart,
