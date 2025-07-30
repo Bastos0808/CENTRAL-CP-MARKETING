@@ -5,15 +5,17 @@ import { DollarSign, CheckCircle } from "lucide-react";
 export default function InvestmentCapacityPage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-4">
         <div className="bg-primary/10 p-3 rounded-full">
           <DollarSign className="h-10 w-10 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">Capacidade de Investimento</h1>
+        <div>
+            <h1 className="text-3xl font-bold tracking-tight">Capacidade de Investimento</h1>
+            <p className="text-lg text-muted-foreground mt-1">
+                O sucesso de uma estratégia de marketing depende de um investimento consistente. O cliente ideal entende que marketing é um motor de crescimento, não uma despesa.
+            </p>
+        </div>
       </div>
-      <p className="text-lg text-muted-foreground pl-16">
-        O sucesso de uma estratégia de marketing depende de um investimento consistente. O cliente ideal entende que marketing é um motor de crescimento, não uma despesa.
-      </p>
 
       <Card>
         <CardHeader>

@@ -5,15 +5,17 @@ import { Milestone, CheckCircle } from "lucide-react";
 export default function BusinessStagePage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-4">
         <div className="bg-primary/10 p-3 rounded-full">
           <Milestone className="h-10 w-10 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">Estágio do Negócio</h1>
+        <div>
+            <h1 className="text-3xl font-bold tracking-tight">Estágio do Negócio</h1>
+            <p className="text-lg text-muted-foreground mt-1">
+                Procuramos empresas com um mínimo de maturidade. Não somos a agência ideal para quem está começando do zero absoluto, pois nossas estratégias visam a escala.
+            </p>
+        </div>
       </div>
-      <p className="text-lg text-muted-foreground pl-16">
-        Procuramos empresas com um mínimo de maturidade. Não somos a agência ideal para quem está começando do zero absoluto, pois nossas estratégias visam a escala.
-      </p>
 
       <Card>
         <CardHeader>

@@ -5,15 +5,17 @@ import { Building, CheckCircle } from "lucide-react";
 export default function PrioritySectorsPage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-4">
         <div className="bg-primary/10 p-3 rounded-full">
           <Building className="h-10 w-10 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">Setores Prioritários</h1>
+        <div>
+            <h1 className="text-3xl font-bold tracking-tight">Setores Prioritários</h1>
+            <p className="text-lg text-muted-foreground mt-1">
+                Embora sejamos versáteis, nossa expertise e os resultados mais expressivos se concentram em alguns setores-chave onde nossa metodologia gera mais impacto.
+            </p>
+        </div>
       </div>
-      <p className="text-lg text-muted-foreground pl-16">
-        Embora sejamos versáteis, nossa expertise e os resultados mais expressivos se concentram em alguns setores-chave onde nossa metodologia gera mais impacto.
-      </p>
 
       <Card>
         <CardHeader>

@@ -5,15 +5,17 @@ import { MapPin, CheckCircle } from "lucide-react";
 export default function LocationPage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-4">
         <div className="bg-primary/10 p-3 rounded-full">
           <MapPin className="h-10 w-10 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">Localização</h1>
+        <div>
+            <h1 className="text-3xl font-bold tracking-tight">Localização</h1>
+            <p className="text-lg text-muted-foreground mt-1">
+                Nosso modelo de trabalho nos permite atender clientes em qualquer lugar, mas temos um foco geográfico estratégico para otimizar resultados.
+            </p>
+        </div>
       </div>
-      <p className="text-lg text-muted-foreground pl-16">
-        Nosso modelo de trabalho nos permite atender clientes em qualquer lugar, mas temos um foco geográfico estratégico para otimizar resultados.
-      </p>
 
       <Card>
         <CardHeader>
