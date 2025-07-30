@@ -43,13 +43,13 @@ const researchSteps = [
     },
     { 
         icon: LinkIcon,
-        title: "Busca por 'Ganchos'",
-        description: "Procure por um motivo relevante e personalizado para iniciar a conversa. Um bom gancho mostra que você fez sua lição de casa.",
+        title: "A Arte do Gancho: Encontrando a Brecha Perfeita",
+        description: "Aqui você se torna um detetive. Sua missão é encontrar a deixa perfeita, um motivo relevante e personalizado para iniciar a conversa. Um bom gancho mostra que você fez sua lição de casa e transforma uma mensagem fria em uma conversa quente.",
         instructions: [
-            "<strong>Atividade Recente:</strong> O decisor ou a empresa postaram sobre um evento, um artigo, uma conquista ou até uma dificuldade? Use isso como ponto de partida: 'Vi que vocês participaram do evento X...' ou 'Parabéns pelo artigo sobre Y, achei o ponto Z muito interessante'.",
-            "<strong>Notícias e Expansão:</strong> A empresa foi mencionada na mídia? Anunciou uma nova contratação, abertura de filial ou lançamento de produto? Isso é um ótimo sinal de crescimento e uma excelente abertura. Ex: 'Vi no portal ABC que vocês estão expandindo para a região Sul, parabéns!'",
-            "<strong>Dor Evidente (da Análise Digital):</strong> A análise da presença digital revelou uma fraqueza óbvia? Use isso de forma sutil. Ex: 'Notei que seu último post no blog foi em 2022. Estão planejando reativar essa frente?' ou 'Vi que seus concorrentes estão fortes em anúncios de vídeo, mas não encontrei os seus. Existe uma razão estratégica para isso?'",
-            "<strong>Conexões em Comum:</strong> Vocês têm conexões em comum no LinkedIn? Mencionar um nome conhecido (com permissão, se possível) pode aquecer drasticamente a abordagem. Ex: 'Vi que temos o [Nome da Conexão] em comum, ele é um grande profissional'."
+            "<strong>A Pista Quente (Atividade Recente):</strong> O que a empresa ou o decisor fizeram nos últimos dias? Ex: 'Vi que vocês participaram do evento X...' ou 'Parabéns pelo artigo sobre Y, achei o ponto Z muito interessante'. É o gancho mais fácil e eficaz.",
+            "<strong>O Grande Furo (Notícias e Expansão):</strong> A empresa saiu na mídia? Anunciou uma nova contratação, abertura de filial ou lançamento? Isso é um sinal de crescimento e uma deixa perfeita. Ex: 'Vi no portal ABC que vocês estão expandindo para a região Sul, parabéns!'",
+            "<strong>A Pista Oculta (Dor Evidente):</strong> Sua análise da presença digital revelou uma fraqueza óbvia? Use isso de forma sutil e consultiva. Ex: 'Notei que o último post no blog foi em 2022. Estão planejando reativar essa frente?' ou 'Vi que seus concorrentes estão fortes em anúncios de vídeo, mas não encontrei os seus. Existe uma razão estratégica para isso?'",
+            "<strong>O Contato Secreto (Conexões em Comum):</strong> Vocês têm conexões em comum no LinkedIn? Mencionar um nome conhecido (com permissão, se possível) pode abrir portas. Ex: 'Vi que temos o [Nome da Conexão] em comum, que mundo pequeno!'"
         ]
     },
     {
@@ -74,7 +74,7 @@ export default function ResearchPage() {
         <div>
             <h1 className="text-3xl font-bold tracking-tight">Fase 1: Pesquisa e Qualificação</h1>
             <p className="text-lg text-muted-foreground mt-1">
-                Esta é a fase mais importante. Um bom SDR gasta 80% do seu tempo aqui. Uma prospecção bem-sucedida não depende de quantas pessoas você contata, mas da qualidade desses contatos.
+                Esta é a fase mais importante. Um bom SDR gasta 80% do seu tempo aqui. Uma prospecção bem-sucedida não depende de quantas pessoas você contata, but da qualidade desses contatos.
             </p>
         </div>
       </div>
@@ -82,9 +82,9 @@ export default function ResearchPage() {
       <Accordion type="single" collapsible className="w-full space-y-4">
           {researchSteps.map((step) => (
             <AccordionItem value={step.title} key={step.title} className="border rounded-lg bg-background/50 data-[state=open]:border-primary data-[state=open]:shadow-lg">
-                <AccordionTrigger className="p-4 hover:no-underline">
-                    <div className="flex items-center gap-3 text-left">
-                        <div className="bg-primary/10 p-2 rounded-md">
+                <AccordionTrigger className="p-4 hover:no-underline text-left">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-primary/10 p-2 rounded-md flex-shrink-0">
                            <step.icon className="h-6 w-6 text-primary" />
                         </div>
                         <div>
