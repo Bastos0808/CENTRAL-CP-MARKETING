@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, CheckSquare, Wand2, Mail, MessageSquare, PhoneCall } from "lucide-react";
+import { Phone, CheckSquare, Wand2, Mail, MessageSquare, PhoneCall, ShieldQuestion } from "lucide-react";
 
 const checklist = [
     { text: "O objetivo NUNCA é vender na primeira mensagem. O objetivo é validar a dor e agendar uma reunião de diagnóstico." },
@@ -44,36 +44,88 @@ export default function ContactPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-3"><MessageSquare /> Modelo de Abordagem (WhatsApp / E-mail)</CardTitle>
+                <CardTitle className="flex items-center gap-3"><MessageSquare /> Modelo 1: E-mail/WhatsApp (Gancho de Oportunidade)</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="p-4 bg-muted/50 rounded-lg w-full">
-                    <p className="whitespace-pre-wrap text-foreground">
+                <div className="p-4 bg-muted/50 rounded-lg w-full space-y-2">
+                    <p className="text-foreground"><strong>Situação:</strong> Você viu que o prospect participou de um evento, lançou um produto ou saiu na mídia.</p>
+                    <p className="whitespace-pre-wrap text-foreground pt-2 border-t mt-2">
                         Olá [Nome do Prospect], tudo bem?
                         <br/><br/>
                         Meu nome é [Seu Nome], sou da CP Marketing Digital.
                         <br/><br/>
-                        Vi que vocês [Gancho/Problema Observado - ex: estão investindo bastante em feiras e eventos, parabéns pela iniciativa].
+                        Vi que vocês [Gancho - ex: participaram da Feira ABC semana passada, parabéns pela iniciativa!].
                         <br/><br/>
-                        Normalmente, empresas de [Setor] que focam nisso encontram o desafio de [Dor Conectada - ex: transformar o networking do evento em clientes reais depois].
+                        Geralmente, empresas que investem em eventos como esse têm o desafio de [Dor Conectada - ex: transformar o networking e os contatos feitos lá em clientes reais].
                         <br/><br/>
-                        Isso faz sentido para você?
+                        Isso faz sentido para você ou é um desafio que já superaram?
                     </p>
                 </div>
             </CardContent>
         </Card>
-        <Card>
+         <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-3"><MessageSquare /> Modelo 2: E-mail/WhatsApp (Gancho de Dor)</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="p-4 bg-muted/50 rounded-lg w-full space-y-2">
+                   <p className="text-foreground"><strong>Situação:</strong> Você viu que o site do prospect está desatualizado, o Instagram está parado ou os concorrentes estão anunciando muito mais.</p>
+                    <p className="whitespace-pre-wrap text-foreground pt-2 border-t mt-2">
+                        Olá [Nome do Prospect],
+                        <br/><br/>
+                        Sou [Seu Nome] da CP Marketing.
+                        <br/><br/>
+                        Enquanto pesquisava sobre o setor de [Setor], notei que [Gancho - ex: o blog de vocês tem um conteúdo ótimo, mas não é atualizado desde o ano passado].
+                        <br/><br/>
+                        Isso às vezes acontece quando a equipe está focada em outras prioridades, mas a consequência pode ser a [Dor Conectada - ex: perda de autoridade e de posições no Google para concorrentes mais ativos].
+                        <br/><br/>
+                        Vocês têm um plano para reativar essa frente?
+                    </p>
+                </div>
+            </CardContent>
+        </Card>
+        <Card className="lg:col-span-2">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3"><PhoneCall /> Modelo de Script (Ligação)</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="p-4 bg-muted/50 rounded-lg w-full space-y-2">
-                   <p className="text-foreground"><strong>Você:</strong> "Oi, [Nome do Prospect], tudo bem? Aqui é o [Seu Nome] da CP Marketing. Te atrapalho?"</p>
-                   <p className="text-foreground"><strong>Você:</strong> "Vi que [Gancho/Problema Observado]. Notei que muitas empresas de [Setor] que fazem isso, depois sentem dificuldade em [Dor Conectada]."</p>
-                   <p className="text-foreground"><strong>Você:</strong> "Isso acontece aí com vocês também ou é diferente?"</p>
-                   <p className="text-foreground"><strong>(Se a resposta for sim...)</strong></p>
-                   <p className="text-foreground"><strong>Você:</strong> "Entendi. Não quero tomar seu tempo, mas acho que consigo te ajudar. Que tal conversarmos por 15 minutos amanhã para eu te apresentar um diagnóstico rápido? O que acha das 10h ou 14h?"</p>
+                <div className="p-4 bg-muted/50 rounded-lg w-full space-y-3">
+                   <p className="text-foreground"><strong>Objetivo:</strong> Apresentar-se, validar a dor e agendar. Seja rápido e respeitoso com o tempo do prospect.</p>
+                   <div className="space-y-2 pt-2 border-t mt-2">
+                        <p className="text-foreground"><strong>Você:</strong> "Oi, [Nome do Prospect], tudo bem? Aqui é o [Seu Nome] da CP Marketing. Consegue falar por 1 minuto?"</p>
+                        <p className="text-foreground"><strong>Você:</strong> "Ótimo. Vi que [Gancho/Problema Observado]. Notei que muitas empresas de [Setor] que fazem isso, depois sentem dificuldade em [Dor Conectada]."</p>
+                        <p className="text-foreground"><strong>Você:</strong> "Isso acontece aí com vocês também ou a realidade é diferente?"</p>
+                        <p className="text-foreground"><strong>(Se a resposta for sim ou demonstrar curiosidade...)</strong></p>
+                        <p className="text-foreground"><strong>Você:</strong> "Entendi. Olha, não quero tomar seu tempo agora, mas acho que consigo te ajudar com isso. Tenho algumas ideias que podem ser úteis. Que tal conversarmos por 15 minutos amanhã para eu te apresentar um diagnóstico rápido? O que acha das 10h ou 14h?"</p>
+                        <p className="text-foreground"><strong>(Se a resposta for não ou negativa...)</strong></p>
+                        <p className="text-foreground"><strong>Você:</strong> "Entendo perfeitamente, [Nome do Prospect]. Fico feliz que já tenham isso sob controle! Agradeço seu tempo. Tenha um ótimo dia!"</p>
+                   </div>
                 </div>
+            </CardContent>
+        </Card>
+         <Card className="lg:col-span-2">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-3"><ShieldQuestion /> Como Lidar com Objeções Iniciais</CardTitle>
+            </CardHeader>
+            <CardContent>
+                 <div className="p-4 bg-muted/50 rounded-lg w-full space-y-3">
+                    <div className="space-y-1">
+                        <p className="text-foreground font-semibold">"Não tenho tempo agora."</p>
+                        <p className="text-muted-foreground"><strong>Resposta:</strong> "Compreendo perfeitamente, por isso fui direto ao ponto. Qual o melhor horário para te ligar por 2 minutos amanhã?"</p>
+                    </div>
+                     <div className="space-y-1 pt-2 border-t">
+                        <p className="text-foreground font-semibold">"Já tenho uma agência."</p>
+                        <p className="text-muted-foreground"><strong>Resposta:</strong> "Que ótimo! Não quero de forma alguma atrapalhar uma parceria que funciona. Apenas por curiosidade, eles estão ajudando vocês a resolver [Dor Conectada que você identificou]?"</p>
+                    </div>
+                     <div className="space-y-1 pt-2 border-t">
+                        <p className="text-foreground font-semibold">"Não tenho interesse."</p>
+                        <p className="text-muted-foreground"><strong>Resposta:</strong> "Sem problemas. Só para eu não te incomodar mais, o desinteresse é porque você não vê valor em marketing digital agora ou porque está satisfeito com os resultados atuais?"</p>
+                    </div>
+                      <div className="space-y-1 pt-2 border-t">
+                        <p className="text-foreground font-semibold">"Me mande por e-mail."</p>
+                        <p className="text-muted-foreground"><strong>Resposta:</strong> "Claro! Para não te enviar um material genérico, você se importa de me dizer qual é seu maior desafio em relação a [Dor Conectada] hoje? Assim eu consigo te mandar algo que realmente te ajude."</p>
+                    </div>
+                 </div>
             </CardContent>
         </Card>
       </div>
@@ -84,7 +136,7 @@ export default function ContactPage() {
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground flex-1">
-                Está sem criatividade? Nossa ferramenta de IA pode te ajudar a criar o script inicial para sua ligação ou a mensagem de texto para o WhatsApp/E-mail. Use-a como fonte de inspiração para aprimorar e personalizar sua abordagem.
+                Está sem criatividade ou quer uma abordagem ainda mais personalizada? Nossa ferramenta de IA interna pode te ajudar a criar o script inicial para sua ligação ou a mensagem de texto para o WhatsApp/E-mail. Use-a como fonte de inspiração para aprimorar e personalizar sua abordagem.
             </p>
           </CardContent>
       </Card>
