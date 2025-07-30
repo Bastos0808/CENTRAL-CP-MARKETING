@@ -10,9 +10,10 @@ const researchSteps = [
         title: "Qualificação com o ICP",
         description: "A primeira e mais crítica etapa. Verifique se o prospect se encaixa em TODOS os critérios do nosso Perfil de Cliente Ideal. Se um critério fundamental falhar, descarte o lead. Não perca tempo com leads desqualificados.",
         instructions: [
-            "Abra a documentação do ICP.",
-            "Verifique o setor, estágio do negócio, e capacidade de investimento.",
-            "Analise o site e LinkedIn para entender a mentalidade do decisor."
+            "<strong>Abra o ICP:</strong> Tenha a documentação do nosso <a href='/onboarding/icp' class='text-primary underline'>Perfil de Cliente Ideal</a> aberta em outra aba.",
+            "<strong>Checklist de Critérios:</strong> Passe por cada um dos 5 critérios (Setor, Estágio do Negócio, etc.) e valide se a empresa se encaixa.",
+            "<strong>Análise do Site e LinkedIn:</strong> Use o site da empresa e seu perfil no LinkedIn para encontrar as informações necessárias para a qualificação.",
+            "<strong>Seja Rigoroso:</strong> Um lead que não se encaixa no ICP tem poucas chances de fechar e menos ainda de ter sucesso com nossa metodologia. A qualificação rigorosa economiza tempo para todos."
         ]
     },
     { 
@@ -20,9 +21,10 @@ const researchSteps = [
         title: "Identificação do Decisor",
         description: "Encontre a pessoa certa para contatar. Geralmente é o Sócio, CEO, Diretor de Marketing ou Gerente da área. Entrar em contato com a pessoa errada pode encerrar a oportunidade antes mesmo de começar.",
         instructions: [
-            "Use o LinkedIn Sales Navigator para filtrar por cargo na empresa alvo.",
-            "Verifique a seção 'Pessoas' na página do LinkedIn da empresa.",
-            "Procure pelo decisor na seção 'Sobre' ou 'Equipe' do site da empresa."
+            "<strong>LinkedIn Sales Navigator:</strong> É a ferramenta principal. Filtre a empresa alvo e procure por cargos como 'Sócio(a)', 'CEO', 'Fundador(a)', 'Diretor(a) de Marketing', 'CMO'.",
+            "<strong>Site da Empresa:</strong> Verifique as páginas 'Sobre Nós' ou 'Nossa Equipe'. Muitas vezes os decisores estão listados lá.",
+            "<strong>Plano B (LinkedIn Comum):</strong> Na página da empresa no LinkedIn, vá na aba 'Pessoas'. Filtre por palavras-chave relacionadas aos cargos de decisão.",
+            "<strong>Foco no Decisor:</strong> Evite contatar analistas ou assistentes, a menos que seja uma empresa muito grande e essa seja a única porta de entrada."
         ]
     },
     { 
@@ -30,9 +32,9 @@ const researchSteps = [
         title: "Análise da Presença Digital",
         description: "Mergulhe no universo do prospect. Analise o site, o Instagram e o LinkedIn para entender como eles se comunicam hoje e encontrar brechas.",
         instructions: [
-            "O site é moderno ou parece desatualizado?",
-            "Qual a frequência de posts no Instagram? A qualidade visual é profissional?",
-            "O decisor e a empresa postam no LinkedIn? Qual o nível de engajamento?"
+            "<strong>Website:</strong> É moderno e otimizado para mobile? Possui blog? A comunicação é clara? Parece ter sido atualizado recentemente?",
+            "<strong>Instagram:</strong> Qual a frequência de posts? A identidade visual é profissional e consistente? Usam Reels? O engajamento é real ou parece baixo?",
+            "<strong>LinkedIn (Empresa e Decisor):</strong> Eles postam com frequência? O conteúdo é sobre a empresa (vendas) ou sobre o setor (educativo)? Qual o nível de engajamento nos posts do decisor?"
         ]
     },
     { 
@@ -40,9 +42,10 @@ const researchSteps = [
         title: "Busca por 'Ganchos'",
         description: "Procure por um motivo relevante e personalizado para iniciar a conversa. Um bom gancho mostra que você fez sua lição de casa.",
         instructions: [
-            "Encontre um post recente do decisor ou da empresa para comentar.",
-            "Veja se a empresa anunciou uma nova contratação ou expansão.",
-            "Identifique uma dor clara: posts antigos, comunicação fraca, concorrentes anunciando forte enquanto eles não."
+            "<strong>Atividade Recente:</strong> O decisor ou a empresa postaram sobre um evento, um artigo, uma conquista? Use isso como ponto de partida.",
+            "<strong>Notícias e Expansão:</strong> A empresa foi mencionada na mídia? Anunciou uma nova contratação ou abertura de filial? Isso é um ótimo sinal de crescimento.",
+            "<strong>Dor Evidente:</strong> A análise da presença digital revelou uma dor óbvia? (ex: 'notei que seu último post no Instagram foi há 3 meses', 'vi que seus concorrentes estão fortes em anúncios, mas não encontrei os seus').",
+            "<strong>Conexões em Comum:</strong> Vocês têm conexões em comum no LinkedIn? Mencionar isso pode aquecer a abordagem."
         ]
     },
     {
@@ -50,9 +53,9 @@ const researchSteps = [
         title: "Sinais de Crescimento",
         description: "Verifique se a empresa está contratando, especialmente em áreas de vendas ou marketing. Vagas abertas são um forte indicativo de que estão investindo em crescimento.",
         instructions: [
-            "Procure pela aba 'Vagas' na página do LinkedIn da empresa.",
-            "Verifique se há uma seção 'Trabalhe Conosco' no site da empresa.",
-            "Use o Google para pesquisar por '[nome da empresa] vagas'."
+            "<strong>LinkedIn Vagas:</strong> Na página da empresa no LinkedIn, procure pela aba 'Vagas'. Vagas para 'Vendedor', 'Executivo de Contas' ou 'Analista de Marketing' são excelentes indicadores.",
+            "<strong>Site da Empresa:</strong> Procure pela seção 'Trabalhe Conosco' ou 'Carreiras'.",
+            "<strong>Interpretação:</strong> Uma empresa que está contratando para a área comercial precisa de mais leads. Uma empresa que contrata para marketing está pronta para investir na área. É um sinal verde para a prospecção."
         ]
     }
 ];
@@ -93,7 +96,7 @@ export default function ResearchPage() {
                          {step.instructions.map((inst, index) => (
                             <li key={index} className="flex items-start gap-3">
                                 <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                <span className="text-muted-foreground">{inst}</span>
+                                <span className="text-muted-foreground" dangerouslySetInnerHTML={{ __html: inst }} />
                             </li>
                          ))}
                      </ul>
