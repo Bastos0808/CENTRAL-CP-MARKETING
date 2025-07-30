@@ -1,6 +1,30 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Target, CheckCircle } from "lucide-react";
+import { Target, CheckCircle, Lightbulb, Handshake, Calendar, ShieldCheck } from "lucide-react";
+
+const mindsets = [
+    {
+        icon: Lightbulb,
+        title: "Aberto a inovação",
+        description: "Não está preso ao 'sempre fizemos assim'. Confia em nossa expertise para testar novas abordagens e estratégias."
+    },
+    {
+        icon: Handshake,
+        title: "Busca parceria de longo prazo",
+        description: "Entende que resultados sólidos em marketing são construídos com tempo e consistência, não com soluções mágicas."
+    },
+    {
+        icon: Calendar,
+        title: "Valoriza o trabalho estratégico",
+        description: "Não quer apenas 'posts bonitos' ou 'mais seguidores', mas sim crescimento de negócio e construção de autoridade."
+    },
+    {
+        icon: ShieldCheck,
+        title: "Delega e confia no processo",
+        description: "Participa ativamente, mas confia na agência para executar a estratégia, sem microgerenciamento excessivo."
+    }
+]
+
 
 export default function DecisionMakerMindsetPage() {
   return (
@@ -17,39 +41,21 @@ export default function DecisionMakerMindsetPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Características do Parceiro Ideal</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Aberto a novas estratégias e inovação:</strong> Não está preso ao "sempre fizemos assim". Confia em nossa expertise para testar novas abordagens.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Busca uma parceria de longo prazo:</strong> Entende que resultados sólidos em marketing são construídos com o tempo e consistência.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Valoriza o trabalho estratégico:</strong> Não quer apenas "posts bonitos" ou "mais seguidores", mas sim crescimento de negócio e autoridade.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Delega e confia no processo:</strong> Participa ativamente, mas confia na agência para executar a estratégia, sem microgerenciamento excessivo.
-              </span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {mindsets.map((item) => (
+            <Card key={item.title}>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                        <item.icon className="h-7 w-7 text-primary" />
+                        {item.title}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground">{item.description}</p>
+                </CardContent>
+            </Card>
+        ))}
+      </div>
     </div>
   );
 }

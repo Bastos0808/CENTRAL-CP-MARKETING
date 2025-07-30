@@ -1,6 +1,24 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, CheckCircle } from "lucide-react";
+import { MapPin, CheckCircle, Globe, Building, Mic } from "lucide-react";
+
+const locations = [
+    {
+        icon: Globe,
+        title: "Atuação em todo o Brasil",
+        description: "Estamos equipados para atender clientes em qualquer estado do país de forma 100% remota, usando ferramentas de comunicação eficientes."
+    },
+    {
+        icon: Building,
+        title: "Foco em Capitais e Grandes Centros",
+        description: "Nossa prospecção ativa é direcionada principalmente para capitais e grandes cidades, onde a concentração de empresas do nosso ICP é maior."
+    },
+    {
+        icon: Mic,
+        title: "Podcast Studio Físico",
+        description: "Para clientes do serviço de podcast, a gravação presencial ocorre em nosso estúdio. Clientes de outras localidades podem ser atendidos remotamente."
+    }
+]
 
 export default function LocationPage() {
   return (
@@ -17,33 +35,21 @@ export default function LocationPage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Foco Geográfico</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Atuação em todo o Brasil:</strong> Estamos equipados para atender clientes em qualquer estado do país de forma 100% remota.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Foco em Capitais e Grandes Centros:</strong> Nossa prospecção ativa é direcionada principalmente para capitais e grandes cidades, onde a concentração de empresas do nosso ICP é maior.
-              </span>
-            </li>
-             <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Podcast Studio:</strong> Para clientes do serviço de podcast, a gravação presencial ocorre em nosso estúdio. Clientes de outras localidades podem ser atendidos remotamente ou em estúdios parceiros (sob consulta).
-              </span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {locations.map((item) => (
+            <Card key={item.title} className={locations.length === 3 && item.icon === Globe ? "lg:col-start-2" : ""}>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                        <item.icon className="h-7 w-7 text-primary" />
+                        {item.title}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground">{item.description}</p>
+                </CardContent>
+            </Card>
+        ))}
+      </div>
     </div>
   );
 }

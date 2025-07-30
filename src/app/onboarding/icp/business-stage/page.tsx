@@ -1,6 +1,29 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Milestone, CheckCircle } from "lucide-react";
+import { Milestone, CheckCircle, TrendingUp, Users, History } from "lucide-react";
+
+const stages = [
+    {
+        icon: History,
+        title: "Mínimo de 2 anos de operação",
+        description: "Isso indica que o negócio já superou as fases iniciais de validação e possui um histórico de mercado."
+    },
+    {
+        icon: TrendingUp,
+        title: "Faturamento recorrente",
+        description: "A empresa já possui um fluxo de caixa que pode suportar o investimento em marketing para escalar."
+    },
+    {
+        icon: Users,
+        title: "Base de clientes estabelecida",
+        description: "Já existe um público para analisar e engajar, o que acelera a obtenção de resultados com nossas estratégias."
+    },
+    {
+        icon: CheckCircle,
+        title: "Busca por escala",
+        description: "O objetivo principal do cliente não é apenas 'existir' no digital, mas sim crescer, profissionalizar e dominar seu nicho."
+    }
+]
 
 export default function BusinessStagePage() {
   return (
@@ -17,39 +40,21 @@ export default function BusinessStagePage() {
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Checklist de Qualificação</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Mínimo de 2 anos de operação:</strong> Isso indica que o negócio já superou as fases iniciais de validação.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Faturamento recorrente:</strong> A empresa já possui um fluxo de caixa que pode suportar o investimento em marketing.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Base de clientes estabelecida:</strong> Já existe um público para analisar e engajar, acelerando nossos resultados.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Busca por escala:</strong> O objetivo principal do cliente não é apenas 'existir' no digital, mas sim crescer, profissionalizar e dominar seu nicho.
-              </span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {stages.map((stage) => (
+            <Card key={stage.title}>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-3">
+                        <stage.icon className="h-7 w-7 text-primary" />
+                        {stage.title}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground">{stage.description}</p>
+                </CardContent>
+            </Card>
+        ))}
+      </div>
     </div>
   );
 }
