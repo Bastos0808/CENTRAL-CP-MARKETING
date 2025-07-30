@@ -26,6 +26,7 @@ const cultureData = [
     }
 ];
 
+
 export default function CulturePage() {
   const missionData = cultureData[0];
   const visionData = cultureData[1];
@@ -37,7 +38,7 @@ export default function CulturePage() {
             Para vender com convicção, você precisa entender o 'porquê' do nosso trabalho. A cultura da CP Marketing é a base de tudo que fazemos.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-6">
             <Card>
                 <CardHeader className="flex flex-row items-center gap-4">
                     <missionData.icon className="h-8 w-8 text-primary" />
@@ -47,6 +48,7 @@ export default function CulturePage() {
                     <p className="text-muted-foreground">{missionData.description}</p>
                 </CardContent>
             </Card>
+
             <Card>
                 <CardHeader className="flex flex-row items-center gap-4">
                     <visionData.icon className="h-8 w-8 text-primary" />
@@ -56,7 +58,8 @@ export default function CulturePage() {
                     <p className="text-muted-foreground">{visionData.description}</p>
                 </CardContent>
             </Card>
-            <Card className="md:col-span-2">
+
+            <Card>
                  <CardHeader className="flex flex-row items-center gap-4">
                     <valuesData.icon className="h-8 w-8 text-primary" />
                     <CardTitle>{valuesData.title}</CardTitle>
