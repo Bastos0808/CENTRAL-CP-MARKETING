@@ -17,7 +17,6 @@ import { useToast } from '@/hooks/use-toast';
 const tabPasswords: Record<string, string> = {
   strategy: 'ESTRATEGIACP',
   podcast: 'PODCASTCP',
-  commercial: 'pass123',
 };
 
 
@@ -25,7 +24,7 @@ export default function Home() {
   const { user, logout, loading } = useAuth();
   const { toast } = useToast();
 
-  const [unlockedTabs, setUnlockedTabs] = useState<string[]>([]);
+  const [unlockedTabs, setUnlockedTabs] = useState<string[]>(['commercial']);
   const [activeTab, setActiveTab] = useState<string>('strategy');
   const [passwordPrompt, setPasswordPrompt] = useState<{ isOpen: boolean; tab: string }>({ isOpen: false, tab: '' });
   const [passwordInput, setPasswordInput] = useState('');
@@ -76,8 +75,11 @@ export default function Home() {
   ]
 
   const handleTabChange = (value: string) => {
-    if (unlockedTabs.includes(value)) {
+    if (unlockedTabs.includes(value) || !tabPasswords[value]) {
       setActiveTab(value);
+       if (!unlockedTabs.includes(value)) {
+          setUnlockedTabs([...unlockedTabs, value]);
+       }
     } else {
       setPasswordPrompt({ isOpen: true, tab: value });
     }
