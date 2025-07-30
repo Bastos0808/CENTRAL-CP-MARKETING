@@ -32,7 +32,23 @@ export default function OnboardingLayout({
     )
   }
 
-  const currentIndex = steps.findIndex(step => pathname.startsWith(step.path));
+  const findCurrentStepIndex = (currentPath: string) => {
+    // Find the step that is the longest prefix of the current path
+    let bestMatch = -1;
+    let maxLength = -1;
+
+    for (let i = 0; i < steps.length; i++) {
+        if (currentPath.startsWith(steps[i].path)) {
+            if (steps[i].path.length > maxLength) {
+                maxLength = steps[i].path.length;
+                bestMatch = i;
+            }
+        }
+    }
+    return bestMatch;
+  };
+
+  const currentIndex = findCurrentStepIndex(pathname);
 
   const prevStep = currentIndex > 0 ? steps[currentIndex - 1] : null;
   const nextStep = currentIndex < steps.length - 1 ? steps[currentIndex + 1] : null;
@@ -48,7 +64,7 @@ export default function OnboardingLayout({
             <header className="my-8 text-center">
                 <nav className="flex justify-center items-center gap-4 sm:gap-8">
                     {steps.map((step, index) => {
-                        const isActive = pathname.startsWith(step.path);
+                        const isActive = currentIndex === index;
                         const isCompleted = currentIndex > index;
 
                         return (
