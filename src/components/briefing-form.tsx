@@ -21,6 +21,8 @@ import {
   FileText,
   Eye,
   Copy,
+  CheckCircle,
+  Save,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -203,7 +205,11 @@ export default function BriefingForm() {
   const [transcript, setTranscript] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+
   const progressIntervalRef = useRef<number | null>(null);
+  const debounceTimeoutRef = useRef<number | null>(null);
 
 
   const form = useForm<FormValues>({
@@ -211,6 +217,8 @@ export default function BriefingForm() {
     defaultValues: defaultFormValues,
     mode: 'onChange',
   });
+
+  const { formState: { isDirty } } = form;
   
   const populateForm = useCallback((data: Partial<FormValues>) => {
       Object.keys(data).forEach((sectionKey) => {
@@ -308,6 +316,72 @@ export default function BriefingForm() {
     };
     fetchAndSetBriefing();
   }, [selectedClientId, toast, form]);
+
+  const handleManualSave = useCallback(async () => {
+    if (!selectedClientId) return;
+
+    setSaveStatus('saving');
+    const values = form.getValues();
+
+    try {
+        const clientDocRef = doc(db, "clients", selectedClientId);
+        const dataToUpdate: { [key: string]: any } = {
+            briefing: values,
+        };
+
+        const clientSnap = await getDoc(clientDocRef);
+        if (clientSnap.exists() && clientSnap.data().status === 'pending') {
+            dataToUpdate.status = "active";
+        }
+
+        if (values.informacoesOperacionais?.nomeNegocio) {
+            dataToUpdate.name = values.informacoesOperacionais.nomeNegocio;
+        }
+        if (values.informacoesOperacionais?.planoContratado) {
+            dataToUpdate.plan = values.informacoesOperacionais.planoContratado;
+        }
+
+        await updateDoc(clientDocRef, dataToUpdate);
+
+        setTimeout(() => {
+            setSaveStatus('saved');
+            const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            setLastSaved(time);
+            form.reset(values, { keepDirty: false }); // Reset form state to non-dirty
+        }, 500);
+
+    } catch (error) {
+        console.error("Error auto-saving document: ", error);
+        setSaveStatus('idle'); // Or an error state
+        toast({
+            title: "Erro ao Salvar",
+            description: "Não foi possível salvar as alterações.",
+            variant: "destructive",
+        });
+    }
+}, [selectedClientId, form, toast]);
+
+
+// Watch for form changes to trigger auto-save
+const watchedValues = form.watch();
+
+useEffect(() => {
+    if (isDirty && selectedClientId) {
+        setSaveStatus('idle'); // There are unsaved changes
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+        debounceTimeoutRef.current = window.setTimeout(() => {
+            handleManualSave();
+        }, 2000); // 2 seconds delay
+    }
+
+    return () => {
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+    };
+}, [watchedValues, isDirty, selectedClientId, handleManualSave]);
 
 
   const handleGenerateFromTranscript = async () => {
@@ -409,55 +483,25 @@ export default function BriefingForm() {
     toast({ title: "Senha copiada!", description: "A senha foi copiada para a área de transferência." });
   };
 
+  const SaveStatusIndicator = () => {
+    if (!selectedClientId || !isDirty && saveStatus !== 'saving') return null;
 
-  async function onSubmit(values: FormValues) {
-      if (!selectedClientId) {
-          toast({ title: "Nenhum cliente selecionado", variant: "destructive" });
-          return;
-      }
-
-      try {
-          const clientDocRef = doc(db, "clients", selectedClientId);
-          
-          const dataToUpdate: { [key: string]: any } = {
-            briefing: values,
-          };
-
-          const clientSnap = await getDoc(clientDocRef);
-          if (clientSnap.exists() && clientSnap.data().status === 'pending') {
-              dataToUpdate.status = "active";
-          }
-
-          if (values.informacoesOperacionais?.nomeNegocio) {
-              dataToUpdate.name = values.informacoesOperacionais.nomeNegocio;
-          }
-          if (values.informacoesOperacionais?.planoContratado) {
-              dataToUpdate.plan = values.informacoesOperacionais.planoContratado;
-          }
-          
-          await updateDoc(clientDocRef, dataToUpdate);
-      
-          toast({
-              title: "Briefing Salvo com Sucesso!",
-              description: `As informações de ${values.informacoesOperacionais?.nomeNegocio} foram atualizadas.`,
-          });
-          form.reset(values, { keepValues: true }); // Reset the form with the new values to clear the 'dirty' state
-
-      } catch (error) {
-          console.error("Error updating document: ", error);
-          toast({
-              title: "Erro ao Salvar Briefing",
-              description: "Houve um problema ao salvar as informações no banco de dados.",
-              variant: "destructive",
-          });
-      }
-  }
+    return (
+        <div className="fixed bottom-4 right-4 z-50">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background border rounded-full px-4 py-2 shadow-lg">
+                {saveStatus === 'saving' && <> <Loader2 className="h-4 w-4 animate-spin"/>Salvando...</>}
+                {saveStatus === 'saved' && <> <CheckCircle className="h-4 w-4 text-green-500"/>Salvo às {lastSaved}</>}
+                {saveStatus === 'idle' && isDirty && <> <Save className="h-4 w-4"/>Alterações não salvas</>}
+            </div>
+        </div>
+    )
+}
 
   return (
     <Card>
       <CardContent className="p-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form className="space-y-8">
             
             <div className="space-y-2">
                 <FormLabel>Selecione o Cliente para o Briefing</FormLabel>
@@ -866,12 +910,7 @@ export default function BriefingForm() {
 
               </Accordion>
 
-              <div className="flex justify-end">
-                <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
-                  {form.formState.isSubmitting ? "Salvando..." : "Salvar Briefing"}
-                </Button>
-              </div>
+             <SaveStatusIndicator />
             </>
             )}
           </form>
@@ -880,5 +919,3 @@ export default function BriefingForm() {
     </Card>
   );
 }
-
-    
