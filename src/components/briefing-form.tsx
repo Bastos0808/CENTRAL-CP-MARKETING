@@ -421,8 +421,12 @@ export default function BriefingForm() {
           
           const dataToUpdate: { [key: string]: any } = {
             briefing: values,
-            status: "active",
           };
+
+          const clientSnap = await getDoc(clientDocRef);
+          if (clientSnap.exists() && clientSnap.data().status === 'pending') {
+              dataToUpdate.status = "active";
+          }
 
           if (values.informacoesOperacionais?.nomeNegocio) {
               dataToUpdate.name = values.informacoesOperacionais.nomeNegocio;
@@ -437,7 +441,7 @@ export default function BriefingForm() {
               title: "Briefing Salvo com Sucesso!",
               description: `As informações de ${values.informacoesOperacionais?.nomeNegocio} foram atualizadas.`,
           });
-          form.reset(form.getValues());
+          form.reset(values); // Reset the form with the new values to clear the 'dirty' state
 
       } catch (error) {
           console.error("Error updating document: ", error);
@@ -863,7 +867,7 @@ export default function BriefingForm() {
               </Accordion>
 
               <div className="flex justify-end">
-                <Button type="submit" size="lg" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
+                <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
                   {form.formState.isSubmitting ? "Salvando..." : "Salvar Briefing"}
                 </Button>
@@ -876,5 +880,3 @@ export default function BriefingForm() {
     </Card>
   );
 }
-
-    
