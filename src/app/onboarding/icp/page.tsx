@@ -50,8 +50,18 @@ export default function IcpPage() {
 
   return (
     <div className="space-y-6">
+        <div>
+            <h2 className="text-2xl font-bold tracking-tight text-primary">O que é o ICP e por que ele é sua arma secreta?</h2>
+            <p className="text-lg text-muted-foreground mt-2">
+                ICP significa <strong>Ideal Customer Profile</strong> (Perfil de Cliente Ideal). Pense nele como um mapa do tesouro: ele te diz exatamente onde encontrar os clientes que <strong>mais precisam</strong> do que vendemos e que têm o <strong>maior potencial de sucesso</strong> com a nossa ajuda. 
+            </p>
+            <p className="text-lg text-muted-foreground mt-2">
+                Como SDR, seu trabalho não é vender para todo mundo. É encontrar as empresas certas. Usar o ICP economiza seu tempo, aumenta drasticamente suas chances de agendar reuniões qualificadas e, consequentemente, de bater suas metas. Ignore o ICP e você estará gastando energia com leads que nunca vão fechar. Domine o ICP e você se tornará uma máquina de gerar oportunidades.
+            </p>
+        </div>
+
         <p className="text-lg text-muted-foreground">
-            Não vendemos para todo mundo. Focamos em clientes que podemos genuinamente ajudar a crescer. Clique em cada card para entender os critérios do nosso Perfil de Cliente Ideal (ICP).
+            Clique em cada card abaixo para entender os 5 pilares do nosso Perfil de Cliente Ideal.
         </p>
 
         <div className="space-y-4">

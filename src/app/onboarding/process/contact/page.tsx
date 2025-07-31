@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, CheckSquare, Wand2, Mail, MessageSquare, PhoneCall, ShieldQuestion, Users, Handshake, Lightbulb, Video } from "lucide-react";
+import { Phone, CheckSquare, Wand2, Mail, MessageSquare, PhoneCall, ShieldQuestion, Users, Handshake, Lightbulb, Video, FileText } from "lucide-react";
 
 const checklist = [
     { text: "O objetivo NUNCA é vender na primeira mensagem. O objetivo é validar a dor e agendar uma reunião de diagnóstico." },
@@ -47,21 +47,25 @@ export default function ContactPage() {
         </CardHeader>
         <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-                Esta é nossa principal ferramenta de qualificação. Oferecer um diagnóstico gratuito é a melhor forma de quebrar o gelo, mostrar autoridade e conseguir a atenção do lead. O objetivo é segmentar: os qualificados vão para uma chamada, e os demais recebem uma versão gravada para nutrição.
+                Esta é nossa principal ferramenta para qualificar e gerar valor. Oferecer um diagnóstico gratuito é a melhor forma de quebrar o gelo, mostrar autoridade e conseguir a atenção do lead. O processo é desenhado para filtrar os leads certos para o time de vendas.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
                 <div>
-                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><Phone className="h-5 w-5 text-green-500" /> Consultoria em Chamada</h3>
-                    <p className="text-sm text-muted-foreground">Para leads que se encaixam 100% no nosso ICP e demonstram claro potencial. É a porta de entrada para o fechamento.</p>
+                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><FileText className="h-5 w-5 text-orange-500" /> 1. Formulário de Qualificação</h3>
+                    <p className="text-sm text-muted-foreground">Quando um lead mostra interesse inicial, o primeiro passo é enviar um link para nosso formulário de qualificação. Ele é curto e direto, desenhado para coletar as informações que precisamos para saber se ele se encaixa em nosso ICP.</p>
                 </div>
-                <div>
-                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><Video className="h-5 w-5 text-yellow-500" /> Consultoria Gravada</h3>
-                    <p className="text-sm text-muted-foreground">Para leads que não se encaixam no ICP ou não estão no momento de compra. Enviamos um vídeo (Loom) com um diagnóstico rápido. Isso mantém a porta aberta e educa o mercado.</p>
+                 <div>
+                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><Phone className="h-5 w-5 text-green-500" /> 2. Consulta Personalizada (Leads Qualificados)</h3>
+                    <p className="text-sm text-muted-foreground">Se as respostas do formulário mostrarem que o lead está <strong>100% alinhado ao nosso ICP</strong>, sua missão é agendar uma chamada de consultoria ao vivo. Esta chamada será conduzida por um de nossos Closers e é a porta de entrada para o fechamento.</p>
+                </div>
+                 <div className="md:col-span-2">
+                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><Video className="h-5 w-5 text-yellow-500" /> 3. Consulta Gravada (Leads Não Qualificados)</h3>
+                    <p className="text-sm text-muted-foreground">Se o formulário mostrar que o lead <strong>não se encaixa no ICP</strong> (ou não está no momento de compra), nós não o descartamos. Você enviará uma mensagem educada agradecendo e explicando que, no momento, ele não se qualifica para a consultoria personalizada, mas que, como agradecimento, preparamos uma consultoria gravada com dicas práticas. Isso nutre o lead e mantém a porta aberta para o futuro.</p>
                 </div>
             </div>
             <div className="pt-4 border-t border-dashed">
                 <h4 className="font-semibold text-sm text-foreground mb-2">Gancho de Venda:</h4>
-                <p className="text-sm text-muted-foreground">"Olá [Nome], vi [Problema Observado]. Que tal um diagnóstico 100% gratuito do seu marketing, sem compromisso? Se fizer sentido, agendamos uma chamada. Se não, te envio uma análise gravada com 3 dicas práticas."</p>
+                <p className="text-sm text-muted-foreground">"Olá [Nome], vi [Problema Observado]. Notei que muitas empresas como a sua enfrentam [Dor Conectada]. Para te ajudar, oferecemos uma consultoria estratégica gratuita. Para garantir que ela seja 100% personalizada para você, poderia preencher este rápido formulário de qualificação? Leva 2 minutos."</p>
             </div>
         </CardContent>
       </Card>

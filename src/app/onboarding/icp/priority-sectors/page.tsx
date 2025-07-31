@@ -1,31 +1,31 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building, CheckCircle, Heart, Stethoscope, Briefcase, ShoppingCart } from "lucide-react";
+import { Building, CheckCircle, Heart, Stethoscope, Briefcase, ShoppingCart, Sparkles } from "lucide-react";
 
 const sectors = [
     {
         icon: Stethoscope,
         title: "Saúde e Bem-Estar",
-        description: "Clínicas, médicos, dentistas, psicólogos e outros profissionais que precisam construir autoridade para atrair pacientes qualificados. O foco é em serviços de ticket médio/alto.",
+        description: "Clínicas, médicos, dentistas, psicólogos e outros profissionais que precisam construir autoridade para atrair pacientes qualificados. O foco é em serviços de ticket médio/alto, onde a percepção de qualidade é fundamental.",
         filter: "Busque por perfis que parecem amadores ou desatualizados, mas o serviço oferecido é de alto valor. A dor principal é não saber comunicar a própria qualidade. A prospecção pode ser feita via pesquisa fria no Instagram e análise de tráfego pago dos concorrentes."
+    },
+    {
+        icon: Sparkles,
+        title: "Estética e Beleza",
+        description: "Clínicas de estética avançada, salões de beleza de alto padrão e profissionais que oferecem serviços premium. Este setor depende fortemente da imagem e da prova social.",
+        filter: "O principal sinal de oportunidade é a falta de consistência visual e a ausência de vídeos mostrando os procedimentos (antes e depois). A dor é a dificuldade em se diferenciar em um mercado concorrido e justificar um preço mais alto."
     },
     {
         icon: Briefcase,
         title: "Serviços B2B e Consultorias",
-        description: "Consultorias, agências de nicho, escritórios de advocacia, empresas de tecnologia (SaaS) e negócios que vendem para outras empresas, focando em geração de leads qualificados.",
+        description: "Consultorias, agências de nicho, escritórios de advocacia, empresas de tecnologia (SaaS) e negócios que vendem para outras empresas, focando em geração de leads qualificados e construção de autoridade no LinkedIn.",
         filter: "Use nossa ferramenta de prospecção, Exact Spotter, para encontrar empresas com sites institucionais antigos ou LinkedIn com baixa atividade. A dor é a dificuldade em gerar novas oportunidades de negócio de forma previsível."
-    },
-    {
-        icon: ShoppingCart,
-        title: "E-commerce com Produto Validado",
-        description: "Lojas virtuais que já têm um produto testado, aprovado pelo mercado e com faturamento recorrente. O objetivo aqui é escalar as vendas de forma consistente e lucrativa.",
-        filter: "Identifique e-commerces que investem em anúncios, mas de forma inconsistente ou com criativos de baixa qualidade. A dor é 'queimar dinheiro' sem ter um retorno claro sobre o investimento."
     },
     {
         icon: Heart,
         title: "Negócios Locais Premium",
-        description: "Restaurantes de alto padrão, clínicas de estética avançada, e outros serviços locais que atendem a um público exigente e precisam de um posicionamento forte na sua região.",
-        filter: "Analise a presença digital de negócios que são referência na cidade, mas cuja comunicação online não reflete seu status. A dor é a dependência de indicações e a falta de um canal digital forte."
+        description: "Restaurantes de alto padrão, lojas conceito, e outros serviços locais que atendem a um público exigente e precisam de um posicionamento forte na sua região.",
+        filter: "Analise a presença digital de negócios que são referência na cidade, mas cuja comunicação online não reflete seu status. A dor é a dependência de indicações e a falta de um canal digital forte para atrair novos clientes."
     }
 ]
 
@@ -39,7 +39,7 @@ export default function PrioritySectorsPage() {
         <div>
             <h1 className="text-3xl font-bold tracking-tight">Setores Prioritários</h1>
             <p className="text-lg text-muted-foreground mt-1">
-                Embora sejamos versáteis, nossa expertise e os resultados mais expressivos se concentram em alguns setores-chave onde nossa metodologia gera mais impacto.
+                Embora sejamos versáteis, nossa expertise e os resultados mais expressivos se concentram em alguns setores-chave onde nossa metodologia gera mais impacto. Focar nesses nichos aumenta drasticamente sua chance de sucesso.
             </p>
         </div>
       </div>
@@ -56,7 +56,7 @@ export default function PrioritySectorsPage() {
                 <CardContent>
                     <p className="text-muted-foreground">{sector.description}</p>
                     <div className="mt-4 pt-4 border-t border-dashed">
-                        <h4 className="font-semibold text-sm text-foreground mb-2">O que buscar:</h4>
+                        <h4 className="font-semibold text-sm text-foreground mb-2">O que buscar (Dor Oculta):</h4>
                         <p className="text-sm text-muted-foreground">{sector.filter}</p>
                     </div>
                 </CardContent>
