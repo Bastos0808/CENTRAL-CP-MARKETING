@@ -151,15 +151,14 @@ export default function OnboardingLayout({
                     <div>
                        {/* Oculta o botão "Próximo" nas subpáginas */}
                        {!isSubPage && nextStep ? (
-                            <Button asChild disabled={!isStepCompleted}>
+                            <Button asChild>
                                 <Link href={nextStep.path}>
-                                    {isStepCompleted ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
                                     Próximo
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>
                         ) : !isSubPage && ( // Mostra o botão final apenas se não for subpágina e for a última etapa
-                            <Button asChild disabled={!isStepCompleted}>
+                            <Button asChild>
                                 <Link href="/ferramentas">
                                     Ir para Ferramentas
                                     <Wand2 className="ml-2 h-4 w-4" />
