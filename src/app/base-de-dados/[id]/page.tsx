@@ -1226,3 +1226,5 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
+
+    
