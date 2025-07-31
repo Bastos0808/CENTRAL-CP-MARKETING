@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, CheckCircle, UserCheck, AlertTriangle, Youtube, BookOpen } from "lucide-react";
+import { Mic, CheckCircle, UserCheck, AlertTriangle, Youtube, BookOpen, Film, Send } from "lucide-react";
 
 export default function PodcastPage() {
   return (
@@ -22,14 +22,14 @@ export default function PodcastPage() {
           <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
           <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           <div>
-            <h3 className="font-semibold text-foreground">Nuggets ou Cortes</h3>
-            <p className="text-sm text-muted-foreground">São os melhores momentos, as "pílulas de ouro" de um episódio longo. Nós os editamos como vídeos curtos e legendados, perfeitos para viralizar no Reels, Shorts e TikTok.</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Film className="h-4 w-4 text-primary" /> Nuggets ou Cortes</h3>
+            <p className="text-sm text-muted-foreground pl-6">São as "pílulas de sabedoria" ou o "trailer do filme". Pegamos os melhores momentos de um episódio longo e os transformamos em vídeos curtos e impactantes, com legendas dinâmicas. São perfeitos para atrair a atenção e viralizar no Reels, Shorts e TikTok.</p>
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">Distribuição</h3>
-            <p className="text-sm text-muted-foreground">É o ato de publicar o podcast em todas as plataformas importantes, como Spotify (áudio), YouTube (vídeo), Apple Podcasts e outras, para que ele possa ser encontrado por todos.</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Send className="h-4 w-4 text-primary" /> Distribuição</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o nosso "serviço de entrega" do podcast. Garantimos que o episódio chegue a todas as "casas" onde as pessoas consomem conteúdo: Spotify e Apple Podcasts para quem ouve, e YouTube para quem assiste. Ninguém fica de fora.</p>
           </div>
         </CardContent>
       </Card>

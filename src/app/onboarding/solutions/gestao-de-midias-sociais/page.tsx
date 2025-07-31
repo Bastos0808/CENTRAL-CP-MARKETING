@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Palette, CheckCircle, UserCheck, AlertTriangle, BookOpen } from "lucide-react";
+import { Palette, CheckCircle, UserCheck, AlertTriangle, BookOpen, MessageSquare, Edit, Bot, TrendingUp } from "lucide-react";
 
 export default function GestaoMidiasPage() {
   return (
@@ -22,18 +22,22 @@ export default function GestaoMidiasPage() {
           <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
           <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           <div>
-            <h3 className="font-semibold text-foreground">Linha Editorial</h3>
-            <p className="text-sm text-muted-foreground">É o "mapa" do conteúdo. Um planejamento que define os temas que vamos abordar para atrair o público certo e atingir os objetivos do cliente.</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Edit className="h-4 w-4 text-primary" /> Linha Editorial</h3>
+            <p className="text-sm text-muted-foreground pl-6">Imagine um roteiro de seriado para a marca. É o nosso mapa que define os temas que vamos abordar, garantindo que cada post faça parte de uma história maior e que o perfil não vire uma "colcha de retalhos".</p>
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">Copywriting</h3>
-            <p className="text-sm text-muted-foreground">A arte de escrever textos (as legendas dos posts, por exemplo) de forma persuasiva, com o objetivo de convencer o leitor a tomar uma ação (comprar, curtir, comentar).</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /> Copywriting</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o superpoder de escrever textos que convencem. É a arte de criar legendas que não apenas descrevem a foto, mas que fazem o seguidor pensar, sentir e, o mais importante, agir (curtir, comentar ou comprar).</p>
           </div>
            <div>
-            <h3 className="font-semibold text-foreground">Algoritmo</h3>
-            <p className="text-sm text-muted-foreground">O sistema de regras que as redes sociais (como o Instagram) usam para decidir quais posts mostrar para cada usuário. Entender o algoritmo é chave para ter mais alcance.</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Algoritmo</h3>
+            <p className="text-sm text-muted-foreground pl-6">Pense no "porteiro do Instagram". É o robô que decide quem vai ver o post. Nosso trabalho é criar um conteúdo tão bom que o porteiro nos dê um "crachá VIP" e mostre nosso post para o máximo de pessoas possível.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" /> Engajamento</h3>
+            <p className="text-sm text-muted-foreground pl-6">São os "aplausos e conversas" da plateia. Curtidas, comentários, compartilhamentos e salvamentos são sinais para o "porteiro" (algoritmo) de que nosso conteúdo é relevante e merece ser mostrado para mais gente.</p>
           </div>
         </CardContent>
       </Card>
@@ -61,7 +65,7 @@ export default function GestaoMidiasPage() {
           <ul className="space-y-2 text-muted-foreground list-disc pl-5">
             <li>"Analisando seu perfil, sinto que ele ainda não faz justiça à qualidade do serviço que vocês oferecem. Faz sentido para você?"</li>
             <li>"Vejo que vocês mantêm uma boa frequência de posts. Como está o resultado disso em termos de novas vendas e clientes?"</li>
-            <li>"Imagino que cuidar do negócio e ainda ter que pensar em conteúdo para as redes sociais seja um grande desafio. Como você tem lidado com a falta de tempo para isso?"</li>
+            <li>"Imagino que cuidar do negócio e ainda ter que pensar em conteúdo para as redes sociais seja um grande desafio. Como você tem lido com a falta de tempo para isso?"</li>
           </ul>
         </CardContent>
       </Card>

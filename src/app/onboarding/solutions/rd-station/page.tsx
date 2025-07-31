@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Network, CheckCircle, UserCheck, AlertTriangle, BadgeCheck, Filter, LineChart, Target, Bot, BookOpen } from "lucide-react";
+import { Network, CheckCircle, UserCheck, AlertTriangle, BadgeCheck, Filter, LineChart, Target, Bot, BookOpen, FileSignature, CalendarCheck } from "lucide-react";
 
 export default function RdStationPage() {
   return (
@@ -22,18 +22,18 @@ export default function RdStationPage() {
           <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
           <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           <div>
-            <h3 className="font-semibold text-foreground">CRM (Customer Relationship Management)</h3>
-            <p className="text-sm text-muted-foreground">Pense nisso como uma "agenda de vendas inteligente". É uma ferramenta para organizar todos os contatos e negociações em andamento, garantindo que nenhum cliente seja esquecido.</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><CalendarCheck className="h-4 w-4 text-primary" /> CRM (Customer Relationship Management)</h3>
+            <p className="text-sm text-muted-foreground pl-6">Pense nisso como uma "agenda com superpoderes" para o time de vendas. Ela organiza todos os contatos e negociações, criando lembretes e garantindo que nenhum cliente importante seja esquecido no meio da correria.</p>
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">Automação de Marketing</h3>
-            <p className="text-sm text-muted-foreground">São "robôs" que programamos para conversar com os clientes automaticamente, enviando e-mails ou mensagens para aquecer o contato e prepará-lo para a compra.</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Automação de Marketing</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o nosso "exército de robôs simpáticos" que programamos para conversar com os clientes automaticamente, enviando e-mails na hora certa para aquecer o contato, educar sobre o produto e prepará-lo para a compra, tudo sem trabalho manual.</p>
           </div>
            <div>
-            <h3 className="font-semibold text-foreground">Landing Page</h3>
-            <p className="text-sm text-muted-foreground">Uma página de internet simples, focada 100% em uma única ação, como preencher um formulário para receber um material ou se inscrever em um evento. É a principal porta de entrada para a automação.</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><FileSignature className="h-4 w-4 text-primary" /> Landing Page</h3>
+            <p className="text-sm text-muted-foreground pl-6">Imagine a vitrine de uma loja, mas focada em um único produto. É uma página na internet 100% focada em convencer o visitante a fazer uma única coisa: deixar seu contato em troca de algo de valor (um e-book, um webinar, etc). É a principal porta de entrada para a automação.</p>
           </div>
         </CardContent>
       </Card>

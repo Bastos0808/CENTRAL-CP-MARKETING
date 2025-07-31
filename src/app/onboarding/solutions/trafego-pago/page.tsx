@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Megaphone, CheckCircle, UserCheck, AlertTriangle, BookOpen } from "lucide-react";
+import { Megaphone, CheckCircle, UserCheck, AlertTriangle, BookOpen, Hand, BarChart, Search, Target } from "lucide-react";
 
 export default function TrafegoPage() {
   return (
@@ -13,7 +13,7 @@ export default function TrafegoPage() {
             <h1 className="text-3xl font-bold tracking-tight">O que é Tráfego Pago (Anúncios)?</h1>
           </div>
           <p className="text-lg text-muted-foreground pl-16">
-             <strong>Tráfego pago</strong> é, de forma simples, pagar para criar anúncios na internet e aparecer para mais pessoas. Nosso trabalho é fazer com que esses anúncios apareçam para as pessoas certas, gerando contatos interessados e acelerando as vendas de forma previsível.
+             <strong>Tráfego pago</strong> é, de forma simples, pagar para criar anúncios na internet e aparecer para mais pessoas. É como colocar um outdoor na avenida mais movimentada do mundo digital. Nosso trabalho é fazer com que esses anúncios apareçam para as pessoas certas, gerando contatos interessados e acelerando as vendas de forma previsível.
           </p>
       </div>
       
@@ -22,26 +22,18 @@ export default function TrafegoPage() {
           <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
           <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           <div>
-            <h3 className="font-semibold text-foreground">Meta Ads (Facebook e Instagram Ads)</h3>
-            <p className="text-sm text-muted-foreground">A plataforma para criar anúncios que aparecem no Instagram, Facebook, Messenger e WhatsApp. Ideal para gerar desejo e alcançar clientes com base em seus interesses e comportamentos.</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Target className="h-4 w-4 text-primary" /> Leads</h3>
+            <p className="text-sm text-muted-foreground pl-6">São as "pessoas que levantam a mão" no meio da multidão. Ao clicarem em um anúncio ou preencherem um formulário, elas estão dizendo "Ei, estou interessado nisso!". Nosso objetivo é gerar o máximo de mãos levantadas qualificadas.</p>
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">Google Ads</h3>
-            <p className="text-sm text-muted-foreground">A plataforma de anúncios do Google. Aparecemos para pessoas que já estão procurando ativamente por um produto ou serviço, geralmente no topo dos resultados de busca.</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><BarChart className="h-4 w-4 text-primary" /> ROI (Retorno sobre o Investimento)</h3>
+            <p className="text-sm text-muted-foreground pl-6">É a "nota da prova" do nosso trabalho. Para cada R$1 que o cliente investe em anúncios, o ROI nos diz quantos reais voltaram em vendas. É a métrica que prova que marketing não é custo, é investimento que dá lucro.</p>
           </div>
            <div>
-            <h3 className="font-semibold text-foreground">Leads</h3>
-            <p className="text-sm text-muted-foreground">Pessoas que demonstraram interesse no seu produto ou serviço ao interagir com um anúncio (clicando, enviando uma mensagem, preenchendo um formulário). São potenciais clientes.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-foreground">ROI (Retorno sobre o Investimento)</h3>
-            <p className="text-sm text-muted-foreground">A métrica mais importante: mostra quanto dinheiro a empresa ganhou para cada real que investiu em anúncios. É a prova de que o marketing está funcionando.</p>
-          </div>
-           <div>
-            <h3 className="font-semibold text-foreground">Pixel de Rastreamento</h3>
-            <p className="text-sm text-muted-foreground">Um pequeno código que instalamos no site do cliente. Funciona como um "espião" que nos diz quais usuários visitaram o site, permitindo-nos criar anúncios específicos para eles (remarketing).</p>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Search className="h-4 w-4 text-primary" /> Pixel de Rastreamento</h3>
+            <p className="text-sm text-muted-foreground pl-6">Pense nele como nosso "detetive particular" ou "espião do bem". É um código que instalamos no site do cliente e que nos conta quem entrou lá, quais páginas viu e se comprou algo. Com essas informações, podemos criar anúncios ultra específicos para quem já demonstrou interesse.</p>
           </div>
         </CardContent>
       </Card>
