@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lightbulb, Megaphone, Mic, Palette, ArrowRight, Network } from "lucide-react";
+import { Lightbulb, Megaphone, Mic, Palette, ArrowRight, Network, Camera } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useOnboarding } from "../layout";
@@ -26,6 +26,12 @@ const solutionsData = [
         title: "Produção de Podcast",
         description: "Transforme seu conhecimento em um ativo de autoridade e conexão.",
         href: "/onboarding/solutions/producao-de-podcast"
+    },
+    {
+        icon: Camera,
+        title: "Captação de Conteúdo Externo",
+        description: "Mostre a realidade do seu negócio com produções audiovisuais profissionais no seu local.",
+        href: "/onboarding/solutions/captacao-externa"
     },
     {
         icon: Lightbulb,
@@ -56,7 +62,7 @@ export default function SolutionsPage() {
                 Agora que você conhece nossa cultura, entenda o que vendemos. Cada solução resolve um problema específico do nosso cliente. Clique nos cards para ver os detalhes, entregáveis e ganchos de venda de cada um.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {solutionsData.map((solution) => (
                     <Link href={solution.href} key={solution.title} className="group block">
                         <Card className="transition-all duration-200 ease-in-out group-hover:border-primary group-hover:shadow-lg group-hover:-translate-y-1 h-full flex flex-col">
