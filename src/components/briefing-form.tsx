@@ -411,12 +411,18 @@ export default function BriefingForm() {
 
       try {
           const clientDocRef = doc(db, "clients", selectedClientId);
-          const dataToUpdate = {
-              briefing: values,
-              status: "active", // Change status to active after briefing is submitted
-              name: values.informacoesOperacionais?.nomeNegocio,
-              plan: values.informacoesOperacionais?.planoContratado,
+          
+          const dataToUpdate: { [key: string]: any } = {
+            briefing: values,
+            status: "active",
           };
+
+          if (values.informacoesOperacionais?.nomeNegocio) {
+              dataToUpdate.name = values.informacoesOperacionais.nomeNegocio;
+          }
+          if (values.informacoesOperacionais?.planoContratado) {
+              dataToUpdate.plan = values.informacoesOperacionais.planoContratado;
+          }
           
           await updateDoc(clientDocRef, dataToUpdate);
       
