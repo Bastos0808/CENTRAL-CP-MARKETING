@@ -73,13 +73,6 @@ export default function GestaoMidiasPage() {
             <li className="flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
-                    <span className="font-semibold">Relacionamento e Engajamento</span>
-                    <p className="text-sm text-muted-foreground">Interação estratégica nos stories e DMs para construir uma comunidade.</p>
-                </div>
-            </li>
-            <li className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                <div>
                     <span className="font-semibold">Análise e Relatórios Mensais</span>
                     <p className="text-sm text-muted-foreground">Apresentamos os resultados, o que funcionou e os planos para o próximo ciclo.</p>
                 </div>
