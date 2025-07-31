@@ -60,7 +60,7 @@ export default function GestaoMidiasPage() {
                 <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
                     <span className="font-semibold">Criação e Design de Posts</span>
-                    <p className="text-sm text-muted-foreground">Produção de artes, carrosséis e vídeos (Reels/TikTok) com design profissional e copywriting persuasivo.</p>
+                    <p className="text-sm text-muted-foreground">Produção de artes, carrosséis e vídeos (Reels/TikTok) com design profissional e copywriting persuasivo. Utilizamos ferramentas de ponta como Photoshop, Premiere e After Effects para garantir a máxima qualidade.</p>
                 </div>
             </li>
             <li className="flex items-start gap-3">
