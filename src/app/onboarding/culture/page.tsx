@@ -1,7 +1,7 @@
 
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Target, Eye, Gem, CheckCircle, HeartHandshake, Lightbulb, Search, Trophy } from "lucide-react";
+import { Target, Eye, Gem, CheckCircle, HeartHandshake, Lightbulb, Search, Trophy, Smile } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 
@@ -13,8 +13,8 @@ const valuesData = [
   },
   {
     icon: HeartHandshake,
-    title: "Parceria e transparência radical",
-    detail: "Construímos relações de confiança, com comunicação aberta sobre vitórias, desafios e até mesmo erros. O cliente não é um número; é um parceiro. Acreditamos que a honestidade radical acelera a resolução de problemas e fortalece a relação."
+    title: "Parceria, lealdade e transparência",
+    detail: "Construímos relações de confiança e lealdade, com comunicação aberta sobre vitórias e desafios. O cliente não é um número; é um parceiro de longo prazo. Acreditamos que a empatia e a honestidade radical aceleram a resolução de problemas e fortalecem a relação."
   },
   {
     icon: Lightbulb,
@@ -30,6 +30,11 @@ const valuesData = [
     icon: Gem,
     title: "Excelência em cada detalhe",
     detail: "Da estratégia macro ao texto de um stories, buscamos o mais alto padrão de qualidade em tudo que entregamos. Acreditamos que a excelência não é um ato, mas um hábito. É o cuidado nos detalhes que constrói grandes marcas."
+  },
+  {
+    icon: Smile,
+    title: "Ambiente leve, trabalho sério",
+    detail: "Promovemos um ambiente descontraído, colaborativo e com espaço para o bom humor. Acreditamos que a leveza no dia a dia impulsiona a criatividade e a performance, mas sem nunca perder o foco na seriedade e na responsabilidade que cada projeto exige."
   }
 ];
 
@@ -88,7 +93,7 @@ export default function CulturePage() {
                 </AccordionTrigger>
                 <AccordionContent className="pt-4 pl-4">
                     <p className="text-lg text-muted-foreground border-l-4 border-primary pl-4 mb-6">
-                        Estes são os cinco pilares que sustentam nossa cultura, nossas decisões e nossas relações. É o nosso código de conduta inegociável.
+                        Estes são os pilares que sustentam nossa cultura, nossas decisões e nossas relações. É o nosso código de conduta inegociável.
                     </p>
                     <div className="space-y-4">
                         {valuesData.map((value) => (
