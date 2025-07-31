@@ -467,7 +467,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     }
   };
   
-  const handleAssetUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleAssetUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (!client || !e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     
@@ -485,7 +485,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       },
       (error) => {
         console.error("Upload error:", error);
-        toast({ title: "Erro no Upload", description: "Não foi possível enviar o arquivo.", variant: "destructive" });
+        toast({ title: "Erro no Upload", description: `Não foi possível enviar o arquivo. Detalhes: ${error.message}`, variant: "destructive" });
         setIsUploading(false);
       },
       async () => {
@@ -499,13 +499,16 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
         };
 
         const clientDocRef = doc(db, "clients", client.id);
+        const currentAssets = client.assets || [];
+        const updatedAssets = [...currentAssets, newAsset];
+        
         await updateDoc(clientDocRef, {
-          assets: arrayUnion(newAsset)
+          assets: updatedAssets
         });
         
         setClient(prev => {
           if (!prev) return null;
-          return { ...prev, assets: [...(prev.assets || []), newAsset] };
+          return { ...prev, assets: updatedAssets };
         });
 
         toast({ title: "Arquivo Enviado!", description: `${file.name} foi adicionado à base de arquivos.` });
@@ -518,32 +521,27 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     );
   };
   
-  const handleDeleteAsset = async (assetToDelete: Asset) => {
+ const handleDeleteAsset = async (assetToDelete: Asset) => {
     if (!client) return;
 
     const clientDocRef = doc(db, "clients", client.id);
     const storageRef = ref(storage, `clients/${client.id}/assets/${assetToDelete.id}_${assetToDelete.name}`);
 
     try {
-        // Get the current assets array from the client state
         const currentAssets = client.assets || [];
-        // Filter out the asset to be deleted
         const updatedAssets = currentAssets.filter(asset => asset.id !== assetToDelete.id);
 
-        // Update Firestore with the new array
         await updateDoc(clientDocRef, {
             assets: updatedAssets
         });
         
-        // Delete from Storage
         await deleteObject(storageRef);
 
-        // Update local state
         setClient(prev => prev ? ({ ...prev, assets: updatedAssets }) : null);
         toast({ title: "Arquivo Excluído!", description: `${assetToDelete.name} foi removido.`});
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error deleting asset:", error);
-        toast({ title: "Erro ao Excluir", description: `Não foi possível remover o arquivo. Detalhe: ${error}`, variant: "destructive"});
+        toast({ title: "Erro ao Excluir", description: `Não foi possível remover o arquivo. Detalhe: ${error.message}`, variant: "destructive"});
     }
 };
 
@@ -816,7 +814,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                              <input ref={assetFileInputRef} id="asset-upload" type="file" className="hidden" onChange={handleAssetUpload} disabled={isUploading}/>
                             {isUploading ? (
                                 <div className='w-full px-8 space-y-2'>
-                                    <Progress value={uploadProgress} className="w-full" />
+                                    <Progress value={uploadProgress} />
                                     <p className="text-sm text-center text-muted-foreground">Enviando... {Math.round(uploadProgress)}%</p>
                                 </div>
                             ) : (
@@ -1169,5 +1167,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
       </div>
     </main>
-  )
+  );
 }
+
+    
