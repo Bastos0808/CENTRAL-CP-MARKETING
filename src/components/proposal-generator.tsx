@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Label } from '@/components/ui/label';
 
 // Schema Definition
 const serviceItemSchema = z.object({ value: z.string().min(1, "O item não pode ser vazio.") });
