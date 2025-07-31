@@ -503,9 +503,14 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
           assets: arrayUnion(newAsset)
         });
         
-        setClient(prev => prev ? ({ ...prev, assets: [...(prev.assets || []), newAsset] }) : null);
+        setClient(prev => {
+          if (!prev) return null;
+          return { ...prev, assets: [...(prev.assets || []), newAsset] };
+        });
+
         toast({ title: "Arquivo Enviado!", description: `${file.name} foi adicionado à base de arquivos.` });
         setIsUploading(false);
+        setUploadProgress(0);
       }
     );
   };
@@ -517,9 +522,18 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       const storageRef = ref(storage, `clients/${client.id}/assets/${asset.id}_${asset.name}`);
       
       try {
+          // Create a new asset object without circular references for Firestore update
+          const assetToRemove = {
+              id: asset.id,
+              name: asset.name,
+              url: asset.url,
+              type: asset.type,
+              createdAt: asset.createdAt
+          };
+
           // Delete from Firestore
           await updateDoc(clientDocRef, {
-              assets: arrayRemove(asset)
+              assets: arrayRemove(assetToRemove)
           });
           
           // Delete from Storage
@@ -795,15 +809,14 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                         <CardDescription>Logos, PDFs, e outros materiais do cliente.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <div 
+                         <div 
                             className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
                             onClick={() => assetFileInputRef.current?.click()}
                         >
+                             <input ref={assetFileInputRef} id="asset-upload" type="file" className="hidden" onChange={handleAssetUpload} disabled={isUploading}/>
                             {isUploading ? (
                                 <div className='w-full px-8 space-y-2'>
-                                    <div className="w-full bg-muted rounded-full h-2.5">
-                                      <div className="bg-primary h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
-                                    </div>
+                                    <Progress value={uploadProgress} />
                                     <p className="text-sm text-center text-muted-foreground">Enviando... {Math.round(uploadProgress)}%</p>
                                 </div>
                             ) : (
@@ -813,7 +826,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                                     <p className="text-xs">PDF, PNG, JPG, ZIP, etc.</p>
                                 </div>
                             )}
-                            <input ref={assetFileInputRef} id="asset-upload" type="file" className="hidden" onChange={handleAssetUpload} disabled={isUploading}/>
                         </div>
 
                         <div className='pt-4'>
