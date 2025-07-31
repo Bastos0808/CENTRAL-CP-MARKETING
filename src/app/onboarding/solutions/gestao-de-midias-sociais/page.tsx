@@ -74,7 +74,7 @@ export default function GestaoMidiasPage() {
                 <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
                     <span className="font-semibold">Relacionamento e Engajamento</span>
-                    <p className="text-sm text-muted-foreground">Interação estratégica nos stories, resposta a comentários e DMs para construir uma comunidade.</p>
+                    <p className="text-sm text-muted-foreground">Interação estratégica nos stories e DMs para construir uma comunidade.</p>
                 </div>
             </li>
             <li className="flex items-start gap-3">
