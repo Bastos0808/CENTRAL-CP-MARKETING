@@ -5,65 +5,74 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Search, UserCheck, Link as LinkIcon, Users, ZoomIn, Briefcase, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useOnboarding } from "../../layout";
 
 const researchSteps = [
     { 
         icon: UserCheck,
-        title: "Qualificação com o ICP",
-        description: "A primeira e mais crítica etapa. Verifique se o prospect se encaixa em TODOS os critérios do nosso Perfil de Cliente Ideal. Se um critério fundamental falhar, descarte o lead. Não perca tempo com leads desqualificados.",
+        title: "Passo 1: Qualificação com o ICP",
+        description: "A primeira e mais crítica etapa. Antes de gastar um minuto sequer analisando a empresa, você precisa garantir que ela se encaixa em nosso Perfil de Cliente Ideal (ICP). Se um critério fundamental falhar, descarte o lead. Não perca tempo com leads que não têm perfil para comprar.",
         instructions: [
-            "<strong>Abra o ICP:</strong> Tenha a documentação do nosso <a href='/onboarding/icp' class='text-primary underline'>Perfil de Cliente Ideal</a> aberta em outra aba.",
-            "<strong>Checklist de Critérios:</strong> Passe por cada um dos 5 critérios (Setor, Estágio do Negócio, etc.) e valide se a empresa se encaixa.",
-            "<strong>Análise do Site e Mídias Sociais:</strong> Use o site da empresa e suas redes sociais para encontrar as informações necessárias para a qualificação.",
-            "<strong>Seja Rigoroso:</strong> Um lead que não se encaixa no ICP tem poucas chances de fechar e menos ainda de ter sucesso com nossa metodologia. A qualificação rigorosa economiza tempo para todos."
+            "<strong>Abra o ICP em outra aba:</strong> Tenha a documentação do nosso <a href='/onboarding/icp' class='text-primary underline font-semibold'>Perfil de Cliente Ideal</a> sempre à mão. Ele é seu guia principal.",
+            "<strong>Faça o Checklist de Critérios:</strong> Passe por cada um dos 5 critérios (Setor, Estágio do Negócio, Capacidade de Investimento, etc.) e valide se a empresa se encaixa. Anote suas conclusões.",
+            "<strong>Use o Site e as Redes Sociais:</strong> As informações que você precisa para essa qualificação inicial estão no site da empresa, no LinkedIn e em outras redes sociais. Analise-os com o foco em responder às perguntas do ICP.",
+            "<strong>Seja Rigoroso, Não Complacente:</strong> Um lead que não se encaixa no ICP tem pouquíssimas chances de fechar e menos ainda de ter sucesso com nossa metodologia. A qualificação rigorosa economiza seu tempo e o da empresa. Sua meta não é ter muitos leads, é ter os leads certos."
         ]
     },
     { 
         icon: Users,
-        title: "Identificação do Decisor",
-        description: "Confirme se o contato associado ao lead é a pessoa certa para contatar. Geralmente é o Sócio, CEO, Diretor de Marketing ou Gerente da área. Contatar a pessoa errada pode encerrar a oportunidade antes mesmo de começar.",
+        title: "Passo 2: Identificação do Decisor",
+        description: "Você está falando com a pessoa certa? Contatar a pessoa errada pode encerrar a oportunidade antes mesmo de começar. Nosso CRM fornecerá o contato inicial, mas seu trabalho é confirmar se ele é, de fato, o tomador de decisão.",
         instructions: [
-            "<strong>Fonte de Leads:</strong> Semanalmente, fornecemos entre 100 a 200 leads de empresas que buscamos em nossa ferramenta de prospecção (Big Data). Esses leads são inseridos diretamente no RD CRM para você trabalhar.",
-            "<strong>Acesse o RD CRM:</strong> Esta é sua principal fonte de informações. Os leads são enviados para o CRM pela nossa ferramenta de prospecção, o Exact Spotter.",
-            "<strong>Localize o Lead:</strong> Encontre a empresa e o contato que você irá trabalhar.",
-            "<strong>Verifique o Cargo:</strong> Analise os dados do contato no CRM para identificar seu cargo. Busque por títulos como 'Sócio(a)', 'CEO', 'Diretor(a)', 'Gerente de Marketing'.",
-            "<strong>Foco no Decisor:</strong> Evite contatar analistas ou assistentes, a menos que seja uma empresa muito grande e essa seja a única porta de entrada. O objetivo é sempre alcançar o tomador de decisão."
+            "<strong>Acesse o RD CRM:</strong> Esta é sua principal fonte de informações. Semanalmente, a liderança fornecerá uma lista de leads (empresas e contatos) que são inseridos diretamente no RD CRM para você trabalhar.",
+            "<strong>Localize o Lead do Dia:</strong> Encontre a empresa e o contato que você irá trabalhar hoje.",
+            "<strong>Verifique o Cargo no LinkedIn:</strong> Use o nome do contato e da empresa para encontrá-lo no LinkedIn. O cargo bate com o de um decisor? Procure por títulos como 'Sócio(a)', 'CEO', 'Diretor(a)', 'Fundador(a)' ou 'Gerente de Marketing'.",
+            "<strong>Foco no Decisor:</strong> Evite contatar analistas ou assistentes, a menos que seja uma empresa muito grande e essa seja a única porta de entrada. O objetivo é sempre alcançar quem tem o poder da caneta."
         ]
     },
     { 
         icon: ZoomIn,
-        title: "Análise da Presença Digital",
-        description: "Mergulhe no universo do prospect. Analise o site, o Instagram e outras mídias para entender como eles se comunicam hoje e encontrar brechas.",
+        title: "Passo 3: Análise da Presença Digital",
+        description: "Agora que o lead está qualificado, mergulhe no universo do prospect. Analise o site, o Instagram e outras mídias para entender como eles se comunicam hoje, quais são suas fraquezas e onde estão as oportunidades de melhoria.",
         instructions: [
-            "<strong>Google:</strong> Pesquise o nome da empresa. Como ela aparece? Existem notícias, artigos ou avaliações no Google Meu Negócio? Avaliações negativas são uma dor explícita.",
-            "<strong>Website:</strong> É moderno e otimizado para mobile? Possui blog? A comunicação é clara e profissional? Parece ter sido atualizado recentemente ou está abandonado?",
-            "<strong>Instagram:</strong> Qual a frequência de posts? A identidade visual é profissional e consistente? Usam Reels? O engajamento é real ou parece baixo? Existem comentários de clientes reclamando?",
-            "<strong>Biblioteca de Anúncios do Meta:</strong> Pesquise na biblioteca de anúncios se a empresa ou seus concorrentes estão veiculando campanhas. A ausência de anúncios (ou anúncios de baixa qualidade) é uma grande oportunidade.",
-            "<strong>YouTube e TikTok:</strong> Se for relevante para o setor, verifique se possuem canais ativos. A falta de presença em vídeo é uma dor para muitas marcas que querem construir autoridade."
+            "<strong>Pesquisa no Google:</strong> Pesquise o nome da empresa. Como ela aparece? Existem notícias, artigos ou avaliações no Google Meu Negócio? Avaliações negativas são uma dor explícita e um ótimo gancho.",
+            "<strong>Análise do Website:</strong> O site é moderno e otimizado para celular? A mensagem é clara? Parece profissional ou abandonado? Possui blog? Quando foi o último post?",
+            "<strong>Análise do Instagram:</strong> Qual a frequência de posts? A identidade visual é profissional? Usam vídeos (Reels)? O engajamento parece real ou baixo? Existem comentários de clientes (positivos ou negativos)?",
+            "<strong>Investigação na Biblioteca de Anúncios:</strong> Pesquise na Biblioteca de Anúncios do Meta se a empresa (ou seus concorrentes diretos) estão veiculando campanhas. A ausência de anúncios ou anúncios de baixa qualidade é uma grande oportunidade.",
+            "<strong>Verificação de Vídeo (YouTube/TikTok):</strong> Se for relevante para o setor, verifique se possuem canais ativos. A falta de presença em vídeo é uma dor para muitas marcas que querem construir autoridade."
         ]
     },
     { 
         icon: LinkIcon,
-        title: "A Arte do Gancho: Encontrando a Brecha Perfeita",
-        description: "Aqui você se torna um detetive. Sua missão é encontrar a deixa perfeita, um motivo relevante e personalizado para iniciar a conversa. Um bom gancho mostra que você fez sua lição de casa e transforma uma mensagem fria em uma conversa quente.",
+        title: "Passo 4: A Arte do Gancho (A Brecha Perfeita)",
+        description: "Com base em tudo que você analisou, sua missão é encontrar a 'desculpa' perfeita, um motivo relevante e personalizado para iniciar a conversa. Um bom gancho prova que você fez sua lição de casa e transforma uma mensagem fria em uma conversa quente.",
         instructions: [
             "<strong>A Pista Quente (Atividade Recente):</strong> O que a empresa ou o decisor fizeram nos últimos dias? Ex: 'Vi que vocês participaram do evento X...' ou 'Parabéns pelo novo site, achei a seção de cases muito interessante'. É o gancho mais fácil e eficaz.",
-            "<strong>O Grande Furo (Notícias e Expansão):</strong> A empresa saiu na mídia? Anunciou uma nova contratação, abertura de filial ou lançamento? Isso é um sinal de crescimento e uma deixa perfeita. Ex: 'Vi no portal ABC que vocês estão expandindo para a região Sul, parabéns!'",
-            "<strong>A Pista Oculta (Dor Evidente):</strong> Sua análise da presença digital revelou uma fraqueza óbvia? Use isso de forma sutil e consultiva. Ex: 'Notei que o último post no blog foi em 2022. Estão planejando reativar essa frente?' ou 'Vi que seus concorrentes estão fortes em anúncios de vídeo, mas não encontrei os seus. Existe uma razão estratégica para isso?'"
+            "<strong>A Notícia (Sinal de Crescimento):</strong> A empresa saiu na mídia? Anunciou uma nova contratação, abertura de filial ou lançamento? Isso é um sinal de crescimento e uma deixa perfeita. Ex: 'Vi no portal ABC que vocês estão expandindo para a região Sul, parabéns!'",
+            "<strong>A Dor Evidente (Ponto Fraco):</strong> Sua análise da presença digital revelou uma fraqueza óbvia? Use isso de forma sutil e consultiva, nunca acusatória. Ex: 'Notei que o último post no blog foi em 2022. Estão planejando reativar essa frente?' ou 'Vi que seus concorrentes estão fortes em anúncios de vídeo, mas não encontrei os seus. Existe uma razão estratégica para isso?'"
         ]
     },
     {
         icon: Briefcase,
-        title: "Sinais de Crescimento: O Indicador de Ouro",
-        description: "Uma empresa que contrata, é uma empresa que investe. Aprenda a identificar esses sinais para abordar prospects no momento exato em que eles precisam de nós.",
+        title: "Passo 5: Sinais de Contratação (O Indicador de Ouro)",
+        description: "Uma empresa que contrata, é uma empresa que investe e está crescendo. Aprenda a identificar esses sinais para abordar prospects no momento exato em que eles precisam de nós.",
         instructions: [
-            "<strong>Fontes de Vagas:</strong> Procure pela seção 'Trabalhe Conosco' ou 'Carreiras' no site da empresa. Vagas para 'Vendedor', 'Executivo de Contas' ou 'Analista de Marketing' são excelentes indicadores.",
-            "<strong>Interpretação:</strong> Este é o pulo do gato. Uma empresa que está contratando para a área comercial (Vendas) precisa de mais leads. Uma empresa que contrata para Marketing está pronta para investir na área. Ambos os cenários são um sinal verde para a prospecção."
+            "<strong>Procure por Vagas:</strong> No LinkedIn da empresa ou na seção 'Trabalhe Conosco' do site, procure por vagas abertas. Vagas para 'Vendedor', 'Executivo de Contas' ou 'Analista de Marketing' são excelentes indicadores.",
+            "<strong>Interprete o Sinal:</strong> Uma empresa que contrata para a área comercial (Vendas) precisa de mais leads para seus novos vendedores. Uma empresa que contrata para Marketing está pronta para investir na área.",
+            "<strong>Use como Gancho:</strong> Este é um dos ganchos mais fortes. Ex: 'Vi que vocês abriram uma vaga para Executivo de Vendas. Geralmente, quando uma empresa expande o time comercial, o maior desafio é gerar leads qualificados na velocidade certa. Como vocês estão planejando lidar com isso?'"
         ]
     }
 ];
 
 export default function ResearchPage() {
+    const { setStepCompleted } = useOnboarding();
+
+    useEffect(() => {
+        // This is a detail page, so we mark it as completed on load to allow navigation.
+        setStepCompleted(true);
+    }, [setStepCompleted]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-start gap-4">
@@ -73,7 +82,7 @@ export default function ResearchPage() {
         <div>
             <h1 className="text-3xl font-bold tracking-tight">Fase 1: Pesquisa e Qualificação</h1>
             <p className="text-lg text-muted-foreground mt-1">
-                Esta é a fase mais importante. Um bom SDR gasta 80% do seu tempo aqui. Uma prospecção bem-sucedida não depende de quantas pessoas você contata, mas da qualidade desses contatos.
+                Esta é a fase mais importante do processo. Um bom SDR gasta 80% do seu tempo aqui. Uma prospecção bem-sucedida não depende de quantas pessoas você contata, mas da qualidade e do timing desses contatos. Siga os passos abaixo.
             </p>
         </div>
       </div>
@@ -87,8 +96,8 @@ export default function ResearchPage() {
                            <step.icon className="h-6 w-6 text-primary" />
                         </div>
                         <div>
-                           <h3 className="font-semibold text-foreground">{step.title}</h3>
-                           <p className="text-sm text-muted-foreground mt-1">{step.description}</p>
+                           <h3 className="font-semibold text-foreground text-lg">{step.title}</h3>
+                           <p className="text-sm text-muted-foreground mt-1 text-left">{step.description}</p>
                         </div>
                     </div>
                 </AccordionTrigger>
