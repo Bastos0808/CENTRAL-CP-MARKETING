@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lightbulb, Megaphone, Mic, Palette, ArrowRight, Network, Camera } from "lucide-react";
+import { Lightbulb, Megaphone, Mic, Palette, ArrowRight, Network, Camera, Video } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useOnboarding } from "../layout";
@@ -32,6 +32,12 @@ const solutionsData = [
         title: "Captação de Conteúdo Externo",
         description: "Mostre a realidade do seu negócio com produções audiovisuais profissionais no seu local.",
         href: "/onboarding/solutions/captacao-externa"
+    },
+    {
+        icon: Video,
+        title: "Produção Audiovisual",
+        description: "Eleve a percepção da sua marca com vídeos de alta qualidade, de estúdio a drone.",
+        href: "/onboarding/solutions/producao-audiovisual"
     },
     {
         icon: Network,
