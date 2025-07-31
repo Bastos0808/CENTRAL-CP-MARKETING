@@ -44,22 +44,23 @@ export default function OnboardingLayout({
 
   // Reinicia o estado de conclusão sempre que a rota muda para uma que não seja uma subpágina.
   useEffect(() => {
-     // As páginas de menu são consideradas "completas" por padrão ao carregar.
-     // As páginas de conteúdo, como cultura, devem definir seu próprio estado de conclusão.
-    const isMenuPage = pathname === '/onboarding/solutions' || 
+     const isMenuPage = pathname === '/onboarding/solutions' || 
                        pathname === '/onboarding/icp' || 
                        pathname === '/onboarding/process';
 
-    const isSubPage = pathname.startsWith('/onboarding/icp/') ||
-                      pathname.startsWith('/onboarding/process/') ||
-                      pathname.startsWith('/onboarding/solutions/');
-
-    if (isMenuPage || isSubPage) {
+    // Se for uma página de menu, ela já está "completa" por padrão.
+    if (isMenuPage) {
       setStepCompleted(true);
     } else {
-      // Para outras páginas como 'culture' e 'modus', o estado começa como falso,
-      // e a própria página deve chamar setStepCompleted(true) quando a interação ocorrer.
-      setStepCompleted(false);
+      // Para outras páginas como 'culture', 'modus' e as sub-páginas, o estado começa como falso.
+      // A própria página (ex: /culture) deve chamar setStepCompleted(true) quando a interação ocorrer.
+      // As sub-páginas de ICP/Process/Solutions também são consideradas "completas" ao carregar.
+       const isSubPage = steps.some(step => pathname.startsWith(step.path) && pathname !== step.path);
+       if (isSubPage) {
+           setStepCompleted(true);
+       } else {
+           setStepCompleted(false);
+       }
     }
   }, [pathname]);
 
@@ -87,6 +88,7 @@ export default function OnboardingLayout({
   };
 
   const currentIndex = findCurrentStepIndex(pathname);
+  const isSubPage = currentIndex !== -1 && pathname !== steps[currentIndex].path;
 
   const prevStep = currentIndex > 0 ? steps[currentIndex - 1] : null;
   const nextStep = currentIndex < steps.length - 1 ? steps[currentIndex + 1] : null;
@@ -132,24 +134,28 @@ export default function OnboardingLayout({
 
                 <footer className="mt-12 border-t pt-6 flex items-center justify-between">
                     <div>
-                        {prevStep ? (
+                         {/* O botão "Voltar" padrão do navegador sempre funciona aqui */}
+                         {isSubPage && currentIndex > 0 ? (
+                           null // Em subpáginas, o BackButton no header é suficiente
+                         ) : prevStep ? (
                             <Link href={prevStep.path} passHref>
                                 <Button variant="outline">
                                     <ArrowLeft className="mr-2 h-4 w-4" />
                                     Anterior
                                 </Button>
                             </Link>
-                        ) : (
+                         ) : (
                               <Link href="/onboarding" passHref>
                                 <Button variant="outline">
                                     <Home className="mr-2 h-4 w-4" />
                                     Início do Onboarding
                                 </Button>
                             </Link>
-                        )}
+                         )}
                     </div>
                     <div>
-                        {nextStep ? (
+                       {/* Oculta o botão "Próximo" nas subpáginas */}
+                       {!isSubPage && nextStep ? (
                             <Button asChild disabled={!isStepCompleted}>
                                 <Link href={nextStep.path}>
                                     {isStepCompleted ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
@@ -157,7 +163,7 @@ export default function OnboardingLayout({
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Link>
                             </Button>
-                        ) : (
+                        ) : !isSubPage && ( // Mostra o botão final apenas se não for subpágina
                             <Button asChild disabled={!isStepCompleted}>
                                 <Link href="/ferramentas">
                                     Ir para Ferramentas
