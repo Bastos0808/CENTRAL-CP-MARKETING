@@ -34,7 +34,7 @@ export default function PodcastPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h3 className="font-semibold text-foreground flex items-center gap-2"><Film className="h-4 w-4 text-primary" /> Nuggets ou Cortes</h3>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Film className="h-4 w-4 text-primary" /> Pílulas ou Cortes</h3>
             <p className="text-sm text-muted-foreground pl-6">São as "pílulas de sabedoria" ou o "trailer do filme". Pegamos os melhores momentos de um episódio longo e os transformamos em vídeos curtos e impactantes, com legendas dinâmicas. São perfeitos para atrair a atenção e viralizar no Reels, Shorts e TikTok.</p>
           </div>
           <div>
@@ -105,8 +105,8 @@ export default function PodcastPage() {
             <li className="flex items-start gap-4">
                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">3</div>
                 <div>
-                    <span className="font-semibold text-lg">Criação de Cortes Estratégicos (Nuggets)</span>
-                    <p className="text-sm text-muted-foreground">Sabemos que pouca gente assiste a um vídeo de 1 hora. Por isso, pegamos os melhores momentos de cada episódio e os transformamos em vídeos curtos e legendados (os <strong>"nuggets"</strong>), perfeitos para postar no Reels, Shorts e TikTok, multiplicando o alcance do conteúdo.</p>
+                    <span className="font-semibold text-lg">Criação de Cortes Estratégicos (Pílulas)</span>
+                    <p className="text-sm text-muted-foreground">Sabemos que pouca gente assiste a um vídeo de 1 hora. Por isso, pegamos os melhores momentos de cada episódio e os transformamos em vídeos curtos e legendados (as <strong>"pílulas"</strong>), perfeitos para postar no Reels, Shorts e TikTok, multiplicando o alcance do conteúdo.</p>
                 </div>
             </li>
             <li className="flex items-start gap-4">
