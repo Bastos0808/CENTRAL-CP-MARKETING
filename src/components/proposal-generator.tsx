@@ -10,9 +10,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle, Trash2, DollarSign, Wand2, Eye, FileText, User, Building, Calendar, Package } from "lucide-react";
-import { useState } from "react";
+import { PlusCircle, Trash2, DollarSign, Wand2, Eye, FileText, User, Building, Calendar, Package, Download } from "lucide-react";
+import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const serviceItemSchema = z.object({
   name: z.string().min(1, "O nome do serviço é obrigatório."),
@@ -37,6 +39,8 @@ type ProposalFormValues = z.infer<typeof proposalSchema>;
 export default function ProposalGenerator() {
   const [generatedProposal, setGeneratedProposal] = useState<ProposalFormValues | null>(null);
   const { toast } = useToast();
+  const proposalPreviewRef = useRef<HTMLDivElement>(null);
+
 
   const form = useForm<ProposalFormValues>({
     resolver: zodResolver(proposalSchema),
@@ -62,13 +66,54 @@ export default function ProposalGenerator() {
   form.setValue('total', total);
 
   function onSubmit(values: ProposalFormValues) {
-    console.log(values);
     setGeneratedProposal(values);
     toast({
       title: "Visualização Gerada!",
       description: "A pré-visualização da sua proposta foi criada ao lado.",
     });
   }
+
+  const handleDownloadPdf = async () => {
+    const reportElement = proposalPreviewRef.current;
+    if (!reportElement || !generatedProposal) {
+        toast({ title: "Erro", description: "Gere uma pré-visualização primeiro.", variant: "destructive" });
+        return;
+    };
+
+    const originalTextColors = new Map<HTMLElement, string>();
+    reportElement.querySelectorAll<HTMLElement>('*').forEach(el => {
+        originalTextColors.set(el, el.style.color);
+        el.style.color = 'black';
+    });
+     reportElement.querySelectorAll<HTMLElement>('.text-primary').forEach(el => {
+        el.style.color = '#030860'; 
+    });
+    reportElement.querySelectorAll<HTMLElement>('.text-muted-foreground').forEach(el => {
+        el.style.color = '#6b7280';
+    });
+
+
+    const canvas = await html2canvas(reportElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+    });
+
+    originalTextColors.forEach((color, el) => {
+        el.style.color = color;
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: [canvas.width, canvas.height]
+    });
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    pdf.save(`Proposta_${generatedProposal.clientCompany || generatedProposal.clientName}.pdf`);
+  };
+
 
   const billingCycleMap = {
     'monthly': 'mensal',
@@ -183,36 +228,68 @@ export default function ProposalGenerator() {
       {/* Preview Column */}
       <Card className="sticky top-8">
         <CardHeader>
-          <CardTitle>Pré-visualização da Proposta</CardTitle>
-          <CardDescription>É assim que seu cliente verá a proposta.</CardDescription>
+          <div className="flex justify-between items-center">
+            <div>
+                <CardTitle>Pré-visualização da Proposta</CardTitle>
+                <CardDescription>É assim que seu cliente verá a proposta.</CardDescription>
+            </div>
+            <Button onClick={handleDownloadPdf} disabled={!generatedProposal}>
+                <Download className="mr-2 h-4 w-4" />
+                Baixar PDF
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="min-h-[600px]">
           {generatedProposal ? (
-             <div className="p-6 border rounded-lg bg-background animate-fade-in">
-                <header className="border-b pb-4 mb-6">
-                    <h1 className="text-3xl font-bold text-primary">Proposta Comercial</h1>
-                    <p className="text-muted-foreground">Para: {generatedProposal.clientName}</p>
-                </header>
-                <div className="space-y-6">
-                    <p className="whitespace-pre-wrap">{generatedProposal.introduction}</p>
-                    <div className="space-y-4">
-                        <h2 className="text-xl font-semibold border-b pb-2">Escopo e Investimento</h2>
-                        {generatedProposal.services.map((service, i) => (
-                            <div key={i} className="p-4 rounded-md bg-muted/50">
-                                <h3 className="font-semibold text-primary">{service.name}</h3>
-                                <p className="text-sm text-muted-foreground mb-2">{service.description}</p>
-                                <p className="text-right font-bold text-lg">
-                                    R$ {service.price.toFixed(2)}
-                                    <span className="text-xs font-normal text-muted-foreground ml-1">/{billingCycleMap[service.billingCycle]}</span>
-                                </p>
-                            </div>
-                        ))}
+             <div ref={proposalPreviewRef} className="p-8 border rounded-lg bg-background animate-fade-in text-gray-800" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <header className="flex justify-between items-start border-b-2 border-primary pb-4 mb-8">
+                    <div>
+                        <h1 className="text-4xl font-bold text-primary">Proposta Comercial</h1>
+                        <p className="text-muted-foreground mt-1">CP Marketing Digital</p>
                     </div>
-                     <div className="text-right border-t pt-4 mt-6">
-                        <p className="text-muted-foreground">Total</p>
-                        <p className="text-3xl font-bold text-primary">R$ {generatedProposal.total.toFixed(2)}</p>
-                     </div>
-                </div>
+                    <div className="text-right">
+                        <p className="font-semibold">{generatedProposal.clientCompany}</p>
+                        <p className="text-sm text-muted-foreground">Para: {generatedProposal.clientName}</p>
+                        <p className="text-sm text-muted-foreground">Data: {new Date(`${generatedProposal.proposalDate}T00:00:00`).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                </header>
+                <main className="space-y-8">
+                    <section>
+                        <h2 className="text-2xl font-semibold text-primary mb-3">Introdução</h2>
+                        <p className="whitespace-pre-wrap text-sm leading-relaxed">{generatedProposal.introduction}</p>
+                    </section>
+                    <section>
+                        <h2 className="text-2xl font-semibold text-primary mb-4">Escopo dos Serviços e Investimento</h2>
+                        <div className="space-y-4">
+                            {generatedProposal.services.map((service, i) => (
+                                <div key={i} className="p-4 rounded-md bg-gray-50 border-l-4 border-primary">
+                                    <div className="flex justify-between items-center">
+                                      <h3 className="font-bold text-lg text-primary">{service.name}</h3>
+                                      <p className="font-bold text-lg">
+                                          R$ {service.price.toFixed(2)}
+                                          <span className="text-xs font-normal text-muted-foreground ml-1">/{billingCycleMap[service.billingCycle]}</span>
+                                      </p>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                     <section className="text-right border-t-2 border-primary pt-4 mt-8">
+                        <p className="text-muted-foreground">Total do Investimento</p>
+                        <p className="text-4xl font-bold text-primary">R$ {generatedProposal.total.toFixed(2)}</p>
+                     </section>
+                      <section>
+                        <h2 className="text-2xl font-semibold text-primary mb-3">Termos e Condições</h2>
+                        <div className="text-sm text-muted-foreground space-y-2">
+                          <p><strong>Cronograma:</strong> {generatedProposal.timeline}</p>
+                          <p><strong>Pagamento:</strong> {generatedProposal.terms}</p>
+                        </div>
+                    </section>
+                </main>
+                 <footer className="text-center mt-12 pt-4 border-t text-xs text-gray-400">
+                    <p>CP Marketing Digital | contato@cpmarketing.com.br</p>
+                </footer>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground bg-muted/30 rounded-lg p-8">
@@ -225,3 +302,5 @@ export default function ProposalGenerator() {
     </div>
   );
 }
+
+    
