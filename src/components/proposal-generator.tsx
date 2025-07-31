@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck } from 'lucide-react';
+import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
@@ -24,6 +24,7 @@ const serviceItemSchema = z.object({ value: z.string().min(1, "O item não pode 
 
 const proposalSchema = z.object({
   clientName: z.string().min(1, 'O nome do cliente é obrigatório.'),
+  clientLogoUrl: z.string().url("Por favor, insira uma URL válida.").optional().or(z.literal('')),
   partnershipDescription: z.string().min(1, 'A descrição da parceria é obrigatória.'),
   
   actionPlanPlatform: z.string().optional(),
@@ -70,6 +71,7 @@ export default function ProposalGenerator() {
     resolver: zodResolver(proposalSchema),
     defaultValues: {
       clientName: 'Bruxelas Grill',
+      clientLogoUrl: '',
       partnershipDescription: 'Nosso objetivo é transformar o Bruxelas Grill em um ponto de referência gastronômico em Goiânia, conectando-se de forma autêntica com a comunidade local e traduzindo a qualidade excepcional de seus pratos em uma presença digital forte e impactante.',
       actionPlanPlatform: 'INSTAGRAM',
       actionPlanFrequency: [{ value: '12 posts mensais' }, { value: '4 reels por mês' }, { value: 'Captação de conteúdo' }],
@@ -139,7 +141,7 @@ export default function ProposalGenerator() {
   };
   
   const formSections = [
-    { name: "Capa e Parceria", fields: ['clientName', 'partnershipDescription'], icon: Target },
+    { name: "Capa e Parceria", fields: ['clientName', 'clientLogoUrl', 'partnershipDescription'], icon: Target },
     { name: "Plano de Ação", fields: ['actionPlanPlatform', 'actionPlanFrequency', 'actionPlanFormat'], icon: ListChecks },
     { name: "Objetivos", fields: ['objectiveItems'], icon: Goal },
     { name: "Diferenciais", fields: ['differentialItems'], icon: Sparkles },
@@ -180,6 +182,7 @@ export default function ProposalGenerator() {
                     <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-2">
                       {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                      {section.fields.includes('clientLogoUrl') && <FormField control={form.control} name="clientLogoUrl" render={({ field }) => <FormItem><FormLabel>URL do Logo do Cliente (Opcional)</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('actionPlanPlatform') && <FormField control={form.control} name="actionPlanPlatform" render={({ field }) => <FormItem><FormLabel>Plataforma</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('actionPlanFrequency') && renderFieldArray(freqFields, removeFreq, appendFreq, "Frequência", "actionPlanFrequency")}
@@ -235,10 +238,21 @@ export default function ProposalGenerator() {
                             <div className="w-1/2 flex flex-col justify-center items-start p-12">
                                 <h2 className="text-5xl font-bold uppercase mb-6">Sobre a Parceria</h2>
                                 <p className="text-2xl font-light text-gray-300 border-l-4 border-[#FE5412] pl-6">{watchedValues.partnershipDescription}</p>
+                                {watchedValues.clientLogoUrl && (
+                                  <div className="mt-12 flex items-center gap-6">
+                                    <div className="relative w-28 h-28">
+                                       <Image src={watchedValues.clientLogoUrl} layout="fill" objectFit="contain" alt="Client Logo" />
+                                    </div>
+                                    <X className="h-8 w-8 text-[#FE5412]" />
+                                    <div className="relative w-28 h-28 flex items-center justify-center rounded-full bg-gray-800">
+                                       <p className="text-3xl font-bold text-[#FE5412]">CP</p>
+                                    </div>
+                                  </div>
+                                )}
                             </div>
                             <div className="w-1/2 h-full relative" style={{ clipPath: 'polygon(20% 0, 100% 0, 100% 100%, 0% 100%)' }}>
                                 <Image
-                                    src="https://placehold.co/800x1080.png"
+                                    src="https://placehold.co/960x1080.png"
                                     alt="Partnership"
                                     layout="fill"
                                     objectFit="cover"
