@@ -13,7 +13,7 @@ export default function TrafegoPage() {
             <h1 className="text-3xl font-bold tracking-tight">O que é Tráfego Pago (Anúncios)?</h1>
           </div>
           <p className="text-lg text-muted-foreground pl-16">
-             Tráfego pago é, de forma simples, criar anúncios na internet (Instagram, Facebook, Google) para atrair mais visitantes para o perfil ou site de uma empresa. Nosso trabalho é fazer com que esses anúncios apareçam para as pessoas certas - aquelas com maior potencial de se tornarem clientes - e, assim, acelerar as vendas de forma previsível.
+             <strong>Tráfego pago</strong> é, de forma simples, pagar para criar anúncios na internet e aparecer para mais pessoas. As principais plataformas são o <strong>Meta Ads</strong> (que inclui Facebook e Instagram) e o <strong>Google Ads</strong>. O oposto disso é o <strong>alcance orgânico</strong>, que é o número de pessoas que você alcança de graça, que hoje em dia é muito baixo. Nosso trabalho é fazer com que esses anúncios apareçam para as pessoas certas, gerando <strong>leads</strong> (contatos interessados) e acelerando as vendas de forma previsível.
           </p>
       </div>
       
@@ -25,7 +25,7 @@ export default function TrafegoPage() {
         <CardContent>
           <ul className="space-y-2 text-muted-foreground">
               <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span><strong>Anúncios Sem Retorno:</strong> A empresa já tentou "impulsionar" posts ou criar anúncios, mas sente que está apenas "queimando dinheiro" sem ver um retorno claro em vendas ou contatos.</span></li>
-              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span><strong>Concorrência Agressiva:</strong> Eles percebem que os concorrentes estão sempre aparecendo em anúncios e alcançando mais clientes, enquanto eles ficam para trás, dependendo apenas do alcance orgânico (que é muito baixo).</span></li>
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span><strong>Concorrência Agressiva:</strong> Eles percebem que os concorrentes estão sempre aparecendo em anúncios e alcançando mais clientes, enquanto eles ficam para trás, dependendo apenas do alcance orgânico.</span></li>
               <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span><strong>Precisa de Clientes Agora:</strong> O negócio precisa de um fluxo mais constante e previsível de novos clientes (leads) entrando em contato todos os dias, e não pode mais depender apenas de indicações.</span></li>
           </ul>
         </CardContent>
@@ -47,7 +47,7 @@ export default function TrafegoPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>O Que Entregamos? (Nosso Diferencial: Sistema de Aquisição)</CardTitle>
+          <CardTitle>O Que Entregamos? (Diferencial: Sistema de Aquisição)</CardTitle>
           <CardDescription>Não apenas apertamos o botão "impulsionar". Nós criamos um sistema de aquisição de clientes.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -70,21 +70,21 @@ export default function TrafegoPage() {
                 <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
                     <span className="font-semibold">Gestão e Otimização Diária</span>
-                    <p className="text-sm text-muted-foreground">Acompanhamos os anúncios todos os dias, vendo o que funciona melhor. Fazemos testes A/B (ex: anúncio A vs. anúncio B) e movemos o dinheiro para as campanhas que trazem mais resultado, garantindo o melhor uso do investimento.</p>
+                    <p className="text-sm text-muted-foreground">Acompanhamos os anúncios todos os dias, vendo o que funciona melhor. Fazemos <strong>Testes A/B</strong> (ex: comparamos o anúncio A com o anúncio B para ver qual vende mais) e movemos o dinheiro para as campanhas que trazem mais resultado.</p>
                 </div>
             </li>
             <li className="flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
-                    <span className="font-semibold">Pixel e Rastreamento (O 'dedo-duro')</span>
-                    <p className="text-sm text-muted-foreground">Instalamos códigos (como o Pixel do Facebook) no site do cliente. Isso nos permite "ver" quem visitou o site, quem comprou, e criar anúncios específicos para essas pessoas, aumentando muito a chance de conversão.</p>
+                    <span className="font-semibold">Pixel e Rastreamento (O 'espião')</span>
+                    <p className="text-sm text-muted-foreground">Instalamos códigos (como o <strong>Pixel do Facebook</strong>) no site do cliente. Isso nos permite "ver" quem visitou o site ou quem comprou. Com essa informação, podemos criar anúncios específicos para essas pessoas (remarketing), o que aumenta muito a chance de conversão.</p>
                 </div>
             </li>
             <li className="flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
                     <span className="font-semibold">Relatórios de Performance Focados em ROI</span>
-                    <p className="text-sm text-muted-foreground">Mostramos para o cliente, de forma clara, quanto foi investido, quantos clientes foram gerados e qual foi o custo por cada um. É um relatório focado em resultado de negócio, não em métricas confusas.</p>
+                    <p className="text-sm text-muted-foreground">Mostramos para o cliente, de forma clara, quanto foi investido e quanto retornou em vendas (o <strong>ROI - Retorno sobre o Investimento</strong>). É um relatório focado em resultado de negócio, não em métricas confusas.</p>
                 </div>
             </li>
           </ul>

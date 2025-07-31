@@ -13,7 +13,7 @@ export default function GestaoMidiasPage() {
             <h1 className="text-3xl font-bold tracking-tight">O que é a Gestão de Mídias Sociais?</h1>
           </div>
           <p className="text-lg text-muted-foreground pl-16">
-            Pense na Gestão de Mídias Sociais como ter uma equipe de marketing profissional cuidando do Instagram, Facebook e outras redes de uma empresa. Nosso trabalho é transformar o perfil, que muitas vezes é amador, em uma poderosa ferramenta que atrai seguidores que realmente compram e constrói a imagem da marca.
+            Pense na Gestão de Mídias Sociais como ter uma equipe de marketing profissional cuidando do <strong>Instagram, Facebook e outras redes</strong> de uma empresa. Nosso trabalho é transformar o perfil, que muitas vezes é amador, em uma poderosa ferramenta que <strong>atrai seguidores que realmente compram</strong> e constrói a imagem da marca.
           </p>
       </div>
       
@@ -47,30 +47,30 @@ export default function GestaoMidiasPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>O Que Entregamos? (Nosso Processo Estratégico)</CardTitle>
-          <CardDescription>Este é o passo a passo do nosso trabalho. Não vendemos "posts", vendemos um processo que gera resultados.</CardDescription>
+          <CardTitle>O Que Entregamos? (Diferencial: Processo Estratégico)</CardTitle>
+          <CardDescription>Não vendemos "posts", vendemos um processo que gera resultados. Este é o "jeito CP de fazer".</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-6 text-foreground">
             <li className="flex items-start gap-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">1</div>
                 <div>
-                    <span className="font-semibold text-lg">Diagnóstico e Planejamento (Nosso Diferencial)</span>
-                    <p className="text-sm text-muted-foreground">O primeiro passo nunca é criar posts. É fazer uma imersão no negócio do cliente. Estudamos o público, os concorrentes e os objetivos. A partir daí, criamos um plano de comunicação (linha editorial) que define o que vamos falar, como vamos falar e para quem vamos falar, garantindo que cada post tenha um propósito e esteja alinhado com os objetivos de negócio do cliente.</p>
+                    <span className="font-semibold text-lg">Diagnóstico e Planejamento Estratégico</span>
+                    <p className="text-sm text-muted-foreground">O primeiro passo nunca é criar posts. É fazer uma imersão no negócio do cliente. Estudamos o público, os concorrentes e os objetivos. A partir daí, criamos um plano de comunicação (a <strong>Linha Editorial</strong>), que é o mapa do que vamos falar, como e para quem, garantindo que cada post tenha um propósito.</p>
                 </div>
             </li>
              <li className="flex items-start gap-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">2</div>
                 <div>
                     <span className="font-semibold text-lg">Produção de Conteúdo de Alta Qualidade</span>
-                    <p className="text-sm text-muted-foreground">Nossa equipe cria o conteúdo do zero. Isso inclui o design das artes e a edição dos vídeos (usando softwares profissionais como Photoshop e Premiere) e também a criação dos textos (copywriting) que acompanham os posts, com técnicas para gerar engajamento e levar o seguidor a uma ação.</p>
+                    <p className="text-sm text-muted-foreground">Nossa equipe cria o conteúdo do zero. Isso inclui o design das artes e a edição dos vídeos, e também o <strong>Copywriting</strong>, que é a técnica de escrever os textos (legendas) de forma persuasiva, para gerar engajamento e levar o seguidor a uma ação (comprar, perguntar, etc.).</p>
                 </div>
             </li>
             <li className="flex items-start gap-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">3</div>
                 <div>
                     <span className="font-semibold text-lg">Gestão e Publicação Consistente</span>
-                    <p className="text-sm text-muted-foreground">Cuidamos de todo o processo: enviamos o conteúdo para aprovação do cliente e agendamos as publicações nos melhores dias e horários. Isso garante a consistência que é fundamental para o algoritmo e para manter a marca sempre presente na mente dos seguidores.</p>
+                    <p className="text-sm text-muted-foreground">Cuidamos de todo o processo: enviamos o conteúdo para aprovação do cliente e agendamos as publicações nos melhores dias e horários. Isso garante a consistência que é fundamental para o <strong>Algoritmo</strong> (as regras da rede social que decidem quem vê os posts) e para manter a marca sempre presente na mente dos seguidores.</p>
                 </div>
             </li>
             <li className="flex items-start gap-4">

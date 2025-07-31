@@ -13,7 +13,7 @@ export default function RdStationPage() {
             <h1 className="text-3xl font-bold tracking-tight">O que é a Implantação de RD Station?</h1>
           </div>
           <p className="text-lg text-muted-foreground pl-16">
-            Como parceiros oficiais da RD Station, nós implementamos as ferramentas de marketing e vendas líderes no Brasil. Na prática, criamos um sistema para <strong>organizar o processo comercial e automatizar a comunicação</strong>, fazendo com que o cliente pare de perder vendas por desorganização e falta de acompanhamento.
+            Como parceiros oficiais da RD Station, nós implementamos as ferramentas de marketing e vendas líderes no Brasil. Na prática, criamos um sistema para <strong>organizar o processo comercial e automatizar a comunicação</strong>, fazendo com que o cliente pare de perder vendas por desorganização e falta de acompanhamento. Explicando de forma simples: o <strong>CRM</strong> é uma agenda de vendas inteligente e a <strong>Automação de Marketing</strong> são "robôs" que conversam com os clientes automaticamente.
           </p>
       </div>
       
@@ -59,7 +59,7 @@ export default function RdStationPage() {
                   <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                   <div>
                       <span className="font-semibold">Fluxos de Automação</span>
-                      <p className="text-sm text-muted-foreground">Criamos "caminhos" automáticos. Ex: quando alguém baixa um e-book, o sistema envia uma sequência de e-mails educativos durante uma semana e, se a pessoa interagir, notifica o vendedor.</p>
+                      <p className="text-sm text-muted-foreground">Criamos "caminhos" automáticos. Ex: quando alguém baixa um e-book em uma <strong>Landing Page</strong> (página de captura), o sistema envia uma sequência de e-mails educativos durante uma semana e, se a pessoa interagir, notifica o vendedor.</p>
                   </div>
               </li>
               <li className="flex items-start gap-3">
