@@ -13,7 +13,7 @@ export default function PodcastPage() {
             <h1 className="text-3xl font-bold tracking-tight">Produção de Podcast</h1>
           </div>
           <p className="text-lg text-muted-foreground pl-16">
-            Oferecemos uma solução completa de produção de podcast, desde a gravação até a distribuição, para transformar seu conhecimento em um ativo de autoridade.
+            Oferecemos uma solução completa de produção de podcast, desde a gravação até a distribuição, para transformar seu conhecimento em um ativo de autoridade e reconhecimento.
           </p>
       </div>
       
