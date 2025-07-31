@@ -129,7 +129,7 @@ export default function Home() {
       
       <div className="w-full max-w-6xl text-center mb-12 mt-12 sm:mt-8">
         <h1 className="text-5xl font-bold tracking-tight text-primary sm:text-6xl">
-          Bem-vindo à Central Mödus
+          Bem-vindo à Central CP Marketing
         </h1>
         <p className="mt-6 text-lg text-muted-foreground max-w-3xl mx-auto">
           Navegue pelas abas abaixo para acessar as ferramentas e recursos específicos do seu setor de atuação.

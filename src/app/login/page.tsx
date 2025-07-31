@@ -6,7 +6,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-primary">
-            Central Mödus
+            CP Marketing
           </h1>
           <p className="mt-2 text-lg text-muted-foreground">
             Acesse sua conta para continuar.
