@@ -18,19 +18,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-   async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Content-Security-Policy',
-            value: "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' *.vercel-insights.com us-assets.i.posthog.com;",
-          },
-        ],
-      },
-    ];
-  },
 };
 
 export default nextConfig;
