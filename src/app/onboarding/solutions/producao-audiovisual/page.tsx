@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Video, CheckCircle, UserCheck, AlertTriangle, Clapperboard, Camera, Plane } from "lucide-react";
+import { Video, CheckCircle, UserCheck, AlertTriangle, Clapperboard, Camera, Plane, PenSquare, GalleryVertical, Tv, Wand } from "lucide-react";
 
 export default function ProducaoAudiovisualPage() {
   return (
@@ -16,6 +16,31 @@ export default function ProducaoAudiovisualPage() {
             É o nosso serviço mais completo de produção de vídeo. Aqui, oferecemos soluções ponta a ponta para criar vídeos de alto impacto que elevam a percepção de valor da marca. Isso pode incluir desde gravações em estúdio profissional, captações externas no local do cliente, até imagens aéreas com drone para mostrar a grandiosidade de um projeto.
           </p>
       </div>
+
+       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Wand /> Definições Básicas</CardTitle>
+          <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><PenSquare className="h-4 w-4 text-primary" /> Roteiro / Storyboard</h3>
+            <p className="text-sm text-muted-foreground pl-6">É a "história em quadrinhos do filme". Antes de gravar, desenhamos e escrevemos cada cena. Isso garante que a história seja contada da melhor forma, que a mensagem seja clara e que nada importante fique de fora no dia da gravação.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Tv className="h-4 w-4 text-primary" /> Captação em Estúdio</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o nosso "cenário perfeito e controlado". Usamos um estúdio profissional com iluminação e som impecáveis. É ideal para vídeos onde o foco total é na pessoa que está falando, sem distrações, transmitindo máxima credibilidade.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Camera className="h-4 w-4 text-primary" /> Captação em Locação</h3>
+            <p className="text-sm text-muted-foreground pl-6">Aqui, o "cenário é o próprio negócio do cliente". Vamos até a empresa, clínica ou loja para gravar. É a melhor forma de mostrar a realidade, a equipe em ação e o ambiente, gerando autenticidade e confiança.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><GalleryVertical className="h-4 w-4 text-primary" /> Motion Graphics</h3>
+            <p className="text-sm text-muted-foreground pl-6">São os "efeitos especiais" que dão vida aos vídeos. Sabe aquelas letras e gráficos que aparecem na tela de forma animada? Isso é Motion Graphics. Usamos para destacar informações importantes e deixar o vídeo mais dinâmico e profissional.</p>
+          </div>
+        </CardContent>
+      </Card>
       
       <Card>
         <CardHeader>

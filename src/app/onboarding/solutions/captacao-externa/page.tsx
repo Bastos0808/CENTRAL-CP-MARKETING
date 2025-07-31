@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Camera, CheckCircle, UserCheck, AlertTriangle, Video, Clapperboard, Users, Lightbulb } from "lucide-react";
+import { Camera, CheckCircle, UserCheck, AlertTriangle, Video, Clapperboard, Users, Lightbulb, Film, Map, Bot, FileVideo } from "lucide-react";
 
 export default function CaptacaoExternaPage() {
   return (
@@ -17,6 +17,31 @@ export default function CaptacaoExternaPage() {
           </p>
       </div>
       
+       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Lightbulb /> Definições Básicas</CardTitle>
+          <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Map className="h-4 w-4 text-primary" /> Pré-Produção / Roteiro</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o "mapa da gravação". Antes mesmo de pensar em ligar a câmera, nós planejamos cada detalhe: o que será filmado, quem vai aparecer, o que será dito. Isso garante que o tempo da gravação seja 100% aproveitado e que o resultado final conte a história certa.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Clapperboard className="h-4 w-4 text-primary" /> Direção de Cena</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o nosso "papel de diretor de cinema". Durante a gravação, nós guiamos o cliente, indicando a melhor forma de agir, o que falar e como se posicionar para a câmera. Isso garante um resultado natural e profissional, mesmo para quem nunca gravou um vídeo na vida.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Pós-Produção / Edição</h3>
+            <p className="text-sm text-muted-foreground pl-6">É "a mágica da edição". Depois que a gravação termina, pegamos todo o material bruto e o transformamos em um vídeo incrível. Cortamos as melhores partes, melhoramos as cores, adicionamos música, legendas e o logo da empresa. É aqui que o vídeo ganha vida.</p>
+          </div>
+           <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><FileVideo className="h-4 w-4 text-primary" /> Vídeo Institucional</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o "cartão de visitas" da empresa em formato de vídeo. É um material curto e de alto impacto que apresenta a empresa, sua missão, seus valores e seus diferenciais. Perfeito para colocar na página principal do site ou fixar nas redes sociais.</p>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><UserCheck /> Para Quem é o Cliente Ideal?</CardTitle>
