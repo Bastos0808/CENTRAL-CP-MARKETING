@@ -801,7 +801,9 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                         >
                             {isUploading ? (
                                 <div className='w-full px-8 space-y-2'>
-                                    <Progress value={uploadProgress} />
+                                    <div className="w-full bg-muted rounded-full h-2.5">
+                                      <div className="bg-primary h-2.5 rounded-full" style={{ width: `${uploadProgress}%` }}></div>
+                                    </div>
                                     <p className="text-sm text-center text-muted-foreground">Enviando... {Math.round(uploadProgress)}%</p>
                                 </div>
                             ) : (
