@@ -1,7 +1,11 @@
 
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Lightbulb, Megaphone, Mic, Palette, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useOnboarding } from "../layout";
 
 
 const solutionsData = [
@@ -33,6 +37,13 @@ const solutionsData = [
 
 
 export default function SolutionsPage() {
+    const { setStepCompleted } = useOnboarding();
+
+    useEffect(() => {
+        // Esta é uma página de menu, então consideramos a etapa completa ao carregar.
+        setStepCompleted(true);
+    }, [setStepCompleted]);
+    
     return (
         <div className="space-y-6">
             <p className="text-lg text-muted-foreground">

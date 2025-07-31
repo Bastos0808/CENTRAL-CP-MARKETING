@@ -3,6 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Target, Eye, Gem, CheckCircle, HeartHandshake, Lightbulb, Search, Trophy, Smile } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useEffect, useState } from "react";
+import { useOnboarding } from "../layout";
 
 
 const valuesData = [
@@ -38,15 +40,31 @@ const valuesData = [
   }
 ];
 
+const accordionItems = ['mission', 'vision', 'values'];
 
 export default function CulturePage() {
+    const { setStepCompleted } = useOnboarding();
+    const [openedItems, setOpenedItems] = useState<Set<string>>(new Set());
+
+    const handleValueChange = (values: string[]) => {
+        const newOpenedItems = new Set([...openedItems, ...values]);
+        setOpenedItems(newOpenedItems);
+    };
+
+    useEffect(() => {
+        // Quando o número de itens abertos for igual ao total de itens, a etapa é concluída.
+        if (openedItems.size === accordionItems.length) {
+            setStepCompleted(true);
+        }
+    }, [openedItems, setStepCompleted]);
+
   return (
     <div className="space-y-6">
         <p className="text-lg text-muted-foreground">
             Para vender com convicção, você precisa entender o 'porquê' do nosso trabalho. A cultura da CP Marketing é a base de tudo que fazemos. Explore cada pilar abaixo para entender nossa essência.
         </p>
 
-        <Accordion type="multiple" className="w-full space-y-4" defaultValue={['mission']}>
+        <Accordion type="multiple" className="w-full space-y-4" onValueChange={handleValueChange}>
             {/* Mission */}
             <AccordionItem value="mission">
                 <AccordionTrigger>
@@ -112,4 +130,3 @@ export default function CulturePage() {
     </div>
   );
 }
-

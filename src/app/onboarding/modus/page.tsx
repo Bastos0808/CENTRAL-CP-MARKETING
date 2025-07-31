@@ -1,8 +1,20 @@
 
+
+"use client";
+
 import MindMap from "@/components/mind-map";
+import { useEffect } from "react";
+import { useOnboarding } from "../layout";
 
 
 export default function ModusPage() {
+    const { setStepCompleted } = useOnboarding();
+
+    useEffect(() => {
+        // Considera a etapa completa assim que o usuário chega nela
+        setStepCompleted(true);
+    }, [setStepCompleted]);
+
   return (
     <div className="space-y-6">
         <p className="text-lg text-muted-foreground">

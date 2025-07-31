@@ -3,10 +3,11 @@
 
 import { Button } from "@/components/ui/button";
 import { usePathname } from "next/navigation";
-import { ArrowLeft, ArrowRight, Home, Wand2, CheckCircle, Circle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Home, Wand2, CheckCircle, Circle, Lock, Unlock } from "lucide-react";
 import Link from "next/link";
 import { BackButton } from "@/components/ui/back-button";
 import { cn } from "@/lib/utils";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const steps = [
     { path: "/onboarding/culture", name: "Cultura" },
@@ -16,14 +17,41 @@ const steps = [
     { path: "/onboarding/modus", name: "Mödus" },
 ];
 
+interface OnboardingContextType {
+    isStepCompleted: boolean;
+    setStepCompleted: (isCompleted: boolean) => void;
+}
+
+const OnboardingContext = createContext<OnboardingContextType | null>(null);
+
+export const useOnboarding = () => {
+    const context = useContext(OnboardingContext);
+    if (!context) {
+        throw new Error("useOnboarding must be used within an OnboardingLayout");
+    }
+    return context;
+}
+
 export default function OnboardingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const [isStepCompleted, setStepCompleted] = useState(false);
 
   const isWelcomePage = pathname === '/onboarding';
+
+  // Reinicia o estado de conclusão sempre que a rota muda
+  useEffect(() => {
+    const isIcpOrProcessSubpage = pathname.startsWith('/onboarding/icp/') || pathname.startsWith('/onboarding/process/');
+    if (isIcpOrProcessSubpage || pathname === '/onboarding/solutions') {
+        setStepCompleted(true);
+    } else {
+        setStepCompleted(false);
+    }
+  }, [pathname]);
+
   if (isWelcomePage) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center p-4 bg-background/30">
@@ -33,7 +61,6 @@ export default function OnboardingLayout({
   }
 
   const findCurrentStepIndex = (currentPath: string) => {
-    // Find the step that is the longest prefix of the current path
     let bestMatch = -1;
     let maxLength = -1;
 
@@ -54,80 +81,83 @@ export default function OnboardingLayout({
   const nextStep = currentIndex < steps.length - 1 ? steps[currentIndex + 1] : null;
 
   return (
-    <div className="flex flex-col min-h-screen p-4 sm:p-6 md:p-8">
-        <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col">
+    <OnboardingContext.Provider value={{ isStepCompleted, setStepCompleted }}>
+        <div className="flex flex-col min-h-screen p-4 sm:p-6 md:p-8">
+            <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col">
 
-            <div className="flex justify-start">
-               <BackButton />
+                <div className="flex justify-start">
+                   <BackButton />
+                </div>
+                
+                <header className="my-8 text-center">
+                    <nav className="flex justify-center items-center gap-4 sm:gap-8">
+                        {steps.map((step, index) => {
+                            const isActive = currentIndex === index;
+                            const isCompleted = currentIndex > index;
+
+                            return (
+                            <Link href={step.path} key={step.name} className="flex flex-col items-center gap-2 group">
+                                <div className={cn(
+                                    "h-8 w-8 rounded-full flex items-center justify-center border-2 transition-all",
+                                    isActive ? "border-primary bg-primary/10" : "border-muted-foreground/30 group-hover:border-primary/50",
+                                    isCompleted ? "border-green-500 bg-green-500/10 text-green-500" : ""
+                                )}>
+                                    {isCompleted ? <CheckCircle className="h-5 w-5"/> : <Circle className={cn("h-3 w-3 transition-all", isActive ? "text-primary fill-current" : "text-muted-foreground/30 group-hover:text-primary/50")}/>}
+                                </div>
+                                <span className={cn(
+                                    "text-xs sm:text-sm font-medium transition-all",
+                                    isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary",
+                                    isCompleted ? "text-green-500" : ""
+                                )}>
+                                    {step.name}
+                                </span>
+                            </Link>
+                            )
+                        })}
+                    </nav>
+                </header>
+                
+                <main className="flex-1 flex flex-col">{children}</main>
+
+                <footer className="mt-12 border-t pt-6 flex items-center justify-between">
+                    <div>
+                        {prevStep ? (
+                            <Link href={prevStep.path} passHref>
+                                <Button variant="outline">
+                                    <ArrowLeft className="mr-2 h-4 w-4" />
+                                    Anterior
+                                </Button>
+                            </Link>
+                        ) : (
+                              <Link href="/onboarding" passHref>
+                                <Button variant="outline">
+                                    <Home className="mr-2 h-4 w-4" />
+                                    Início do Onboarding
+                                </Button>
+                            </Link>
+                        )}
+                    </div>
+                    <div>
+                        {nextStep ? (
+                            <Button asChild disabled={!isStepCompleted}>
+                                <Link href={nextStep.path}>
+                                    {isStepCompleted ? <Unlock className="mr-2 h-4 w-4" /> : <Lock className="mr-2 h-4 w-4" />}
+                                    Próximo
+                                    <ArrowRight className="ml-2 h-4 w-4" />
+                                </Link>
+                            </Button>
+                        ) : (
+                            <Button asChild disabled={!isStepCompleted}>
+                                <Link href="/ferramentas">
+                                    Ir para Ferramentas
+                                    <Wand2 className="ml-2 h-4 w-4" />
+                                </Link>
+                            </Button>
+                        )}
+                    </div>
+                </footer>
             </div>
-            
-            <header className="my-8 text-center">
-                <nav className="flex justify-center items-center gap-4 sm:gap-8">
-                    {steps.map((step, index) => {
-                        const isActive = currentIndex === index;
-                        const isCompleted = currentIndex > index;
-
-                        return (
-                        <Link href={step.path} key={step.name} className="flex flex-col items-center gap-2 group">
-                            <div className={cn(
-                                "h-8 w-8 rounded-full flex items-center justify-center border-2 transition-all",
-                                isActive ? "border-primary bg-primary/10" : "border-muted-foreground/30 group-hover:border-primary/50",
-                                isCompleted ? "border-green-500 bg-green-500/10 text-green-500" : ""
-                            )}>
-                                {isCompleted ? <CheckCircle className="h-5 w-5"/> : <Circle className={cn("h-3 w-3 transition-all", isActive ? "text-primary fill-current" : "text-muted-foreground/30 group-hover:text-primary/50")}/>}
-                            </div>
-                            <span className={cn(
-                                "text-xs sm:text-sm font-medium transition-all",
-                                isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary",
-                                isCompleted ? "text-green-500" : ""
-                            )}>
-                                {step.name}
-                            </span>
-                        </Link>
-                        )
-                    })}
-                </nav>
-            </header>
-            
-            <main className="flex-1 flex flex-col">{children}</main>
-
-            <footer className="mt-12 border-t pt-6 flex items-center justify-between">
-                <div>
-                    {prevStep ? (
-                        <Link href={prevStep.path} passHref>
-                            <Button variant="outline">
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Anterior
-                            </Button>
-                        </Link>
-                    ) : (
-                          <Link href="/onboarding" passHref>
-                            <Button variant="outline">
-                                <Home className="mr-2 h-4 w-4" />
-                                Início do Onboarding
-                            </Button>
-                        </Link>
-                    )}
-                </div>
-                <div>
-                    {nextStep ? (
-                        <Link href={nextStep.path} passHref>
-                            <Button>
-                                Próximo
-                                <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
-                        </Link>
-                    ) : (
-                        <Link href="/ferramentas" passHref>
-                            <Button>
-                                Ir para Ferramentas
-                                <Wand2 className="ml-2 h-4 w-4" />
-                            </Button>
-                        </Link>
-                    )}
-                </div>
-            </footer>
         </div>
-    </div>
+    </OnboardingContext.Provider>
   );
 }

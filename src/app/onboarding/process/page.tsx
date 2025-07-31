@@ -1,7 +1,11 @@
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckSquare, Search, Phone, Calendar, Mail, Network, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useOnboarding } from "../layout";
 
 const processSteps = [
     {
@@ -12,7 +16,7 @@ const processSteps = [
     },
     {
         title: "Fase 2: Contato Direto",
-        icon: Mail,
+        icon: Phone,
         description: "O momento da abordagem. Como enviar uma mensagem personalizada que desperta curiosidade.",
         href: "/onboarding/process/contact"
     },
@@ -25,6 +29,13 @@ const processSteps = [
 ];
 
 export default function ProcessPage() {
+    const { setStepCompleted } = useOnboarding();
+
+    useEffect(() => {
+        // Esta é uma página de menu, então consideramos a etapa completa ao carregar.
+        setStepCompleted(true);
+    }, [setStepCompleted]);
+
     return (
         <div className="space-y-6">
             <p className="text-lg text-muted-foreground">

@@ -1,7 +1,11 @@
 
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, MapPin, DollarSign, Target, Milestone, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useOnboarding } from "../layout";
 
 const icpCriteria = [
     {
@@ -37,6 +41,13 @@ const icpCriteria = [
 ];
 
 export default function IcpPage() {
+    const { setStepCompleted } = useOnboarding();
+
+    useEffect(() => {
+        // Esta é uma página de menu, então consideramos a etapa completa ao carregar.
+        setStepCompleted(true);
+    }, [setStepCompleted]);
+
   return (
     <div className="space-y-6">
         <p className="text-lg text-muted-foreground">
