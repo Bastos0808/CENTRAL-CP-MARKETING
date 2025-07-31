@@ -23,6 +23,7 @@ const researchSteps = [
         title: "Identificação do Decisor",
         description: "Confirme se o contato associado ao lead é a pessoa certa para contatar. Geralmente é o Sócio, CEO, Diretor de Marketing ou Gerente da área. Contatar a pessoa errada pode encerrar a oportunidade antes mesmo de começar.",
         instructions: [
+            "<strong>Fonte de Leads:</strong> Semanalmente, fornecemos entre 100 a 200 leads de empresas que buscamos em nossa ferramenta de prospecção (Big Data). Esses leads são inseridos diretamente no RD CRM para você trabalhar.",
             "<strong>Acesse o RD CRM:</strong> Esta é sua principal fonte de informações. Os leads são enviados para o CRM pela nossa ferramenta de prospecção, o Exact Spotter.",
             "<strong>Localize o Lead:</strong> Encontre a empresa e o contato que você irá trabalhar.",
             "<strong>Verifique o Cargo:</strong> Analise os dados do contato no CRM para identificar seu cargo. Busque por títulos como 'Sócio(a)', 'CEO', 'Diretor(a)', 'Gerente de Marketing'.",
