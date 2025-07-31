@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -62,6 +62,12 @@ export default function Home() {
         description: "Recursos para potencializar sua prospecção.",
         href: "/ferramentas",
         icon: Wand2
+      },
+      {
+        title: "Gerador de Propostas",
+        description: "Crie propostas comerciais modernas e personalizadas.",
+        href: "/gerador-propostas",
+        icon: FileSignature
       }
   ]
 
