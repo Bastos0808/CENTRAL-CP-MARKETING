@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Megaphone, CheckCircle, UserCheck, AlertTriangle } from "lucide-react";
+import { Megaphone, CheckCircle, UserCheck, AlertTriangle, BookOpen } from "lucide-react";
 
 export default function TrafegoPage() {
   return (
@@ -13,10 +13,39 @@ export default function TrafegoPage() {
             <h1 className="text-3xl font-bold tracking-tight">O que é Tráfego Pago (Anúncios)?</h1>
           </div>
           <p className="text-lg text-muted-foreground pl-16">
-             <strong>Tráfego pago</strong> é, de forma simples, pagar para criar anúncios na internet e aparecer para mais pessoas. As principais plataformas são o <strong>Meta Ads</strong> (que inclui Facebook e Instagram) e o <strong>Google Ads</strong>. O oposto disso é o <strong>alcance orgânico</strong>, que é o número de pessoas que você alcança de graça, que hoje em dia é muito baixo. Nosso trabalho é fazer com que esses anúncios apareçam para as pessoas certas, gerando <strong>leads</strong> (contatos interessados) e acelerando as vendas de forma previsível.
+             <strong>Tráfego pago</strong> é, de forma simples, pagar para criar anúncios na internet e aparecer para mais pessoas. Nosso trabalho é fazer com que esses anúncios apareçam para as pessoas certas, gerando contatos interessados e acelerando as vendas de forma previsível.
           </p>
       </div>
       
+       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
+          <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <h3 className="font-semibold text-foreground">Meta Ads (Facebook e Instagram Ads)</h3>
+            <p className="text-sm text-muted-foreground">A plataforma para criar anúncios que aparecem no Instagram, Facebook, Messenger e WhatsApp. Ideal para gerar desejo e alcançar clientes com base em seus interesses e comportamentos.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">Google Ads</h3>
+            <p className="text-sm text-muted-foreground">A plataforma de anúncios do Google. Aparecemos para pessoas que já estão procurando ativamente por um produto ou serviço, geralmente no topo dos resultados de busca.</p>
+          </div>
+           <div>
+            <h3 className="font-semibold text-foreground">Leads</h3>
+            <p className="text-sm text-muted-foreground">Pessoas que demonstraram interesse no seu produto ou serviço ao interagir com um anúncio (clicando, enviando uma mensagem, preenchendo um formulário). São potenciais clientes.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">ROI (Retorno sobre o Investimento)</h3>
+            <p className="text-sm text-muted-foreground">A métrica mais importante: mostra quanto dinheiro a empresa ganhou para cada real que investiu em anúncios. É a prova de que o marketing está funcionando.</p>
+          </div>
+           <div>
+            <h3 className="font-semibold text-foreground">Pixel de Rastreamento</h3>
+            <p className="text-sm text-muted-foreground">Um pequeno código que instalamos no site do cliente. Funciona como um "espião" que nos diz quais usuários visitaram o site, permitindo-nos criar anúncios específicos para eles (remarketing).</p>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><UserCheck /> Para Quem é o Cliente Ideal?</CardTitle>
@@ -84,7 +113,7 @@ export default function TrafegoPage() {
                 <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
                     <span className="font-semibold">Relatórios de Performance Focados em ROI</span>
-                    <p className="text-sm text-muted-foreground">Mostramos para o cliente, de forma clara, quanto foi investido e quanto retornou em vendas (o <strong>ROI - Retorno sobre o Investimento</strong>). É um relatório focado em resultado de negócio, não em métricas confusas.</p>
+                    <p className="text-sm text-muted-foreground">Mostramos para o cliente, de forma clara, quanto foi investido e quanto retornou em vendas (o <strong>ROI</strong>). É um relatório focado em resultado de negócio, não em métricas confusas.</p>
                 </div>
             </li>
           </ul>

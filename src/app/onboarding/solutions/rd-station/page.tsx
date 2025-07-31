@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Network, CheckCircle, UserCheck, AlertTriangle, BadgeCheck, Filter, LineChart, Target, Bot } from "lucide-react";
+import { Network, CheckCircle, UserCheck, AlertTriangle, BadgeCheck, Filter, LineChart, Target, Bot, BookOpen } from "lucide-react";
 
 export default function RdStationPage() {
   return (
@@ -13,9 +13,30 @@ export default function RdStationPage() {
             <h1 className="text-3xl font-bold tracking-tight">O que é a Implantação de RD Station?</h1>
           </div>
           <p className="text-lg text-muted-foreground pl-16">
-            Como parceiros oficiais da RD Station, nós implementamos as ferramentas de marketing e vendas líderes no Brasil. Na prática, criamos um sistema para <strong>organizar o processo comercial e automatizar a comunicação</strong>, fazendo com que o cliente pare de perder vendas por desorganização e falta de acompanhamento. Explicando de forma simples: o <strong>CRM</strong> é uma agenda de vendas inteligente e a <strong>Automação de Marketing</strong> são "robôs" que conversam com os clientes automaticamente.
+            Como parceiros oficiais da RD Station, nós implementamos as ferramentas de marketing e vendas líderes no Brasil. Na prática, criamos um sistema para <strong>organizar o processo comercial e automatizar a comunicação</strong>, fazendo com que o cliente pare de perder vendas por desorganização e falta de acompanhamento.
           </p>
       </div>
+
+       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
+          <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <h3 className="font-semibold text-foreground">CRM (Customer Relationship Management)</h3>
+            <p className="text-sm text-muted-foreground">Pense nisso como uma "agenda de vendas inteligente". É uma ferramenta para organizar todos os contatos e negociações em andamento, garantindo que nenhum cliente seja esquecido.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">Automação de Marketing</h3>
+            <p className="text-sm text-muted-foreground">São "robôs" que programamos para conversar com os clientes automaticamente, enviando e-mails ou mensagens para aquecer o contato e prepará-lo para a compra.</p>
+          </div>
+           <div>
+            <h3 className="font-semibold text-foreground">Landing Page</h3>
+            <p className="text-sm text-muted-foreground">Uma página de internet simples, focada 100% em uma única ação, como preencher um formulário para receber um material ou se inscrever em um evento. É a principal porta de entrada para a automação.</p>
+          </div>
+        </CardContent>
+      </Card>
       
       <Card>
         <CardHeader>
@@ -59,7 +80,7 @@ export default function RdStationPage() {
                   <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                   <div>
                       <span className="font-semibold">Fluxos de Automação</span>
-                      <p className="text-sm text-muted-foreground">Criamos "caminhos" automáticos. Ex: quando alguém baixa um e-book em uma <strong>Landing Page</strong> (página de captura), o sistema envia uma sequência de e-mails educativos durante uma semana e, se a pessoa interagir, notifica o vendedor.</p>
+                      <p className="text-sm text-muted-foreground">Criamos "caminhos" automáticos. Ex: quando alguém baixa um e-book em uma <strong>Landing Page</strong>, o sistema envia uma sequência de e-mails educativos durante uma semana e, se a pessoa interagir, notifica o vendedor.</p>
                   </div>
               </li>
               <li className="flex items-start gap-3">

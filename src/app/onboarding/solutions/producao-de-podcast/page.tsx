@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, CheckCircle, UserCheck, AlertTriangle, Youtube } from "lucide-react";
+import { Mic, CheckCircle, UserCheck, AlertTriangle, Youtube, BookOpen } from "lucide-react";
 
 export default function PodcastPage() {
   return (
@@ -13,9 +13,26 @@ export default function PodcastPage() {
             <h1 className="text-3xl font-bold tracking-tight">O que é a Produção de Podcast?</h1>
           </div>
           <p className="text-lg text-muted-foreground pl-16">
-            Nosso serviço de podcast é uma solução completa para transformar o conhecimento de um especialista em um programa profissional. Cuidamos de tudo, da gravação em nosso estúdio à <strong>distribuição</strong> (publicação no Spotify, YouTube, etc.). O cliente só precisa se preocupar com o conteúdo, o resto é com a gente. É a forma mais eficaz de construir autoridade e se conectar com o público.
+            Nosso serviço de podcast é uma solução completa para transformar o conhecimento de um especialista em um programa profissional. Cuidamos de tudo, da gravação em nosso estúdio à distribuição. O cliente só precisa se preocupar com o conteúdo, o resto é com a gente. É a forma mais eficaz de construir autoridade e se conectar com o público.
           </p>
       </div>
+
+       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
+          <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <h3 className="font-semibold text-foreground">Nuggets ou Cortes</h3>
+            <p className="text-sm text-muted-foreground">São os melhores momentos, as "pílulas de ouro" de um episódio longo. Nós os editamos como vídeos curtos e legendados, perfeitos para viralizar no Reels, Shorts e TikTok.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">Distribuição</h3>
+            <p className="text-sm text-muted-foreground">É o ato de publicar o podcast em todas as plataformas importantes, como Spotify (áudio), YouTube (vídeo), Apple Podcasts e outras, para que ele possa ser encontrado por todos.</p>
+          </div>
+        </CardContent>
+      </Card>
       
       <Card>
         <CardHeader>
@@ -71,7 +88,7 @@ export default function PodcastPage() {
                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">3</div>
                 <div>
                     <span className="font-semibold text-lg">Criação de Cortes Estratégicos (Nuggets)</span>
-                    <p className="text-sm text-muted-foreground">Sabemos que pouca gente assiste a um vídeo de 1 hora. Por isso, pegamos os melhores momentos de cada episódio e os transformamos em vídeos curtos e legendados (os <strong>"nuggets"</strong> ou <strong>"cortes"</strong>), perfeitos para postar no Reels, Shorts e TikTok, multiplicando o alcance do conteúdo.</p>
+                    <p className="text-sm text-muted-foreground">Sabemos que pouca gente assiste a um vídeo de 1 hora. Por isso, pegamos os melhores momentos de cada episódio e os transformamos em vídeos curtos e legendados (os <strong>"nuggets"</strong>), perfeitos para postar no Reels, Shorts e TikTok, multiplicando o alcance do conteúdo.</p>
                 </div>
             </li>
             <li className="flex items-start gap-4">
