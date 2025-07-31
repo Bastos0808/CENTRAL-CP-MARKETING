@@ -10,42 +10,45 @@ export default function CaptacaoExternaPage() {
              <div className="bg-primary/10 p-3 rounded-full">
                 <Camera className="h-10 w-10 text-primary" />
              </div>
-            <h1 className="text-3xl font-bold tracking-tight">Captação de Conteúdo Externo</h1>
+            <h1 className="text-3xl font-bold tracking-tight">O que é a Captação de Conteúdo Externo?</h1>
           </div>
           <p className="text-lg text-muted-foreground pl-16">
-            Levamos nossa equipe e equipamentos profissionais até o seu negócio em Goiânia para produzir conteúdo audiovisual de alta qualidade, mostrando a realidade da sua operação.
+            É quando levamos nossa equipe de filmagem e equipamentos profissionais até a empresa do cliente (em Goiânia). O objetivo é produzir vídeos e fotos de alta qualidade que mostrem a realidade da operação, os bastidores, o ambiente e os produtos em ação. É a melhor forma de gerar confiança e mostrar o que torna o negócio único.
           </p>
       </div>
       
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><UserCheck /> Para Quem é?</CardTitle>
+          <CardTitle className="flex items-center gap-2"><UserCheck /> Para Quem é o Cliente Ideal?</CardTitle>
+           <CardDescription>Este serviço é perfeito para negócios que se encontram nestas situações:</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-muted-foreground">
-              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Empresas que querem mostrar seus bastidores, processos e cultura.</span></li>
-              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Negócios (clínicas, restaurantes, lojas) que precisam de imagens e vídeos profissionais do seu espaço físico e produtos.</span></li>
-              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span>Clientes que desejam criar vídeos institucionais, depoimentos de clientes ou vídeos de vendas mais elaborados.</span></li>
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span><strong>Querem Humanizar a Marca:</strong> Empresas que desejam mostrar as pessoas por trás do negócio, seus processos e a cultura da empresa para criar uma conexão mais forte com o público.</span></li>
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span><strong>Negócios Físicos:</strong> Clínicas, restaurantes, lojas ou academias que precisam de imagens e vídeos profissionais para mostrar a qualidade de seu espaço, equipamentos e atendimento.</span></li>
+              <li className="flex items-start gap-2"><CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" /><span><strong>Precisam de Prova Social:</strong> Clientes que querem gravar depoimentos de seus próprios clientes em seu ambiente de trabalho ou vídeos de vendas mais elaborados e autênticos.</span></li>
           </ul>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><AlertTriangle /> Ganchos de Venda (Dores)</CardTitle>
+          <CardTitle className="flex items-center gap-2"><AlertTriangle /> Ganchos de Venda (As Dores que Resolvemos)</CardTitle>
+          <CardDescription>Use estas perguntas para fazer o prospect sentir a dor que a nossa solução cura.</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-muted-foreground list-disc pl-5">
-            <li>"Quer mostrar o que acontece por trás das câmeras e gerar mais conexão com seu público?"</li>
-            <li>"Sente que as fotos e vídeos do seu negócio não transmitem a qualidade que você oferece?"</li>
-            <li>"Precisa de um vídeo profissional para apresentar sua empresa ou um novo produto?"</li>
+            <li>"Você sente que seu público gostaria de ver mais dos bastidores e de como as coisas realmente funcionam aí na empresa?"</li>
+            <li>"As fotos e vídeos que você tira com o celular conseguem transmitir o verdadeiro padrão de qualidade do seu espaço/serviço?"</li>
+            <li>"Já pensou no impacto de ter um vídeo profissional apresentando sua empresa, gravado aí mesmo no seu ambiente?"</li>
           </ul>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>O Que Entregamos?</CardTitle>
+          <CardTitle>O Que Entregamos? (Nosso Processo)</CardTitle>
+          <CardDescription>Transformamos o ambiente do cliente em um set de filmagem profissional.</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-6 text-foreground">
@@ -53,28 +56,28 @@ export default function CaptacaoExternaPage() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">1</div>
                 <div>
                     <span className="font-semibold text-lg">Pré-Produção e Roteiro</span>
-                    <p className="text-sm text-muted-foreground">Planejamos a gravação junto com o cliente, definindo os objetivos, o roteiro, os locais e a logística necessária para otimizar o dia da captação.</p>
+                    <p className="text-sm text-muted-foreground">Antes de ligar a câmera, planejamos tudo. Junto com o cliente, definimos o que será gravado, quem participará e qual a mensagem principal. Criamos um roteiro para otimizar o tempo no dia da gravação e garantir que nenhum detalhe importante seja esquecido.</p>
                 </div>
             </li>
              <li className="flex items-start gap-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">2</div>
                 <div>
                     <span className="font-semibold text-lg">Produção com Equipe Profissional</span>
-                    <p className="text-sm text-muted-foreground">Nossa equipe (filmmaker) vai até o local do cliente em Goiânia com equipamentos de ponta: câmeras profissionais, iluminação, microfones e drones (se aplicável).</p>
+                    <p className="text-sm text-muted-foreground">No dia combinado, nosso filmmaker vai até o cliente em Goiânia com todo o equipamento necessário: câmeras de cinema, iluminação profissional, microfones de lapela e até drones, se o projeto exigir. Cuidamos de toda a direção da cena.</p>
                 </div>
             </li>
             <li className="flex items-start gap-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">3</div>
                 <div>
                     <span className="font-semibold text-lg">Pós-Produção de Alta Qualidade</span>
-                    <p className="text-sm text-muted-foreground">Editamos todo o material bruto, realizando tratamento de cor, edição de áudio, inclusão de trilha sonora, legendas e elementos gráficos para criar vídeos impactantes e alinhados à marca.</p>
+                    <p className="text-sm text-muted-foreground">Todo o material bruto gravado é levado para nossa ilha de edição. Lá, fazemos o tratamento de cor, a edição do áudio, incluímos a trilha sonora, legendas e o logo da empresa para criar vídeos com acabamento de cinema.</p>
                 </div>
             </li>
             <li className="flex items-start gap-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">4</div>
                 <div>
                     <span className="font-semibold text-lg">Múltiplos Formatos de Vídeo</span>
-                    <p className="text-sm text-muted-foreground">Entregamos o material finalizado em diversos formatos, otimizados para diferentes plataformas: vídeos longos para YouTube, Reels/Shorts para Instagram e TikTok, e vídeos para anúncios.</p>
+                    <p className="text-sm text-muted-foreground">A partir de uma única diária de gravação, conseguimos extrair diversos materiais. Entregamos vídeos mais longos para o YouTube ou site, e também vários vídeos curtos (Reels/Shorts) já prontos para postar nas redes sociais.</p>
                 </div>
             </li>
           </ul>
