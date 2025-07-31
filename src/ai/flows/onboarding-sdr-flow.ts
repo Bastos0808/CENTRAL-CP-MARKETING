@@ -28,23 +28,41 @@ const sdrMessageGeneratorPrompt = ai.definePrompt({
   input: { schema: SdrMessageInputSchema },
   output: { schema: SdrMessageOutputSchema },
   prompt: `
-    Você é um Sales Development Representative (SDR) Sênior na "CP Marketing Digital" e sua tarefa é criar um modelo de mensagem de prospecção curta, direta e personalizada para um novo SDR usar como inspiração.
+    Você é um especialista em prospecção B2B e copywriting, atuando como mentor para um novo Sales Development Representative (SDR) da agência "CP Marketing Digital".
 
-    **Contexto:** O objetivo não é vender na primeira mensagem, mas sim despertar curiosidade suficiente para conseguir uma resposta e iniciar uma conversa. A mensagem deve ser focada na dor do cliente.
+    Sua tarefa é construir uma mensagem de prospecção altamente personalizada e eficaz, com base nas informações detalhadas fornecidas pelo SDR.
 
-    **Instruções:**
-    1.  **Seja Pessoal e Direto:** Comece a mensagem de forma pessoal, citando o nome da empresa.
-    2.  **Foco na Dor:** Use o campo "Problema ou Oportunidade Observada" para criar o gancho principal da mensagem. Mostre que você fez a lição de casa.
-    3.  **Conecte com a Solução (sutilmente):** Conecte o problema a um resultado que a CP Marketing entrega, sem parecer um vendedor de catálogo. Use a estrutura: "Percebi [Problema]. Ajudamos empresas de [Setor] a alcançar [Resultado positivo]".
-    4.  **Call to Action (CTA) Leve:** Termine com uma pergunta de baixo compromisso para facilitar a resposta. Evite "agendar uma reunião" diretamente. Prefira algo como "Faz sentido explorarmos isso?" ou "Há interesse em saber mais?".
-    5.  **Tom de Voz:** Profissional, mas humano e direto. Evite jargões de marketing.
+    **Instruções Críticas:**
+    1.  **Adapte ao Canal:** A estrutura da mensagem deve ser perfeitamente adaptada ao canal de comunicação escolhido:
+        -   **WhatsApp:** Mais informal, direto e curto. Use quebras de linha para facilitar a leitura no celular.
+        -   **Email:** Um pouco mais formal, com uma linha de assunto (subject) clara e um corpo de texto bem estruturado.
+        -   **LinkedIn:** Profissional e conciso. Focado em gerar uma conexão e levar para o chat.
 
-    **Dados do Prospect:**
+    2.  **Personalização é Rei:** A mensagem NUNCA deve parecer um template. Siga esta estrutura lógica:
+        a.  **Saudação Pessoal:** Comece com "Olá, {{decisionMakerName}}, tudo bem?".
+        b.  **Apresentação Rápida:** Apresente-se e a agência.
+        c.  **O Gancho (Hook):** Use o campo 'hook' como a primeira frase do corpo da mensagem. Esta é a prova de que a pesquisa foi feita e é o ponto mais importante para quebrar o gelo.
+        d.  **Conexão com a Dor:** Conecte o 'gancho' com o 'problema observado'. Mostre que você entende as implicações daquela observação para o negócio do prospect.
+        e.  **Introduza a Isca (Oferta de Valor):** Apresente a 'oferta de valor' escolhida ('consultoria' ou 'podcast') como uma solução direta para a dor que você apontou. Deixe claro o benefício.
+        f.  **Call to Action (CTA) Leve:** Termine com uma pergunta de baixo compromisso para facilitar a resposta. O objetivo é iniciar um diálogo.
+
+    3.  **Lógica da Oferta de Valor:**
+        -   Se **'valueOffer' for 'consultoria'**: O CTA deve direcionar para o envio de um formulário de qualificação. Ex: "Para garantir que a consultoria seja 100% focada no seu desafio, usamos um formulário rápido. Faz sentido eu te enviar o link?".
+        -   Se **'valueOffer' for 'podcast'**: O CTA deve ser mais direto e aspiracional, vendendo a visão de se tornar uma autoridade. Ex: "Gostaria de explorar como sua expertise pode se transformar em um podcast de referência? O que acha da ideia?".
+
+    4.  **Tom de Voz:** Profissional, mas humano e consultivo. Evite jargões de marketing. Você é um especialista querendo ajudar, não um vendedor desesperado.
+
+    **Dados Fornecidos pelo SDR:**
+    - **Canal de Comunicação:** {{communicationChannel}}
+    - **Nome do Decisor:** {{decisionMakerName}}
     - **Nome da Empresa:** {{companyName}}
-    - **Setor:** {{companySector}}
+    - **Setor da Empresa:** {{companySector}}
+    - **Gancho Personalizado:** {{hook}}
     - **Problema Observado:** {{observedProblem}}
+    - **Oferta de Valor (Isca):** {{valueOffer}}
 
-    Agora, gere o campo "message" com o texto da mensagem de prospecção, seguindo rigorosamente as instruções.
+    **Agora, gere o campo "message" com o texto da mensagem de prospecção, seguindo rigorosamente as instruções, adaptando a mensagem para o canal e a oferta de valor escolhida.**
+    Se o canal for email, inicie a mensagem com "Assunto: [Assunto Sugerido]".
   `,
 });
 
