@@ -45,36 +45,36 @@ export default function GestaoMidiasPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>O Que Entregamos?</CardTitle>
+          <CardTitle>O Que Entregamos? (Nosso Processo)</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-4 text-foreground">
-            <li className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+          <ul className="space-y-6 text-foreground">
+            <li className="flex items-start gap-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">1</div>
                 <div>
-                    <span className="font-semibold">Planejamento Estratégico de Conteúdo</span>
-                    <p className="text-sm text-muted-foreground">Definição de pilares, editoriais e calendário mensal alinhado aos seus objetivos.</p>
+                    <span className="font-semibold text-lg">Diagnóstico e Planejamento Estratégico Personalizado</span>
+                    <p className="text-sm text-muted-foreground">Não criamos posts aleatórios. Mergulhamos no negócio do cliente para entender o mercado, os objetivos e o público. Aqui definimos os pilares de conteúdo, a linha editorial e o tom de voz que guiarão toda a comunicação.</p>
                 </div>
             </li>
-            <li className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+             <li className="flex items-start gap-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">2</div>
                 <div>
-                    <span className="font-semibold">Criação e Design de Posts</span>
-                    <p className="text-sm text-muted-foreground">Produção de artes, carrosséis e vídeos (Reels/TikTok) com design profissional e copywriting persuasivo. Utilizamos ferramentas de ponta como Photoshop, Premiere e After Effects para garantir a máxima qualidade.</p>
+                    <span className="font-semibold text-lg">Produção de Conteúdo de Alta Qualidade</span>
+                    <p className="text-sm text-muted-foreground">Criamos posts em múltiplos formatos (Artes, Carrosséis, Reels, Stories) com design profissional, utilizando ferramentas como Photoshop, Premiere e After Effects. Desenvolvemos legendas (copywriting) persuasivas, pensadas para engajar e converter.</p>
                 </div>
             </li>
-            <li className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+            <li className="flex items-start gap-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">3</div>
                 <div>
-                    <span className="font-semibold">Agendamento e Publicação</span>
-                    <p className="text-sm text-muted-foreground">Gerenciamos todo o fluxo de publicação para garantir consistência e os melhores horários.</p>
+                    <span className="font-semibold text-lg">Gestão e Publicação Consistente</span>
+                    <p className="text-sm text-muted-foreground">Gerenciamos todo o fluxo de aprovação e agendamento dos posts, garantindo a frequência e os melhores horários de publicação para maximizar o alcance e manter a marca do cliente sempre presente na mente do consumidor.</p>
                 </div>
             </li>
-            <li className="flex items-start gap-3">
-                <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+            <li className="flex items-start gap-4">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">4</div>
                 <div>
-                    <span className="font-semibold">Análise e Relatórios Mensais</span>
-                    <p className="text-sm text-muted-foreground">Apresentamos os resultados, o que funcionou e os planos para o próximo ciclo.</p>
+                    <span className="font-semibold text-lg">Análise de Performance e Otimização</span>
+                    <p className="text-sm text-muted-foreground">Apresentamos relatórios mensais que vão além das métricas de vaidade. Analisamos o que funcionou, o que não funcionou e por quê, usando esses insights para otimizar a estratégia e direcionar os próximos passos de forma inteligente.</p>
                 </div>
             </li>
           </ul>
