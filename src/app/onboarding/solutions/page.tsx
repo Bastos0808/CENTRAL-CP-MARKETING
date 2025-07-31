@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lightbulb, Megaphone, Mic, Palette, ArrowRight } from "lucide-react";
+import { Lightbulb, Megaphone, Mic, Palette, ArrowRight, Network } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useOnboarding } from "../layout";
@@ -32,6 +32,12 @@ const solutionsData = [
         title: "Consultoria Estratégica",
         description: "Receba um plano de ação claro e acionável para sua equipe executar.",
         href: "/onboarding/solutions/consultoria-estrategica"
+    },
+    {
+        icon: Network,
+        title: "RD Station (Marketing & CRM)",
+        description: "Automatize seu marketing e organize seu processo de vendas.",
+        href: "/onboarding/solutions/rd-station"
     }
 ];
 
