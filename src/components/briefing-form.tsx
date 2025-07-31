@@ -441,7 +441,7 @@ export default function BriefingForm() {
               title: "Briefing Salvo com Sucesso!",
               description: `As informações de ${values.informacoesOperacionais?.nomeNegocio} foram atualizadas.`,
           });
-          form.reset(values); // Reset the form with the new values to clear the 'dirty' state
+          form.reset(values, { keepValues: true }); // Reset the form with the new values to clear the 'dirty' state
 
       } catch (error) {
           console.error("Error updating document: ", error);
@@ -880,3 +880,5 @@ export default function BriefingForm() {
     </Card>
   );
 }
+
+    
