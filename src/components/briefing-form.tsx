@@ -411,12 +411,14 @@ export default function BriefingForm() {
 
       try {
           const clientDocRef = doc(db, "clients", selectedClientId);
-          await updateDoc(clientDocRef, {
+          const dataToUpdate = {
               briefing: values,
               status: "active", // Change status to active after briefing is submitted
               name: values.informacoesOperacionais?.nomeNegocio,
               plan: values.informacoesOperacionais?.planoContratado,
-          });
+          };
+          
+          await updateDoc(clientDocRef, dataToUpdate);
       
           toast({
               title: "Briefing Salvo com Sucesso!",
