@@ -19,6 +19,8 @@ import html2canvas from 'html2canvas';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import Image from "next/image";
+
 
 const serviceItemSchema = z.object({
   name: z.string().min(1, "O nome do serviço é obrigatório."),
@@ -232,62 +234,101 @@ export default function ProposalGenerator() {
               {generatedProposal ? (
                 <>
                 {/* Page 1: Cover */}
-                <Page className="flex flex-col justify-between text-center">
-                    <div>
+                <Page className="flex flex-col justify-between text-black relative overflow-hidden">
+                    <div className="absolute inset-0">
+                         <Image src="https://placehold.co/827x1169.png" alt="Capa da proposta" layout="fill" objectFit="cover" data-ai-hint="abstract background" />
+                         <div className="absolute inset-0 bg-black/60"></div>
+                    </div>
+                    <div className="relative z-10 text-white">
                         <p className="font-bold text-lg text-primary">CP MARKETING DIGITAL</p>
                     </div>
-                    <div className="flex-grow flex flex-col items-center justify-center">
-                        <h1 className="text-4xl font-bold text-gray-800 leading-tight">{generatedProposal.coverTitle}</h1>
+                    <div className="relative z-10 flex-grow flex flex-col items-center justify-center text-center text-white">
+                        <h1 className="text-4xl font-bold leading-tight drop-shadow-md">{generatedProposal.coverTitle}</h1>
                         <div className="w-24 h-1 bg-primary my-6"></div>
-                        <p className="text-xl text-gray-600">Preparada para</p>
-                        <p className="text-3xl font-semibold text-gray-800 mt-2">{generatedProposal.clientCompany || generatedProposal.clientName}</p>
+                        <p className="text-xl">Preparada para</p>
+                        <p className="text-3xl font-semibold mt-2">{generatedProposal.clientCompany || generatedProposal.clientName}</p>
                     </div>
-                    <div>
-                        <p className="text-sm text-gray-500">{format(new Date(`${generatedProposal.proposalDate}T00:00:00`), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</p>
+                    <div className="relative z-10 text-white text-center">
+                        <p className="text-sm">{format(new Date(`${generatedProposal.proposalDate}T00:00:00`), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</p>
                     </div>
                 </Page>
                 
                 {/* Page 2: Challenge & Solution */}
-                <Page>
-                     <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3"><Target className="h-6 w-6"/>O Cenário Atual: O Desafio</h2>
-                     <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{generatedProposal.challenge}</p>
-                     <div className="w-16 h-1 bg-primary my-8"></div>
-                     <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3"><Rocket className="h-6 w-6"/>Nossa Proposta de Solução</h2>
-                     <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{generatedProposal.solution}</p>
+                <Page className="text-gray-800 space-y-8">
+                    <div className="grid grid-cols-2 gap-8 items-start">
+                        <div className="space-y-4">
+                           <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                                <h2 className="text-2xl font-bold text-orange-600 mb-2 flex items-center gap-3"><Target className="h-6 w-6"/>O Desafio</h2>
+                                <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{generatedProposal.challenge}</p>
+                           </div>
+                           <Image src="https://placehold.co/400x300.png" width={400} height={300} alt="Placeholder 1" className="rounded-lg shadow-md" data-ai-hint="problem solving"/>
+                        </div>
+                         <div className="space-y-4">
+                             <Image src="https://placehold.co/400x300.png" width={400} height={300} alt="Placeholder 2" className="rounded-lg shadow-md" data-ai-hint="success chart"/>
+                           <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                                <h2 className="text-2xl font-bold text-primary mb-2 flex items-center gap-3"><Rocket className="h-6 w-6"/>Nossa Solução</h2>
+                                <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{generatedProposal.solution}</p>
+                           </div>
+                        </div>
+                    </div>
                 </Page>
 
                 {/* Page 3: Scope & Investment */}
-                 <Page>
-                     <h2 className="text-2xl font-bold text-primary mb-6 flex items-center gap-3"><Package className="h-6 w-6"/>Escopo e Investimento</h2>
-                     <div className="space-y-4 mb-8">
+                 <Page className="text-gray-800">
+                     <h2 className="text-3xl font-bold text-primary mb-6 text-center">Escopo e Investimento</h2>
+                     <div className="space-y-6 mb-8">
                         {generatedProposal.services.map((service, i) => (
-                            <div key={i} className="p-4 rounded-md border-l-4 border-primary bg-gray-50">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-bold text-lg text-primary">{service.name}</h3>
-                                    <p className="font-bold text-lg text-gray-800">R$ {service.price.toFixed(2)}<span className="text-xs font-normal text-gray-500 ml-1">/{billingCycleMap[service.billingCycle]}</span></p>
-                                </div>
-                                <p className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">{service.description}</p>
-                            </div>
+                           <Card key={i} className="bg-gray-50/50 shadow-md transition-all hover:shadow-lg">
+                               <CardHeader>
+                                    <div className="flex justify-between items-start">
+                                        <CardTitle className="text-xl text-primary">{service.name}</CardTitle>
+                                        <p className="font-bold text-xl text-gray-800 whitespace-nowrap">R$ {service.price.toFixed(2)}<span className="text-sm font-normal text-gray-500 ml-1">/{billingCycleMap[service.billingCycle]}</span></p>
+                                    </div>
+                               </CardHeader>
+                               <CardContent>
+                                    <p className="text-sm text-gray-600 mb-4 whitespace-pre-wrap">{service.description}</p>
+                                    <div className="border-t pt-4">
+                                        <h4 className="font-semibold mb-2">Entregáveis:</h4>
+                                        <ul className="space-y-1 text-sm text-gray-700">
+                                            {service.description.split('\n').map((deliverable, idx) => deliverable.trim().startsWith('-') && (
+                                                <li key={idx} className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500"/>{deliverable.replace('-', '').trim()}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                               </CardContent>
+                           </Card>
                         ))}
                      </div>
-                     <div className="text-right border-t-2 border-primary pt-4">
+                     <div className="text-right border-t-2 border-primary pt-4 mt-8">
                         <p className="text-gray-600">Investimento Mensal Total</p>
                         <p className="text-4xl font-bold text-primary">R$ {generatedProposal.total.toFixed(2)}</p>
                      </div>
                 </Page>
 
                 {/* Page 4: About & Next Steps */}
-                 <Page className="flex flex-col">
-                     <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3"><Building className="h-6 w-6"/>Sobre a CP Marketing</h2>
-                     <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{generatedProposal.aboutUs}</p>
-                     <div className="w-16 h-1 bg-primary my-8"></div>
-                     <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3"><Calendar className="h-6 w-6"/>Próximos Passos</h2>
-                     <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{generatedProposal.nextSteps}</p>
-                     <div className="w-16 h-1 bg-primary my-8"></div>
-                     <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3"><DollarSign className="h-6 w-6"/>Termos de Pagamento</h2>
-                     <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{generatedProposal.terms}</p>
-                      <div className="flex-grow"></div>
-                     <footer className="text-center mt-12 pt-4 border-t text-xs text-gray-400">
+                 <Page className="text-gray-800">
+                    <div className="grid grid-cols-5 gap-8">
+                         <div className="col-span-3 space-y-6">
+                            <Card className="bg-gray-50/50 p-6 h-full">
+                               <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3"><Building className="h-6 w-6"/>Sobre a CP Marketing</h2>
+                               <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{generatedProposal.aboutUs}</p>
+                            </Card>
+                             <Card className="bg-gray-50/50 p-6 h-full">
+                               <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3"><Calendar className="h-6 w-6"/>Próximos Passos</h2>
+                               <ol className="text-gray-600 leading-relaxed whitespace-pre-wrap list-decimal list-inside space-y-2">
+                                  {generatedProposal.nextSteps.split('\n').map((step, i) => <li key={i}>{step.replace(/^\d+\.\s*/, '')}</li>)}
+                               </ol>
+                            </Card>
+                             <Card className="bg-gray-50/50 p-6 h-full">
+                               <h2 className="text-2xl font-bold text-primary mb-4 flex items-center gap-3"><DollarSign className="h-6 w-6"/>Termos de Pagamento</h2>
+                               <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{generatedProposal.terms}</p>
+                            </Card>
+                         </div>
+                         <div className="col-span-2">
+                            <Image src="https://placehold.co/400x1100.png" width={400} height={1100} alt="Placeholder 3" className="rounded-lg shadow-md object-cover h-full" data-ai-hint="business team"/>
+                         </div>
+                    </div>
+                     <footer className="text-center mt-8 pt-4 border-t text-xs text-gray-400">
                         <p>CP Marketing Digital | Proposta confidencial</p>
                     </footer>
                 </Page>
