@@ -20,6 +20,7 @@ import {
   Wand2,
   FileText,
   Eye,
+  Copy,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -208,6 +209,7 @@ export default function BriefingForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: defaultFormValues,
+    mode: 'onChange',
   });
   
   const populateForm = useCallback((data: Partial<FormValues>) => {
@@ -402,6 +404,11 @@ export default function BriefingForm() {
       name: "concorrenciaMercado.inspiracoesPerfis",
   });
 
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Senha copiada!", description: "A senha foi copiada para a área de transferência." });
+  };
+
 
   async function onSubmit(values: FormValues) {
       if (!selectedClientId) {
@@ -430,6 +437,7 @@ export default function BriefingForm() {
               title: "Briefing Salvo com Sucesso!",
               description: `As informações de ${values.informacoesOperacionais?.nomeNegocio} foram atualizadas.`,
           });
+          form.reset(form.getValues());
 
       } catch (error) {
           console.error("Error updating document: ", error);
@@ -564,7 +572,18 @@ export default function BriefingForm() {
                                   <FormItem className="flex-1">
                                     <FormLabel>Senha</FormLabel>
                                     <FormControl>
-                                      <Input type="password" placeholder="••••••••" {...field} />
+                                      <div className="relative">
+                                        <Input type="text" placeholder="••••••••" {...field} className="pr-10"/>
+                                        <Button
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon"
+                                          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                                          onClick={() => handleCopy(field.value)}
+                                        >
+                                            <Copy className="h-4 w-4" />
+                                        </Button>
+                                      </div>
                                     </FormControl>
                                     <FormMessage />
                                   </FormItem>
@@ -844,7 +863,7 @@ export default function BriefingForm() {
               </Accordion>
 
               <div className="flex justify-end">
-                <Button type="submit" size="lg" disabled={form.formState.isSubmitting}>
+                <Button type="submit" size="lg" disabled={form.formState.isSubmitting || !form.formState.isDirty}>
                   {form.formState.isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
                   {form.formState.isSubmitting ? "Salvando..." : "Salvar Briefing"}
                 </Button>
@@ -857,3 +876,5 @@ export default function BriefingForm() {
     </Card>
   );
 }
+
+    
