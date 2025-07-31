@@ -34,12 +34,6 @@ const solutionsData = [
         href: "/onboarding/solutions/captacao-externa"
     },
     {
-        icon: Lightbulb,
-        title: "Consultoria Estratégica",
-        description: "Receba um plano de ação claro e acionável para sua equipe executar.",
-        href: "/onboarding/solutions/consultoria-estrategica"
-    },
-    {
         icon: Network,
         title: "RD Station (Marketing & CRM)",
         description: "Automatize seu marketing e organize seu processo de vendas.",

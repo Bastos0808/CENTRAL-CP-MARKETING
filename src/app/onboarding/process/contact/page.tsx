@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, CheckSquare, Wand2, Mail, MessageSquare, PhoneCall, ShieldQuestion, Users, Handshake } from "lucide-react";
+import { Phone, CheckSquare, Wand2, Mail, MessageSquare, PhoneCall, ShieldQuestion, Users, Handshake, Lightbulb, Video } from "lucide-react";
 
 const checklist = [
     { text: "O objetivo NUNCA é vender na primeira mensagem. O objetivo é validar a dor e agendar uma reunião de diagnóstico." },
@@ -38,6 +38,31 @@ export default function ContactPage() {
                     </li>
                 ))}
             </ul>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-primary/5 border-primary/20">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-3"><Lightbulb /> Isca de Leads: A Consultoria Estratégica Gratuita</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <p className="text-muted-foreground">
+                Esta é nossa principal ferramenta de qualificação. Oferecer um diagnóstico gratuito é a melhor forma de quebrar o gelo, mostrar autoridade e conseguir a atenção do lead. O objetivo é segmentar: os qualificados vão para uma chamada, e os demais recebem uma versão gravada para nutrição.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><Phone className="h-5 w-5 text-green-500" /> Consultoria em Chamada</h3>
+                    <p className="text-sm text-muted-foreground">Para leads que se encaixam 100% no nosso ICP e demonstram claro potencial. É a porta de entrada para o fechamento.</p>
+                </div>
+                <div>
+                    <h3 className="font-semibold text-lg flex items-center gap-2 mb-2"><Video className="h-5 w-5 text-yellow-500" /> Consultoria Gravada</h3>
+                    <p className="text-sm text-muted-foreground">Para leads que não se encaixam no ICP ou não estão no momento de compra. Enviamos um vídeo (Loom) com um diagnóstico rápido. Isso mantém a porta aberta e educa o mercado.</p>
+                </div>
+            </div>
+            <div className="pt-4 border-t border-dashed">
+                <h4 className="font-semibold text-sm text-foreground mb-2">Gancho de Venda:</h4>
+                <p className="text-sm text-muted-foreground">"Olá [Nome], vi [Problema Observado]. Que tal um diagnóstico 100% gratuito do seu marketing, sem compromisso? Se fizer sentido, agendamos uma chamada. Se não, te envio uma análise gravada com 3 dicas práticas."</p>
+            </div>
         </CardContent>
       </Card>
       
