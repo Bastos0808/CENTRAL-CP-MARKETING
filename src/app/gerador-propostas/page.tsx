@@ -1,6 +1,5 @@
 
 import { BackButton } from '@/components/ui/back-button';
-import ProposalGenerator from '@/components/proposal-generator';
 
 export default function GeradorPropostasPage() {
   return (
@@ -16,7 +15,7 @@ export default function GeradorPropostasPage() {
           </p>
         </header>
         <div className="max-w-6xl mx-auto">
-          <ProposalGenerator />
+          {/* O conteúdo foi removido conforme solicitado. */}
         </div>
       </div>
     </main>
