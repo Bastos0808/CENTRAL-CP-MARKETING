@@ -295,7 +295,7 @@ export default function BriefingForm() {
               }
             };
             
-            populateForm(initialData);
+            form.reset(initialData);
 
         }
       } catch (error) {
@@ -305,7 +305,7 @@ export default function BriefingForm() {
       }
     };
     fetchAndSetBriefing();
-  }, [selectedClientId, toast, populateForm, form]);
+  }, [selectedClientId, toast, form]);
 
 
   const handleGenerateFromTranscript = async () => {
