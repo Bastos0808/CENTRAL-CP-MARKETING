@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState, useRef, type ChangeEvent, use } from 'react';
-import { doc, getDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db, storage } from '@/lib/firebase';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { notFound, useRouter } from 'next/navigation';
@@ -51,7 +51,8 @@ import {
   FileJson,
   FileImage,
   FileAudio,
-  FileVideo
+  FileVideo,
+  Copy
 } from "lucide-react";
 import {
   Select,
@@ -121,6 +122,12 @@ interface Report {
     id: string;
     createdAt: string;
     analysis: string;
+}
+
+interface SocialAccess {
+    plataforma: string;
+    login: string;
+    senha?: string;
 }
 
 interface AnalyzedProfile {
@@ -424,10 +431,14 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   
   const handleDeleteReport = async (reportId: string) => {
     if (!client) return;
-
     const clientDocRef = doc(db, "clients", client.id);
-    const updatedReports = client.reports?.filter(report => report.id !== reportId) || [];
+    const reportToDelete = client.reports?.find(report => report.id === reportId);
 
+    if (!reportToDelete) return;
+
+    const clientData = (await getDoc(clientDocRef)).data() as Client;
+    const updatedReports = clientData.reports?.filter(r => r.id !== reportId) ?? [];
+    
     try {
       await updateDoc(clientDocRef, { reports: updatedReports });
       setClient(prevClient => prevClient ? { ...prevClient, reports: updatedReports } : null);
@@ -497,11 +508,14 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
           type: file.type,
           createdAt: new Date().toISOString(),
         };
-
-        const clientDocRef = doc(db, "clients", client.id);
-        const currentAssets = client.assets || [];
-        const updatedAssets = [...currentAssets, newAsset];
         
+        const clientDocRef = doc(db, 'clients', client.id);
+        const clientSnap = await getDoc(clientDocRef);
+        const clientData = clientSnap.data() as Client;
+        
+        const currentAssets = clientData.assets || [];
+        const updatedAssets = [...currentAssets, newAsset];
+
         await updateDoc(clientDocRef, {
           assets: updatedAssets
         });
@@ -521,15 +535,17 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     );
   };
   
- const handleDeleteAsset = async (assetToDelete: Asset) => {
+  const handleDeleteAsset = async (assetToDelete: Asset) => {
     if (!client) return;
 
     const clientDocRef = doc(db, "clients", client.id);
     const storageRef = ref(storage, `clients/${client.id}/assets/${assetToDelete.id}_${assetToDelete.name}`);
 
     try {
-        const currentAssets = client.assets || [];
-        const updatedAssets = currentAssets.filter(asset => asset.id !== assetToDelete.id);
+        const clientSnap = await getDoc(clientDocRef);
+        const clientData = clientSnap.data() as Client;
+
+        const updatedAssets = (clientData.assets || []).filter(asset => asset.id !== assetToDelete.id);
 
         await updateDoc(clientDocRef, {
             assets: updatedAssets
@@ -543,7 +559,12 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
         console.error("Error deleting asset:", error);
         toast({ title: "Erro ao Excluir", description: `Não foi possível remover o arquivo. Detalhe: ${error.message}`, variant: "destructive"});
     }
-};
+  };
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({ title: "Copiado!", description: "A senha foi copiada para a área de transferência." });
+  };
 
 
   if (loading) {
@@ -576,6 +597,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const sortedAssets = client.assets?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   
   const isPodcastOnly = !!client.podcastPlan && !client.briefing.negociosPosicionamento?.descricao;
+  const socialAccess: SocialAccess[] = client.briefing?.informacoesOperacionais?.redesSociaisAcesso || [];
 
 
   return (
@@ -909,6 +931,38 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                                 {client.briefing.informacoesOperacionais?.possuiIdentidadeVisual && <InfoCard title="Possui Identidade Visual?" value={client.briefing.informacoesOperacionais.possuiIdentidadeVisual} icon={ImageIcon} />}
                                 {client.briefing.informacoesOperacionais?.possuiBancoImagens && <InfoCard title="Possui Banco de Imagens?" value={client.briefing.informacoesOperacionais.possuiBancoImagens} icon={ImageIcon} />}
                                 {client.briefing.informacoesOperacionais?.linksRelevantes && <InfoCard title="Links Relevantes" value={client.briefing.informacoesOperacionais.linksRelevantes} icon={Info} />}
+                                
+                                {socialAccess.length > 0 && (
+                                    <div className="space-y-2">
+                                        <Label className="text-md font-semibold text-primary">Acessos a Redes Sociais</Label>
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Plataforma</TableHead>
+                                                    <TableHead>Login</TableHead>
+                                                    <TableHead>Senha</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {socialAccess.map((access, index) => (
+                                                    <TableRow key={index}>
+                                                        <TableCell className="font-medium">{access.plataforma}</TableCell>
+                                                        <TableCell>{access.login}</TableCell>
+                                                        <TableCell className="flex items-center gap-2">
+                                                            <span>{access.senha || 'Não informada'}</span>
+                                                            {access.senha && (
+                                                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleCopy(access.senha!)}>
+                                                                    <Copy className="h-4 w-4" />
+                                                                </Button>
+                                                            )}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                )}
+
                             </AccordionContent>
                         </AccordionItem>
                         <AccordionItem value="item-2">
@@ -1169,5 +1223,3 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     </main>
   );
 }
-
-    
