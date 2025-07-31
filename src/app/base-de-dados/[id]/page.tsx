@@ -511,6 +511,9 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
         toast({ title: "Arquivo Enviado!", description: `${file.name} foi adicionado à base de arquivos.` });
         setIsUploading(false);
         setUploadProgress(0);
+        if (assetFileInputRef.current) {
+            assetFileInputRef.current.value = "";
+        }
       }
     );
   };
@@ -816,7 +819,9 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                              <input ref={assetFileInputRef} id="asset-upload" type="file" className="hidden" onChange={handleAssetUpload} disabled={isUploading}/>
                             {isUploading ? (
                                 <div className='w-full px-8 space-y-2'>
-                                    <Progress value={uploadProgress} />
+                                    <div className="w-full bg-secondary rounded-full h-2.5">
+                                      <div className="bg-primary h-2.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
+                                    </div>
                                     <p className="text-sm text-center text-muted-foreground">Enviando... {Math.round(uploadProgress)}%</p>
                                 </div>
                             ) : (
@@ -1169,5 +1174,5 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
       </div>
     </main>
-  );
+  )
 }
