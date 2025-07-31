@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PlusCircle, Trash2, DollarSign, Wand2, Eye, FileText, User, Building, Calendar, Package, Download } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -62,8 +62,12 @@ export default function ProposalGenerator() {
   });
 
   const services = form.watch("services");
-  const total = services.reduce((acc, service) => acc + (service.price || 0), 0);
-  form.setValue('total', total);
+  
+  useEffect(() => {
+    const total = services.reduce((acc, service) => acc + (service.price || 0), 0);
+    form.setValue('total', total);
+  }, [services, form]);
+
 
   function onSubmit(values: ProposalFormValues) {
     setGeneratedProposal(values);
@@ -181,17 +185,29 @@ export default function ProposalGenerator() {
                             <FormField name={`services.${index}.price`} control={form.control} render={({ field }) => (
                                 <FormItem><FormLabel>Preço</FormLabel><FormControl><div className="relative"><DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" /><Input type="number" placeholder="1500" className="pl-8" {...field} /></div></FormControl><FormMessage /></FormItem>
                             )} />
-                            <FormField name={`services.${index}.billingCycle`} control={form.control} render={({ field }) => (
-                                <FormItem><FormLabel>Ciclo</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger></FormControl>
+                           <Controller
+                                name={`services.${index}.billingCycle`}
+                                control={form.control}
+                                render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Ciclo</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                        <SelectValue placeholder="Selecione..." />
+                                        </SelectTrigger>
+                                    </FormControl>
                                     <SelectContent>
                                         <SelectItem value="monthly">Mensal</SelectItem>
                                         <SelectItem value="quarterly">Trimestral</SelectItem>
                                         <SelectItem value="annually">Anual</SelectItem>
                                         <SelectItem value="one-time">Pagamento Único</SelectItem>
                                     </SelectContent>
-                                </Select><FormMessage /></FormItem>
-                            )} />
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                                )}
+                            />
                         </div>
                     </div>
                   ))}
@@ -302,5 +318,3 @@ export default function ProposalGenerator() {
     </div>
   );
 }
-
-    
