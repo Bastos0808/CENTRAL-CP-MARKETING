@@ -518,37 +518,34 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     );
   };
   
-  const handleDeleteAsset = async (asset: Asset) => {
-      if (!client) return;
-      
-      const clientDocRef = doc(db, "clients", client.id);
-      const storageRef = ref(storage, `clients/${client.id}/assets/${asset.id}_${asset.name}`);
-      
-      try {
-          // Create a new asset object without circular references for Firestore update
-          const assetToRemove = {
-              id: asset.id,
-              name: asset.name,
-              url: asset.url,
-              type: asset.type,
-              createdAt: asset.createdAt
-          };
+  const handleDeleteAsset = async (assetToDelete: Asset) => {
+    if (!client) return;
 
-          // Delete from Firestore
-          await updateDoc(clientDocRef, {
-              assets: arrayRemove(assetToRemove)
-          });
-          
-          // Delete from Storage
-          await deleteObject(storageRef);
+    const clientDocRef = doc(db, "clients", client.id);
+    const storageRef = ref(storage, `clients/${client.id}/assets/${assetToDelete.id}_${assetToDelete.name}`);
 
-          setClient(prev => prev ? ({ ...prev, assets: prev.assets?.filter(a => a.id !== asset.id) || []}) : null);
-          toast({ title: "Arquivo Excluído!", description: `${asset.name} foi removido.`});
-      } catch (error) {
-          console.error("Error deleting asset:", error);
-          toast({ title: "Erro ao Excluir", description: "Não foi possível remover o arquivo.", variant: "destructive"});
-      }
-  };
+    try {
+        // Get the current assets array from the client state
+        const currentAssets = client.assets || [];
+        // Filter out the asset to be deleted
+        const updatedAssets = currentAssets.filter(asset => asset.id !== assetToDelete.id);
+
+        // Update Firestore with the new array
+        await updateDoc(clientDocRef, {
+            assets: updatedAssets
+        });
+        
+        // Delete from Storage
+        await deleteObject(storageRef);
+
+        // Update local state
+        setClient(prev => prev ? ({ ...prev, assets: updatedAssets }) : null);
+        toast({ title: "Arquivo Excluído!", description: `${assetToDelete.name} foi removido.`});
+    } catch (error) {
+        console.error("Error deleting asset:", error);
+        toast({ title: "Erro ao Excluir", description: `Não foi possível remover o arquivo. Detalhe: ${error}`, variant: "destructive"});
+    }
+};
 
 
   if (loading) {
@@ -819,9 +816,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                              <input ref={assetFileInputRef} id="asset-upload" type="file" className="hidden" onChange={handleAssetUpload} disabled={isUploading}/>
                             {isUploading ? (
                                 <div className='w-full px-8 space-y-2'>
-                                    <div className="w-full bg-secondary rounded-full h-2.5">
-                                      <div className="bg-primary h-2.5 rounded-full transition-all duration-300" style={{ width: `${uploadProgress}%` }}></div>
-                                    </div>
+                                    <Progress value={uploadProgress} className="w-full" />
                                     <p className="text-sm text-center text-muted-foreground">Enviando... {Math.round(uploadProgress)}%</p>
                                 </div>
                             ) : (
