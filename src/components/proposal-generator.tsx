@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight } from 'lucide-react';
+import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
@@ -25,27 +25,19 @@ const proposalSchema = z.object({
   clientName: z.string().min(1, 'O nome do cliente é obrigatório.'),
   partnershipDescription: z.string().min(1, 'A descrição da parceria é obrigatória.'),
   
-  // Plano de Ação
   actionPlanPlatform: z.string().optional(),
   actionPlanFrequency: z.array(serviceItemSchema).optional(),
   actionPlanFormat: z.array(serviceItemSchema).optional(),
   
-  // Objetivo
   objectiveItems: z.array(serviceItemSchema).optional(),
-
-  // Diferencial
   differentialItems: z.array(serviceItemSchema).optional(),
   
-  // Campanhas
   campaignsIncluded: z.string().optional(),
   campaignsObjective: z.array(serviceItemSchema).optional(),
   campaignsDifferential: z.array(serviceItemSchema).optional(),
   
-  // Investimento
   investmentPackage: z.string().optional(),
   investmentValue: z.string().optional(),
-
-  // Plano Ideal
   idealPlanItems: z.array(serviceItemSchema).optional(),
 });
 
@@ -55,18 +47,20 @@ const Page = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   <div
     ref={ref}
     className={cn(
-      "aspect-[16/9] w-full bg-[#030860] text-white overflow-hidden shadow-lg relative flex flex-col justify-center items-center p-8 font-body",
+      "aspect-video w-full bg-gray-900 text-gray-50 overflow-hidden shadow-2xl relative flex flex-col justify-center items-center p-12 font-body",
       className
     )}
     {...props}
   >
     {children}
+    <div className="absolute bottom-6 left-12 flex items-center gap-2">
+        <p className="text-xl font-bold text-[#FE5412]">CP</p>
+        <p className="text-sm font-light text-gray-400 border-l border-gray-700 pl-2">MARKETING</p>
+    </div>
   </div>
 ));
 Page.displayName = 'Page';
 
-
-// Main Component
 export default function ProposalGenerator() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
   const pagesRef = React.useRef<(HTMLDivElement | null)[]>([]);
@@ -118,17 +112,25 @@ export default function ProposalGenerator() {
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1920, 1080] });
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    // Set aspect ratio for consistency
+    const canvasWidth = 1920;
+    const canvasHeight = 1080;
 
     for (let i = 0; i < pagesRef.current.length; i++) {
       const pageElement = pagesRef.current[i];
       if (pageElement) {
-        const canvas = await html2canvas(pageElement, { scale: 2, useCORS: true, backgroundColor: '#030860' });
+        const canvas = await html2canvas(pageElement, { 
+            width: canvasWidth,
+            height: canvasHeight,
+            scale: 2, // Increase for higher resolution
+            useCORS: true, 
+            backgroundColor: '#111827' // Consistent dark background
+        });
         const imgData = canvas.toDataURL('image/png');
         
-        if (i > 0) pdf.addPage([1920, 1080], 'landscape');
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        if (i > 0) pdf.addPage([canvasWidth, canvasHeight], 'landscape');
+        pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight);
       }
     }
     pdf.save(`Proposta_${watchedValues.clientName.replace(/\s+/g, '_')}.pdf`);
@@ -136,13 +138,13 @@ export default function ProposalGenerator() {
   };
   
   const formSections = [
-    { name: "Capa e Parceria", fields: ['clientName', 'partnershipDescription'] },
-    { name: "Plano de Ação", fields: ['actionPlanPlatform', 'actionPlanFrequency', 'actionPlanFormat'] },
-    { name: "Objetivos", fields: ['objectiveItems'] },
-    { name: "Diferenciais", fields: ['differentialItems'] },
-    { name: "Campanhas", fields: ['campaignsIncluded', 'campaignsObjective', 'campaignsDifferential'] },
-    { name: "Investimento", fields: ['investmentPackage', 'investmentValue'] },
-    { name: "Resumo do Plano Ideal", fields: ['idealPlanItems'] },
+    { name: "Capa e Parceria", fields: ['clientName', 'partnershipDescription'], icon: Target },
+    { name: "Plano de Ação", fields: ['actionPlanPlatform', 'actionPlanFrequency', 'actionPlanFormat'], icon: ListChecks },
+    { name: "Objetivos", fields: ['objectiveItems'], icon: Goal },
+    { name: "Diferenciais", fields: ['differentialItems'], icon: Sparkles },
+    { name: "Campanhas", fields: ['campaignsIncluded', 'campaignsObjective', 'campaignsDifferential'], icon: Megaphone },
+    { name: "Investimento", fields: ['investmentPackage', 'investmentValue'], icon: DollarSign },
+    { name: "Resumo do Plano Ideal", fields: ['idealPlanItems'], icon: PackageCheck },
   ];
 
   const renderFieldArray = (fields: any, remove: any, append: any, label: string, name: keyof ProposalFormValues) => (
@@ -167,17 +169,17 @@ export default function ProposalGenerator() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-      <Card className="lg:col-span-1">
+      <Card className="lg:col-span-1 sticky top-8">
         <CardContent className="p-4">
            <Form {...form}>
             <form className="space-y-4">
               <Accordion type="multiple" defaultValue={['item-0']} className="w-full">
                 {formSections.map((section, index) => (
                   <AccordionItem value={`item-${index}`} key={section.name}>
-                    <AccordionTrigger>{section.name}</AccordionTrigger>
-                    <AccordionContent className="space-y-4">
+                    <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
                       {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>} />}
+                      {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('actionPlanPlatform') && <FormField control={form.control} name="actionPlanPlatform" render={({ field }) => <FormItem><FormLabel>Plataforma</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('actionPlanFrequency') && renderFieldArray(freqFields, removeFreq, appendFreq, "Frequência", "actionPlanFrequency")}
                       {section.fields.includes('actionPlanFormat') && renderFieldArray(formatFields, removeFormat, appendFormat, "Formato", "actionPlanFormat")}
@@ -207,163 +209,139 @@ export default function ProposalGenerator() {
             <CarouselContent>
                 {/* Page 1: Capa */}
                 <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[0] = el; }}>
-                       <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 to-transparent"></div>
-                       <div className="absolute right-8 top-8 h-24 w-24 border-2 border-[#FE5412] rounded-full flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                            <p className="text-white text-[10px] absolute font-light">Marketing Digital & Podcast •</p>
-                       </div>
-                        <div className="absolute -right-8 top-16 h-12 w-12 rounded-full flex items-center justify-center ">
-                            <p className="text-[#FE5412] font-bold text-3xl">CP</p>
+                    <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center" style={{backgroundImage: "url('https://placehold.co/1920x1080/111827/111827.png')"}}>
+                        <div className="absolute inset-0 bg-black/50"></div>
+                        <div className="z-10 text-center flex flex-col items-center">
+                            <p className="text-[#FE5412] font-semibold tracking-widest mb-2">PROPOSTA COMERCIAL</p>
+                            <h1 className="text-7xl font-extrabold max-w-4xl">{watchedValues.clientName || '[Cliente]'}</h1>
+                            <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
                         </div>
-                       <div className="absolute left-8 right-1/2 h-full border-r border-white/20"></div>
-                       <div className="w-full h-full flex flex-col justify-center items-start text-left pl-12 pr-1/2">
-                            <h1 className="text-5xl font-extrabold uppercase tracking-wider mb-2">Proposta Comercial</h1>
-                            <p className="text-lg font-light">Gestão Estratégica de Marketing Digital para <strong className="font-bold">{watchedValues.clientName || '[Cliente]'}</strong></p>
-                       </div>
                     </Page>
                 </CarouselItem>
+
                 {/* Page 2: Sobre a Parceria */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[1] = el; }}>
-                        <div className="absolute inset-0 bg-gradient-to-tr from-orange-600/30 via-transparent to-blue-900/50"></div>
-                        <div className="w-full h-full flex items-center">
-                            <div className="w-1/2 flex flex-col justify-center p-12">
-                                <h2 className="text-3xl font-bold uppercase mb-4">Sobre a Parceria</h2>
-                                <p className="text-lg font-light">{watchedValues.partnershipDescription}</p>
-                            </div>
-                            <div className="w-1/2 flex items-center justify-center relative">
-                                <div className="absolute -left-1/4 top-0 bottom-0 w-full bg-[#030860] transform -skew-x-12"></div>
-                                <p className="text-5xl font-extrabold text-[#FE5412] z-10">{watchedValues.clientName || '[Cliente]'}</p>
-                            </div>
+                        <div className="w-full max-w-5xl text-left">
+                            <h2 className="text-5xl font-bold uppercase mb-6">Sobre a Parceria</h2>
+                            <p className="text-2xl font-light text-gray-300 border-l-4 border-[#FE5412] pl-6">{watchedValues.partnershipDescription}</p>
                         </div>
-                         <p className="absolute bottom-4 left-8 text-xs font-light tracking-widest border-t border-white/20 pt-1">CP MARKETING</p>
                     </Page>
                 </CarouselItem>
+
                 {/* Page 3: Plano de Ação */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[2] = el; }}>
-                        <h2 className="text-3xl font-bold uppercase mb-8 text-center">Plano de Ação e Entregas Mensais</h2>
-                        <div className="grid grid-cols-2 gap-8 w-full max-w-4xl">
-                            <div className="bg-black/20 p-6 rounded-lg">
-                                <h3 className="font-bold text-xl mb-4 text-[#FE5412]">Plataforma</h3>
+                        <h2 className="text-5xl font-bold uppercase mb-8 text-center w-full">Plano de Ação</h2>
+                        <div className="grid grid-cols-3 gap-8 w-full max-w-6xl">
+                            <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg text-center">
+                                <ListChecks className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
+                                <h3 className="font-bold text-xl mb-3">Plataforma</h3>
                                 <p className="text-2xl font-semibold">{watchedValues.actionPlanPlatform}</p>
                             </div>
-                             <div className="bg-black/20 p-6 rounded-lg">
-                                <h3 className="font-bold text-xl mb-4 text-[#FE5412]">Frequência</h3>
+                             <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg">
+                                <AlignLeft className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
+                                <h3 className="font-bold text-xl mb-3 text-center">Frequência</h3>
                                 <ul className="space-y-2">
                                     {watchedValues.actionPlanFrequency?.map((item, i) => (
                                         <li key={i} className="flex items-center gap-2"><Check className="h-5 w-5 text-green-400" /> {item.value}</li>
                                     ))}
                                 </ul>
                             </div>
-                             <div className="col-span-2 bg-black/20 p-6 rounded-lg">
-                                <h3 className="font-bold text-xl mb-4 text-[#FE5412]">Formato</h3>
-                                <div className="flex gap-4">
+                             <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg">
+                                <BarChart2 className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
+                                <h3 className="font-bold text-xl mb-3 text-center">Formato</h3>
+                                <ul className="space-y-2">
                                      {watchedValues.actionPlanFormat?.map((item, i) => (
-                                        <p key={i} className="bg-white/10 px-4 py-2 rounded-full text-sm">{item.value}</p>
+                                        <li key={i} className="flex items-center gap-2"><Check className="h-5 w-5 text-green-400" /> {item.value}</li>
                                     ))}
-                                </div>
+                                </ul>
                             </div>
                         </div>
-                        <p className="absolute bottom-4 left-8 text-xs font-light tracking-widest border-t border-white/20 pt-1">CP MARKETING</p>
                     </Page>
                 </CarouselItem>
+
                 {/* Page 4: Objetivo */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[3] = el; }}>
-                        <div className="absolute right-8 top-8 h-24 w-24 rounded-full flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                             <p className="text-[#FE5412] font-bold text-3xl">CP</p>
-                        </div>
-                        <div className="w-full max-w-4xl">
-                            <h2 className="text-3xl font-bold uppercase mb-6">Objetivo</h2>
-                             <ul className="space-y-3 text-lg font-light">
+                        <div className="w-full max-w-5xl">
+                            <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
+                             <ul className="space-y-4 text-xl font-light">
                                 {watchedValues.objectiveItems?.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-3"><span className="text-[#FE5412] mt-1.5">•</span>{item.value}</li>
+                                    <li key={i} className="flex items-start gap-4"><Goal className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" />{item.value}</li>
                                 ))}
                             </ul>
                         </div>
-                         <p className="absolute bottom-4 left-8 text-xs font-light tracking-widest border-t border-white/20 pt-1">CP MARKETING</p>
                     </Page>
                 </CarouselItem>
+
                 {/* Page 5: Diferencial */}
                  <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[4] = el; }}>
-                         <div className="absolute right-8 top-8 h-24 w-24 rounded-full flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                             <p className="text-[#FE5412] font-bold text-3xl">CP</p>
-                        </div>
-                         <div className="w-full max-w-4xl">
-                            <h2 className="text-3xl font-bold uppercase mb-6">Diferencial</h2>
-                            <ul className="space-y-3 text-lg font-light columns-2">
+                         <div className="w-full max-w-5xl">
+                            <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
+                            <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
                                 {watchedValues.differentialItems?.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-3 mb-3 break-inside-avoid"><span className="text-[#FE5412] mt-1.5">•</span>{item.value}</li>
+                                    <li key={i} className="flex items-start gap-4 mb-4 break-inside-avoid"><Sparkles className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" />{item.value}</li>
                                 ))}
                             </ul>
                          </div>
-                         <p className="absolute bottom-4 left-8 text-xs font-light tracking-widest border-t border-white/20 pt-1">CP MARKETING</p>
                     </Page>
                 </CarouselItem>
+
                 {/* Page 6: Campanhas */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[5] = el; }}>
-                         <div className="absolute right-8 top-8 h-24 w-24 rounded-full flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                             <p className="text-[#FE5412] font-bold text-3xl">CP</p>
-                        </div>
-                        <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <h2 className="text-2xl font-bold uppercase mb-4">Campanhas Incluídas</h2>
-                                <p className="text-lg font-light">{watchedValues.campaignsIncluded}</p>
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold uppercase mb-2 text-[#FE5412]">Objetivo</h3>
-                                <ul className="space-y-1 text-md font-light">
-                                    {watchedValues.campaignsObjective?.map((item, i) => <li key={i}>• {item.value}</li>)}
+                        <h2 className="text-5xl font-bold uppercase mb-8 text-center w-full">Campanhas e Tráfego Pago</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
+                           <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg">
+                                <h3 className="font-bold text-2xl mb-4 text-[#FE5412]">Objetivo</h3>
+                                <ul className="space-y-2 text-lg">
+                                    {watchedValues.campaignsObjective?.map((item, i) => <li className='flex items-center gap-2' key={i}><Check className="h-5 w-5 text-green-400" /> {item.value}</li>)}
                                 </ul>
-                                <h3 className="text-lg font-bold uppercase mt-4 mb-2 text-[#FE5412]">Diferencial</h3>
-                                <ul className="space-y-1 text-md font-light">
-                                    {watchedValues.campaignsDifferential?.map((item, i) => <li key={i}>• {item.value}</li>)}
+                            </div>
+                             <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg">
+                                <h3 className="font-bold text-2xl mb-4 text-[#FE5412]">Diferencial</h3>
+                                <ul className="space-y-2 text-lg">
+                                    {watchedValues.campaignsDifferential?.map((item, i) => <li className='flex items-center gap-2' key={i}><Check className="h-5 w-5 text-green-400" /> {item.value}</li>)}
                                 </ul>
                             </div>
                         </div>
-                        <p className="absolute bottom-4 left-8 text-xs font-light tracking-widest border-t border-white/20 pt-1">CP MARKETING</p>
                     </Page>
                 </CarouselItem>
+
                 {/* Page 7: Investimento */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[6] = el; }}>
-                         <div className="absolute right-8 top-8 h-24 w-24 rounded-full flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                             <p className="text-[#FE5412] font-bold text-3xl">CP</p>
+                        <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
+                            <h2 className="text-4xl font-bold uppercase mb-2">Investimento</h2>
+                            <p className="text-lg text-gray-300 mb-4">{watchedValues.investmentPackage}</p>
+                            <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
+                            <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
                         </div>
-                        <div className="text-center">
-                            <h2 className="text-3xl font-bold uppercase mb-2">Investimento</h2>
-                            <p className="text-lg text-white/70 mb-4">{watchedValues.investmentPackage}</p>
-                            <p className="text-7xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
-                            <p className="font-semibold tracking-wider">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
-                        </div>
-                        <p className="absolute bottom-4 left-8 text-xs font-light tracking-widest border-t border-white/20 pt-1">CP MARKETING</p>
                     </Page>
                 </CarouselItem>
+
                 {/* Page 8: Plano Ideal */}
                 <CarouselItem>
                      <Page ref={el => { if(el) pagesRef.current[7] = el; }}>
-                         <div className="absolute right-8 top-8 h-24 w-24 rounded-full flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                             <p className="text-[#FE5412] font-bold text-3xl">CP</p>
-                        </div>
-                         <div className="w-full max-w-4xl">
-                            <h2 className="text-2xl font-bold uppercase mb-6 text-center">Por que esse plano é <span className="text-[#FE5412]">ideal</span> para o {watchedValues.clientName}?</h2>
-                             <ul className="space-y-3 text-lg font-light">
+                         <div className="w-full max-w-5xl text-center">
+                            <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
+                             <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
                                 {watchedValues.idealPlanItems?.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-3"><span className="text-[#FE5412] mt-1.5">•</span>{item.value}</li>
+                                    <li key={i} className="flex items-start gap-4"><Check className="h-7 w-7 text-green-400 mt-1 flex-shrink-0" />{item.value}</li>
                                 ))}
                             </ul>
                          </div>
-                         <p className="absolute bottom-4 left-8 text-xs font-light tracking-widest border-t border-white/20 pt-1">CP MARKETING</p>
                     </Page>
                 </CarouselItem>
             </CarouselContent>
-            <CarouselPrevious className="-left-12 bg-transparent hover:bg-white/10 border-white/50 text-white" />
-            <CarouselNext className="-right-12 bg-transparent hover:bg-white/10 border-white/50 text-white" />
+            <CarouselPrevious className="-left-16 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
+            <CarouselNext className="-right-16 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
         </Carousel>
       </div>
     </div>
   );
 }
+
+    
