@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -32,6 +32,12 @@ export default function Home() {
         description: "Crie relatórios de desempenho com IA.",
         href: "/relatorios",
         icon: Wand2
+      },
+      {
+        title: "Método Modus",
+        description: "Explore nosso mapa mental estratégico para guiar as operações.",
+        href: "/metodo-modus",
+        icon: Waypoints
       }
   ];
   
