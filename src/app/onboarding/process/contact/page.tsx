@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Phone, CheckSquare, Wand2, Lightbulb, Video, FileText, ArrowRight } from "lucide-react";
+import { Phone, CheckSquare, Wand2, Lightbulb, Video, FileText, ArrowRight, Mic } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 import { useOnboarding } from "../../layout";
@@ -83,6 +83,21 @@ export default function ContactPage() {
         </CardContent>
       </Card>
       
+       <Card className="bg-purple-600/10 border-purple-600/20">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-purple-800 dark:text-purple-400"><Mic /> Isca de Alto Valor: O Episódio de Podcast Gratuito</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <p className="text-muted-foreground">
+                Para leads com altíssimo potencial e que se encaixam perfeitamente no nosso perfil de cliente para podcast (especialistas, empresários com conhecimento para compartilhar), temos uma oferta irresistível: a gravação de um episódio piloto completo, em nosso estúdio, de forma 100% gratuita.
+            </p>
+            <div className="pt-4 border-t border-dashed">
+                <h4 className="font-semibold text-sm text-foreground mb-2">Gancho de Venda:</h4>
+                <p className="text-sm text-muted-foreground">"Olá [Nome], vi que você é uma referência no setor de [Setor] e compartilha conteúdos muito ricos. Acreditamos que seu conhecimento tem um potencial incrível para um podcast, que é a melhor ferramenta para construir autoridade hoje. Para que você veja na prática o poder disso, estamos oferecendo a especialistas como você a oportunidade de gravar um episódio piloto completo em nosso estúdio profissional, sem custo algum. Você só precisa vir com seu conteúdo, nós cuidamos de toda a técnica. O que acha da ideia?"</p>
+            </div>
+        </CardContent>
+      </Card>
+
        <Link href="/onboarding/process/templates" className="group block">
             <Card className="transition-all duration-200 ease-in-out group-hover:border-primary group-hover:shadow-lg group-hover:-translate-y-1">
                 <CardHeader className="flex flex-row items-center justify-between">
