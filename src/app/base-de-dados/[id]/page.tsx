@@ -432,10 +432,6 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const handleDeleteReport = async (reportId: string) => {
     if (!client) return;
     const clientDocRef = doc(db, "clients", client.id);
-    const reportToDelete = client.reports?.find(report => report.id === reportId);
-
-    if (!reportToDelete) return;
-
     const clientData = (await getDoc(clientDocRef)).data() as Client;
     const updatedReports = clientData.reports?.filter(r => r.id !== reportId) ?? [];
     
@@ -496,40 +492,47 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       },
       (error) => {
         console.error("Upload error:", error);
-        toast({ title: "Erro no Upload", description: `Não foi possível enviar o arquivo. Detalhes: ${error.message}`, variant: "destructive" });
+        toast({ title: "Erro no Upload", description: `Falha no envio do arquivo. Verifique as regras do Firebase Storage. Detalhes: ${error.message}`, variant: "destructive" });
         setIsUploading(false);
       },
       async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        const newAsset: Asset = {
-          id: assetId,
-          name: file.name,
-          url: downloadURL,
-          type: file.type,
-          createdAt: new Date().toISOString(),
-        };
-        
-        const clientDocRef = doc(db, 'clients', client.id);
-        const clientSnap = await getDoc(clientDocRef);
-        const clientData = clientSnap.data() as Client;
-        
-        const currentAssets = clientData.assets || [];
-        const updatedAssets = [...currentAssets, newAsset];
+        try {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          const newAsset: Asset = {
+            id: assetId,
+            name: file.name,
+            url: downloadURL,
+            type: file.type,
+            createdAt: new Date().toISOString(),
+          };
+          
+          const clientDocRef = doc(db, 'clients', client.id);
+          
+          // Robust update: get current assets, add new one, and set the array
+          const clientSnap = await getDoc(clientDocRef);
+          const clientData = clientSnap.data() as Client;
+          const currentAssets = clientData.assets || [];
+          const updatedAssets = [...currentAssets, newAsset];
 
-        await updateDoc(clientDocRef, {
-          assets: updatedAssets
-        });
-        
-        setClient(prev => {
-          if (!prev) return null;
-          return { ...prev, assets: updatedAssets };
-        });
+          await updateDoc(clientDocRef, {
+            assets: updatedAssets
+          });
+          
+          setClient(prev => {
+            if (!prev) return null;
+            return { ...prev, assets: updatedAssets };
+          });
 
-        toast({ title: "Arquivo Enviado!", description: `${file.name} foi adicionado à base de arquivos.` });
-        setIsUploading(false);
-        setUploadProgress(0);
-        if (assetFileInputRef.current) {
-            assetFileInputRef.current.value = "";
+          toast({ title: "Arquivo Enviado!", description: `${file.name} foi adicionado à base de arquivos.` });
+        } catch (dbError) {
+            console.error("Database update error:", dbError);
+            toast({ title: "Erro no Banco de Dados", description: `O arquivo foi enviado mas não foi possível salvar a referência.`, variant: "destructive" });
+        } finally {
+            setIsUploading(false);
+            setUploadProgress(0);
+            if (assetFileInputRef.current) {
+                assetFileInputRef.current.value = "";
+            }
         }
       }
     );
