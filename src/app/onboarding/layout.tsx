@@ -104,21 +104,18 @@ export default function OnboardingLayout({
                     <nav className="flex justify-center items-center gap-4 sm:gap-8">
                         {steps.map((step, index) => {
                             const isActive = currentIndex === index;
-                            const isCompleted = currentIndex > index;
-
+                            
                             return (
                             <Link href={step.path} key={step.name} className="flex flex-col items-center gap-2 group">
                                 <div className={cn(
                                     "h-8 w-8 rounded-full flex items-center justify-center border-2 transition-all",
-                                    isActive ? "border-primary bg-primary/10" : "border-muted-foreground/30 group-hover:border-primary/50",
-                                    isCompleted ? "border-green-500 bg-green-500/10 text-green-500" : ""
+                                    isActive ? "border-primary bg-primary/10" : "border-muted-foreground/30 group-hover:border-primary/50"
                                 )}>
-                                    {isCompleted ? <CheckCircle className="h-5 w-5"/> : <Circle className={cn("h-3 w-3 transition-all", isActive ? "text-primary fill-current" : "text-muted-foreground/30 group-hover:text-primary/50")}/>}
+                                    <Circle className={cn("h-3 w-3 transition-all", isActive ? "text-primary fill-current" : "text-muted-foreground/30 group-hover:text-primary/50")}/>
                                 </div>
                                 <span className={cn(
                                     "text-xs sm:text-sm font-medium transition-all",
-                                    isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary",
-                                    isCompleted ? "text-green-500" : ""
+                                    isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"
                                 )}>
                                     {step.name}
                                 </span>
