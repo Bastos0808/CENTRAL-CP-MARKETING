@@ -144,13 +144,13 @@ export default function SdrAiTool() {
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                            <SelectValue placeholder="Selecione o canal" />
+                                                <SelectValue placeholder="Selecione o canal" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="whatsapp"><MessageSquare className="mr-2"/> WhatsApp</SelectItem>
-                                            <SelectItem value="email"><Mail className="mr-2"/> E-mail</SelectItem>
-                                            <SelectItem value="linkedin"><Linkedin className="mr-2"/> LinkedIn</SelectItem>
+                                            <SelectItem value="whatsapp"><div className="flex items-center gap-2"><MessageSquare/> WhatsApp</div></SelectItem>
+                                            <SelectItem value="email"><div className="flex items-center gap-2"><Mail/> E-mail</div></SelectItem>
+                                            <SelectItem value="linkedin"><div className="flex items-center gap-2"><Linkedin/> LinkedIn</div></SelectItem>
                                         </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -166,12 +166,12 @@ export default function SdrAiTool() {
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
-                                            <SelectValue placeholder="Selecione a oferta" />
+                                                <SelectValue placeholder="Selecione a oferta" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
-                                            <SelectItem value="consultoria"><FileText className="mr-2"/> Consultoria Estratégica</SelectItem>
-                                            <SelectItem value="podcast"><Podcast className="mr-2"/> Episódio de Podcast</SelectItem>
+                                            <SelectItem value="consultoria"><div className="flex items-center gap-2"><FileText/> Consultoria Estratégica</div></SelectItem>
+                                            <SelectItem value="podcast"><div className="flex items-center gap-2"><Podcast/> Episódio de Podcast</div></SelectItem>
                                         </SelectContent>
                                         </Select>
                                         <FormMessage />
