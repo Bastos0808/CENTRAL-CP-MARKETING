@@ -35,19 +35,19 @@ export default function PodcastPage() {
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Film className="h-4 w-4 text-primary" /> Pílulas ou Cortes</h3>
-            <p className="text-sm text-muted-foreground pl-6">São as "pílulas de sabedoria" ou o "trailer do filme". Pegamos os melhores momentos de um episódio longo e os transformamos em vídeos curtos e impactantes, com legendas dinâmicas. São perfeitos para atrair a atenção e viralizar no Reels, Shorts e TikTok.</p>
+            <p className="text-sm text-muted-foreground pl-6">São os melhores momentos de um episódio longo, transformados em vídeos curtos e legendados. São perfeitos para atrair a atenção e aumentar o alcance do conteúdo no Reels, Shorts e TikTok.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Send className="h-4 w-4 text-primary" /> Distribuição</h3>
-            <p className="text-sm text-muted-foreground pl-6">É o nosso "serviço de entrega" do podcast. Garantimos que o episódio chegue a todas as "casas" onde as pessoas consomem conteúdo: Spotify e Apple Podcasts para quem ouve, e YouTube para quem assiste. Ninguém fica de fora.</p>
+            <p className="text-sm text-muted-foreground pl-6">É o processo de publicar o episódio em todas as plataformas de áudio e vídeo. Garantimos que o programa chegue a todos os canais relevantes onde o público consome conteúdo.</p>
           </div>
            <div className="pt-4 border-t">
             <h3 className="font-semibold text-foreground flex items-center gap-2"><SpotifyIcon className="h-4 w-4 text-primary" /> Spotify & <AppleIcon className="h-4 w-4 text-primary" /> Apple Podcasts</h3>
-            <p className="text-sm text-muted-foreground pl-6">São as principais "rádios" do mundo dos podcasts. É onde a maioria das pessoas ouve programas enquanto está no trânsito, na academia ou fazendo outras atividades. Estar aqui é fundamental.</p>
+            <p className="text-sm text-muted-foreground pl-6">São as principais plataformas de áudio do mercado. É onde a maioria das pessoas ouve podcasts enquanto está no trânsito, na academia ou fazendo outras atividades. Estar aqui é fundamental.</p>
           </div>
            <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Youtube className="h-4 w-4 text-primary" /> YouTube</h3>
-            <p className="text-sm text-muted-foreground pl-6">É a "TV do podcast". Para o público que prefere assistir à conversa, o YouTube é a plataforma ideal. Ter o episódio em vídeo, com múltiplos ângulos de câmera, aumenta o profissionalismo e o alcance.</p>
+            <p className="text-sm text-muted-foreground pl-6">É a principal plataforma para quem prefere assistir ao podcast. Publicar o episódio em vídeo, com qualidade de som e imagem, aumenta o profissionalismo e o alcance do conteúdo.</p>
           </div>
         </CardContent>
       </Card>

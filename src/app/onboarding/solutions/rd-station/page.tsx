@@ -25,15 +25,15 @@ export default function RdStationPage() {
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><CalendarCheck className="h-4 w-4 text-primary" /> CRM (Customer Relationship Management)</h3>
-            <p className="text-sm text-muted-foreground pl-6">Pense nisso como uma "agenda com superpoderes" para o time de vendas. Ela organiza todos os contatos e negociações, criando lembretes e garantindo que nenhum cliente importante seja esquecido no meio da correria.</p>
+            <p className="text-sm text-muted-foreground pl-6">É uma plataforma para organizar o processo de vendas. Ela centraliza todos os contatos e negociações em um só lugar, com lembretes e histórico, garantindo que nenhum cliente importante seja esquecido.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Automação de Marketing</h3>
-            <p className="text-sm text-muted-foreground pl-6">É o nosso "exército de robôs simpáticos" que programamos para conversar com os clientes automaticamente, enviando e-mails na hora certa para aquecer o contato, educar sobre o produto e prepará-lo para a compra, tudo sem trabalho manual.</p>
+            <p className="text-sm text-muted-foreground pl-6">É a criação de fluxos de comunicação automáticos. Programamos o envio de e-mails em sequência para educar os contatos, aquecer o interesse e prepará-los para a compra, tudo sem trabalho manual repetitivo.</p>
           </div>
            <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><FileSignature className="h-4 w-4 text-primary" /> Landing Page</h3>
-            <p className="text-sm text-muted-foreground pl-6">Imagine a vitrine de uma loja, mas focada em um único produto. É uma página na internet 100% focada em convencer o visitante a fazer uma única coisa: deixar seu contato em troca de algo de valor (um e-book, um webinar, etc). É a principal porta de entrada para a automação.</p>
+            <p className="text-sm text-muted-foreground pl-6">É uma página de internet 100% focada em um único objetivo: convencer o visitante a deixar seu contato em troca de algo de valor (um e-book, um webinar, um cupom). É a principal porta de entrada para a automação.</p>
           </div>
         </CardContent>
       </Card>

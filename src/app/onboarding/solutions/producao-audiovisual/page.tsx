@@ -25,19 +25,19 @@ export default function ProducaoAudiovisualPage() {
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><PenSquare className="h-4 w-4 text-primary" /> Roteiro / Storyboard</h3>
-            <p className="text-sm text-muted-foreground pl-6">É a "história em quadrinhos do filme". Antes de gravar, desenhamos e escrevemos cada cena. Isso garante que a história seja contada da melhor forma, que a mensagem seja clara e que nada importante fique de fora no dia da gravação.</p>
+            <p className="text-sm text-muted-foreground pl-6">É o documento que descreve cada cena do vídeo em detalhes antes da gravação. Garante que a história seja contada de forma coesa, que a mensagem seja clara e que o tempo de filmagem seja otimizado.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Tv className="h-4 w-4 text-primary" /> Captação em Estúdio</h3>
-            <p className="text-sm text-muted-foreground pl-6">É o nosso "cenário perfeito e controlado". Usamos um estúdio profissional com iluminação e som impecáveis. É ideal para vídeos onde o foco total é na pessoa que está falando, sem distrações, transmitindo máxima credibilidade.</p>
+            <p className="text-sm text-muted-foreground pl-6">É a gravação em um ambiente controlado, com iluminação e som perfeitos. É ideal para vídeos onde o foco total é na pessoa que está falando, transmitindo máxima credibilidade e profissionalismo.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Camera className="h-4 w-4 text-primary" /> Captação em Locação</h3>
-            <p className="text-sm text-muted-foreground pl-6">Aqui, o "cenário é o próprio negócio do cliente". Vamos até a empresa, clínica ou loja para gravar. É a melhor forma de mostrar a realidade, a equipe em ação e o ambiente, gerando autenticidade e confiança.</p>
+            <p className="text-sm text-muted-foreground pl-6">Neste formato, a gravação ocorre no próprio ambiente do cliente (loja, escritório, clínica). É a melhor forma de mostrar a realidade da operação, a equipe em ação e o espaço físico, gerando autenticidade.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><GalleryVertical className="h-4 w-4 text-primary" /> Motion Graphics</h3>
-            <p className="text-sm text-muted-foreground pl-6">São os "efeitos especiais" que dão vida aos vídeos. Sabe aquelas letras e gráficos que aparecem na tela de forma animada? Isso é Motion Graphics. Usamos para destacar informações importantes e deixar o vídeo mais dinâmico e profissional.</p>
+            <p className="text-sm text-muted-foreground pl-6">São elementos gráficos animados, como textos, ícones e logos, que inserimos sobre o vídeo. Servem para destacar informações importantes e deixar a produção mais dinâmica e profissional.</p>
           </div>
         </CardContent>
       </Card>

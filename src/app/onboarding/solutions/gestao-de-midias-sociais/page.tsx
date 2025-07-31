@@ -25,23 +25,23 @@ export default function GestaoMidiasPage() {
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Edit className="h-4 w-4 text-primary" /> Linha Editorial</h3>
-            <p className="text-sm text-muted-foreground pl-6">Imagine um roteiro de seriado para a marca. É o nosso mapa que define os temas que vamos abordar, garantindo que cada post faça parte de uma história maior e que o perfil não vire uma "colcha de retalhos".</p>
+            <p className="text-sm text-muted-foreground pl-6">É o planejamento de conteúdo da marca. Funciona como um mapa que define os temas a serem abordados, garantindo que o perfil tenha uma comunicação coesa e não vire uma "colcha de retalhos".</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /> Copywriting</h3>
-            <p className="text-sm text-muted-foreground pl-6">É o superpoder de escrever textos que convencem. É a arte de criar legendas que não apenas descrevem a foto, mas que fazem o seguidor pensar, sentir e, o mais importante, agir (curtir, comentar ou comprar).</p>
+            <p className="text-sm text-muted-foreground pl-6">É a técnica de escrever textos persuasivos. O objetivo é criar legendas que incentivem o seguidor a tomar uma ação específica, seja curtir, comentar, compartilhar ou comprar.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><MicVocal className="h-4 w-4 text-primary" /> Tom de Voz</h3>
-            <p className="text-sm text-muted-foreground pl-6">É a "personalidade" da marca ao falar. Ela é mais séria e formal? Ou divertida e descolada? Definimos isso para que a comunicação seja sempre consistente, como se fosse uma única pessoa falando.</p>
+            <p className="text-sm text-muted-foreground pl-6">É a "personalidade" da marca na comunicação. Define se a linguagem será mais formal, técnica, descontraída ou divertida, garantindo consistência em todos os pontos de contato.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Algoritmo</h3>
-            <p className="text-sm text-muted-foreground pl-6">Pense no "porteiro do Instagram". É o robô que decide quem vai ver o post. Nosso trabalho é criar um conteúdo tão bom que o porteiro nos dê um "crachá VIP" e mostre nosso post para o máximo de pessoas possível.</p>
+            <p className="text-sm text-muted-foreground pl-6">É o sistema da rede social que decide qual conteúdo será exibido para os usuários. Nosso trabalho é criar publicações de alta qualidade que o algoritmo considere relevantes e mostre para mais pessoas.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" /> Engajamento</h3>
-            <p className="text-sm text-muted-foreground pl-6">São os "aplausos e conversas" da plateia. Curtidas, comentários, compartilhamentos e salvamentos são sinais para o "porteiro" (algoritmo) de que nosso conteúdo é relevante e merece ser mostrado para mais gente.</p>
+            <p className="text-sm text-muted-foreground pl-6">São todas as interações que o público tem com a publicação: curtidas, comentários, compartilhamentos e salvamentos. É um forte indicador de que o conteúdo é relevante para a audiência.</p>
           </div>
           <div className="pt-4 border-t">
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Instagram className="h-4 w-4 text-primary" /> Instagram & Facebook</h3>
@@ -49,7 +49,7 @@ export default function GestaoMidiasPage() {
           </div>
            <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Linkedin className="h-4 w-4 text-primary" /> LinkedIn</h3>
-            <p className="text-sm text-muted-foreground pl-6">É o "escritório" das redes sociais. A plataforma ideal para empresas que vendem para outras empresas (B2B), para construir autoridade profissional e se conectar com outros players do mercado.</p>
+            <p className="text-sm text-muted-foreground pl-6">É a principal rede social profissional. A plataforma ideal para empresas que vendem para outras empresas (B2B), para construir autoridade e se conectar com outros players do mercado.</p>
           </div>
         </CardContent>
       </Card>
@@ -123,5 +123,3 @@ export default function GestaoMidiasPage() {
     </div>
   );
 }
-
-    

@@ -35,15 +35,15 @@ export default function TrafegoPage() {
         <CardContent className="space-y-4">
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Target className="h-4 w-4 text-primary" /> Leads</h3>
-            <p className="text-sm text-muted-foreground pl-6">São as "pessoas que levantam a mão" no meio da multidão. Ao clicarem em um anúncio ou preencherem um formulário, elas estão dizendo "Ei, estou interessado nisso!". Nosso objetivo é gerar o máximo de mãos levantadas qualificadas.</p>
+            <p className="text-sm text-muted-foreground pl-6">São contatos de pessoas que demonstraram interesse em um produto ou serviço, geralmente ao preencherem um formulário. Nosso objetivo é gerar o máximo de leads qualificados para o cliente.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><BarChart className="h-4 w-4 text-primary" /> ROI (Retorno sobre o Investimento)</h3>
-            <p className="text-sm text-muted-foreground pl-6">É a "nota da prova" do nosso trabalho. Para cada R$1 que o cliente investe em anúncios, o ROI nos diz quantos reais voltaram em vendas. É a métrica que prova que marketing não é custo, é investimento que dá lucro.</p>
+            <p className="text-sm text-muted-foreground pl-6">É a principal métrica do nosso trabalho. Para cada R$1 que o cliente investe em anúncios, o ROI nos diz quantos reais voltaram em vendas. É o que prova que marketing não é custo, é investimento.</p>
           </div>
            <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Search className="h-4 w-4 text-primary" /> Pixel de Rastreamento</h3>
-            <p className="text-sm text-muted-foreground pl-6">Pense nele como nosso "detetive particular" ou "espião do bem". É um código que instalamos no site do cliente e que nos conta quem entrou lá, quais páginas viu e se comprou algo. Com essas informações, podemos criar anúncios ultra específicos para quem já demonstrou interesse.</p>
+            <p className="text-sm text-muted-foreground pl-6">É um código que instalamos no site do cliente e que rastreia o comportamento dos visitantes. Com essas informações, podemos criar anúncios ultra específicos para quem já demonstrou interesse (remarketing).</p>
           </div>
            <div className="pt-4 border-t">
             <h3 className="font-semibold text-foreground flex items-center gap-2"><MetaIcon className="h-4 w-4 text-primary" /> Meta Ads (Facebook/Instagram Ads)</h3>
@@ -136,5 +136,3 @@ export default function TrafegoPage() {
     </div>
   );
 }
-
-    
