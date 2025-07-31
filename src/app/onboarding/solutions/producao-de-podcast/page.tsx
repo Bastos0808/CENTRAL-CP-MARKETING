@@ -1,7 +1,16 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Mic, CheckCircle, UserCheck, AlertTriangle, Youtube, BookOpen, Film, Send, Radio } from "lucide-react";
-import { FaApple, FaSpotify } from "react-icons/fa6";
+
+// SVG components for logos
+const AppleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
+);
+
+const SpotifyIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10" /><path d="M8 11.5c1.5 0 3 .5 4.5 1.5M9 8.5c2 0 4 .5 6 1.5" /><path d="M10 5.5c2.5 0 5 .5 7.5 1.5" /></svg>
+);
+
 
 export default function PodcastPage() {
   return (
@@ -33,7 +42,7 @@ export default function PodcastPage() {
             <p className="text-sm text-muted-foreground pl-6">É o nosso "serviço de entrega" do podcast. Garantimos que o episódio chegue a todas as "casas" onde as pessoas consomem conteúdo: Spotify e Apple Podcasts para quem ouve, e YouTube para quem assiste. Ninguém fica de fora.</p>
           </div>
            <div className="pt-4 border-t">
-            <h3 className="font-semibold text-foreground flex items-center gap-2"><FaSpotify className="h-4 w-4 text-primary" /> Spotify & <FaApple className="h-4 w-4 text-primary" /> Apple Podcasts</h3>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><SpotifyIcon className="h-4 w-4 text-primary" /> Spotify & <AppleIcon className="h-4 w-4 text-primary" /> Apple Podcasts</h3>
             <p className="text-sm text-muted-foreground pl-6">São as principais "rádios" do mundo dos podcasts. É onde a maioria das pessoas ouve programas enquanto está no trânsito, na academia ou fazendo outras atividades. Estar aqui é fundamental.</p>
           </div>
            <div>
@@ -120,5 +129,3 @@ export default function PodcastPage() {
     </div>
   );
 }
-
-    
