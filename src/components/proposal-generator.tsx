@@ -17,6 +17,7 @@ import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, Align
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
+import Image from 'next/image';
 
 // Schema Definition
 const serviceItemSchema = z.object({ value: z.string().min(1, "O item não pode ser vazio.") });
@@ -209,7 +210,15 @@ export default function ProposalGenerator() {
             <CarouselContent>
                 {/* Page 1: Capa */}
                 <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center" style={{backgroundImage: "url('https://placehold.co/1920x1080/111827/111827.png')"}}>
+                    <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center">
+                        <Image 
+                            src="https://placehold.co/1920x1080/111827/111827.png" 
+                            alt="Background" 
+                            layout="fill" 
+                            objectFit="cover" 
+                            className="absolute inset-0 z-0"
+                            data-ai-hint="office background"
+                        />
                         <div className="absolute inset-0 bg-black/50"></div>
                         <div className="z-10 text-center flex flex-col items-center">
                             <p className="text-[#FE5412] font-semibold tracking-widest mb-2">PROPOSTA COMERCIAL</p>
@@ -221,11 +230,24 @@ export default function ProposalGenerator() {
 
                 {/* Page 2: Sobre a Parceria */}
                 <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[1] = el; }}>
-                        <div className="w-full max-w-5xl text-left">
-                            <h2 className="text-5xl font-bold uppercase mb-6">Sobre a Parceria</h2>
-                            <p className="text-2xl font-light text-gray-300 border-l-4 border-[#FE5412] pl-6">{watchedValues.partnershipDescription}</p>
-                        </div>
+                    <Page ref={el => { if(el) pagesRef.current[1] = el; }} className="p-0 justify-start items-stretch">
+                       <div className="w-full h-full flex">
+                            <div className="w-1/2 flex flex-col justify-center items-start p-12">
+                                <h2 className="text-5xl font-bold uppercase mb-6">Sobre a Parceria</h2>
+                                <p className="text-2xl font-light text-gray-300 border-l-4 border-[#FE5412] pl-6">{watchedValues.partnershipDescription}</p>
+                            </div>
+                            <div className="w-1/2 h-full relative" style={{ clipPath: 'polygon(20% 0, 100% 0, 100% 100%, 0% 100%)' }}>
+                                <Image
+                                    src="https://placehold.co/800x1080.png"
+                                    alt="Partnership"
+                                    layout="fill"
+                                    objectFit="cover"
+                                    className="z-0"
+                                    data-ai-hint="meeting collaboration"
+                                />
+                                <div className="absolute inset-0 bg-black/30"></div>
+                            </div>
+                       </div>
                     </Page>
                 </CarouselItem>
 
@@ -343,5 +365,3 @@ export default function ProposalGenerator() {
     </div>
   );
 }
-
-    
