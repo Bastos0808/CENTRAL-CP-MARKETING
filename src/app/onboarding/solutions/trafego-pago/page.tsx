@@ -47,7 +47,7 @@ export default function TrafegoPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>O Que Entregamos? (Nosso Processo)</CardTitle>
+          <CardTitle>O Que Entregamos? (Nosso Diferencial: Sistema de Aquisição)</CardTitle>
           <CardDescription>Não apenas apertamos o botão "impulsionar". Nós criamos um sistema de aquisição de clientes.</CardDescription>
         </CardHeader>
         <CardContent>
@@ -83,7 +83,7 @@ export default function TrafegoPage() {
             <li className="flex items-start gap-3">
                 <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
                 <div>
-                    <span className="font-semibold">Relatórios de Performance</span>
+                    <span className="font-semibold">Relatórios de Performance Focados em ROI</span>
                     <p className="text-sm text-muted-foreground">Mostramos para o cliente, de forma clara, quanto foi investido, quantos clientes foram gerados e qual foi o custo por cada um. É um relatório focado em resultado de negócio, não em métricas confusas.</p>
                 </div>
             </li>

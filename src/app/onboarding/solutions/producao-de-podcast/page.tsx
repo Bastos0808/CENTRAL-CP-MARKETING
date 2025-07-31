@@ -48,8 +48,8 @@ export default function PodcastPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>O Que Entregamos? (Solução Completa)</CardTitle>
-          <CardDescription>Oferecemos uma experiência "Turnkey" (chave na mão). O cliente entra, grava e nós cuidamos de todo o resto.</CardDescription>
+          <CardTitle>O Que Entregamos? (Diferencial: Solução "Chave na Mão")</CardTitle>
+          <CardDescription>Oferecemos uma experiência completa. O cliente entra no estúdio, grava, e nós cuidamos de todo o resto.</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-6 text-foreground">

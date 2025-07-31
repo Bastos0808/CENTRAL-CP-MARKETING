@@ -47,8 +47,8 @@ export default function RdStationPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><BadgeCheck /> O Que Entregamos? (Nossas Duas Frentes de Atuação)</CardTitle>
-          <CardDescription>Implementamos as duas principais ferramentas da RD Station, dependendo da necessidade do cliente.</CardDescription>
+          <CardTitle className="flex items-center gap-2"><BadgeCheck /> O Que Entregamos? (Diferencial: Processo e Estratégia)</CardTitle>
+          <CardDescription>Não apenas instalamos uma ferramenta. Implementamos um processo de vendas e marketing mais inteligente.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>

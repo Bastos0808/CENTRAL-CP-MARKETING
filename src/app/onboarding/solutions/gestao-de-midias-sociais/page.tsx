@@ -47,16 +47,16 @@ export default function GestaoMidiasPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>O Que Entregamos? (Nosso Processo)</CardTitle>
-          <CardDescription>Este é o passo a passo do nosso trabalho. Não vendemos "posts", vendemos um processo estratégico.</CardDescription>
+          <CardTitle>O Que Entregamos? (Nosso Processo Estratégico)</CardTitle>
+          <CardDescription>Este é o passo a passo do nosso trabalho. Não vendemos "posts", vendemos um processo que gera resultados.</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-6 text-foreground">
             <li className="flex items-start gap-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">1</div>
                 <div>
-                    <span className="font-semibold text-lg">Diagnóstico e Planejamento Estratégico</span>
-                    <p className="text-sm text-muted-foreground">O primeiro passo nunca é criar posts. É fazer uma imersão no negócio do cliente. Estudamos o público, os concorrentes e os objetivos. A partir daí, criamos um plano de comunicação (linha editorial) que define o que vamos falar, como vamos falar e para quem vamos falar, garantindo que cada post tenha um propósito.</p>
+                    <span className="font-semibold text-lg">Diagnóstico e Planejamento (Nosso Diferencial)</span>
+                    <p className="text-sm text-muted-foreground">O primeiro passo nunca é criar posts. É fazer uma imersão no negócio do cliente. Estudamos o público, os concorrentes e os objetivos. A partir daí, criamos um plano de comunicação (linha editorial) que define o que vamos falar, como vamos falar e para quem vamos falar, garantindo que cada post tenha um propósito e esteja alinhado com os objetivos de negócio do cliente.</p>
                 </div>
             </li>
              <li className="flex items-start gap-4">

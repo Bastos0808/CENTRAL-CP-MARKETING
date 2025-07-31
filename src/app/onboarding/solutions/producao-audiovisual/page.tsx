@@ -48,8 +48,8 @@ export default function ProducaoAudiovisualPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>O Que Entregamos? (Nosso Processo Criativo)</CardTitle>
-          <CardDescription>Da ideia à tela, cuidamos de cada detalhe para entregar um resultado excepcional.</CardDescription>
+          <CardTitle>O Que Entregamos? (Diferencial: Gestão de Projeto Completo)</CardTitle>
+          <CardDescription>Da ideia à tela, cuidamos de cada detalhe para entregar um resultado excepcional, sem dor de cabeça para o cliente.</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-6 text-foreground">

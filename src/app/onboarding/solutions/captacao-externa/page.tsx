@@ -47,8 +47,8 @@ export default function CaptacaoExternaPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>O Que Entregamos? (Nosso Processo)</CardTitle>
-          <CardDescription>Transformamos o ambiente do cliente em um set de filmagem profissional.</CardDescription>
+          <CardTitle>O Que Entregamos? (Diferencial: Direção Estratégica)</CardTitle>
+          <CardDescription>Não somos apenas "cinegrafistas". Transformamos o ambiente do cliente em um set de filmagem com propósito.</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-6 text-foreground">
@@ -62,8 +62,8 @@ export default function CaptacaoExternaPage() {
              <li className="flex items-start gap-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">2</div>
                 <div>
-                    <span className="font-semibold text-lg">Produção com Equipe Profissional</span>
-                    <p className="text-sm text-muted-foreground">No dia combinado, nosso filmmaker vai até o cliente em Goiânia com todo o equipamento necessário: câmeras de cinema, iluminação profissional, microfones de lapela e até drones, se o projeto exigir. Cuidamos de toda a direção da cena.</p>
+                    <span className="font-semibold text-lg">Produção com Direção Profissional</span>
+                    <p className="text-sm text-muted-foreground">No dia combinado, nosso filmmaker vai até o cliente em Goiânia com todo o equipamento necessário: câmeras de cinema, iluminação profissional, microfones de lapela e até drones, se o projeto exigir. Cuidamos de toda a direção da cena para extrair o melhor material.</p>
                 </div>
             </li>
             <li className="flex items-start gap-4">
