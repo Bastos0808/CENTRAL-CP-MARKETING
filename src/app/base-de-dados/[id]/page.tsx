@@ -2,8 +2,9 @@
 "use client";
 
 import { useEffect, useState, useRef, type ChangeEvent, use } from 'react';
-import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { doc, getDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { db, storage } from '@/lib/firebase';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -44,6 +45,13 @@ import {
   Youtube,
   Film,
   CalendarClock,
+  File,
+  FileUp,
+  Download,
+  FileJson,
+  FileImage,
+  FileAudio,
+  FileVideo
 } from "lucide-react";
 import {
   Select,
@@ -71,7 +79,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useToast } from '@/hooks/use-toast';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
@@ -81,6 +96,7 @@ import { Input } from '@/components/ui/input';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { BackButton } from '@/components/ui/back-button';
 import ClientChat from '@/components/client-chat';
+import { Progress } from '@/components/ui/progress';
 
 
 // Simple markdown to HTML converter, can be extracted to utils if used elsewhere
@@ -123,6 +139,14 @@ interface VisualIdentity {
     secondaryFont?: string;
 }
 
+interface Asset {
+  id: string;
+  name: string;
+  url: string;
+  type: string;
+  createdAt: string;
+}
+
 interface Recording {
     id: string;
     date: string; // YYYY-MM-DD
@@ -149,6 +173,7 @@ interface Client {
   reports?: Report[];
   visualIdentity?: VisualIdentity;
   podcastPlan?: PodcastPlan;
+  assets?: Asset[];
 }
 
 const statusMap: { 
@@ -193,21 +218,13 @@ const InfoCard = ({ title, value, icon: Icon, children }: { title: string; value
     </div>
 );
 
-const renderList = (items?: { name: string; perfil: string }[]) => {
-  if (!items || items.length === 0 || (items.length === 1 && !items[0].name && !items[0].perfil)) {
-    return <p className="text-md font-semibold text-foreground">Não informado</p>;
-  }
-  return (
-    <ul className="list-disc pl-5 space-y-1">
-      {items.map((item, index) => (
-        (item.name || item.perfil) && (
-          <li key={index} className="text-md font-semibold text-foreground break-all">
-            {item.name} {item.perfil && `(${item.perfil})`}
-          </li>
-        )
-      ))}
-    </ul>
-  );
+const getFileIcon = (fileType: string): LucideIcon => {
+    if (fileType.startsWith('image/')) return FileImage;
+    if (fileType.startsWith('audio/')) return FileAudio;
+    if (fileType.startsWith('video/')) return FileVideo;
+    if (fileType === 'application/pdf') return FileText;
+    if (fileType === 'application/json') return FileJson;
+    return File;
 };
 
 
@@ -228,6 +245,11 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
   const [isSavingVisual, setIsSavingVisual] = useState(false);
   const fileInputRef1 = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
+
+  // Asset management state
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const assetFileInputRef = useRef<HTMLInputElement>(null);
   
 
   useEffect(() => {
@@ -444,6 +466,72 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       });
     }
   };
+  
+  const handleAssetUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (!client || !e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    const assetId = crypto.randomUUID();
+    const storageRef = ref(storage, `clients/${client.id}/assets/${assetId}_${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setUploadProgress(progress);
+      },
+      (error) => {
+        console.error("Upload error:", error);
+        toast({ title: "Erro no Upload", description: "Não foi possível enviar o arquivo.", variant: "destructive" });
+        setIsUploading(false);
+      },
+      async () => {
+        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+        const newAsset: Asset = {
+          id: assetId,
+          name: file.name,
+          url: downloadURL,
+          type: file.type,
+          createdAt: new Date().toISOString(),
+        };
+
+        const clientDocRef = doc(db, "clients", client.id);
+        await updateDoc(clientDocRef, {
+          assets: arrayUnion(newAsset)
+        });
+        
+        setClient(prev => prev ? ({ ...prev, assets: [...(prev.assets || []), newAsset] }) : null);
+        toast({ title: "Arquivo Enviado!", description: `${file.name} foi adicionado à base de arquivos.` });
+        setIsUploading(false);
+      }
+    );
+  };
+  
+  const handleDeleteAsset = async (asset: Asset) => {
+      if (!client) return;
+      
+      const clientDocRef = doc(db, "clients", client.id);
+      const storageRef = ref(storage, `clients/${client.id}/assets/${asset.id}_${asset.name}`);
+      
+      try {
+          // Delete from Firestore
+          await updateDoc(clientDocRef, {
+              assets: arrayRemove(asset)
+          });
+          
+          // Delete from Storage
+          await deleteObject(storageRef);
+
+          setClient(prev => prev ? ({ ...prev, assets: prev.assets?.filter(a => a.id !== asset.id) || []}) : null);
+          toast({ title: "Arquivo Excluído!", description: `${asset.name} foi removido.`});
+      } catch (error) {
+          console.error("Error deleting asset:", error);
+          toast({ title: "Erro ao Excluir", description: "Não foi possível remover o arquivo.", variant: "destructive"});
+      }
+  };
 
 
   if (loading) {
@@ -473,6 +561,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
 
   const StatusInfo = statusMap[client.status];
   const sortedReports = client.reports?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const sortedAssets = client.assets?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   
   const isPodcastOnly = !!client.podcastPlan && !client.briefing.negociosPosicionamento?.descricao;
 
@@ -694,6 +783,97 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                                 {isSavingVisual ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                 {isSavingVisual ? 'Salvando...' : 'Salvar Identidade Visual'}
                             </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </section>
+            
+            <section className="mb-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Base de Arquivos</CardTitle>
+                        <CardDescription>Logos, PDFs, e outros materiais do cliente.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div 
+                            className="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted/30 hover:bg-muted/50"
+                            onClick={() => assetFileInputRef.current?.click()}
+                        >
+                            {isUploading ? (
+                                <div className='w-full px-8 space-y-2'>
+                                    <Progress value={uploadProgress} />
+                                    <p className="text-sm text-center text-muted-foreground">Enviando... {Math.round(uploadProgress)}%</p>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center text-muted-foreground">
+                                    <FileUp className="w-8 h-8 mb-2" />
+                                    <p className="text-sm">Clique ou arraste para enviar um arquivo</p>
+                                    <p className="text-xs">PDF, PNG, JPG, ZIP, etc.</p>
+                                </div>
+                            )}
+                            <input ref={assetFileInputRef} id="asset-upload" type="file" className="hidden" onChange={handleAssetUpload} disabled={isUploading}/>
+                        </div>
+
+                        <div className='pt-4'>
+                             <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                    <TableHead>Nome do Arquivo</TableHead>
+                                    <TableHead>Data de Upload</TableHead>
+                                    <TableHead className="text-right">Ações</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {sortedAssets && sortedAssets.length > 0 ? (
+                                        sortedAssets.map((asset) => {
+                                            const FileIcon = getFileIcon(asset.type);
+                                            return (
+                                                <TableRow key={asset.id}>
+                                                <TableCell className="font-medium">
+                                                    <div className='flex items-center gap-2'>
+                                                        <FileIcon className='h-5 w-5 text-muted-foreground' />
+                                                        <span>{asset.name}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>{formatDate(asset.createdAt)}</TableCell>
+                                                <TableCell className="text-right space-x-2">
+                                                    <Button variant="outline" size="icon" asChild>
+                                                        <a href={asset.url} target="_blank" rel="noopener noreferrer"><Download className='h-4 w-4'/></a>
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="destructive" size="icon">
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Excluir este arquivo?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Esta ação não pode ser desfeita. O arquivo "{asset.name}" será removido permanentemente.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDeleteAsset(asset)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                                                    Excluir Arquivo
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </TableCell>
+                                                </TableRow>
+                                            )
+                                        })
+                                    ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
+                                        Nenhum arquivo na base.
+                                        </TableCell>
+                                    </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
                         </div>
                     </CardContent>
                 </Card>
