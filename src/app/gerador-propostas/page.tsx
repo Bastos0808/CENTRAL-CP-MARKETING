@@ -1,5 +1,8 @@
 
+"use client";
+
 import { BackButton } from '@/components/ui/back-button';
+import ProposalGenerator from '@/components/proposal-generator';
 
 export default function GeradorPropostasPage() {
   return (
@@ -14,8 +17,8 @@ export default function GeradorPropostasPage() {
             Crie propostas comerciais modernas e personalizadas para seus clientes.
           </p>
         </header>
-        <div className="max-w-6xl mx-auto">
-          {/* O conteúdo foi removido conforme solicitado. */}
+        <div className="mx-auto">
+          <ProposalGenerator />
         </div>
       </div>
     </main>
