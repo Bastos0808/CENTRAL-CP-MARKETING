@@ -42,13 +42,24 @@ export default function OnboardingLayout({
 
   const isWelcomePage = pathname === '/onboarding';
 
-  // Reinicia o estado de conclusão sempre que a rota muda
+  // Reinicia o estado de conclusão sempre que a rota muda para uma que não seja uma subpágina.
   useEffect(() => {
-    const isIcpOrProcessSubpage = pathname.startsWith('/onboarding/icp/') || pathname.startsWith('/onboarding/process/');
-    if (isIcpOrProcessSubpage || pathname === '/onboarding/solutions') {
-        setStepCompleted(true);
+     // As páginas de menu são consideradas "completas" por padrão ao carregar.
+     // As páginas de conteúdo, como cultura, devem definir seu próprio estado de conclusão.
+    const isMenuPage = pathname === '/onboarding/solutions' || 
+                       pathname === '/onboarding/icp' || 
+                       pathname === '/onboarding/process';
+
+    const isSubPage = pathname.startsWith('/onboarding/icp/') ||
+                      pathname.startsWith('/onboarding/process/') ||
+                      pathname.startsWith('/onboarding/solutions/');
+
+    if (isMenuPage || isSubPage) {
+      setStepCompleted(true);
     } else {
-        setStepCompleted(false);
+      // Para outras páginas como 'culture' e 'modus', o estado começa como falso,
+      // e a própria página deve chamar setStepCompleted(true) quando a interação ocorrer.
+      setStepCompleted(false);
     }
   }, [pathname]);
 
