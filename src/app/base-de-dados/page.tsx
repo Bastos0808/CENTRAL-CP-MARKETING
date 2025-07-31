@@ -26,10 +26,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useToast } from '@/hooks/use-toast';
-import { PlusCircle, Loader2, Search } from 'lucide-react';
+import { PlusCircle, Loader2, Search, Briefcase, Mic } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { BackButton } from '@/components/ui/back-button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Recording {
     id: string;
@@ -49,6 +50,7 @@ interface Client {
   status: "active" | "inactive" | "pending";
   plan: string;
   startDate: string;
+  briefing: any;
   podcastPlan?: PodcastPlan;
 }
 
@@ -108,6 +110,8 @@ export default function ClientDatabasePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [planFilter, setPlanFilter] = useState("");
+  const [clientTypeFilter, setClientTypeFilter] = useState("all");
+
   const router = useRouter();
   const { toast } = useToast();
 
@@ -144,11 +148,20 @@ export default function ClientDatabasePage() {
 
   useEffect(() => {
     fetchClients();
-  }, []);
+  }, [toast]);
   
   const filteredClients = useMemo(() => {
     return clients
       .filter(client => {
+        // Client Type filter
+        const isPodcastOnly = !!client.podcastPlan && !client.briefing.negociosPosicionamento?.descricao;
+        if (clientTypeFilter === 'podcast' && !isPodcastOnly) {
+          return false;
+        }
+        if (clientTypeFilter === 'social' && isPodcastOnly) {
+          return false;
+        }
+
         // Status filter
         if (statusFilter !== 'all' && client.status !== statusFilter) {
           return false;
@@ -163,7 +176,7 @@ export default function ClientDatabasePage() {
         }
         return true;
       });
-  }, [clients, searchTerm, statusFilter, planFilter]);
+  }, [clients, searchTerm, statusFilter, planFilter, clientTypeFilter]);
 
 
   const onPreRegisterSubmit = async (data: PreRegisterFormValues) => {
@@ -240,6 +253,18 @@ export default function ClientDatabasePage() {
             Aqui você encontra todos os clientes da CP Marketing.
           </p>
         </header>
+        
+        <div className="mb-6 flex justify-center">
+            <Tabs value={clientTypeFilter} onValueChange={setClientTypeFilter} className="w-full max-w-md">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="all">Todos</TabsTrigger>
+                    <TabsTrigger value="social"><div className='flex items-center gap-2'><Briefcase/> Mídia Social</div></TabsTrigger>
+                    <TabsTrigger value="podcast"><div className='flex items-center gap-2'><Mic /> Podcast</div></TabsTrigger>
+                </TabsList>
+            </Tabs>
+        </div>
+
+
         <Card>
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -448,5 +473,3 @@ export default function ClientDatabasePage() {
     </main>
   );
 }
-
-    
