@@ -145,14 +145,14 @@ export default function ProposalGenerator() {
     { name: "Resumo do Plano Ideal", fields: ['idealPlanItems'] },
   ];
 
-  const renderFieldArray = (fields: any, remove: any, append: any, label: string) => (
+  const renderFieldArray = (fields: any, remove: any, append: any, label: string, name: keyof ProposalFormValues) => (
     <div className="space-y-2">
       <Label>{label}</Label>
       {fields.map((field: any, index: number) => (
         <FormField
           key={field.id}
           control={form.control}
-          name={`${fields[0].name.split('.').slice(0, -1).join('.')}.${index}.value`}
+          name={`${name}.${index}.value` as any}
           render={({ field }) => (
             <FormItem className="flex items-center gap-2">
               <FormControl><Input {...field} /></FormControl>
@@ -179,16 +179,16 @@ export default function ProposalGenerator() {
                       {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('actionPlanPlatform') && <FormField control={form.control} name="actionPlanPlatform" render={({ field }) => <FormItem><FormLabel>Plataforma</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('actionPlanFrequency') && renderFieldArray(freqFields, removeFreq, appendFreq, "Frequência")}
-                      {section.fields.includes('actionPlanFormat') && renderFieldArray(formatFields, removeFormat, appendFormat, "Formato")}
-                      {section.fields.includes('objectiveItems') && renderFieldArray(objectiveFields, removeObjective, appendObjective, "Objetivos")}
-                      {section.fields.includes('differentialItems') && renderFieldArray(differentialFields, removeDifferential, appendDifferential, "Diferenciais")}
+                      {section.fields.includes('actionPlanFrequency') && renderFieldArray(freqFields, removeFreq, appendFreq, "Frequência", "actionPlanFrequency")}
+                      {section.fields.includes('actionPlanFormat') && renderFieldArray(formatFields, removeFormat, appendFormat, "Formato", "actionPlanFormat")}
+                      {section.fields.includes('objectiveItems') && renderFieldArray(objectiveFields, removeObjective, appendObjective, "Objetivos", "objectiveItems")}
+                      {section.fields.includes('differentialItems') && renderFieldArray(differentialFields, removeDifferential, appendDifferential, "Diferenciais", "differentialItems")}
                       {section.fields.includes('campaignsIncluded') && <FormField control={form.control} name="campaignsIncluded" render={({ field }) => <FormItem><FormLabel>Campanhas Incluídas</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('campaignsObjective') && renderFieldArray(campObjectiveFields, removeCampObjective, appendCampObjective, "Objetivos da Campanha")}
-                      {section.fields.includes('campaignsDifferential') && renderFieldArray(campDifferentialFields, removeCampDifferential, appendCampDifferential, "Diferenciais da Campanha")}
+                      {section.fields.includes('campaignsObjective') && renderFieldArray(campObjectiveFields, removeCampObjective, appendCampObjective, "Objetivos da Campanha", "campaignsObjective")}
+                      {section.fields.includes('campaignsDifferential') && renderFieldArray(campDifferentialFields, removeCampDifferential, appendCampDifferential, "Diferenciais da Campanha", "campaignsDifferential")}
                       {section.fields.includes('investmentPackage') && <FormField control={form.control} name="investmentPackage" render={({ field }) => <FormItem><FormLabel>Pacote de Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('investmentValue') && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('idealPlanItems') && renderFieldArray(idealPlanFields, removeIdealPlan, appendIdealPlan, "Itens do Plano Ideal")}
+                      {section.fields.includes('idealPlanItems') && renderFieldArray(idealPlanFields, removeIdealPlan, appendIdealPlan, "Itens do Plano Ideal", "idealPlanItems")}
                     </AccordionContent>
                   </AccordionItem>
                 ))}
