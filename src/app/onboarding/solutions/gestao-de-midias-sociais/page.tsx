@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Palette, CheckCircle, UserCheck, AlertTriangle, BookOpen, MessageSquare, Edit, Bot, TrendingUp } from "lucide-react";
+import { Palette, CheckCircle, UserCheck, AlertTriangle, BookOpen, MessageSquare, Edit, Bot, TrendingUp, Instagram, Linkedin, MicVocal } from "lucide-react";
 
 export default function GestaoMidiasPage() {
   return (
@@ -20,7 +20,7 @@ export default function GestaoMidiasPage() {
        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
-          <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
+          <CardDescription>Conceitos e ferramentas que você precisa saber para vender este serviço.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -31,13 +31,25 @@ export default function GestaoMidiasPage() {
             <h3 className="font-semibold text-foreground flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /> Copywriting</h3>
             <p className="text-sm text-muted-foreground pl-6">É o superpoder de escrever textos que convencem. É a arte de criar legendas que não apenas descrevem a foto, mas que fazem o seguidor pensar, sentir e, o mais importante, agir (curtir, comentar ou comprar).</p>
           </div>
-           <div>
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><MicVocal className="h-4 w-4 text-primary" /> Tom de Voz</h3>
+            <p className="text-sm text-muted-foreground pl-6">É a "personalidade" da marca ao falar. Ela é mais séria e formal? Ou divertida e descolada? Definimos isso para que a comunicação seja sempre consistente, como se fosse uma única pessoa falando.</p>
+          </div>
+          <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Algoritmo</h3>
             <p className="text-sm text-muted-foreground pl-6">Pense no "porteiro do Instagram". É o robô que decide quem vai ver o post. Nosso trabalho é criar um conteúdo tão bom que o porteiro nos dê um "crachá VIP" e mostre nosso post para o máximo de pessoas possível.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" /> Engajamento</h3>
             <p className="text-sm text-muted-foreground pl-6">São os "aplausos e conversas" da plateia. Curtidas, comentários, compartilhamentos e salvamentos são sinais para o "porteiro" (algoritmo) de que nosso conteúdo é relevante e merece ser mostrado para mais gente.</p>
+          </div>
+          <div className="pt-4 border-t">
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Instagram className="h-4 w-4 text-primary" /> Instagram & Facebook</h3>
+            <p className="text-sm text-muted-foreground pl-6">São as principais "vitrines visuais". Ideais para criar desejo, mostrar o estilo de vida da marca, os bastidores e construir uma comunidade fiel através de fotos, vídeos (Reels) e stories.</p>
+          </div>
+           <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Linkedin className="h-4 w-4 text-primary" /> LinkedIn</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o "escritório" das redes sociais. A plataforma ideal para empresas que vendem para outras empresas (B2B), para construir autoridade profissional e se conectar com outros players do mercado.</p>
           </div>
         </CardContent>
       </Card>
@@ -111,3 +123,5 @@ export default function GestaoMidiasPage() {
     </div>
   );
 }
+
+    

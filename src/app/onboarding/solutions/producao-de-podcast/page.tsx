@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, CheckCircle, UserCheck, AlertTriangle, Youtube, BookOpen, Film, Send } from "lucide-react";
+import { Mic, CheckCircle, UserCheck, AlertTriangle, Youtube, BookOpen, Film, Send, Radio } from "lucide-react";
+import { FaApple, FaSpotify } from "react-icons/fa6";
 
 export default function PodcastPage() {
   return (
@@ -20,7 +21,7 @@ export default function PodcastPage() {
        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
-          <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
+          <CardDescription>Conceitos e ferramentas que você precisa saber para vender este serviço.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -30,6 +31,14 @@ export default function PodcastPage() {
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Send className="h-4 w-4 text-primary" /> Distribuição</h3>
             <p className="text-sm text-muted-foreground pl-6">É o nosso "serviço de entrega" do podcast. Garantimos que o episódio chegue a todas as "casas" onde as pessoas consomem conteúdo: Spotify e Apple Podcasts para quem ouve, e YouTube para quem assiste. Ninguém fica de fora.</p>
+          </div>
+           <div className="pt-4 border-t">
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><FaSpotify className="h-4 w-4 text-primary" /> Spotify & <FaApple className="h-4 w-4 text-primary" /> Apple Podcasts</h3>
+            <p className="text-sm text-muted-foreground pl-6">São as principais "rádios" do mundo dos podcasts. É onde a maioria das pessoas ouve programas enquanto está no trânsito, na academia ou fazendo outras atividades. Estar aqui é fundamental.</p>
+          </div>
+           <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Youtube className="h-4 w-4 text-primary" /> YouTube</h3>
+            <p className="text-sm text-muted-foreground pl-6">É a "TV do podcast". Para o público que prefere assistir à conversa, o YouTube é a plataforma ideal. Ter o episódio em vídeo, com múltiplos ângulos de câmera, aumenta o profissionalismo e o alcance.</p>
           </div>
         </CardContent>
       </Card>
@@ -111,3 +120,5 @@ export default function PodcastPage() {
     </div>
   );
 }
+
+    

@@ -1,6 +1,16 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Megaphone, CheckCircle, UserCheck, AlertTriangle, BookOpen, Hand, BarChart, Search, Target } from "lucide-react";
+import { Megaphone, CheckCircle, UserCheck, AlertTriangle, BookOpen, Hand, BarChart, Search, Target, Settings, MonitorPlay } from "lucide-react";
+
+// SVG components for logos
+const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+);
+
+const MetaIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.4 0 .8 0 1.2-.1L12 18l-1.4-2.8c-1.4-.4-2.6-1.3-3.4-2.5L3.5 9.8c.2-.5.4-1 .7-1.5L2 6l3.3 2.7c.6-.4 1.3-.7 2-1L6 2l4 3.2c.7-.2 1.3-.2 2 0L16 2l-2.3 5.7c.7.2 1.4.5 2 1L22 6l-2.2 2.3c.3.5.5 1 .7 1.5l-3.7 2.9c-.8 1.2-2 2-3.4 2.5L12 18l1.2 3.9c.4.1.8.1 1.2.1 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+);
+
 
 export default function TrafegoPage() {
   return (
@@ -20,7 +30,7 @@ export default function TrafegoPage() {
        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><BookOpen /> Definições Básicas</CardTitle>
-          <CardDescription>Conceitos que você precisa saber para vender este serviço.</CardDescription>
+          <CardDescription>Conceitos e ferramentas que você precisa saber para vender este serviço.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
@@ -34,6 +44,18 @@ export default function TrafegoPage() {
            <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Search className="h-4 w-4 text-primary" /> Pixel de Rastreamento</h3>
             <p className="text-sm text-muted-foreground pl-6">Pense nele como nosso "detetive particular" ou "espião do bem". É um código que instalamos no site do cliente e que nos conta quem entrou lá, quais páginas viu e se comprou algo. Com essas informações, podemos criar anúncios ultra específicos para quem já demonstrou interesse.</p>
+          </div>
+           <div className="pt-4 border-t">
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><MetaIcon className="h-4 w-4 text-primary" /> Meta Ads (Facebook/Instagram Ads)</h3>
+            <p className="text-sm text-muted-foreground pl-6">É a ferramenta para criar anúncios que aparecem no Instagram e no Facebook. É perfeita para despertar o desejo por um produto, pois conseguimos segmentar por interesses, comportamentos e dados demográficos. É ideal para encontrar novos clientes que ainda não conhecem a marca.</p>
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><GoogleIcon className="h-4 w-4 text-primary" /> Google Ads</h3>
+            <p className="text-sm text-muted-foreground pl-6">É a plataforma para anunciar no Google. A grande vantagem é que alcançamos pessoas que estão ativamente procurando por uma solução naquele exato momento. Se alguém busca "clínica de estética em Goiânia", nós fazemos nosso cliente aparecer em primeiro lugar.</p>
+          </div>
+           <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Settings className="h-4 w-4 text-primary" /> Gerenciador de Anúncios</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o painel de controle profissional para criar e gerenciar campanhas, tanto no Meta quanto no Google. É a nossa "cabine de piloto", que nos dá acesso a todas as ferramentas avançadas, muito diferente do simples botão "Impulsionar", que é como um "modo automático" com pouquíssimos recursos.</p>
           </div>
         </CardContent>
       </Card>
@@ -114,3 +136,5 @@ export default function TrafegoPage() {
     </div>
   );
 }
+
+    
