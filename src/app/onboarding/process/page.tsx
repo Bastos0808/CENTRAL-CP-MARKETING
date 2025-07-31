@@ -17,7 +17,7 @@ const processSteps = [
     {
         title: "Fase 2: Contato Direto",
         icon: Phone,
-        description: "O momento da abordagem. Como enviar uma mensagem personalizada que desperta curiosidade.",
+        description: "O momento da abordagem. Como iniciar uma conversa personalizada que desperta curiosidade.",
         href: "/onboarding/process/contact"
     },
     {
