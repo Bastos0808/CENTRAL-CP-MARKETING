@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from 'react';
@@ -64,15 +65,15 @@ type ProposalFormValues = z.infer<typeof proposalSchema>;
 
 const packageOptions = {
     "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 999, description: "Análise de perfil com otimização\nCriação de projeto para público alvo\nPlanejamento mensal\nMentoria\nCopywriting\nTráfego pago (Meta e Google)\n3 postagens semanais (1 arte e 2 vídeos)\nRelatório mensal\nArtes profissionais\nGestão completa e suporte via WhatsApp.", icon: Palette },
-    "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1999, description: "Para começar a crescer. Análise de perfil com otimização, criação de projeto para público alvo, planejamento mensal, mentoria, copywriting, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), relatório mensal, artes profissionais, gestão completa e suporte via WhatsApp.", icon: Palette },
+    "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1999, description: "Análise de perfil com otimização, criação de projeto para público alvo, planejamento mensal, mentoria, copywriting, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), relatório mensal, artes profissionais, gestão completa e suporte via WhatsApp.", icon: Palette },
     "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Análise de perfil com otimização\nCriação de projeto para público alvo\nPlanejamento mensal\nMentoria\nCopywriting\nTráfego pago (Meta e Google)\n20 postagens mensais\nRelatório mensal\nArtes profissionais\nGestão completa e suporte via WhatsApp\n2 reuniões de pauta\nGestão de LinkedIn\n1 diária de captação de vídeo externa", icon: Palette },
     "marketing_premium": { name: "Plano de Marketing - Premium", price: 2999, description: "Análise de perfil com alterações para otimizar\nAnálise de concorrentes ou inspirações\nCriação de persona para direcionamento de conteúdo\nPlanejamento estratégico mensal\nDirecionamento para posicionamento de imagem nas gravações\nDirecionamento para stories\nTráfego pago (Meta e Google) sem limite de campanha\n3 postagens semanais (arte ou vídeos)\n1 Gravação de podcast de 1H mensal\nMentoria para cliente (Apresentação)\nArtes profissionais criadas no Photoshop e videos editados no premiere e after effects\nTécnicas de copywriting nas legendas\nNeste plano, fazemos a gestão da rede social: planejamento, criação, postagem e acompanhamento de resultados.\nEntrega de relatório mensal com análise de métricas\nCriação e configuração do Google meu negócio com SEO e palavras de reconhecimento\nCaptação de vídeo em nosso estúdio de gravação de vídeos com videomaker mobile\nCaptação de fotos comercias para criação de conteúdo\nGerente de conta", icon: Palette },
     "marketing_master": { name: "Plano de Marketing - Master", price: 3999, description: "Análise de perfil com alterações para otimizar\nAnálise de concorrentes ou inspirações\nCriação de persona para direcionamento de conteúdo\nPlanejamento estratégico mensal\nDirecionamento para posicionamento de imagem nas gravações\nDirecionamento para stories\nTráfego pago (Meta, Google e YouTube)\nGestão do canal do YouTube\nGestão do Spotify para postagem do podcast\n3 postagens semanais (arte ou vídeos)\n4 episódios de 1 hora cada: No caso de meses com 5 semanas completas (de segunda a sexta), oferecemos um episódio adicional sem custo extra.\n2 cortes por episódio: Incluídos no pacote.\nOs episódios podem ser gravados em qualquer horário de segunda a sexta, entre 8h e 17h. (Feriados não estão inclusos.)", icon: Palette },
     "trafego_pago": { name: "Tráfego Pago - Avulso", price: 1200, description: "Planejamento Estratégico de Campanhas\nSegmentação Avançada de Público\nTeste A/B de Anúncios\nMonitoramento de Desempenho\nRelatórios Detalhados e Insights\nOtimização de Campanhas\nAcompanhamento de Leads\nGestão de Campanhas no Google e Meta Ads\n\nContrato de 6 meses. Valor promocional de R$2.000,00 por R$1.200,00.", icon: Megaphone },
     "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "4 episódios/mês (1h cada) gravados em nosso estúdio profissional, com edição de áudio e vídeo e distribuição nas principais plataformas (Spotify e YouTube).", icon: Mic },
     "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada) gravados em nosso estúdio profissional, com edição de áudio e vídeo completa, criação de 2 cortes estratégicos (pílulas de conteúdo) por episódio para redes sociais e distribuição completa.", icon: Mic },
-    "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "4 episódios/mês (2h cada) gravados em nosso estúdio, com edição completa, 4 cortes estratégicos por episódio, gestão do canal do YouTube e 1 diária de captação externa inclusa para gravações especiais.", icon: Mic },
-    "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "4 episódios/mês (2h cada) gravados em nosso estúdio, com edição completa, 4 cortes estratégicos por episódio, gestão completa do canal do YouTube com thumbnails profissionais e otimização de SEO.", icon: Mic },
+    "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "Tudo do plano Prata, mais 2 cortes estratégicos por episódio (total de 4), e 1 diária de captação externa para gravações especiais.", icon: Mic },
+    "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "Tudo do plano Safira, mais gestão completa do canal do YouTube com thumbnails profissionais e otimização de SEO.", icon: Mic },
     "identidade_visual": { name: "Identidade Visual", price: 2500, description: "A cara da sua marca. Criação de logo, paleta de cores, tipografia e um manual de marca completo para garantir consistência.", icon: Sparkles },
     "website": { name: "Website Institucional", price: 5000, description: "Sua casa na internet. Criação de site com até 5 páginas, design responsivo e otimizado para os mecanismos de busca (SEO).", icon: Sparkles },
     "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
@@ -274,7 +275,7 @@ export default function ProposalGeneratorV2() {
   ];
 
   return (
-    <div className="flex flex-col gap-8 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <div className="w-full space-y-4">
           <Card>
             <CardContent className="p-4">
@@ -442,35 +443,13 @@ export default function ProposalGeneratorV2() {
                 </CarouselItem>
 
                 {/* Page 2: Sobre a Parceria */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[1] = el; }} className="p-0 justify-start items-stretch">
-                       <div className="w-full h-full flex items-center">
-                            <div className="w-1/2 flex flex-col justify-center items-start p-24">
-                                <h2 className="text-5xl font-bold uppercase mb-6">Sobre a Parceria</h2>
-                                <p className="text-2xl font-light text-gray-300 border-l-4 border-[#FE5412] pl-6">{watchedValues.partnershipDescription}</p>
-                                {watchedValues.clientLogoUrl && (
-                                  <div className="mt-12 flex items-center gap-6">
-                                    <div className="relative w-24 h-24">
-                                       <Image crossOrigin='anonymous' src={watchedValues.clientLogoUrl} layout="fill" objectFit="contain" alt="Client Logo" />
-                                    </div>
-                                    <X className="h-8 w-8 text-[#FE5412]" />
-                                    <div className="relative w-24 h-24 flex items-center justify-center rounded-full bg-transparent">
-                                       <Image crossOrigin='anonymous' src="/Ativo 6.svg" layout="fill" objectFit="contain" alt="CP Marketing Logo" />
-                                    </div>
-                                  </div>
-                                )}
-                            </div>
-                             <div className="w-1/2 h-full relative flex items-center justify-center">
-                                 <div className="absolute inset-0 bg-black/10"></div>
-                                 <Image
-                                    crossOrigin='anonymous'
-                                    src="/Ativo 6.svg"
-                                    alt="Partnership"
-                                    width={300}
-                                    height={300}
-                                    objectFit="contain"
-                                    className="z-0"
-                                />
+                 <CarouselItem>
+                    <Page ref={el => { if(el) pagesRef.current[1] = el; }} className="justify-start items-start">
+                       <div className="w-full h-full flex flex-col items-start justify-center text-left max-w-5xl mx-auto">
+                            <h2 className="text-6xl font-bold uppercase mb-10">Sobre a Parceria</h2>
+                            <div className="flex items-start gap-6">
+                                <div className="w-1 bg-[#FE5412] self-stretch"></div>
+                                <p className="text-3xl font-light text-gray-200">{watchedValues.partnershipDescription}</p>
                             </div>
                        </div>
                     </Page>
@@ -530,7 +509,7 @@ export default function ProposalGeneratorV2() {
                                         if (!pkg) return null;
                                         const Icon = pkg.icon;
                                         return (
-                                            <div key={pkgKey} className="bg-gray-900/70 p-4 rounded-lg border border-gray-700 flex flex-col min-h-[300px]">
+                                            <div key={pkgKey} className="bg-gray-900/70 p-4 rounded-lg border border-gray-700 flex flex-col min-h-[350px]">
                                                 <div className="flex-grow">
                                                     <div className="flex items-center gap-3 mb-3">
                                                         <Icon className="h-8 w-8 text-[#FE5412]" />
