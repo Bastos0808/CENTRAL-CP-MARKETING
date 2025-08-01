@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,15 @@ import { Label } from '@/components/ui/label';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
+import { Switch } from './ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 // Schema Definition
 const serviceItemSchema = z.object({ value: z.string().min(1, "O item não pode ser vazio.") });
@@ -29,24 +38,46 @@ const proposalSchema = z.object({
   clientLogoUrl: z.string().url("Por favor, insira uma URL válida.").optional().or(z.literal('')),
   coverImageUrl: z.string().url("Por favor, insira uma URL de imagem válida.").optional().or(z.literal('')),
   partnershipDescription: z.string().min(1, 'A descrição da parceria é obrigatória.'),
+  useCustomServices: z.boolean().default(false),
   
-  actionPlanPlatform: z.string().optional(),
-  actionPlanFrequency: z.array(serviceItemSchema).optional(),
-  actionPlanFormat: z.array(serviceItemSchema).optional(),
+  // Pacotes pré-definidos
+  packages: z.array(z.string()).optional(),
+
+  // Seção de Serviços Avulsos (se useCustomServices for true)
+  customServices: z.object({
+      socialMedia: z.array(serviceItemSchema).optional(),
+      paidTraffic: z.array(serviceItemSchema).optional(),
+      podcast: z.array(serviceItemSchema).optional(),
+      branding: z.array(serviceItemSchema).optional(),
+      website: z.array(serviceItemSchema).optional(),
+      landingPage: z.array(serviceItemSchema).optional(),
+  }).optional(),
   
   objectiveItems: z.array(serviceItemSchema).optional(),
   differentialItems: z.array(serviceItemSchema).optional(),
   
-  campaignsIncluded: z.string().optional(),
-  campaignsObjective: z.array(serviceItemSchema).optional(),
-  campaignsDifferential: z.array(serviceItemSchema).optional(),
-  
-  investmentPackage: z.string().optional(),
   investmentValue: z.string().optional(),
   idealPlanItems: z.array(serviceItemSchema).optional(),
 });
 
+
 type ProposalFormValues = z.infer<typeof proposalSchema>;
+
+const packageOptions = {
+    "social_media_prata": "Social Media - Prata",
+    "social_media_ouro": "Social Media - Ouro",
+    "social_media_diamante": "Social Media - Diamante",
+    "trafego_pago_bronze": "Tráfego Pago - Bronze",
+    "trafego_pago_prata": "Tráfego Pago - Prata",
+    "trafego_pago_ouro": "Tráfego Pago - Ouro",
+    "podcast_bronze": "Podcast - Bronze",
+    "podcast_prata": "Podcast - Prata",
+    "podcast_ouro": "Podcast - Ouro",
+    "identidade_visual": "Identidade Visual",
+    "website": "Website Institucional",
+    "landing_page": "Landing Page"
+};
+
 
 const Page = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, children, ...props }, ref) => (
   <div
@@ -65,7 +96,7 @@ const Page = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
 ));
 Page.displayName = 'Page';
 
-export default function ProposalGenerator() {
+export default function ProposalGeneratorV2() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
   const [isGeneratingWithAi, setIsGeneratingWithAi] = React.useState(false);
   const [aiBrief, setAiBrief] = React.useState("");
@@ -77,31 +108,38 @@ export default function ProposalGenerator() {
     defaultValues: {
       clientName: '',
       clientLogoUrl: '',
-      coverImageUrl: '',
+      coverImageUrl: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070&auto=format&fit=crop',
       partnershipDescription: '',
-      actionPlanPlatform: 'INSTAGRAM',
-      actionPlanFrequency: [],
-      actionPlanFormat: [],
+      useCustomServices: false,
+      packages: [],
+      customServices: {
+          socialMedia: [],
+          paidTraffic: [],
+          podcast: [],
+          branding: [],
+          website: [],
+          landingPage: [],
+      },
       objectiveItems: [],
       differentialItems: [],
-      campaignsIncluded: 'Gestão de campanhas de tráfego pago para Facebook e Instagram.',
-      campaignsObjective: [],
-      campaignsDifferential: [],
-      investmentPackage: 'SOCIAL + TRÁFEGO',
       investmentValue: 'R$ 0,00',
       idealPlanItems: [],
     },
   });
 
-  const { fields: freqFields, append: appendFreq, remove: removeFreq } = useFieldArray({ control: form.control, name: "actionPlanFrequency" });
-  const { fields: formatFields, append: appendFormat, remove: removeFormat } = useFieldArray({ control: form.control, name: "actionPlanFormat" });
-  const { fields: objectiveFields, append: appendObjective, remove: removeObjective } = useFieldArray({ control: form.control, name: "objectiveItems" });
-  const { fields: differentialFields, append: appendDifferential, remove: removeDifferential } = useFieldArray({ control: form.control, name: "differentialItems" });
-  const { fields: idealPlanFields, append: appendIdealPlan, remove: removeIdealPlan } = useFieldArray({ control: form.control, name: "idealPlanItems" });
-  const { fields: campObjectiveFields, append: appendCampObjective, remove: removeCampObjective } = useFieldArray({ control: form.control, name: "campaignsObjective" });
-  const { fields: campDifferentialFields, append: appendCampDifferential, remove: removeCampDifferential } = useFieldArray({ control: form.control, name: "campaignsDifferential" });
+  const { fields: objFields, append: appendObj, remove: removeObj } = useFieldArray({ control: form.control, name: "objectiveItems" });
+  const { fields: diffFields, append: appendDiff, remove: removeDiff } = useFieldArray({ control: form.control, name: "differentialItems" });
+  const { fields: idealFields, append: appendIdeal, remove: removeIdeal } = useFieldArray({ control: form.control, name: "idealPlanItems" });
+  const { fields: smFields, append: appendSm, remove: removeSm } = useFieldArray({ control: form.control, name: "customServices.socialMedia" });
+  const { fields: trafficFields, append: appendTraffic, remove: removeTraffic } = useFieldArray({ control: form.control, name: "customServices.paidTraffic" });
+  const { fields: podcastFields, append: appendPodcast, remove: removePodcast } = useFieldArray({ control: form.control, name: "customServices.podcast" });
+  const { fields: brandingFields, append: appendBranding, remove: removeBranding } = useFieldArray({ control: form.control, name: "customServices.branding" });
+  const { fields: websiteFields, append: appendWebsite, remove: removeWebsite } = useFieldArray({ control: form.control, name: "customServices.website" });
+  const { fields: lpFields, append: appendLp, remove: removeLp } = useFieldArray({ control: form.control, name: "customServices.landingPage" });
+
 
   const watchedValues = form.watch();
+  const useCustomServices = watchedValues.useCustomServices;
 
   const handleGenerateWithAi = async () => {
     const clientName = form.getValues("clientName");
@@ -120,18 +158,16 @@ export default function ProposalGenerator() {
         clientBrief: aiBrief
       });
 
-      // Populate form fields with AI result
       form.setValue("partnershipDescription", result.partnershipDescription);
       
-      // Reset and append for field arrays
-      removeObjective();
-      result.objectiveItems.forEach(item => appendObjective(item));
+      removeObj();
+      result.objectiveItems.forEach(item => appendObj(item));
 
-      removeDifferential();
-      result.differentialItems.forEach(item => appendDifferential(item));
+      removeDiff();
+      result.differentialItems.forEach(item => appendDiff(item));
       
-      removeIdealPlan();
-      result.idealPlanItems.forEach(item => appendIdealPlan(item));
+      removeIdeal();
+      result.idealPlanItems.forEach(item => appendIdeal(item));
 
       toast({
         title: "Conteúdo Gerado com Sucesso!",
@@ -160,13 +196,12 @@ export default function ProposalGenerator() {
       for (let i = 0; i < pagesRef.current.length; i++) {
         const pageElement = pagesRef.current[i];
         if (pageElement) {
-          // Preload images within the element
           const images = Array.from(pageElement.getElementsByTagName('img'));
           await Promise.all(images.map(img => {
             if (img.complete) return Promise.resolve();
             return new Promise(resolve => {
               img.onload = resolve;
-              img.onerror = resolve; // Continue even if an image fails
+              img.onerror = resolve;
             });
           }));
 
@@ -202,22 +237,21 @@ export default function ProposalGenerator() {
     { name: "Geração com IA", fields: ['aiBrief'], icon: Wand2 },
     { name: "Capa e Parceria", fields: ['clientName', 'partnershipDescription'], icon: Target },
     { name: "Estilo da Proposta", fields: ['clientLogoUrl', 'coverImageUrl'], icon: Palette },
-    { name: "Plano de Ação", fields: ['actionPlanPlatform', 'actionPlanFrequency', 'actionPlanFormat'], icon: ListChecks },
+    { name: "Serviços", fields: ['useCustomServices', 'packages', 'customServices'], icon: ListChecks },
     { name: "Objetivos", fields: ['objectiveItems'], icon: Goal },
     { name: "Diferenciais", fields: ['differentialItems'], icon: Sparkles },
-    { name: "Campanhas", fields: ['campaignsIncluded', 'campaignsObjective', 'campaignsDifferential'], icon: Megaphone },
-    { name: "Investimento", fields: ['investmentPackage', 'investmentValue'], icon: DollarSign },
     { name: "Resumo do Plano Ideal", fields: ['idealPlanItems'], icon: PackageCheck },
+    { name: "Investimento", fields: ['investmentValue'], icon: DollarSign },
   ];
 
-  const renderFieldArray = (fields: any, remove: any, append: any, label: string, name: keyof ProposalFormValues) => (
+  const renderFieldArray = (fields: any, remove: any, append: any, label: string, name: any) => (
     <div className="space-y-2">
       <Label>{label}</Label>
       {fields.map((field: any, index: number) => (
         <FormField
           key={field.id}
           control={form.control}
-          name={`${name}.${index}.value` as const}
+          name={`${name}.${index}.value`}
           render={({ field }) => (
             <FormItem className="flex items-center gap-2">
               <FormControl><Input {...field} /></FormControl>
@@ -231,13 +265,13 @@ export default function ProposalGenerator() {
   );
 
   return (
-    <div className="flex flex-col gap-8 items-start">
-      <div className="w-full max-w-4xl">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+      <div className="w-full">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
                 <form className="space-y-4">
-                  <Accordion type="multiple" defaultValue={['item-0', 'item-1']} className="w-full">
+                  <Accordion type="multiple" defaultValue={['item-0', 'item-1', 'item-3']} className="w-full">
                     {formSections.map((section, index) => (
                       <AccordionItem value={`item-${index}`} key={section.name}>
                         <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
@@ -261,17 +295,73 @@ export default function ProposalGenerator() {
                           {section.fields.includes('clientLogoUrl') && <FormField control={form.control} name="clientLogoUrl" render={({ field }) => <FormItem><FormLabel>URL do Logo do Cliente (Opcional)</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>} />}
                           {section.fields.includes('coverImageUrl') && <FormField control={form.control} name="coverImageUrl" render={({ field }) => <FormItem><FormLabel>URL da Imagem de Capa (Opcional)</FormLabel><FormControl><Input placeholder="https://images.unsplash.com/..." {...field} /></FormControl><FormMessage /></FormItem>} />}
                           {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>} />}
-                          {section.fields.includes('actionPlanPlatform') && <FormField control={form.control} name="actionPlanPlatform" render={({ field }) => <FormItem><FormLabel>Plataforma</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
-                          {section.fields.includes('actionPlanFrequency') && renderFieldArray(freqFields, removeFreq, appendFreq, "Frequência", "actionPlanFrequency")}
-                          {section.fields.includes('actionPlanFormat') && renderFieldArray(formatFields, removeFormat, appendFormat, "Formato", "actionPlanFormat")}
-                          {section.fields.includes('objectiveItems') && renderFieldArray(objectiveFields, removeObjective, appendObjective, "Objetivos", "objectiveItems")}
-                          {section.fields.includes('differentialItems') && renderFieldArray(differentialFields, removeDifferential, appendDifferential, "Diferenciais", "differentialItems")}
-                          {section.fields.includes('campaignsIncluded') && <FormField control={form.control} name="campaignsIncluded" render={({ field }) => <FormItem><FormLabel>Campanhas Incluídas</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>} />}
-                          {section.fields.includes('campaignsObjective') && renderFieldArray(campObjectiveFields, removeCampObjective, appendCampObjective, "Objetivos da Campanha", "campaignsObjective")}
-                          {section.fields.includes('campaignsDifferential') && renderFieldArray(campDifferentialFields, removeCampDifferential, appendCampDifferential, "Diferenciais da Campanha", "campaignsDifferential")}
-                          {section.fields.includes('investmentPackage') && <FormField control={form.control} name="investmentPackage" render={({ field }) => <FormItem><FormLabel>Pacote de Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          
+                          {section.fields.includes('useCustomServices') && (
+                            <FormField
+                                control={form.control}
+                                name="useCustomServices"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                        <div className="space-y-0.5">
+                                            <FormLabel>Usar Serviços Personalizados?</FormLabel>
+                                            <FormDescription>Ative para criar pacotes do zero.</FormDescription>
+                                        </div>
+                                        <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                          )}
+
+                          {section.fields.includes('packages') && !useCustomServices && (
+                            <FormField
+                                control={form.control}
+                                name="packages"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Pacotes de Serviços</FormLabel>
+                                        <Select onValueChange={(value) => field.onChange([...(field.value || []), value])} >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Adicionar pacote..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {Object.entries(packageOptions).map(([key, value]) => (
+                                                    <SelectItem key={key} value={key} disabled={(field.value || []).includes(key)}>
+                                                        {value}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <div className="flex flex-wrap gap-2 pt-2">
+                                            {(field.value || []).map((pkg) => (
+                                                <div key={pkg} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm">
+                                                    {packageOptions[pkg as keyof typeof packageOptions]}
+                                                    <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => field.onChange(field.value?.filter(v => v !== pkg))}>
+                                                        <X className="h-3 w-3"/>
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                          )}
+
+                          {section.fields.includes('customServices') && useCustomServices && (
+                              <div className="space-y-4 pt-4 border-t">
+                                  {renderFieldArray(smFields, removeSm, appendSm, "Social Media", "customServices.socialMedia")}
+                                  {renderFieldArray(trafficFields, removeTraffic, appendTraffic, "Tráfego Pago", "customServices.paidTraffic")}
+                                  {renderFieldArray(podcastFields, removePodcast, appendPodcast, "Podcast", "customServices.podcast")}
+                                  {renderFieldArray(brandingFields, removeBranding, appendBranding, "Identidade Visual (Branding)", "customServices.branding")}
+                                  {renderFieldArray(websiteFields, removeWebsite, appendWebsite, "Website", "customServices.website")}
+                                  {renderFieldArray(lpFields, removeLp, appendLp, "Landing Page", "customServices.landingPage")}
+                              </div>
+                          )}
+                          
+                          {section.fields.includes('objectiveItems') && renderFieldArray(objFields, removeObj, appendObj, "Objetivos", "objectiveItems")}
+                          {section.fields.includes('differentialItems') && renderFieldArray(diffFields, removeDiff, appendDiff, "Diferenciais", "differentialItems")}
                           {section.fields.includes('investmentValue') && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
-                          {section.fields.includes('idealPlanItems') && renderFieldArray(idealPlanFields, removeIdealPlan, appendIdealPlan, "Itens do Plano Ideal", "idealPlanItems")}
+                          {section.fields.includes('idealPlanItems') && renderFieldArray(idealFields, removeIdeal, appendIdeal, "Itens do Plano Ideal", "idealPlanItems")}
                         </AccordionContent>
                       </AccordionItem>
                     ))}
@@ -286,8 +376,8 @@ export default function ProposalGenerator() {
           </Card>
       </div>
 
-      <div className="w-full">
-         <Carousel className="w-full max-w-4xl mx-auto">
+      <div className="w-full sticky top-8">
+         <Carousel className="w-full mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
                 <CarouselItem>
@@ -348,45 +438,7 @@ export default function ProposalGenerator() {
                     </Page>
                 </CarouselItem>
 
-                {/* Page 3: Plano de Ação */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[2] = el; }}>
-                        <h2 className="text-5xl font-bold uppercase mb-8 text-center w-full">Plano de Ação</h2>
-                        <div className="grid grid-cols-3 gap-8 w-full max-w-6xl">
-                            <Card className="bg-gray-800/50 border-gray-700 text-center !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
-                                <CardContent className="p-8">
-                                    <ListChecks className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
-                                    <h3 className="font-bold text-xl mb-3">Plataforma</h3>
-                                    <p className="text-2xl font-semibold">{watchedValues.actionPlanPlatform}</p>
-                                </CardContent>
-                            </Card>
-                             <Card className="bg-gray-800/50 border-gray-700 !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
-                                <CardContent className="p-8">
-                                    <AlignLeft className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
-                                    <h3 className="font-bold text-xl mb-3 text-center">Frequência</h3>
-                                    <ul className="space-y-2">
-                                        {watchedValues.actionPlanFrequency?.map((item, i) => (
-                                            <li key={i} className="flex items-center gap-2"><Check className="h-5 w-5 text-green-400" /> {item.value}</li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                             <Card className="bg-gray-800/50 border-gray-700 !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
-                                <CardContent className="p-8">
-                                    <BarChart2 className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
-                                    <h3 className="font-bold text-xl mb-3 text-center">Formato</h3>
-                                    <ul className="space-y-2">
-                                         {watchedValues.actionPlanFormat?.map((item, i) => (
-                                            <li key={i} className="flex items-center gap-2"><Check className="h-5 w-5 text-green-400" /> {item.value}</li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </Page>
-                </CarouselItem>
-
-                {/* Page 4: Objetivo */}
+                 {/* Page 3: Objetivo */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[3] = el; }}>
                         <div className="w-full max-w-5xl">
@@ -400,7 +452,7 @@ export default function ProposalGenerator() {
                     </Page>
                 </CarouselItem>
 
-                {/* Page 5: Diferencial */}
+                {/* Page 4: Diferencial */}
                  <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[4] = el; }}>
                          <div className="w-full max-w-5xl">
@@ -413,45 +465,8 @@ export default function ProposalGenerator() {
                          </div>
                     </Page>
                 </CarouselItem>
-
-                {/* Page 6: Campanhas */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[5] = el; }}>
-                        <h2 className="text-5xl font-bold uppercase mb-8 text-center w-full">Campanhas e Tráfego Pago</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
-                           <Card className="bg-gray-800/50 border-gray-700 !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
-                                <CardContent className="p-8">
-                                    <h3 className="font-bold text-2xl mb-4 text-[#FE5412]">Objetivo</h3>
-                                    <ul className="space-y-2 text-lg">
-                                        {watchedValues.campaignsObjective?.map((item, i) => <li className='flex items-center gap-2' key={i}><Check className="h-5 w-5 text-green-400" /> {item.value}</li>)}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                             <Card className="bg-gray-800/50 border-gray-700 !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
-                                <CardContent className="p-8">
-                                    <h3 className="font-bold text-2xl mb-4 text-[#FE5412]">Diferencial</h3>
-                                    <ul className="space-y-2 text-lg">
-                                        {watchedValues.campaignsDifferential?.map((item, i) => <li className='flex items-center gap-2' key={i}><Check className="h-5 w-5 text-green-400" /> {item.value}</li>)}
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </Page>
-                </CarouselItem>
-
-                {/* Page 7: Investimento */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[6] = el; }}>
-                        <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
-                            <h2 className="text-4xl font-bold uppercase mb-2">Investimento</h2>
-                            <p className="text-lg text-gray-300 mb-4">{watchedValues.investmentPackage}</p>
-                            <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
-                            <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
-                        </div>
-                    </Page>
-                </CarouselItem>
-
-                {/* Page 8: Plano Ideal */}
+                
+                {/* Page 5: Plano Ideal */}
                 <CarouselItem>
                      <Page ref={el => { if(el) pagesRef.current[7] = el; }}>
                          <div className="w-full max-w-5xl text-center">
@@ -465,7 +480,18 @@ export default function ProposalGenerator() {
                     </Page>
                 </CarouselItem>
 
-                {/* Page 9: Próximos Passos */}
+                {/* Page 6: Investimento */}
+                <CarouselItem>
+                    <Page ref={el => { if(el) pagesRef.current[6] = el; }}>
+                        <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
+                            <h2 className="text-4xl font-bold uppercase mb-2">Investimento</h2>
+                            <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
+                            <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
+                        </div>
+                    </Page>
+                </CarouselItem>
+
+                {/* Page 7: Próximos Passos */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[8] = el; }}>
                         <div className="w-full max-w-5xl text-center">
@@ -497,7 +523,7 @@ export default function ProposalGenerator() {
                     </Page>
                 </CarouselItem>
 
-                 {/* Page 10: Contato */}
+                 {/* Page 8: Contato */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[9] = el; }}>
                         <div className="text-center">
@@ -507,12 +533,10 @@ export default function ProposalGenerator() {
                     </Page>
                 </CarouselItem>
             </CarouselContent>
-            <CarouselPrevious className="-left-16 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
-            <CarouselNext className="-right-16 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
+            <CarouselPrevious className="-left-12 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
+            <CarouselNext className="-right-12 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
         </Carousel>
       </div>
     </div>
   );
 }
-
-    
