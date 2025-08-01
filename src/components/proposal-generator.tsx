@@ -212,60 +212,62 @@ export default function ProposalGenerator() {
   );
 
   return (
-    <div className="flex flex-col gap-8">
-      <Card>
-        <CardContent className="p-4">
-           <Form {...form}>
-            <form className="space-y-4">
-              <Accordion type="multiple" defaultValue={['item-0', 'item-1']} className="w-full">
-                {formSections.map((section, index) => (
-                  <AccordionItem value={`item-${index}`} key={section.name}>
-                    <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
-                    <AccordionContent className="space-y-4 pt-2">
-                      {section.fields.includes('aiBrief') && (
-                        <div className="space-y-2">
-                          <Label htmlFor="ai-brief">Briefing Rápido</Label>
-                          <Textarea 
-                            id="ai-brief"
-                            placeholder="Descreva o cliente e seus desafios. Ex: Restaurante de luxo que precisa aumentar o movimento durante a semana."
-                            value={aiBrief}
-                            onChange={(e) => setAiBrief(e.target.value)}
-                          />
-                          <Button type="button" onClick={handleGenerateWithAi} disabled={isGeneratingWithAi} className="w-full">
-                            {isGeneratingWithAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4"/>}
-                            {isGeneratingWithAi ? "Gerando..." : "Gerar Conteúdo da Proposta"}
-                          </Button>
-                        </div>
-                      )}
-                      {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('clientLogoUrl') && <FormField control={form.control} name="clientLogoUrl" render={({ field }) => <FormItem><FormLabel>URL do Logo do Cliente (Opcional)</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('coverImageUrl') && <FormField control={form.control} name="coverImageUrl" render={({ field }) => <FormItem><FormLabel>URL da Imagem de Capa (Opcional)</FormLabel><FormControl><Input placeholder="https://images.unsplash.com/..." {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('actionPlanPlatform') && <FormField control={form.control} name="actionPlanPlatform" render={({ field }) => <FormItem><FormLabel>Plataforma</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('actionPlanFrequency') && renderFieldArray(freqFields, removeFreq, appendFreq, "Frequência", "actionPlanFrequency")}
-                      {section.fields.includes('actionPlanFormat') && renderFieldArray(formatFields, removeFormat, appendFormat, "Formato", "actionPlanFormat")}
-                      {section.fields.includes('objectiveItems') && renderFieldArray(objectiveFields, removeObjective, appendObjective, "Objetivos", "objectiveItems")}
-                      {section.fields.includes('differentialItems') && renderFieldArray(differentialFields, removeDifferential, appendDifferential, "Diferenciais", "differentialItems")}
-                      {section.fields.includes('campaignsIncluded') && <FormField control={form.control} name="campaignsIncluded" render={({ field }) => <FormItem><FormLabel>Campanhas Incluídas</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('campaignsObjective') && renderFieldArray(campObjectiveFields, removeCampObjective, appendCampObjective, "Objetivos da Campanha", "campaignsObjective")}
-                      {section.fields.includes('campaignsDifferential') && renderFieldArray(campDifferentialFields, removeCampDifferential, appendCampDifferential, "Diferenciais da Campanha", "campaignsDifferential")}
-                      {section.fields.includes('investmentPackage') && <FormField control={form.control} name="investmentPackage" render={({ field }) => <FormItem><FormLabel>Pacote de Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('investmentValue') && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
-                      {section.fields.includes('idealPlanItems') && renderFieldArray(idealPlanFields, removeIdealPlan, appendIdealPlan, "Itens do Plano Ideal", "idealPlanItems")}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-               <Button onClick={handleDownloadPdf} disabled={isGeneratingPdf} className="w-full mt-6">
-                {isGeneratingPdf ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-                {isGeneratingPdf ? "Gerando PDF..." : "Baixar Proposta em PDF"}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+    <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="w-full lg:w-2/5 lg:sticky top-8">
+          <Card>
+            <CardContent className="p-4">
+               <Form {...form}>
+                <form className="space-y-4">
+                  <Accordion type="multiple" defaultValue={['item-0', 'item-1']} className="w-full">
+                    {formSections.map((section, index) => (
+                      <AccordionItem value={`item-${index}`} key={section.name}>
+                        <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
+                        <AccordionContent className="space-y-4 pt-2">
+                          {section.fields.includes('aiBrief') && (
+                            <div className="space-y-2">
+                              <Label htmlFor="ai-brief">Briefing Rápido</Label>
+                              <Textarea 
+                                id="ai-brief"
+                                placeholder="Descreva o cliente e seus desafios. Ex: Restaurante de luxo que precisa aumentar o movimento durante a semana."
+                                value={aiBrief}
+                                onChange={(e) => setAiBrief(e.target.value)}
+                              />
+                              <Button type="button" onClick={handleGenerateWithAi} disabled={isGeneratingWithAi} className="w-full">
+                                {isGeneratingWithAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4"/>}
+                                {isGeneratingWithAi ? "Gerando..." : "Gerar Conteúdo da Proposta"}
+                              </Button>
+                            </div>
+                          )}
+                          {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('clientLogoUrl') && <FormField control={form.control} name="clientLogoUrl" render={({ field }) => <FormItem><FormLabel>URL do Logo do Cliente (Opcional)</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('coverImageUrl') && <FormField control={form.control} name="coverImageUrl" render={({ field }) => <FormItem><FormLabel>URL da Imagem de Capa (Opcional)</FormLabel><FormControl><Input placeholder="https://images.unsplash.com/..." {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('actionPlanPlatform') && <FormField control={form.control} name="actionPlanPlatform" render={({ field }) => <FormItem><FormLabel>Plataforma</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('actionPlanFrequency') && renderFieldArray(freqFields, removeFreq, appendFreq, "Frequência", "actionPlanFrequency")}
+                          {section.fields.includes('actionPlanFormat') && renderFieldArray(formatFields, removeFormat, appendFormat, "Formato", "actionPlanFormat")}
+                          {section.fields.includes('objectiveItems') && renderFieldArray(objectiveFields, removeObjective, appendObjective, "Objetivos", "objectiveItems")}
+                          {section.fields.includes('differentialItems') && renderFieldArray(differentialFields, removeDifferential, appendDifferential, "Diferenciais", "differentialItems")}
+                          {section.fields.includes('campaignsIncluded') && <FormField control={form.control} name="campaignsIncluded" render={({ field }) => <FormItem><FormLabel>Campanhas Incluídas</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('campaignsObjective') && renderFieldArray(campObjectiveFields, removeCampObjective, appendCampObjective, "Objetivos da Campanha", "campaignsObjective")}
+                          {section.fields.includes('campaignsDifferential') && renderFieldArray(campDifferentialFields, removeCampDifferential, appendCampDifferential, "Diferenciais da Campanha", "campaignsDifferential")}
+                          {section.fields.includes('investmentPackage') && <FormField control={form.control} name="investmentPackage" render={({ field }) => <FormItem><FormLabel>Pacote de Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('investmentValue') && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('idealPlanItems') && renderFieldArray(idealPlanFields, removeIdealPlan, appendIdealPlan, "Itens do Plano Ideal", "idealPlanItems")}
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                   <Button onClick={handleDownloadPdf} disabled={isGeneratingPdf} className="w-full mt-6">
+                    {isGeneratingPdf ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                    {isGeneratingPdf ? "Gerando PDF..." : "Baixar Proposta em PDF"}
+                  </Button>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+      </div>
 
-      <div className="w-full md:block hidden">
+      <div className="w-full lg:w-3/5">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
@@ -278,7 +280,7 @@ export default function ProposalGenerator() {
                                 alt="Background" 
                                 layout="fill" 
                                 objectFit="cover" 
-                                className="absolute inset-0 z-0"
+                                className="absolute inset-0 z-0 opacity-40"
                                 data-ai-hint="technology dark"
                             />
                          )}
@@ -478,12 +480,8 @@ export default function ProposalGenerator() {
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[9] = el; }}>
                         <div className="text-center">
-                            <h2 className="text-7xl font-bold uppercase">Vamos <span className="text-[#FE5412]">conversar?</span></h2>
-                            <p className="text-2xl mt-4 text-gray-300">Estamos prontos para impulsionar seus resultados.</p>
-                             <div className="mt-12 text-2xl font-light">
-                                <p>contato@cpmarketing.com.br</p>
-                                <p>@cpmarketingdigital</p>
-                             </div>
+                            <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
+                            <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder o email do nosso especialista que te enviou esta proposta para agendarmos nossa conversa inicial.</p>
                         </div>
                     </Page>
                 </CarouselItem>
