@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -47,6 +47,12 @@ export default function Home() {
         description: "Gerencie clientes, saldos de gravações e agendamentos.",
         href: "/podcast",
         icon: Mic
+      },
+      {
+        title: "Valores por Hora",
+        description: "Consulte os valores para gravações de podcast.",
+        href: "/valores-podcast",
+        icon: DollarSign
       }
   ];
   
