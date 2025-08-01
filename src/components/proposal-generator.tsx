@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2 } from 'lucide-react';
+import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
@@ -27,6 +27,7 @@ const serviceItemSchema = z.object({ value: z.string().min(1, "O item não pode 
 const proposalSchema = z.object({
   clientName: z.string().min(1, 'O nome do cliente é obrigatório.'),
   clientLogoUrl: z.string().url("Por favor, insira uma URL válida.").optional().or(z.literal('')),
+  coverImageUrl: z.string().url("Por favor, insira uma URL de imagem válida.").optional().or(z.literal('')),
   partnershipDescription: z.string().min(1, 'A descrição da parceria é obrigatória.'),
   
   actionPlanPlatform: z.string().optional(),
@@ -77,6 +78,7 @@ export default function ProposalGenerator() {
     defaultValues: {
       clientName: '',
       clientLogoUrl: '',
+      coverImageUrl: '',
       partnershipDescription: '',
       actionPlanPlatform: 'INSTAGRAM',
       actionPlanFrequency: [],
@@ -179,7 +181,7 @@ export default function ProposalGenerator() {
   
   const formSections = [
     { name: "Geração com IA", fields: ['aiBrief'], icon: Wand2 },
-    { name: "Capa e Parceria", fields: ['clientName', 'clientLogoUrl', 'partnershipDescription'], icon: Target },
+    { name: "Capa e Parceria", fields: ['clientName', 'clientLogoUrl', 'coverImageUrl', 'partnershipDescription'], icon: Target },
     { name: "Plano de Ação", fields: ['actionPlanPlatform', 'actionPlanFrequency', 'actionPlanFormat'], icon: ListChecks },
     { name: "Objetivos", fields: ['objectiveItems'], icon: Goal },
     { name: "Diferenciais", fields: ['differentialItems'], icon: Sparkles },
@@ -209,12 +211,12 @@ export default function ProposalGenerator() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <Card>
         <CardContent className="p-4">
            <Form {...form}>
             <form className="space-y-4">
-              <Accordion type="multiple" defaultValue={['item-0']} className="w-full">
+              <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
                 {formSections.map((section, index) => (
                   <AccordionItem value={`item-${index}`} key={section.name}>
                     <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
@@ -236,6 +238,7 @@ export default function ProposalGenerator() {
                       )}
                       {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('clientLogoUrl') && <FormField control={form.control} name="clientLogoUrl" render={({ field }) => <FormItem><FormLabel>URL do Logo do Cliente (Opcional)</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>} />}
+                      {section.fields.includes('coverImageUrl') && <FormField control={form.control} name="coverImageUrl" render={({ field }) => <FormItem><FormLabel>URL da Imagem de Capa (Opcional)</FormLabel><FormControl><Input placeholder="https://images.unsplash.com/..." {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('actionPlanPlatform') && <FormField control={form.control} name="actionPlanPlatform" render={({ field }) => <FormItem><FormLabel>Plataforma</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('actionPlanFrequency') && renderFieldArray(freqFields, removeFreq, appendFreq, "Frequência", "actionPlanFrequency")}
@@ -268,12 +271,12 @@ export default function ProposalGenerator() {
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center">
                          <Image 
-                            src="https://images.unsplash.com/photo-1715593949273-09009558300a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxvZmZpY2UlMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc1NDA0OTMzNnww&ixlib=rb-4.1.0&q=80&w=1080"
+                            src={watchedValues.coverImageUrl || "https://images.unsplash.com/photo-1519389950473-47ba0277781c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx0ZWNobm9sb2d5JTIwZGFya3xlbnwwfHx8fDE3NTQwNTExNDN8MA&ixlib=rb-4.1.0&q=80&w=1080"}
                             alt="Background" 
                             layout="fill" 
                             objectFit="cover" 
                             className="absolute inset-0 z-0"
-                            data-ai-hint="office background"
+                            data-ai-hint="technology dark"
                         />
                         <div className="absolute inset-0 bg-black/50"></div>
                         <div className="z-10 text-center flex flex-col items-center">
