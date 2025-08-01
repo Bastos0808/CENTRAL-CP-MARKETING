@@ -51,7 +51,7 @@ const Page = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   <div
     ref={ref}
     className={cn(
-      "aspect-video w-full bg-[#111827] text-gray-50 overflow-hidden shadow-2xl relative flex flex-col justify-center items-center p-12 font-body",
+      "aspect-video w-full bg-[#000000] text-gray-50 overflow-hidden shadow-2xl relative flex flex-col justify-center items-center p-12 font-body",
       className
     )}
     {...props}
@@ -165,7 +165,7 @@ export default function ProposalGenerator() {
             height: canvasHeight,
             scale: 2,
             useCORS: true, 
-            backgroundColor: '#111827'
+            backgroundColor: '#000000'
         });
         const imgData = canvas.toDataURL('image/png');
         
@@ -268,7 +268,7 @@ export default function ProposalGenerator() {
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center">
                         <Image 
-                            src="https://placehold.co/1920x1080/111827/111827.png" 
+                            src="https://placehold.co/1920x1080/000000/000000.png" 
                             alt="Background" 
                             layout="fill" 
                             objectFit="cover" 
@@ -288,16 +288,16 @@ export default function ProposalGenerator() {
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[1] = el; }} className="p-0 justify-start items-stretch">
                        <div className="w-full h-full flex">
-                            <div className="w-1/2 flex flex-col justify-center items-start p-12">
+                            <div className="w-1/2 flex flex-col justify-center items-start p-24">
                                 <h2 className="text-5xl font-bold uppercase mb-6">Sobre a Parceria</h2>
                                 <p className="text-2xl font-light text-gray-300 border-l-4 border-[#FE5412] pl-6">{watchedValues.partnershipDescription}</p>
                                 {watchedValues.clientLogoUrl && (
                                   <div className="mt-12 flex items-center gap-6">
-                                    <div className="relative w-28 h-28">
+                                    <div className="relative w-24 h-24">
                                        <Image src={watchedValues.clientLogoUrl} layout="fill" objectFit="contain" alt="Client Logo" />
                                     </div>
                                     <X className="h-8 w-8 text-[#FE5412]" />
-                                    <div className="relative w-28 h-28 flex items-center justify-center rounded-full bg-gray-800">
+                                    <div className="relative w-24 h-24 flex items-center justify-center rounded-full bg-gray-800">
                                        <p className="text-3xl font-bold text-[#FE5412]">CP</p>
                                     </div>
                                   </div>
@@ -310,7 +310,6 @@ export default function ProposalGenerator() {
                                     layout="fill"
                                     objectFit="cover"
                                     className="z-0"
-                                    data-ai-hint="meeting collaboration"
                                 />
                                 <div className="absolute inset-0 bg-black/30"></div>
                             </div>
