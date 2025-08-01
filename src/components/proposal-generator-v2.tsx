@@ -63,16 +63,16 @@ const proposalSchema = z.object({
 type ProposalFormValues = z.infer<typeof proposalSchema>;
 
 const packageOptions = {
-    "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 999, description: "Análise de perfil com otimização, criação de projeto para público alvo, planejamento mensal, mentoria, copywriting, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), relatório mensal, artes profissionais, gestão completa e suporte via WhatsApp.", icon: Palette },
+    "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 999, description: "Análise de perfil com otimização\nCriação de projeto para público alvo\nPlanejamento mensal\nMentoria\nCopywriting\nTráfego pago (Meta e Google)\n3 postagens semanais (1 arte e 2 vídeos)\nRelatório mensal\nArtes profissionais\nGestão completa e suporte via WhatsApp.", icon: Palette },
     "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1999, description: "Para começar a crescer. Análise de perfil com otimização, criação de projeto para público alvo, planejamento mensal, mentoria, copywriting, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), relatório mensal, artes profissionais, gestão completa e suporte via WhatsApp.", icon: Palette },
     "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Análise de perfil com otimização\nCriação de projeto para público alvo\nPlanejamento mensal\nMentoria\nCopywriting\nTráfego pago (Meta e Google)\n20 postagens mensais\nRelatório mensal\nArtes profissionais\nGestão completa e suporte via WhatsApp\n2 reuniões de pauta\nGestão de LinkedIn\n1 diária de captação de vídeo externa", icon: Palette },
     "marketing_premium": { name: "Plano de Marketing - Premium", price: 2999, description: "Análise de perfil com alterações para otimizar\nAnálise de concorrentes ou inspirações\nCriação de persona para direcionamento de conteúdo\nPlanejamento estratégico mensal\nDirecionamento para posicionamento de imagem nas gravações\nDirecionamento para stories\nTráfego pago (Meta e Google) sem limite de campanha\n3 postagens semanais (arte ou vídeos)\n1 Gravação de podcast de 1H mensal\nMentoria para cliente (Apresentação)\nArtes profissionais criadas no Photoshop e videos editados no premiere e after effects\nTécnicas de copywriting nas legendas\nNeste plano, fazemos a gestão da rede social: planejamento, criação, postagem e acompanhamento de resultados.\nEntrega de relatório mensal com análise de métricas\nCriação e configuração do Google meu negócio com SEO e palavras de reconhecimento\nCaptação de vídeo em nosso estúdio de gravação de vídeos com videomaker mobile\nCaptação de fotos comercias para criação de conteúdo\nGerente de conta", icon: Palette },
     "marketing_master": { name: "Plano de Marketing - Master", price: 3999, description: "Análise de perfil com alterações para otimizar\nAnálise de concorrentes ou inspirações\nCriação de persona para direcionamento de conteúdo\nPlanejamento estratégico mensal\nDirecionamento para posicionamento de imagem nas gravações\nDirecionamento para stories\nTráfego pago (Meta, Google e YouTube)\nGestão do canal do YouTube\nGestão do Spotify para postagem do podcast\n3 postagens semanais (arte ou vídeos)\n4 episódios de 1 hora cada: No caso de meses com 5 semanas completas (de segunda a sexta), oferecemos um episódio adicional sem custo extra.\n2 cortes por episódio: Incluídos no pacote.\nOs episódios podem ser gravados em qualquer horário de segunda a sexta, entre 8h e 17h. (Feriados não estão inclusos.)", icon: Palette },
     "trafego_pago": { name: "Tráfego Pago - Avulso", price: 1200, description: "Planejamento Estratégico de Campanhas\nSegmentação Avançada de Público\nTeste A/B de Anúncios\nMonitoramento de Desempenho\nRelatórios Detalhados e Insights\nOtimização de Campanhas\nAcompanhamento de Leads\nGestão de Campanhas no Google e Meta Ads\n\nContrato de 6 meses. Valor promocional de R$2.000,00 por R$1.200,00.", icon: Megaphone },
     "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "4 episódios/mês (1h cada) gravados em nosso estúdio profissional, com edição de áudio e vídeo e distribuição nas principais plataformas (Spotify e YouTube).", icon: Mic },
-    "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada) com edição completa, criação de 2 cortes estratégicos (pílulas de conteúdo) por episódio para redes sociais e distribuição completa.", icon: Mic },
-    "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "4 episódios/mês (2h cada), com edição completa, 4 cortes estratégicos por episódio, gestão do canal do YouTube e 1 diária de captação externa inclusa para gravações especiais.", icon: Mic },
-    "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "4 episódios/mês (2h cada), com edição completa, 4 cortes estratégicos por episódio, gestão completa do canal do YouTube com thumbnails profissionais e otimização de SEO.", icon: Mic },
+    "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada) gravados em nosso estúdio profissional, com edição de áudio e vídeo completa, criação de 2 cortes estratégicos (pílulas de conteúdo) por episódio para redes sociais e distribuição completa.", icon: Mic },
+    "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "4 episódios/mês (2h cada) gravados em nosso estúdio, com edição completa, 4 cortes estratégicos por episódio, gestão do canal do YouTube e 1 diária de captação externa inclusa para gravações especiais.", icon: Mic },
+    "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "4 episódios/mês (2h cada) gravados em nosso estúdio, com edição completa, 4 cortes estratégicos por episódio, gestão completa do canal do YouTube com thumbnails profissionais e otimização de SEO.", icon: Mic },
     "identidade_visual": { name: "Identidade Visual", price: 2500, description: "A cara da sua marca. Criação de logo, paleta de cores, tipografia e um manual de marca completo para garantir consistência.", icon: Sparkles },
     "website": { name: "Website Institucional", price: 5000, description: "Sua casa na internet. Criação de site com até 5 páginas, design responsivo e otimizado para os mecanismos de busca (SEO).", icon: Sparkles },
     "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
@@ -274,8 +274,8 @@ export default function ProposalGeneratorV2() {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start">
-      <div className="w-full lg:w-2/5 xl:w-1/3 space-y-4 lg:sticky lg:top-8">
+    <div className="flex flex-col gap-8 items-start">
+      <div className="w-full space-y-4">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
@@ -414,8 +414,8 @@ export default function ProposalGeneratorV2() {
           </Card>
       </div>
 
-      <div className="w-full lg:w-3/5 xl:w-2/3">
-         <Carousel className="w-full">
+      <div className="w-full">
+         <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
                 <CarouselItem>
@@ -530,13 +530,13 @@ export default function ProposalGeneratorV2() {
                                         if (!pkg) return null;
                                         const Icon = pkg.icon;
                                         return (
-                                            <div key={pkgKey} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col min-h-[380px]">
+                                            <div key={pkgKey} className="bg-gray-900/70 p-4 rounded-lg border border-gray-700 flex flex-col min-h-[300px]">
                                                 <div className="flex-grow">
                                                     <div className="flex items-center gap-3 mb-3">
                                                         <Icon className="h-8 w-8 text-[#FE5412]" />
                                                         <h3 className="font-bold text-lg">{pkg.name}</h3>
                                                     </div>
-                                                    <p className="text-xs text-gray-400 mt-1 whitespace-pre-line leading-relaxed">{pkg.description}</p>
+                                                    <p className="text-[10px] text-gray-400 mt-1 whitespace-pre-line leading-relaxed">{pkg.description}</p>
                                                 </div>
                                             </div>
                                         )
@@ -627,5 +627,3 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
-
-    
