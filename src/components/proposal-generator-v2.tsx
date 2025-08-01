@@ -65,9 +65,9 @@ type ProposalFormValues = z.infer<typeof proposalSchema>;
 const packageOptions = {
     "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 999, description: "Análise de perfil com otimização, criação de projeto para público alvo, planejamento mensal, mentoria, copywriting, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), relatório mensal, artes profissionais, gestão completa e suporte via WhatsApp.", icon: Palette },
     "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1999, description: "Análise de perfil com otimização, criação de projeto para público alvo, planejamento mensal, mentoria, copywriting, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), relatório mensal, artes profissionais, gestão completa e suporte via WhatsApp.", icon: Palette },
-    "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Para crescer. Tudo do Essencial, com 20 posts mensais, 2 reuniões de pauta, gestão de LinkedIn e 1 diária de captação de vídeo externa.", icon: Palette },
+    "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Análise de perfil com otimização\nCriação de projeto para público alvo\nPlanejamento mensal\nMentoria\nCopywriting\nTráfego pago (Meta e Google)\n20 postagens mensais\nRelatório mensal\nArtes profissionais\nGestão completa e suporte via WhatsApp\n2 reuniões de pauta\nGestão de LinkedIn\n1 diária de captação de vídeo externa", icon: Palette },
     "marketing_premium": { name: "Plano de Marketing - Premium", price: 2999, description: "Análise de perfil com alterações para otimizar\nAnálise de concorrentes ou inspirações\nCriação de persona para direcionamento de conteúdo\nPlanejamento estratégico mensal\nDirecionamento para posicionamento de imagem nas gravações\nDirecionamento para stories\nTráfego pago (Meta e Google) sem limite de campanha\n3 postagens semanais (arte ou vídeos)\n1 Gravação de podcast de 1H mensal\nMentoria para cliente (Apresentação)\nArtes profissionais criadas no Photoshop e videos editados no premiere e after effects\nTécnicas de copywriting nas legendas\nNeste plano, fazemos a gestão da rede social: planejamento, criação, postagem e acompanhamento de resultados.\nEntrega de relatório mensal com análise de métricas\nCriação e configuração do Google meu negócio com SEO e palavras de reconhecimento\nCaptação de vídeo em nosso estúdio de gravação de vídeos com videomaker mobile\nCaptação de fotos comercias para criação de conteúdo\nGerente de conta", icon: Palette },
-    "marketing_master": { name: "Plano de Marketing - Master", price: 3999, description: "Plano Premium Completo\nGestão do canal do YouTube\nTráfego pago para YouTube\nGestão do Spotify para postagem do podcast\n4 episódios de 1 hora cada: No caso de meses com 5 semanas completas (de segunda a sexta), oferecemos um episódio adicional sem custo extra.\n2 cortes por episódio: Incluídos no pacote, para facilitar a distribuição e divulgação.\nOs episódios podem ser gravados em qualquer horário de segunda a sexta, entre 8h e 17h.\n(Feriados não estão inclusos.)\nNeste plano, fazemos a gestão da rede social: planejamento, criação, postagem e acompanhamento de resultados.", icon: Palette },
+    "marketing_master": { name: "Plano de Marketing - Master", price: 3999, description: "Análise de perfil com alterações para otimizar\nAnálise de concorrentes ou inspirações\nCriação de persona para direcionamento de conteúdo\nPlanejamento estratégico mensal\nDirecionamento para posicionamento de imagem nas gravações\nDirecionamento para stories\nTráfego pago (Meta, Google e YouTube)\nGestão do canal do YouTube\nGestão do Spotify para postagem do podcast\n3 postagens semanais (arte ou vídeos)\n4 episódios de 1 hora cada: No caso de meses com 5 semanas completas (de segunda a sexta), oferecemos um episódio adicional sem custo extra.\n2 cortes por episódio: Incluídos no pacote.\nOs episódios podem ser gravados em qualquer horário de segunda a sexta, entre 8h e 17h. (Feriados não estão inclusos.)\nMentoria para cliente (Apresentação)\nArtes profissionais e vídeos editados\nTécnicas de copywriting nas legendas\nEntrega de relatório mensal com análise de métricas\nCriação e configuração do Google meu negócio\nCaptação de vídeo em estúdio com videomaker mobile\nCaptação de fotos comerciais\nGerente de conta", icon: Palette },
     "trafego_pago": { name: "Tráfego Pago - Avulso", price: 1200, description: "Planejamento Estratégico de Campanhas\nSegmentação Avançada de Público\nTeste A/B de Anúncios\nMonitoramento de Desempenho\nRelatórios Detalhados e Insights\nOtimização de Campanhas\nAcompanhamento de Leads\nGestão de Campanhas no Google e Meta Ads\n\nContrato de 6 meses. Valor promocional de R$2.000,00 por R$1.200,00.", icon: Megaphone },
     "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "Ideal para começar. 4 episódios/mês (1h cada) gravados em estúdio, com edição básica e distribuição nas principais plataformas.", icon: Mic },
     "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "Mais conteúdo. 4 episódios/mês (2h cada), com edição completa e criação de cortes estratégicos para redes sociais.", icon: Mic },
@@ -274,8 +274,8 @@ export default function ProposalGeneratorV2() {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start">
-      <div className="w-full lg:w-1/3 space-y-4 lg:sticky top-8">
+    <div className="flex flex-col gap-8 items-start">
+      <div className="w-full space-y-4">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
@@ -414,7 +414,7 @@ export default function ProposalGeneratorV2() {
           </Card>
       </div>
 
-      <div className="w-full lg:w-2/3">
+      <div className="w-full">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
