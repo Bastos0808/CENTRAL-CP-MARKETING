@@ -63,8 +63,8 @@ const proposalSchema = z.object({
 type ProposalFormValues = z.infer<typeof proposalSchema>;
 
 const packageOptions = {
-    "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 999, description: "4 artes e legendas persuasivas por mês, tráfego pago no Meta, otimização de perfil e bio, e estratégia de vendas personalizada. Conteúdo entregue pronto para o cliente postar (não inclui gerenciamento de redes).", icon: Palette },
-    "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1500, description: "Ideal para iniciar. Gestão de Mídias Sociais (Instagram e Facebook), 12 posts mensais, 1 reunião de pauta, relatório mensal e suporte via WhatsApp.", icon: Palette },
+    "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 999, description: "Análise de perfil com alterações para otimizar, criação do projeto para público alvo, planejamento mensal, mentoria para cliente (apresentação), técnicas de copywriting nas legendas, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), entrega de relatório mensal, artes profissionais (Photoshop) e vídeos editados (Premiere e After Effects), gestão completa de rede social (planejamento, criação, postagem e acompanhamento) e grupo de WhatsApp para suporte.", icon: Palette },
+    "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1999, description: "Análise de perfil com otimização, criação de projeto para público alvo, planejamento mensal, mentoria, copywriting, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), relatório mensal, artes profissionais, gestão completa e suporte via WhatsApp.", icon: Palette },
     "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Para crescer. Tudo do Essencial, com 20 posts mensais, 2 reuniões de pauta, gestão de LinkedIn e 1 diária de captação de vídeo externa.", icon: Palette },
     "marketing_premium": { name: "Plano de Marketing - Premium", price: 4000, description: "Para se destacar. Tudo do Performance, com 30 posts mensais, 4 reuniões de pauta, gestão de blog e canal no YouTube.", icon: Palette },
     "marketing_master": { name: "Plano de Marketing - Master", price: 6000, description: "A solução completa. Inclui tudo do Premium, com gestão de Tráfego Pago (até R$ 5.000), criação de Landing Pages e assessoria estratégica contínua.", icon: Palette },
@@ -274,8 +274,8 @@ export default function ProposalGeneratorV2() {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start">
-      <div className="w-full lg:w-1/3 space-y-4 lg:sticky lg:top-8">
+     <div className="flex flex-col gap-8 items-start">
+      <div className="w-full space-y-4">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
@@ -414,7 +414,7 @@ export default function ProposalGeneratorV2() {
           </Card>
       </div>
 
-      <div className="w-full lg:w-2/3">
+      <div className="w-full">
          <Carousel className="w-full mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
@@ -534,7 +534,7 @@ export default function ProposalGeneratorV2() {
                                                 <div className="flex-grow">
                                                     <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
                                                     <h3 className="font-bold text-lg mb-1">{pkg.name}</h3>
-                                                    <p className="text-sm text-gray-400 mt-1">{pkg.description}</p>
+                                                    <p className="text-sm text-gray-400 mt-1 whitespace-pre-line">{pkg.description}</p>
                                                 </div>
                                             </div>
                                         )
@@ -625,3 +625,5 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
+
+    
