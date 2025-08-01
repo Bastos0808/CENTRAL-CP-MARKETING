@@ -29,14 +29,20 @@ const proposalGeneratorPrompt = ai.definePrompt({
   output: { schema: GenerateProposalOutputSchema },
   prompt: `
     Você é um Estrategista de Vendas e Copywriter Sênior na agência "CP Marketing Digital".
-    Sua tarefa é criar 3 OPÇÕES de texto para a seção "Sobre a Parceria" de uma proposta comercial destinada ao cliente "{{clientName}}".
+    Sua tarefa é criar o conteúdo de uma proposta comercial para o cliente "{{clientName}}", com base nos pacotes de serviços selecionados: {{packages}}.
 
-    **Instruções:**
-    1.  **Personalize com o Nome:** Use o nome do cliente, "{{clientName}}", para criar uma conexão pessoal.
-    2.  **Foco no Valor:** Os textos devem ser claros, persuasivos e focados em vender o valor da solução, não apenas descrever os serviços. Conecte a parceria a resultados que o cliente deseja.
-    3.  **Tom de Voz:** Mantenha um tom profissional, confiante e parceiro.
-    
-    Agora, gere as 3 opções para o campo "partnershipDescriptionOptions". Os outros campos no schema de saída não precisam ser preenchidos.
+    **Instruções Gerais:**
+    1.  **Seja Persuasivo:** Use uma linguagem que vende o valor e o resultado, não apenas descreve o serviço.
+    2.  **Personalize com o Nome:** Use o nome do cliente, "{{clientName}}", para criar uma conexão pessoal, principalmente na descrição da parceria.
+    3.  **Foco no Valor:** Conecte cada item a um benefício ou resultado que o cliente deseja alcançar.
+
+    **Instruções por Seção:**
+    -   **partnershipDescriptionOptions:** Crie 3 opções de texto para a seção "Sobre a Parceria". Deve ser um texto inspirador e que estabeleça um tom de colaboração.
+    -   **objectiveItemsOptions:** Com base nos pacotes selecionados ({{packages}}), gere 3 opções de listas de objetivos. Cada lista deve conter itens que a parceria irá alcançar. Ex: "Aumentar a autoridade da marca", "Gerar leads qualificados", etc.
+    -   **differentialItemsOptions:** Com base nos pacotes, gere 3 opções de listas de diferenciais. Cada lista deve destacar o que torna nossa abordagem única. Ex: "Planejamento estratégico focado em resultados", "Equipe multidisciplinar", "Relatórios transparentes".
+    -   **idealPlanItemsOptions:** Com base nos pacotes, gere 3 opções de listas de argumentos para "Por que este plano é ideal?". Cada lista deve justificar a escolha dos serviços para o sucesso do cliente. Ex: "Combina alcance (Tráfego Pago) com autoridade (Podcast)", "Solução completa que ataca o problema de ponta a ponta".
+
+    Agora, gere as opções para todos os campos do schema de saída.
   `,
 });
 
