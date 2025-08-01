@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon } from 'lucide-react';
+import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
@@ -181,7 +181,8 @@ export default function ProposalGenerator() {
   
   const formSections = [
     { name: "Geração com IA", fields: ['aiBrief'], icon: Wand2 },
-    { name: "Capa e Parceria", fields: ['clientName', 'clientLogoUrl', 'coverImageUrl', 'partnershipDescription'], icon: Target },
+    { name: "Capa e Parceria", fields: ['clientName', 'partnershipDescription'], icon: Target },
+    { name: "Estilo da Proposta", fields: ['clientLogoUrl', 'coverImageUrl'], icon: Palette },
     { name: "Plano de Ação", fields: ['actionPlanPlatform', 'actionPlanFrequency', 'actionPlanFormat'], icon: ListChecks },
     { name: "Objetivos", fields: ['objectiveItems'], icon: Goal },
     { name: "Diferenciais", fields: ['differentialItems'], icon: Sparkles },
@@ -211,7 +212,7 @@ export default function ProposalGenerator() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-8">
       <Card>
         <CardContent className="p-4">
            <Form {...form}>
@@ -264,13 +265,14 @@ export default function ProposalGenerator() {
         </CardContent>
       </Card>
 
-      <div className="w-full">
+      <div className="w-full md:block hidden">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center">
-                         {watchedValues.coverImageUrl ? (
+                        <div className="absolute inset-0 bg-black z-0"></div>
+                         {watchedValues.coverImageUrl && (
                             <Image 
                                 src={watchedValues.coverImageUrl}
                                 alt="Background" 
@@ -279,8 +281,6 @@ export default function ProposalGenerator() {
                                 className="absolute inset-0 z-0"
                                 data-ai-hint="technology dark"
                             />
-                         ) : (
-                            <div className="absolute inset-0 bg-black z-0"></div>
                          )}
                         <div className="absolute inset-0 bg-black/50"></div>
                         <div className="z-10 text-center flex flex-col items-center">
@@ -311,15 +311,15 @@ export default function ProposalGenerator() {
                                 )}
                             </div>
                             <div className="w-1/2 h-full relative flex items-center justify-center">
-                                <Image
+                                 <div className="absolute inset-0 bg-black/10"></div>
+                                 <Image
                                     src="/Ativo 6.svg"
                                     alt="Partnership"
-                                    width={400}
-                                    height={400}
+                                    width={300}
+                                    height={300}
                                     objectFit="contain"
                                     className="z-0"
                                 />
-                                <div className="absolute inset-0 bg-black/10"></div>
                             </div>
                        </div>
                     </Page>
