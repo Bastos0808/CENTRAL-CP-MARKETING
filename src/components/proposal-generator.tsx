@@ -261,7 +261,7 @@ export default function ProposalGenerator() {
         </CardContent>
       </Card>
 
-      <div className="w-full">
+      <div className="w-full hidden md:block">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
@@ -305,12 +305,11 @@ export default function ProposalGenerator() {
                             </div>
                             <div className="w-1/2 h-full relative" style={{ clipPath: 'polygon(20% 0, 100% 0, 100% 100%, 0% 100%)' }}>
                                 <Image
-                                    src="https://placehold.co/960x1080.png"
+                                    src="/LOGO PROPOSTA.png"
                                     alt="Partnership"
                                     layout="fill"
                                     objectFit="cover"
                                     className="z-0"
-                                    data-ai-hint="meeting collaboration"
                                 />
                                 <div className="absolute inset-0 bg-black/30"></div>
                             </div>
