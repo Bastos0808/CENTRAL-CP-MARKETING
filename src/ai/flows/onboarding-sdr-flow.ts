@@ -24,7 +24,7 @@ export async function generateSdrMessage(
 
 const sdrMessageGeneratorPrompt = ai.definePrompt({
   name: 'sdrMessageGeneratorPrompt',
-  model: googleAI.model('gemini-1.5-flash-latest'),
+  model: googleAI.model('gemini-1.5-pro-latest'),
   input: { schema: SdrMessageInputSchema },
   output: { schema: SdrMessageOutputSchema },
   prompt: `

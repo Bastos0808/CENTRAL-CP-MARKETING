@@ -30,7 +30,7 @@ const clientChatFlow = ai.defineFlow(
     const { history, client } = input;
     
     const llmResponse = await ai.generate({
-        model: googleAI.model('gemini-1.5-flash-latest'),
+        model: googleAI.model('gemini-1.5-pro-latest'),
         prompt: input.history[input.history.length - 1].content,
         history: input.history.slice(0, -1),
         system: `Você é um Estrategista de Marketing e assistente de IA da agência "CP Marketing Digital". Sua função é conversar com o usuário sobre os dados de um cliente específico, fornecendo insights, gerando ideias e respondendo a perguntas com base estritamente nas informações fornecidas.

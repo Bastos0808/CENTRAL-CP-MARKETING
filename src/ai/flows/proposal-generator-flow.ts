@@ -24,7 +24,7 @@ export async function generateProposalContent(
 
 const proposalGeneratorPrompt = ai.definePrompt({
   name: 'proposalGeneratorPrompt',
-  model: googleAI.model('gemini-1.5-flash-latest'),
+  model: googleAI.model('gemini-1.5-pro-latest'),
   input: { schema: GenerateProposalInputSchema },
   output: { schema: GenerateProposalOutputSchema },
   prompt: `
