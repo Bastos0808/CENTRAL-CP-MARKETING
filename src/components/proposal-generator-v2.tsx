@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette } from 'lucide-react';
+import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette, Percent, Tag } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
@@ -40,10 +40,8 @@ const proposalSchema = z.object({
   partnershipDescription: z.string().min(1, 'A descrição da parceria é obrigatória.'),
   useCustomServices: z.boolean().default(false),
   
-  // Pacotes pré-definidos
   packages: z.array(z.string()).optional(),
-
-  // Seção de Serviços Avulsos (se useCustomServices for true)
+  
   customServices: z.object({
       socialMedia: z.array(serviceItemSchema).optional(),
       paidTraffic: z.array(serviceItemSchema).optional(),
@@ -57,6 +55,7 @@ const proposalSchema = z.object({
   differentialItems: z.array(serviceItemSchema).optional(),
   
   investmentValue: z.string().optional(),
+  discount: z.coerce.number().min(0, "Desconto não pode ser negativo").optional(),
   idealPlanItems: z.array(serviceItemSchema).optional(),
 });
 
@@ -64,20 +63,19 @@ const proposalSchema = z.object({
 type ProposalFormValues = z.infer<typeof proposalSchema>;
 
 const packageOptions = {
-    "social_media_prata": "Social Media - Prata",
-    "social_media_ouro": "Social Media - Ouro",
-    "social_media_diamante": "Social Media - Diamante",
-    "trafego_pago_bronze": "Tráfego Pago - Bronze",
-    "trafego_pago_prata": "Tráfego Pago - Prata",
-    "trafego_pago_ouro": "Tráfego Pago - Ouro",
-    "podcast_bronze": "Podcast - Bronze",
-    "podcast_prata": "Podcast - Prata",
-    "podcast_ouro": "Podcast - Ouro",
-    "identidade_visual": "Identidade Visual",
-    "website": "Website Institucional",
-    "landing_page": "Landing Page"
+    "social_media_prata": { name: "Social Media - Prata", price: 1500, description: "Gestão completa de Instagram e Facebook, 12 posts/mês, 1 reunião mensal.", icon: Palette },
+    "social_media_ouro": { name: "Social Media - Ouro", price: 2500, description: "Tudo do Prata, com 20 posts/mês, relatórios avançados e gestão de LinkedIn.", icon: Palette },
+    "social_media_diamante": { name: "Social Media - Diamante", price: 4000, description: "Tudo do Ouro, com 30 posts/mês, captação de vídeo externa e gestão de blog.", icon: Palette },
+    "trafego_pago_bronze": { name: "Tráfego Pago - Bronze", price: 1000, description: "Gestão de até R$2.000 em Meta Ads, 2 campanhas e relatórios mensais.", icon: Megaphone },
+    "trafego_pago_prata": { name: "Tráfego Pago - Prata", price: 2000, description: "Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas e otimização semanal.", icon: Megaphone },
+    "trafego_pago_ouro": { name: "Tráfego Pago - Ouro", price: 3500, description: "Gestão de até R$10.000, campanhas ilimitadas, funil completo e dashboard em tempo real.", icon: Megaphone },
+    "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "4 episódios/mês (1h cada) gravados em estúdio, edição básica e distribuição.", icon: DollarSign },
+    "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada), edição completa, cortes para redes sociais.", icon: DollarSign },
+    "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "Tudo do Prata, com gestão do canal do YouTube e thumbnails profissionais.", icon: DollarSign },
+    "identidade_visual": { name: "Identidade Visual", price: 2500, description: "Criação de logo, paleta de cores, tipografia e manual de marca completo.", icon: Sparkles },
+    "website": { name: "Website Institucional", price: 5000, description: "Criação de site com até 5 páginas, design responsivo e otimizado para SEO.", icon: Sparkles },
+    "landing_page": { name: "Landing Page", price: 1800, description: "Página de alta conversão para campanhas específicas, com formulário integrado.", icon: Sparkles }
 };
-
 
 const Page = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, children, ...props }, ref) => (
   <div
@@ -123,8 +121,10 @@ export default function ProposalGeneratorV2() {
       objectiveItems: [],
       differentialItems: [],
       investmentValue: 'R$ 0,00',
+      discount: 0,
       idealPlanItems: [],
     },
+    mode: 'onChange'
   });
 
   const { fields: objFields, append: appendObj, remove: removeObj } = useFieldArray({ control: form.control, name: "objectiveItems" });
@@ -140,6 +140,21 @@ export default function ProposalGeneratorV2() {
 
   const watchedValues = form.watch();
   const useCustomServices = watchedValues.useCustomServices;
+
+  React.useEffect(() => {
+    if (watchedValues.useCustomServices) return;
+
+    const total = watchedValues.packages?.reduce((acc, pkgKey) => {
+        const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+        return acc + (pkg ? pkg.price : 0);
+    }, 0) || 0;
+    
+    const discountAmount = watchedValues.discount || 0;
+    const finalTotal = total - discountAmount;
+    
+    form.setValue('investmentValue', finalTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+
+  }, [watchedValues.packages, watchedValues.discount, watchedValues.useCustomServices, form]);
 
   const handleGenerateWithAi = async () => {
     const clientName = form.getValues("clientName");
@@ -160,14 +175,13 @@ export default function ProposalGeneratorV2() {
 
       form.setValue("partnershipDescription", result.partnershipDescription);
       
-      removeObj();
-      result.objectiveItems.forEach(item => appendObj(item));
-
-      removeDiff();
-      result.differentialItems.forEach(item => appendDiff(item));
-      
-      removeIdeal();
-      result.idealPlanItems.forEach(item => appendIdeal(item));
+      form.reset({
+        ...form.getValues(),
+        partnershipDescription: result.partnershipDescription,
+        objectiveItems: result.objectiveItems,
+        differentialItems: result.differentialItems,
+        idealPlanItems: result.idealPlanItems
+      });
 
       toast({
         title: "Conteúdo Gerado com Sucesso!",
@@ -241,7 +255,7 @@ export default function ProposalGeneratorV2() {
     { name: "Objetivos", fields: ['objectiveItems'], icon: Goal },
     { name: "Diferenciais", fields: ['differentialItems'], icon: Sparkles },
     { name: "Resumo do Plano Ideal", fields: ['idealPlanItems'], icon: PackageCheck },
-    { name: "Investimento", fields: ['investmentValue'], icon: DollarSign },
+    { name: "Investimento", fields: ['investmentValue', 'discount'], icon: DollarSign },
   ];
 
   const renderFieldArray = (fields: any, remove: any, append: any, label: string, name: any) => (
@@ -313,7 +327,7 @@ export default function ProposalGeneratorV2() {
                           )}
 
                           {section.fields.includes('packages') && !useCustomServices && (
-                            <FormField
+                             <Controller
                                 control={form.control}
                                 name="packages"
                                 render={({ field }) => (
@@ -326,7 +340,7 @@ export default function ProposalGeneratorV2() {
                                             <SelectContent>
                                                 {Object.entries(packageOptions).map(([key, value]) => (
                                                     <SelectItem key={key} value={key} disabled={(field.value || []).includes(key)}>
-                                                        {value}
+                                                        {value.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -334,7 +348,7 @@ export default function ProposalGeneratorV2() {
                                         <div className="flex flex-wrap gap-2 pt-2">
                                             {(field.value || []).map((pkg) => (
                                                 <div key={pkg} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm">
-                                                    {packageOptions[pkg as keyof typeof packageOptions]}
+                                                    {packageOptions[pkg as keyof typeof packageOptions].name}
                                                     <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => field.onChange(field.value?.filter(v => v !== pkg))}>
                                                         <X className="h-3 w-3"/>
                                                     </Button>
@@ -346,7 +360,7 @@ export default function ProposalGeneratorV2() {
                                 )}
                             />
                           )}
-
+                          
                           {section.fields.includes('customServices') && useCustomServices && (
                               <div className="space-y-4 pt-4 border-t">
                                   {renderFieldArray(smFields, removeSm, appendSm, "Social Media", "customServices.socialMedia")}
@@ -360,7 +374,25 @@ export default function ProposalGeneratorV2() {
                           
                           {section.fields.includes('objectiveItems') && renderFieldArray(objFields, removeObj, appendObj, "Objetivos", "objectiveItems")}
                           {section.fields.includes('differentialItems') && renderFieldArray(diffFields, removeDiff, appendDiff, "Diferenciais", "differentialItems")}
-                          {section.fields.includes('investmentValue') && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('investmentValue') && useCustomServices && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento (Manual)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('discount') && (
+                             <FormField
+                                control={form.control}
+                                name="discount"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Desconto (R$)</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                                <Input type="number" placeholder="0.00" {...field} className="pl-10" />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                          )}
                           {section.fields.includes('idealPlanItems') && renderFieldArray(idealFields, removeIdeal, appendIdeal, "Itens do Plano Ideal", "idealPlanItems")}
                         </AccordionContent>
                       </AccordionItem>
@@ -440,7 +472,7 @@ export default function ProposalGeneratorV2() {
 
                  {/* Page 3: Objetivo */}
                 <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[3] = el; }}>
+                    <Page ref={el => { if(el) pagesRef.current[2] = el; }}>
                         <div className="w-full max-w-5xl">
                             <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
                              <ul className="space-y-4 text-xl font-light">
@@ -454,7 +486,7 @@ export default function ProposalGeneratorV2() {
 
                 {/* Page 4: Diferencial */}
                  <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[4] = el; }}>
+                    <Page ref={el => { if(el) pagesRef.current[3] = el; }}>
                          <div className="w-full max-w-5xl">
                             <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
                             <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
@@ -465,10 +497,33 @@ export default function ProposalGeneratorV2() {
                          </div>
                     </Page>
                 </CarouselItem>
+
+                 {/* Page 5: Escopo */}
+                 <CarouselItem>
+                    <Page ref={el => { if(el) pagesRef.current[4] = el; }}>
+                        <div className="w-full max-w-6xl">
+                            <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                                {watchedValues.packages?.map(pkgKey => {
+                                    const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+                                    if (!pkg) return null;
+                                    const Icon = pkg.icon;
+                                    return (
+                                        <div key={pkgKey} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700">
+                                            <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
+                                            <h3 className="font-bold text-lg">{pkg.name}</h3>
+                                            <p className="text-sm text-gray-400 mt-1">{pkg.description}</p>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </Page>
+                </CarouselItem>
                 
-                {/* Page 5: Plano Ideal */}
+                {/* Page 6: Plano Ideal */}
                 <CarouselItem>
-                     <Page ref={el => { if(el) pagesRef.current[7] = el; }}>
+                     <Page ref={el => { if(el) pagesRef.current[5] = el; }}>
                          <div className="w-full max-w-5xl text-center">
                             <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
                              <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
@@ -480,20 +535,20 @@ export default function ProposalGeneratorV2() {
                     </Page>
                 </CarouselItem>
 
-                {/* Page 6: Investimento */}
+                {/* Page 7: Investimento */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[6] = el; }}>
                         <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
-                            <h2 className="text-4xl font-bold uppercase mb-2">Investimento</h2>
+                            <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
                             <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
                             <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
                         </div>
                     </Page>
                 </CarouselItem>
 
-                {/* Page 7: Próximos Passos */}
+                {/* Page 8: Próximos Passos */}
                 <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[8] = el; }}>
+                    <Page ref={el => { if(el) pagesRef.current[7] = el; }}>
                         <div className="w-full max-w-5xl text-center">
                             <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
                             <div className="flex justify-center items-stretch gap-8 text-left">
@@ -523,9 +578,9 @@ export default function ProposalGeneratorV2() {
                     </Page>
                 </CarouselItem>
 
-                 {/* Page 8: Contato */}
+                 {/* Page 9: Contato */}
                 <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[9] = el; }}>
+                    <Page ref={el => { if(el) pagesRef.current[8] = el; }}>
                         <div className="text-center">
                             <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
                             <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
@@ -540,3 +595,4 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
+
