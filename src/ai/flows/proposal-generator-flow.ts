@@ -1,9 +1,9 @@
 
 'use server';
 /**
- * @fileOverview A Genkit flow to generate a marketing proposal.
+ * @fileOverview A Genkit flow to generate marketing proposal content options.
  *
- * - generateProposalContent: Creates proposal content based on a client brief.
+ * - generateProposalContent: Creates proposal content based on selected service packages.
  */
 
 import { ai } from '@/ai/genkit';
@@ -28,21 +28,35 @@ const proposalGeneratorPrompt = ai.definePrompt({
   input: { schema: GenerateProposalInputSchema },
   output: { schema: GenerateProposalOutputSchema },
   prompt: `
-    Você é um Estrategista de Marketing Sênior e Copywriter na agência "CP Marketing Digital".
-    Sua tarefa é criar o conteúdo textual para uma proposta comercial para um novo cliente, com base em um breve resumo.
+    Você é um Estrategista de Vendas e Copywriter Sênior na agência "CP Marketing Digital".
+    Sua tarefa é criar OPÇÕES de textos persuasivos para uma proposta comercial, com base nos pacotes de serviço que o cliente está contratando.
 
     **Instruções:**
-    1.  **Seja Estratégico e Persuasivo:** Use uma linguagem profissional, clara e convincente. O objetivo é mostrar o valor da parceria.
-    2.  **Descrição da Parceria:** Crie um parágrafo que resuma o objetivo principal da colaboração, conectando a expertise da CP Marketing com a necessidade do cliente.
-    3.  **Objetivos:** Liste 3 a 4 objetivos claros e mensuráveis que a parceria buscará atingir.
-    4.  **Diferenciais:** Liste 4 diferenciais ou ações específicas que a CP Marketing fará para atingir os objetivos.
-    5.  **Plano Ideal:** Liste 5 benefícios ou resultados que o cliente alcançará ao escolher o plano ideal, reforçando o valor da solução completa.
+    1.  **Seja um Vendedor:** Seus textos devem ser claros, persuasivos e focados em vender o valor da solução, não apenas descrever os serviços. Conecte os serviços aos resultados que o cliente deseja.
+    2.  **Gere 3 Opções para Cada Campo:** Para cada campo de texto da proposta (partnershipDescriptionOptions, objectiveItemsOptions, differentialItemsOptions, idealPlanItemsOptions), você deve gerar 3 opções distintas para o usuário escolher.
+    3.  **Analise os Pacotes:** Use a lista de pacotes contratados para entender o escopo do trabalho e personalizar os textos.
+        -   Se tiver "Social Media", foque em autoridade, engajamento e comunidade.
+        -   Se tiver "Tráfego Pago", foque em leads, vendas rápidas e ROI.
+        -   Se tiver "Podcast", foque em autoridade de marca e conexão profunda.
+        -   Se tiver "Identidade Visual" ou "Website", foque em profissionalismo e percepção de valor.
+    4.  **Objetivos Claros:** Os objetivos devem ser claros, mensuráveis e diretamente ligados aos serviços contratados.
+    5.  **Diferenciais Reais:** Os diferenciais devem destacar o "jeito CP de fazer" e o que nos torna únicos.
+    6.  **Plano Ideal Convincente:** Os benefícios do plano ideal devem ser aspiracionais e mostrar o valor da solução completa.
 
-    **Resumo do Cliente:**
+    **Cliente:**
     - Nome do Cliente: {{clientName}}
-    - Briefing Rápido: {{clientBrief}}
+    
+    **Pacotes Contratados:**
+    {{#if packages}}
+      {{#each packages}}
+      - {{this}}
+      {{/each}}
+    {{else}}
+      Nenhum pacote selecionado. Crie opções genéricas de alto valor.
+    {{/if}}
 
-    Agora, gere os campos de texto para a proposta.
+
+    Agora, gere as opções para cada campo da proposta.
   `,
 });
 
