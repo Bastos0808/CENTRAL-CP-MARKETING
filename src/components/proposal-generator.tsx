@@ -58,9 +58,8 @@ const Page = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     {...props}
   >
     {children}
-    <div className="absolute bottom-6 left-12 flex items-baseline gap-2">
-        <p className="text-xl font-bold text-[#FE5412]">CP</p>
-        <p className="text-sm font-light text-gray-400 border-l border-gray-700 pl-2">MARKETING</p>
+    <div className="absolute bottom-6 left-12 w-32 h-10">
+      <Image crossOrigin="anonymous" src="/LOGO HORIZONTAL.svg" alt="CP Marketing Logo" layout="fill" objectFit="contain" />
     </div>
   </div>
 ));
@@ -232,7 +231,7 @@ export default function ProposalGenerator() {
   );
 
   return (
-    <div className="flex flex-col gap-8 items-center">
+    <div className="flex flex-col gap-8 items-start">
       <div className="w-full max-w-4xl">
           <Card>
             <CardContent className="p-4">
@@ -515,3 +514,5 @@ export default function ProposalGenerator() {
     </div>
   );
 }
+
+    
