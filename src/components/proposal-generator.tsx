@@ -51,7 +51,7 @@ const Page = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   <div
     ref={ref}
     className={cn(
-      "aspect-video w-full bg-gray-900 text-gray-50 overflow-hidden shadow-2xl relative flex flex-col justify-center items-center p-12 font-body",
+      "aspect-video w-full bg-[#111827] text-gray-50 overflow-hidden shadow-2xl relative flex flex-col justify-center items-center p-12 font-body",
       className
     )}
     {...props}
@@ -195,7 +195,7 @@ export default function ProposalGenerator() {
         <FormField
           key={field.id}
           control={form.control}
-          name={`${name}.${index}.value` as any}
+          name={`${name}.${index}.value`}
           render={({ field }) => (
             <FormItem className="flex items-center gap-2">
               <FormControl><Input {...field} /></FormControl>
@@ -310,6 +310,7 @@ export default function ProposalGenerator() {
                                     layout="fill"
                                     objectFit="cover"
                                     className="z-0"
+                                    data-ai-hint="meeting collaboration"
                                 />
                                 <div className="absolute inset-0 bg-black/30"></div>
                             </div>
@@ -322,29 +323,35 @@ export default function ProposalGenerator() {
                     <Page ref={el => { if(el) pagesRef.current[2] = el; }}>
                         <h2 className="text-5xl font-bold uppercase mb-8 text-center w-full">Plano de Ação</h2>
                         <div className="grid grid-cols-3 gap-8 w-full max-w-6xl">
-                            <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg text-center">
-                                <ListChecks className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
-                                <h3 className="font-bold text-xl mb-3">Plataforma</h3>
-                                <p className="text-2xl font-semibold">{watchedValues.actionPlanPlatform}</p>
-                            </div>
-                             <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg">
-                                <AlignLeft className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
-                                <h3 className="font-bold text-xl mb-3 text-center">Frequência</h3>
-                                <ul className="space-y-2">
-                                    {watchedValues.actionPlanFrequency?.map((item, i) => (
-                                        <li key={i} className="flex items-center gap-2"><Check className="h-5 w-5 text-green-400" /> {item.value}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                             <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg">
-                                <BarChart2 className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
-                                <h3 className="font-bold text-xl mb-3 text-center">Formato</h3>
-                                <ul className="space-y-2">
-                                     {watchedValues.actionPlanFormat?.map((item, i) => (
-                                        <li key={i} className="flex items-center gap-2"><Check className="h-5 w-5 text-green-400" /> {item.value}</li>
-                                    ))}
-                                </ul>
-                            </div>
+                            <Card className="bg-gray-800/50 border-gray-700 text-center !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
+                                <CardContent className="p-8">
+                                    <ListChecks className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
+                                    <h3 className="font-bold text-xl mb-3">Plataforma</h3>
+                                    <p className="text-2xl font-semibold">{watchedValues.actionPlanPlatform}</p>
+                                </CardContent>
+                            </Card>
+                             <Card className="bg-gray-800/50 border-gray-700 !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
+                                <CardContent className="p-8">
+                                    <AlignLeft className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
+                                    <h3 className="font-bold text-xl mb-3 text-center">Frequência</h3>
+                                    <ul className="space-y-2">
+                                        {watchedValues.actionPlanFrequency?.map((item, i) => (
+                                            <li key={i} className="flex items-center gap-2"><Check className="h-5 w-5 text-green-400" /> {item.value}</li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                             <Card className="bg-gray-800/50 border-gray-700 !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
+                                <CardContent className="p-8">
+                                    <BarChart2 className="h-10 w-10 text-[#FE5412] mx-auto mb-4"/>
+                                    <h3 className="font-bold text-xl mb-3 text-center">Formato</h3>
+                                    <ul className="space-y-2">
+                                         {watchedValues.actionPlanFormat?.map((item, i) => (
+                                            <li key={i} className="flex items-center gap-2"><Check className="h-5 w-5 text-green-400" /> {item.value}</li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
                         </div>
                     </Page>
                 </CarouselItem>
@@ -382,18 +389,22 @@ export default function ProposalGenerator() {
                     <Page ref={el => { if(el) pagesRef.current[5] = el; }}>
                         <h2 className="text-5xl font-bold uppercase mb-8 text-center w-full">Campanhas e Tráfego Pago</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-6xl">
-                           <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg">
-                                <h3 className="font-bold text-2xl mb-4 text-[#FE5412]">Objetivo</h3>
-                                <ul className="space-y-2 text-lg">
-                                    {watchedValues.campaignsObjective?.map((item, i) => <li className='flex items-center gap-2' key={i}><Check className="h-5 w-5 text-green-400" /> {item.value}</li>)}
-                                </ul>
-                            </div>
-                             <div className="bg-gray-800/50 border border-gray-700 p-8 rounded-lg">
-                                <h3 className="font-bold text-2xl mb-4 text-[#FE5412]">Diferencial</h3>
-                                <ul className="space-y-2 text-lg">
-                                    {watchedValues.campaignsDifferential?.map((item, i) => <li className='flex items-center gap-2' key={i}><Check className="h-5 w-5 text-green-400" /> {item.value}</li>)}
-                                </ul>
-                            </div>
+                           <Card className="bg-gray-800/50 border-gray-700 !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
+                                <CardContent className="p-8">
+                                    <h3 className="font-bold text-2xl mb-4 text-[#FE5412]">Objetivo</h3>
+                                    <ul className="space-y-2 text-lg">
+                                        {watchedValues.campaignsObjective?.map((item, i) => <li className='flex items-center gap-2' key={i}><Check className="h-5 w-5 text-green-400" /> {item.value}</li>)}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                             <Card className="bg-gray-800/50 border-gray-700 !shadow-none hover:!shadow-[0_0_20px_hsl(var(--accent)/0.2)]">
+                                <CardContent className="p-8">
+                                    <h3 className="font-bold text-2xl mb-4 text-[#FE5412]">Diferencial</h3>
+                                    <ul className="space-y-2 text-lg">
+                                        {watchedValues.campaignsDifferential?.map((item, i) => <li className='flex items-center gap-2' key={i}><Check className="h-5 w-5 text-green-400" /> {item.value}</li>)}
+                                    </ul>
+                                </CardContent>
+                            </Card>
                         </div>
                     </Page>
                 </CarouselItem>
