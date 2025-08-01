@@ -273,7 +273,7 @@ export default function ProposalGeneratorV2() {
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div className="space-y-8">
       <div className="w-full">
           <Card>
             <CardContent className="p-4">
@@ -623,4 +623,3 @@ export default function ProposalGeneratorV2() {
   );
 }
 
-    
