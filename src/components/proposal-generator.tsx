@@ -151,32 +151,52 @@ export default function ProposalGenerator() {
     }
   };
 
-
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
-    const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1920, 1080] });
-    
-    const canvasWidth = 1920;
-    const canvasHeight = 1080;
+    try {
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1920, 1080] });
+      const canvasWidth = 1920;
+      const canvasHeight = 1080;
 
-    for (let i = 0; i < pagesRef.current.length; i++) {
-      const pageElement = pagesRef.current[i];
-      if (pageElement) {
-        const canvas = await html2canvas(pageElement, { 
+      for (let i = 0; i < pagesRef.current.length; i++) {
+        const pageElement = pagesRef.current[i];
+        if (pageElement) {
+          // Preload images within the element
+          const images = Array.from(pageElement.getElementsByTagName('img'));
+          await Promise.all(images.map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+              img.onload = resolve;
+              img.onerror = resolve; // Continue even if an image fails
+            });
+          }));
+
+          const canvas = await html2canvas(pageElement, {
             width: canvasWidth,
             height: canvasHeight,
             scale: 2,
-            useCORS: true, 
-            backgroundColor: '#000000'
-        });
-        const imgData = canvas.toDataURL('image/png');
-        
-        if (i > 0) pdf.addPage([canvasWidth, canvasHeight], 'landscape');
-        pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight);
+            useCORS: true,
+            backgroundColor: '#000000',
+            logging: false,
+          });
+
+          const imgData = canvas.toDataURL('image/png');
+
+          if (i > 0) pdf.addPage([canvasWidth, canvasHeight], 'landscape');
+          pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight, undefined, 'FAST');
+        }
       }
+      pdf.save(`Proposta_${watchedValues.clientName.replace(/\s+/g, '_')}.pdf`);
+    } catch (error) {
+      console.error("PDF Generation Error: ", error);
+      toast({
+        title: "Erro ao Gerar PDF",
+        description: "Ocorreu um problema ao exportar a proposta. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingPdf(false);
     }
-    pdf.save(`Proposta_${watchedValues.clientName.replace(/\s+/g, '_')}.pdf`);
-    setIsGeneratingPdf(false);
   };
   
   const formSections = [
@@ -212,8 +232,8 @@ export default function ProposalGenerator() {
   );
 
   return (
-    <div className="flex flex-col gap-8 items-start">
-      <div className="w-full lg:sticky top-8">
+    <div className="flex flex-col gap-8 items-center">
+      <div className="w-full max-w-4xl">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
@@ -276,6 +296,7 @@ export default function ProposalGenerator() {
                         <div className="absolute inset-0 bg-black z-0"></div>
                          {watchedValues.coverImageUrl && (
                             <Image 
+                                crossOrigin='anonymous'
                                 src={watchedValues.coverImageUrl}
                                 alt="Background" 
                                 layout="fill" 
@@ -303,11 +324,11 @@ export default function ProposalGenerator() {
                                 {watchedValues.clientLogoUrl && (
                                   <div className="mt-12 flex items-center gap-6">
                                     <div className="relative w-24 h-24">
-                                       <Image src={watchedValues.clientLogoUrl} layout="fill" objectFit="contain" alt="Client Logo" />
+                                       <Image crossOrigin='anonymous' src={watchedValues.clientLogoUrl} layout="fill" objectFit="contain" alt="Client Logo" />
                                     </div>
                                     <X className="h-8 w-8 text-[#FE5412]" />
                                     <div className="relative w-24 h-24 flex items-center justify-center rounded-full bg-transparent">
-                                       <Image src="/Ativo 6.svg" layout="fill" objectFit="contain" alt="CP Marketing Logo" />
+                                       <Image crossOrigin='anonymous' src="/Ativo 6.svg" layout="fill" objectFit="contain" alt="CP Marketing Logo" />
                                     </div>
                                   </div>
                                 )}
@@ -315,6 +336,7 @@ export default function ProposalGenerator() {
                              <div className="w-1/2 h-full relative flex items-center justify-center">
                                  <div className="absolute inset-0 bg-black/10"></div>
                                  <Image
+                                    crossOrigin='anonymous'
                                     src="/Ativo 6.svg"
                                     alt="Partnership"
                                     width={300}
