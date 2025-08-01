@@ -216,7 +216,7 @@ export default function ProposalGenerator() {
         <CardContent className="p-4">
            <Form {...form}>
             <form className="space-y-4">
-              <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
+              <Accordion type="multiple" defaultValue={['item-0', 'item-1']} className="w-full">
                 {formSections.map((section, index) => (
                   <AccordionItem value={`item-${index}`} key={section.name}>
                     <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
@@ -264,14 +264,14 @@ export default function ProposalGenerator() {
         </CardContent>
       </Card>
 
-      <div className="w-full hidden md:block">
+      <div className="w-full hidden lg:block">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center">
                          <Image 
-                            src={watchedValues.coverImageUrl || "https://images.unsplash.com/photo-1519389950473-47ba0277781c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx0ZWNobm9sb2d5JTIwZGFya3xlbnwwfHx8fDE3NTQwNTExNDN8MA&ixlib=rb-4.1.0&q=80&w=1080"}
+                            src={watchedValues.coverImageUrl || "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1920&auto=format&fit=crop"}
                             alt="Background" 
                             layout="fill" 
                             objectFit="cover" 
@@ -437,6 +437,52 @@ export default function ProposalGenerator() {
                          </div>
                     </Page>
                 </CarouselItem>
+
+                {/* Page 9: Próximos Passos */}
+                <CarouselItem>
+                    <Page ref={el => { if(el) pagesRef.current[8] = el; }}>
+                        <div className="w-full max-w-5xl text-center">
+                            <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
+                            <div className="flex justify-center items-stretch gap-8 text-left">
+                                <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                                    <CardContent className="p-8">
+                                        <div className="text-5xl font-extrabold text-[#FE5412] mb-4">1</div>
+                                        <h3 className="font-bold text-xl mb-2">Aprovação</h3>
+                                        <p className="text-gray-300">Análise e aprovação da proposta.</p>
+                                    </CardContent>
+                                </Card>
+                                <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                                    <CardContent className="p-8">
+                                        <div className="text-5xl font-extrabold text-[#FE5412] mb-4">2</div>
+                                        <h3 className="font-bold text-xl mb-2">Assinatura</h3>
+                                        <p className="text-gray-300">Assinatura do contrato de prestação de serviços.</p>
+                                    </CardContent>
+                                </Card>
+                                <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                                    <CardContent className="p-8">
+                                        <div className="text-5xl font-extrabold text-[#FE5412] mb-4">3</div>
+                                        <h3 className="font-bold text-xl mb-2">Onboarding</h3>
+                                        <p className="text-gray-300">Início da parceria e alinhamento estratégico.</p>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </div>
+                    </Page>
+                </CarouselItem>
+
+                 {/* Page 10: Contato */}
+                <CarouselItem>
+                    <Page ref={el => { if(el) pagesRef.current[9] = el; }}>
+                        <div className="text-center">
+                            <h2 className="text-7xl font-bold uppercase">Vamos <span className="text-[#FE5412]">conversar?</span></h2>
+                            <p className="text-2xl mt-4 text-gray-300">Estamos prontos para impulsionar seus resultados.</p>
+                             <div className="mt-12 text-2xl font-light">
+                                <p>contato@cpmarketing.com.br</p>
+                                <p>@cpmarketingdigital</p>
+                             </div>
+                        </div>
+                    </Page>
+                </CarouselItem>
             </CarouselContent>
             <CarouselPrevious className="-left-16 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
             <CarouselNext className="-right-16 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
@@ -445,3 +491,5 @@ export default function ProposalGenerator() {
     </div>
   );
 }
+
+    
