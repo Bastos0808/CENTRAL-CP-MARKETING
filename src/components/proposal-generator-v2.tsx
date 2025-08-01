@@ -66,7 +66,7 @@ const packageOptions = {
     "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1500, description: "Gestão de Mídias Sociais (Instagram e Facebook), 12 posts mensais, 1 reunião de pauta, relatório mensal e suporte via WhatsApp.", icon: Palette },
     "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Tudo do Essencial, com 20 posts mensais, 2 reuniões de pauta, gestão de LinkedIn e 1 diária de captação de vídeo externa.", icon: Palette },
     "marketing_premium_plus": { name: "Plano de Marketing - Premium Plus", price: 4000, description: "Tudo do Performance, com 30 posts mensais, 4 reuniões de pauta, gestão de blog e canal no YouTube.", icon: Palette },
-    "marketing_safira": { name: "Plano de Marketing - Safira", price: 2000, description: "Tudo do Essencial, com 16 posts mensais, 2 reuniões de pauta e análise de métricas.", icon: Palette },
+    "marketing_marketmaster": { name: "Plano de Marketing - MarketMaster", price: 6000, description: "A solução completa. Inclui tudo do Premium Plus, com gestão de Tráfego Pago (até R$ 5.000), criação de Landing Pages e assessoria estratégica contínua.", icon: Palette },
     "trafego_pago": { name: "Tráfego Pago", price: 2000, description: "Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas e otimização semanal.", icon: Megaphone },
     "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "4 episódios/mês (1h cada) gravados em estúdio, edição básica e distribuição.", icon: DollarSign },
     "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada), edição completa, cortes para redes sociais.", icon: DollarSign },
