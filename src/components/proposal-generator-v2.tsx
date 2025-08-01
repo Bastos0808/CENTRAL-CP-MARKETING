@@ -63,9 +63,10 @@ const proposalSchema = z.object({
 type ProposalFormValues = z.infer<typeof proposalSchema>;
 
 const packageOptions = {
-    "social_media_essencial": { name: "Social Media - Essencial", price: 1500, description: "Gestão completa de Instagram e Facebook, 12 posts/mês, 1 reunião mensal.", icon: Palette },
-    "social_media_performance": { name: "Social Media - Performance", price: 2500, description: "Tudo do Essencial, com 20 posts/mês, relatórios avançados e gestão de LinkedIn.", icon: Palette },
-    "social_media_premium_plus": { name: "Social Media - Premium Plus", price: 4000, description: "Tudo do Performance, com 30 posts/mês, captação de vídeo externa e gestão de blog.", icon: Palette },
+    "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1500, description: "Gestão de Mídias Sociais (Instagram e Facebook), 12 posts mensais, 1 reunião de pauta, relatório mensal e suporte via WhatsApp.", icon: Palette },
+    "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Tudo do Essencial, com 20 posts mensais, 2 reuniões de pauta, gestão de LinkedIn e 1 diária de captação de vídeo externa.", icon: Palette },
+    "marketing_premium_plus": { name: "Plano de Marketing - Premium Plus", price: 4000, description: "Tudo do Performance, com 30 posts mensais, 4 reuniões de pauta, gestão de blog e canal no YouTube.", icon: Palette },
+    "marketing_safira": { name: "Plano de Marketing - Safira", price: 2000, description: "Tudo do Essencial, com 16 posts mensais, 2 reuniões de pauta e análise de métricas.", icon: Palette },
     "trafego_pago": { name: "Tráfego Pago", price: 2000, description: "Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas e otimização semanal.", icon: Megaphone },
     "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "4 episódios/mês (1h cada) gravados em estúdio, edição básica e distribuição.", icon: DollarSign },
     "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada), edição completa, cortes para redes sociais.", icon: DollarSign },
@@ -287,6 +288,7 @@ export default function ProposalGeneratorV2() {
                                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                                         <div className="space-y-0.5">
                                             <FormLabel>Usar Serviços Personalizados?</FormLabel>
+                                            <FormDescription>Ative para criar pacotes do zero.</FormDescription>
                                         </div>
                                         <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                                     </FormItem>
