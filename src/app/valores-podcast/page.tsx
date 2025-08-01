@@ -44,6 +44,20 @@ const cutsPrices = [
     { name: "12 Cortes", value: "R$ 340,00" },
 ];
 
+const interviewOffer = {
+    items: [
+        "Entrevista Profissional em Estúdio Completo",
+        "4 Cortes Profissionais editados da Entrevista",
+        "Divulgação do Podcast no YouTube e Spotify",
+        "Título Chamativo e SEO Otimizado",
+        "Direitos de Uso dos Conteúdos",
+        "Experiência de Branding Pessoal",
+        "Seja entrevistado por nossa equipe"
+    ],
+    price: "R$ 499,00",
+    originalPrice: "R$ 999,00"
+};
+
 
 export default function ValoresPodcastPage() {
   return (
@@ -59,6 +73,27 @@ export default function ValoresPodcastPage() {
           </p>
         </header>
         <div className="max-w-2xl mx-auto space-y-8">
+            <Card className="border-primary/30">
+                <CardHeader>
+                    <CardTitle>Oferta Especial: Podcast Entrevista</CardTitle>
+                    <CardDescription>Pacote completo para quem quer gravar um podcast sendo entrevistado por nossa equipe.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <ul className="space-y-2">
+                       {interviewOffer.items.map((item) => (
+                         <li key={item} className="flex items-center gap-3">
+                            <Check className="h-5 w-5 text-green-500 flex-shrink-0"/>
+                            <span className="font-medium">{item}</span>
+                         </li>
+                       ))}
+                    </ul>
+                    <div className="text-center pt-4 mt-4 border-t">
+                        <span className="text-lg text-muted-foreground line-through">DE {interviewOffer.originalPrice}</span>
+                        <p className="text-4xl font-bold text-primary">POR {interviewOffer.price}</p>
+                    </div>
+                </CardContent>
+            </Card>
+
              <Card>
                 <CardHeader>
                     <CardTitle>Segunda a Sexta (Manhã e Tarde)</CardTitle>
