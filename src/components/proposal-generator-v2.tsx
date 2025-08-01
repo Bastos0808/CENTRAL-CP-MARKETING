@@ -530,9 +530,11 @@ export default function ProposalGeneratorV2() {
                                         const Icon = pkg.icon;
                                         return (
                                             <div key={pkgKey} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
-                                                <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
-                                                <h3 className="font-bold text-lg mb-1">{pkg.name}</h3>
-                                                <p className="text-sm text-gray-400 mt-1 flex-grow">{pkg.description}</p>
+                                                <div className="flex-grow">
+                                                    <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
+                                                    <h3 className="font-bold text-lg mb-1">{pkg.name}</h3>
+                                                    <p className="text-sm text-gray-400 mt-1">{pkg.description}</p>
+                                                </div>
                                             </div>
                                         )
                                     })}
@@ -622,4 +624,3 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
-
