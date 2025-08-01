@@ -13,11 +13,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X } from 'lucide-react';
+import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast';
+import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
 
 // Schema Definition
 const serviceItemSchema = z.object({ value: z.string().min(1, "O item não pode ser vazio.") });
@@ -55,7 +57,7 @@ const Page = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     {...props}
   >
     {children}
-    <div className="absolute bottom-6 left-12 flex items-center gap-2">
+    <div className="absolute bottom-6 left-12 flex items-baseline gap-2">
         <p className="text-xl font-bold text-[#FE5412]">CP</p>
         <p className="text-sm font-light text-gray-400 border-l border-gray-700 pl-2">MARKETING</p>
     </div>
@@ -65,40 +67,28 @@ Page.displayName = 'Page';
 
 export default function ProposalGenerator() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
+  const [isGeneratingWithAi, setIsGeneratingWithAi] = React.useState(false);
+  const [aiBrief, setAiBrief] = React.useState("");
   const pagesRef = React.useRef<(HTMLDivElement | null)[]>([]);
+  const { toast } = useToast();
 
   const form = useForm<ProposalFormValues>({
     resolver: zodResolver(proposalSchema),
     defaultValues: {
-      clientName: 'Bruxelas Grill',
+      clientName: '',
       clientLogoUrl: '',
-      partnershipDescription: 'Nosso objetivo é transformar o Bruxelas Grill em um ponto de referência gastronômico em Goiânia, conectando-se de forma autêntica com a comunidade local e traduzindo a qualidade excepcional de seus pratos em uma presença digital forte e impactante.',
+      partnershipDescription: '',
       actionPlanPlatform: 'INSTAGRAM',
-      actionPlanFrequency: [{ value: '12 posts mensais' }, { value: '4 reels por mês' }, { value: 'Captação de conteúdo' }],
-      actionPlanFormat: [{ value: 'Artes' }, { value: 'Vídeos' }, { value: 'Fotos' }],
-      objectiveItems: [
-        { value: 'Engajar o público local que busca experiências gastronômicas de alta qualidade.' },
-        { value: 'Valorizar os principais diferenciais: os pratos autorais, o ambiente e o atendimento.' },
-        { value: 'Aumentar o fluxo de clientes e o número de reservas através de um funil de marketing digital.' },
-      ],
-      differentialItems: [
-        { value: 'Sessões de fotos e vídeos profissionais para destacar a apresentação dos pratos.' },
-        { value: 'Divulgação de eventos e promoções para atrair o público em momentos estratégicos.' },
-        { value: 'Estratégias de SEO local e otimização do perfil do Google para buscas na região.' },
-        { value: 'Criação de um cardápio digital funcional e atraente.' },
-      ],
+      actionPlanFrequency: [],
+      actionPlanFormat: [],
+      objectiveItems: [],
+      differentialItems: [],
       campaignsIncluded: 'Gestão de campanhas de tráfego pago para Facebook e Instagram.',
-      campaignsObjective: [{ value: 'Geração de leads' }, { value: 'Aumento do movimento' }, { value: 'Otimização do investimento' }],
-      campaignsDifferential: [{ value: 'Criativos personalizados' }, { value: 'Segmentação precisa' }, { value: 'Testes A/B' }],
-      investmentPackage: 'SOCIAL + TRÁFEGO + CAPTAÇÃO',
-      investmentValue: 'R$ 3.500,00',
-      idealPlanItems: [
-        { value: 'Posicionamento como restaurante referência na cidade' },
-        { value: 'Aumento de reservas e movimento com funil completo' },
-        { value: 'Campanhas inteligentes com foco em conversão real' },
-        { value: 'Conteúdo para Instagram com consistência e impacto' },
-        { value: 'Suporte completo em marketing, tráfego, captação e conteúdo' },
-      ],
+      campaignsObjective: [],
+      campaignsDifferential: [],
+      investmentPackage: 'SOCIAL + TRÁFEGO',
+      investmentValue: 'R$ 0,00',
+      idealPlanItems: [],
     },
   });
 
@@ -112,11 +102,58 @@ export default function ProposalGenerator() {
 
   const watchedValues = form.watch();
 
+  const handleGenerateWithAi = async () => {
+    const clientName = form.getValues("clientName");
+    if (!clientName.trim() || !aiBrief.trim()) {
+      toast({
+        title: "Informações Insuficientes",
+        description: "Por favor, preencha o nome do cliente e o briefing rápido para usar a IA.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setIsGeneratingWithAi(true);
+    try {
+      const result = await generateProposalContent({
+        clientName,
+        clientBrief: aiBrief
+      });
+
+      // Populate form fields with AI result
+      form.setValue("partnershipDescription", result.partnershipDescription);
+      
+      // Reset and append for field arrays
+      removeObjective();
+      result.objectiveItems.forEach(item => appendObjective(item));
+
+      removeDifferential();
+      result.differentialItems.forEach(item => appendDifferential(item));
+      
+      removeIdealPlan();
+      result.idealPlanItems.forEach(item => appendIdealPlan(item));
+
+      toast({
+        title: "Conteúdo Gerado com Sucesso!",
+        description: "A IA preencheu os campos da proposta para você."
+      });
+
+    } catch (error) {
+      console.error("Error generating with AI:", error);
+      toast({
+        title: "Erro na Geração",
+        description: "Não foi possível gerar o conteúdo com a IA. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingWithAi(false);
+    }
+  };
+
+
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
     const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1920, 1080] });
     
-    // Set aspect ratio for consistency
     const canvasWidth = 1920;
     const canvasHeight = 1080;
 
@@ -126,9 +163,9 @@ export default function ProposalGenerator() {
         const canvas = await html2canvas(pageElement, { 
             width: canvasWidth,
             height: canvasHeight,
-            scale: 2, // Increase for higher resolution
+            scale: 2,
             useCORS: true, 
-            backgroundColor: '#111827' // Consistent dark background
+            backgroundColor: '#111827'
         });
         const imgData = canvas.toDataURL('image/png');
         
@@ -141,6 +178,7 @@ export default function ProposalGenerator() {
   };
   
   const formSections = [
+    { name: "Geração com IA", fields: ['aiBrief'], icon: Wand2 },
     { name: "Capa e Parceria", fields: ['clientName', 'clientLogoUrl', 'partnershipDescription'], icon: Target },
     { name: "Plano de Ação", fields: ['actionPlanPlatform', 'actionPlanFrequency', 'actionPlanFormat'], icon: ListChecks },
     { name: "Objetivos", fields: ['objectiveItems'], icon: Goal },
@@ -181,6 +219,21 @@ export default function ProposalGenerator() {
                   <AccordionItem value={`item-${index}`} key={section.name}>
                     <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
                     <AccordionContent className="space-y-4 pt-2">
+                      {section.fields.includes('aiBrief') && (
+                        <div className="space-y-2">
+                          <Label htmlFor="ai-brief">Briefing Rápido</Label>
+                          <Textarea 
+                            id="ai-brief"
+                            placeholder="Descreva o cliente e seus desafios. Ex: Restaurante de luxo que precisa aumentar o movimento durante a semana."
+                            value={aiBrief}
+                            onChange={(e) => setAiBrief(e.target.value)}
+                          />
+                          <Button type="button" onClick={handleGenerateWithAi} disabled={isGeneratingWithAi} className="w-full">
+                            {isGeneratingWithAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4"/>}
+                            {isGeneratingWithAi ? "Gerando..." : "Gerar Conteúdo da Proposta"}
+                          </Button>
+                        </div>
+                      )}
                       {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('clientLogoUrl') && <FormField control={form.control} name="clientLogoUrl" render={({ field }) => <FormItem><FormLabel>URL do Logo do Cliente (Opcional)</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>} />}
                       {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>} />}
