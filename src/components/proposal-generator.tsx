@@ -267,8 +267,8 @@ export default function ProposalGenerator() {
                 {/* Page 1: Capa */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center">
-                        <Image 
-                            src="https://placehold.co/1920x1080/000000/000000.png" 
+                         <Image 
+                            src="https://images.unsplash.com/photo-1715593949273-09009558300a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxvZmZpY2UlMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc1NDA0OTMzNnww&ixlib=rb-4.1.0&q=80&w=1080"
                             alt="Background" 
                             layout="fill" 
                             objectFit="cover" 
@@ -287,11 +287,11 @@ export default function ProposalGenerator() {
                 {/* Page 2: Sobre a Parceria */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[1] = el; }} className="p-0 justify-start items-stretch">
-                       <div className="w-full h-full flex">
+                       <div className="w-full h-full flex items-center">
                             <div className="w-1/2 flex flex-col justify-center items-start p-24">
                                 <h2 className="text-5xl font-bold uppercase mb-6">Sobre a Parceria</h2>
                                 <p className="text-2xl font-light text-gray-300 border-l-4 border-[#FE5412] pl-6">{watchedValues.partnershipDescription}</p>
-                                {watchedValues.clientLogoUrl ? (
+                                {watchedValues.clientLogoUrl && (
                                   <div className="mt-12 flex items-center gap-6">
                                     <div className="relative w-24 h-24">
                                        <Image src={watchedValues.clientLogoUrl} layout="fill" objectFit="contain" alt="Client Logo" />
@@ -301,17 +301,18 @@ export default function ProposalGenerator() {
                                        <Image src="/Ativo 6.svg" layout="fill" objectFit="contain" alt="CP Marketing Logo" />
                                     </div>
                                   </div>
-                                ) : null}
+                                )}
                             </div>
-                            <div className="w-1/2 h-full relative" style={{ clipPath: 'polygon(20% 0, 100% 0, 100% 100%, 0% 100%)' }}>
+                            <div className="w-1/2 h-full relative flex items-center justify-center">
                                 <Image
                                     src="/Ativo 6.svg"
                                     alt="Partnership"
-                                    layout="fill"
-                                    objectFit="cover"
+                                    width={400}
+                                    height={400}
+                                    objectFit="contain"
                                     className="z-0"
                                 />
-                                <div className="absolute inset-0 bg-black/30"></div>
+                                <div className="absolute inset-0 bg-black/10"></div>
                             </div>
                        </div>
                     </Page>
