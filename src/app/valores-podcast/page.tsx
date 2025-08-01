@@ -35,6 +35,15 @@ const specialNightPrices = [
     { name: "Domingo | 1 Episódio de 1h", value: "R$ 599,00" }
 ];
 
+const cutsPrices = [
+    { name: "2 Cortes", value: "R$ 80,00" },
+    { name: "4 Cortes", value: "R$ 140,00" },
+    { name: "6 Cortes", value: "R$ 200,00" },
+    { name: "8 Cortes", value: "R$ 240,00" },
+    { name: "10 Cortes", value: "R$ 300,00" },
+    { name: "12 Cortes", value: "R$ 340,00" },
+];
+
 
 export default function ValoresPodcastPage() {
   return (
@@ -43,10 +52,10 @@ export default function ValoresPodcastPage() {
         <BackButton />
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-            Valores por Hora de Gravação
+            Valores de Gravação e Edição
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Consulte os preços para gravações de podcast.
+            Consulte os preços para gravações de podcast e pacotes de cortes.
           </p>
         </header>
         <div className="max-w-2xl mx-auto space-y-8">
@@ -149,6 +158,34 @@ export default function ValoresPodcastPage() {
                     </ul>
                 </CardContent>
             </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Valores para Cortes</CardTitle>
+                    <CardDescription>Pacotes de cortes simples e valor para cortes magnéticos.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ul className="space-y-4">
+                       {cutsPrices.map((price) => (
+                         <li key={price.name} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                            <span className="flex items-center gap-3 font-medium">
+                                <Check className="h-5 w-5 text-primary"/>
+                                {price.name}
+                            </span>
+                            <span className="font-bold text-lg text-primary">{price.value}</span>
+                         </li>
+                       ))}
+                       <li className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                            <span className="flex items-center gap-3 font-medium">
+                                <Check className="h-5 w-5 text-primary"/>
+                                Cortes Magnéticos (cada)
+                            </span>
+                            <span className="font-bold text-lg text-primary">R$ 50,00</span>
+                         </li>
+                    </ul>
+                </CardContent>
+            </Card>
+
         </div>
       </div>
     </main>
