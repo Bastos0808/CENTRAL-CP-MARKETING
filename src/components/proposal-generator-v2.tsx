@@ -9,11 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette, Percent, Tag } from 'lucide-react';
+import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette, Percent, Tag, FileText } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
 
 
 // Schema Definition
@@ -34,6 +35,7 @@ const serviceItemSchema = z.object({ value: z.string().min(1, "O item não pode 
 
 const proposalSchema = z.object({
   clientName: z.string().min(1, 'O nome do cliente é obrigatório.'),
+  clientBrief: z.string().optional(),
   clientLogoUrl: z.string().url("Por favor, insira uma URL válida.").optional().or(z.literal('')),
   coverImageUrl: z.string().url("Por favor, insira uma URL de imagem válida.").optional().or(z.literal('')),
   partnershipDescription: z.string().min(1, 'A descrição da parceria é obrigatória.'),
@@ -95,6 +97,7 @@ Page.displayName = 'Page';
 
 export default function ProposalGeneratorV2() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
+  const [isGeneratingAi, setIsGeneratingAi] = React.useState(false);
   const pagesRef = React.useRef<(HTMLDivElement | null)[]>([]);
   const { toast } = useToast();
 
@@ -102,6 +105,7 @@ export default function ProposalGeneratorV2() {
     resolver: zodResolver(proposalSchema),
     defaultValues: {
       clientName: '',
+      clientBrief: '',
       clientLogoUrl: '',
       coverImageUrl: 'https://images.unsplash.com/photo-1707380659093-97e45913a9ea?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
       partnershipDescription: '',
@@ -124,9 +128,6 @@ export default function ProposalGeneratorV2() {
     mode: 'onChange'
   });
 
-  const { fields: objFields, append: appendObj, remove: removeObj } = useFieldArray({ control: form.control, name: "objectiveItems" });
-  const { fields: diffFields, append: appendDiff, remove: removeDiff } = useFieldArray({ control: form.control, name: "differentialItems" });
-  const { fields: idealFields, append: appendIdeal, remove: removeIdeal } = useFieldArray({ control: form.control, name: "idealPlanItems" });
   const { fields: smFields, append: appendSm, remove: removeSm } = useFieldArray({ control: form.control, name: "customServices.socialMedia" });
   const { fields: trafficFields, append: appendTraffic, remove: removeTraffic } = useFieldArray({ control: form.control, name: "customServices.paidTraffic" });
   const { fields: podcastFields, append: appendPodcast, remove: removePodcast } = useFieldArray({ control: form.control, name: "customServices.podcast" });
@@ -199,14 +200,34 @@ export default function ProposalGeneratorV2() {
       setIsGeneratingPdf(false);
     }
   };
+
+  const handleGenerateContent = async () => {
+      const { clientName, clientBrief } = form.getValues();
+      if (!clientName || !clientBrief) {
+          toast({ title: "Informações Faltando", description: "Preencha o nome e o resumo do cliente para a IA gerar o conteúdo.", variant: "destructive" });
+          return;
+      }
+
+      setIsGeneratingAi(true);
+      try {
+          const result = await generateProposalContent({ clientName, clientBrief });
+          form.setValue('partnershipDescription', result.partnershipDescription);
+          form.setValue('objectiveItems', result.objectiveItems);
+          form.setValue('differentialItems', result.differentialItems);
+          form.setValue('idealPlanItems', result.idealPlanItems);
+          toast({ title: "Conteúdo Gerado!", description: "A IA preencheu os campos da proposta." });
+      } catch (error) {
+          console.error("AI Generation Error: ", error);
+          toast({ title: "Erro na Geração", description: "Não foi possível gerar o conteúdo com a IA. Tente novamente.", variant: "destructive" });
+      } finally {
+          setIsGeneratingAi(false);
+      }
+  }
   
   const formSections = [
-    { name: "Capa e Parceria", fields: ['clientName', 'partnershipDescription'], icon: Target },
-    { name: "Estilo da Proposta", fields: ['clientLogoUrl', 'coverImageUrl'], icon: Palette },
-    { name: "Serviços", fields: ['useCustomServices', 'packages', 'customServices'], icon: ListChecks },
-    { name: "Objetivos", fields: ['objectiveItems'], icon: Goal },
-    { name: "Diferenciais", fields: ['differentialItems'], icon: Sparkles },
-    { name: "Resumo do Plano Ideal", fields: ['idealPlanItems'], icon: PackageCheck },
+    { name: "Informações do Cliente", fields: ['clientName', 'clientLogoUrl'], icon: Target },
+    { name: "Geração com IA", fields: ['clientBrief'], icon: Wand2 },
+    { name: "Estilo e Serviços", fields: ['coverImageUrl', 'useCustomServices', 'packages', 'customServices'], icon: ListChecks },
     { name: "Investimento", fields: ['investmentValue', 'discount'], icon: DollarSign },
   ];
 
@@ -231,21 +252,31 @@ export default function ProposalGeneratorV2() {
   );
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col gap-8">
       <div className="w-full">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
                 <form className="space-y-4">
-                  <Accordion type="multiple" defaultValue={['item-0', 'item-1', 'item-2']} className="w-full">
+                  <Accordion type="multiple" defaultValue={['item-0', 'item-1']} className="w-full">
                     {formSections.map((section, index) => (
                       <AccordionItem value={`item-${index}`} key={section.name}>
                         <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2">
-                          {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input placeholder="Nome da empresa do cliente" {...field} /></FormControl><FormMessage /></FormItem>} />}
                           {section.fields.includes('clientLogoUrl') && <FormField control={form.control} name="clientLogoUrl" render={({ field }) => <FormItem><FormLabel>URL do Logo do Cliente (Opcional)</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          
+                          {section.fields.includes('clientBrief') && (
+                            <div className="p-4 border rounded-md bg-muted/30 space-y-3">
+                              <FormField control={form.control} name="clientBrief" render={({ field }) => <FormItem><FormLabel className="flex items-center gap-2"><FileText />Resumo sobre o Cliente</FormLabel><FormDescription>Forneça um breve resumo sobre o cliente e seus desafios. A IA usará isso para gerar os textos da proposta.</FormDescription><FormControl><Textarea className="min-h-[100px]" placeholder="Ex: Clínica de estética focada em alto padrão que precisa se posicionar como autoridade e atrair mais clientes pelo Instagram." {...field} /></FormControl><FormMessage /></FormItem>} />
+                               <Button type="button" onClick={handleGenerateContent} disabled={isGeneratingAi}>
+                                  {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                                  {isGeneratingAi ? 'Gerando...' : 'Gerar Textos com IA'}
+                              </Button>
+                            </div>
+                          )}
+
                           {section.fields.includes('coverImageUrl') && <FormField control={form.control} name="coverImageUrl" render={({ field }) => <FormItem><FormLabel>URL da Imagem de Capa (Opcional)</FormLabel><FormControl><Input placeholder="https://images.unsplash.com/..." {...field} /></FormControl><FormMessage /></FormItem>} />}
-                          {section.fields.includes('partnershipDescription') && <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Descrição da Parceria</FormLabel><FormControl><Textarea className="min-h-[120px]" {...field} /></FormControl><FormMessage /></FormItem>} />}
                           
                           {section.fields.includes('useCustomServices') && (
                             <FormField
@@ -309,8 +340,6 @@ export default function ProposalGeneratorV2() {
                               </div>
                           )}
                           
-                          {section.fields.includes('objectiveItems') && renderFieldArray(objFields, removeObj, appendObj, "Objetivos", "objectiveItems")}
-                          {section.fields.includes('differentialItems') && renderFieldArray(diffFields, removeDiff, appendDiff, "Diferenciais", "differentialItems")}
                           {section.fields.includes('investmentValue') && useCustomServices && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento (Manual)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
                           {section.fields.includes('discount') && (
                              <FormField
@@ -330,15 +359,10 @@ export default function ProposalGeneratorV2() {
                                 )}
                             />
                           )}
-                          {section.fields.includes('idealPlanItems') && renderFieldArray(idealFields, removeIdeal, appendIdeal, "Itens do Plano Ideal", "idealPlanItems")}
                         </AccordionContent>
                       </AccordionItem>
                     ))}
                   </Accordion>
-                   <Button onClick={handleDownloadPdf} disabled={isGeneratingPdf} className="w-full mt-6">
-                    {isGeneratingPdf ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-                    {isGeneratingPdf ? "Gerando PDF..." : "Baixar Proposta em PDF"}
-                  </Button>
                 </form>
               </Form>
             </CardContent>
@@ -528,9 +552,13 @@ export default function ProposalGeneratorV2() {
             <CarouselPrevious className="-left-12 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
             <CarouselNext className="-right-12 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
         </Carousel>
+        <div className="w-full flex justify-center mt-8">
+            <Button onClick={handleDownloadPdf} disabled={isGeneratingPdf} size="lg">
+                {isGeneratingPdf ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+                {isGeneratingPdf ? "Gerando PDF..." : "Baixar Proposta em PDF"}
+            </Button>
+        </div>
       </div>
     </div>
   );
 }
-
-    
