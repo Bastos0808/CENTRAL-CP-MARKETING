@@ -63,6 +63,7 @@ const proposalSchema = z.object({
 type ProposalFormValues = z.infer<typeof proposalSchema>;
 
 const packageOptions = {
+    "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 999, description: "4 artes e legendas persuasivas por mês, tráfego pago no Meta, otimização de perfil e bio, e estratégia de vendas personalizada. Conteúdo entregue pronto para o cliente postar (não inclui gerenciamento de redes).", icon: Palette },
     "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1500, description: "Ideal para iniciar. Gestão de Mídias Sociais (Instagram e Facebook), 12 posts mensais, 1 reunião de pauta, relatório mensal e suporte via WhatsApp.", icon: Palette },
     "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Para crescer. Tudo do Essencial, com 20 posts mensais, 2 reuniões de pauta, gestão de LinkedIn e 1 diária de captação de vídeo externa.", icon: Palette },
     "marketing_premium": { name: "Plano de Marketing - Premium", price: 4000, description: "Para se destacar. Tudo do Performance, com 30 posts mensais, 4 reuniões de pauta, gestão de blog e canal no YouTube.", icon: Palette },
@@ -273,8 +274,8 @@ export default function ProposalGeneratorV2() {
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="w-full">
+    <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="w-full lg:w-1/3 space-y-4 lg:sticky lg:top-8">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
@@ -413,7 +414,7 @@ export default function ProposalGeneratorV2() {
           </Card>
       </div>
 
-      <div className="w-full">
+      <div className="w-full lg:w-2/3">
          <Carousel className="w-full mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
