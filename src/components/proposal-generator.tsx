@@ -211,7 +211,7 @@ export default function ProposalGenerator() {
   );
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div className="space-y-8">
       <Card>
         <CardContent className="p-4">
            <Form {...form}>
@@ -264,7 +264,7 @@ export default function ProposalGenerator() {
         </CardContent>
       </Card>
 
-      <div className="w-full md:block">
+      <div className="w-full">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
