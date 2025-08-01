@@ -212,8 +212,8 @@ export default function ProposalGenerator() {
   );
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start">
-      <div className="w-full lg:w-2/5 lg:sticky top-8">
+    <div className="flex flex-col gap-8 items-start">
+      <div className="w-full lg:sticky top-8">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
@@ -267,7 +267,7 @@ export default function ProposalGenerator() {
           </Card>
       </div>
 
-      <div className="w-full lg:w-3/5">
+      <div className="w-full">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
@@ -312,7 +312,7 @@ export default function ProposalGenerator() {
                                   </div>
                                 )}
                             </div>
-                            <div className="w-1/2 h-full relative flex items-center justify-center">
+                             <div className="w-1/2 h-full relative flex items-center justify-center">
                                  <div className="absolute inset-0 bg-black/10"></div>
                                  <Image
                                     src="/Ativo 6.svg"
@@ -481,7 +481,7 @@ export default function ProposalGenerator() {
                     <Page ref={el => { if(el) pagesRef.current[9] = el; }}>
                         <div className="text-center">
                             <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
-                            <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder o email do nosso especialista que te enviou esta proposta para agendarmos nossa conversa inicial.</p>
+                            <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
                         </div>
                     </Page>
                 </CarouselItem>
