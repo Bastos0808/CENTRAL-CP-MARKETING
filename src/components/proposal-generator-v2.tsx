@@ -63,11 +63,11 @@ const proposalSchema = z.object({
 type ProposalFormValues = z.infer<typeof proposalSchema>;
 
 const packageOptions = {
-    "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 999, description: "Análise de perfil com alterações para otimizar, criação do projeto para público alvo, planejamento mensal, mentoria para cliente (apresentação), técnicas de copywriting nas legendas, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), entrega de relatório mensal, artes profissionais (Photoshop) e vídeos editados (Premiere e After Effects), gestão completa de rede social (planejamento, criação, postagem e acompanhamento) e grupo de WhatsApp para suporte.", icon: Palette },
+    "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 999, description: "Análise de perfil com otimização, criação de projeto para público alvo, planejamento mensal, mentoria, copywriting, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), relatório mensal, artes profissionais, gestão completa e suporte via WhatsApp.", icon: Palette },
     "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1999, description: "Análise de perfil com otimização, criação de projeto para público alvo, planejamento mensal, mentoria, copywriting, tráfego pago (Meta e Google), 3 postagens semanais (1 arte e 2 vídeos), relatório mensal, artes profissionais, gestão completa e suporte via WhatsApp.", icon: Palette },
     "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Para crescer. Tudo do Essencial, com 20 posts mensais, 2 reuniões de pauta, gestão de LinkedIn e 1 diária de captação de vídeo externa.", icon: Palette },
     "marketing_premium": { name: "Plano de Marketing - Premium", price: 2999, description: "Análise de perfil com alterações para otimizar\nAnálise de concorrentes ou inspirações\nCriação de persona para direcionamento de conteúdo\nPlanejamento estratégico mensal\nDirecionamento para posicionamento de imagem nas gravações\nDirecionamento para stories\nTráfego pago (Meta e Google) sem limite de campanha\n3 postagens semanais (arte ou vídeos)\n1 Gravação de podcast de 1H mensal\nMentoria para cliente (Apresentação)\nArtes profissionais criadas no Photoshop e videos editados no premiere e after effects\nTécnicas de copywriting nas legendas\nNeste plano, fazemos a gestão da rede social: planejamento, criação, postagem e acompanhamento de resultados.\nEntrega de relatório mensal com análise de métricas\nCriação e configuração do Google meu negócio com SEO e palavras de reconhecimento\nCaptação de vídeo em nosso estúdio de gravação de vídeos com videomaker mobile\nCaptação de fotos comercias para criação de conteúdo\nGerente de conta", icon: Palette },
-    "marketing_master": { name: "Plano de Marketing - Master", price: 6000, description: "A solução completa. Inclui tudo do Premium, com gestão de Tráfego Pago (até R$ 5.000), criação de Landing Pages e assessoria estratégica contínua.", icon: Palette },
+    "marketing_master": { name: "Plano de Marketing - Master", price: 3999, description: "Plano Premium Completo\nGestão do canal do YouTube\nTráfego pago para YouTube\nGestão do Spotify para postagem do podcast\n4 episódios de 1 hora cada: No caso de meses com 5 semanas completas (de segunda a sexta), oferecemos um episódio adicional sem custo extra.\n2 cortes por episódio: Incluídos no pacote, para facilitar a distribuição e divulgação.\nOs episódios podem ser gravados em qualquer horário de segunda a sexta, entre 8h e 17h.\n(Feriados não estão inclusos.)\nNeste plano, fazemos a gestão da rede social: planejamento, criação, postagem e acompanhamento de resultados.", icon: Palette },
     "trafego_pago": { name: "Gestão de Tráfego Pago", price: 2000, description: "Para resultados rápidos. Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas simultâneas e otimização semanal focada em ROI.", icon: Megaphone },
     "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "Ideal para começar. 4 episódios/mês (1h cada) gravados em estúdio, com edição básica e distribuição nas principais plataformas.", icon: Mic },
     "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "Mais conteúdo. 4 episódios/mês (2h cada), com edição completa e criação de cortes estratégicos para redes sociais.", icon: Mic },
@@ -274,8 +274,8 @@ export default function ProposalGeneratorV2() {
   ];
 
   return (
-     <div className="flex flex-col lg:flex-row gap-8 items-start">
-      <div className="w-full lg:w-1/3 space-y-4 lg:sticky lg:top-8">
+    <div className="flex flex-col gap-8 items-start">
+      <div className="w-full space-y-4 sticky top-8 z-20 bg-background/80 backdrop-blur-sm pb-4">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
@@ -414,8 +414,8 @@ export default function ProposalGeneratorV2() {
           </Card>
       </div>
 
-      <div className="w-full lg:w-2/3">
-         <Carousel className="w-full mx-auto">
+      <div className="w-full">
+         <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
                 <CarouselItem>
@@ -625,5 +625,3 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
-
-    
