@@ -68,7 +68,7 @@ const packageOptions = {
     "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Para crescer. Tudo do Essencial, com 20 posts mensais, 2 reuniões de pauta, gestão de LinkedIn e 1 diária de captação de vídeo externa.", icon: Palette },
     "marketing_premium": { name: "Plano de Marketing - Premium", price: 2999, description: "Análise de perfil com alterações para otimizar\nAnálise de concorrentes ou inspirações\nCriação de persona para direcionamento de conteúdo\nPlanejamento estratégico mensal\nDirecionamento para posicionamento de imagem nas gravações\nDirecionamento para stories\nTráfego pago (Meta e Google) sem limite de campanha\n3 postagens semanais (arte ou vídeos)\n1 Gravação de podcast de 1H mensal\nMentoria para cliente (Apresentação)\nArtes profissionais criadas no Photoshop e videos editados no premiere e after effects\nTécnicas de copywriting nas legendas\nNeste plano, fazemos a gestão da rede social: planejamento, criação, postagem e acompanhamento de resultados.\nEntrega de relatório mensal com análise de métricas\nCriação e configuração do Google meu negócio com SEO e palavras de reconhecimento\nCaptação de vídeo em nosso estúdio de gravação de vídeos com videomaker mobile\nCaptação de fotos comercias para criação de conteúdo\nGerente de conta", icon: Palette },
     "marketing_master": { name: "Plano de Marketing - Master", price: 3999, description: "Plano Premium Completo\nGestão do canal do YouTube\nTráfego pago para YouTube\nGestão do Spotify para postagem do podcast\n4 episódios de 1 hora cada: No caso de meses com 5 semanas completas (de segunda a sexta), oferecemos um episódio adicional sem custo extra.\n2 cortes por episódio: Incluídos no pacote, para facilitar a distribuição e divulgação.\nOs episódios podem ser gravados em qualquer horário de segunda a sexta, entre 8h e 17h.\n(Feriados não estão inclusos.)\nNeste plano, fazemos a gestão da rede social: planejamento, criação, postagem e acompanhamento de resultados.", icon: Palette },
-    "trafego_pago": { name: "Gestão de Tráfego Pago", price: 2000, description: "Para resultados rápidos. Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas simultâneas e otimização semanal focada em ROI.", icon: Megaphone },
+    "trafego_pago": { name: "Tráfego Pago - Avulso", price: 1200, description: "Planejamento Estratégico de Campanhas\nSegmentação Avançada de Público\nTeste A/B de Anúncios\nMonitoramento de Desempenho\nRelatórios Detalhados e Insights\nOtimização de Campanhas\nAcompanhamento de Leads\nGestão de Campanhas no Google e Meta Ads\n\nContrato de 6 meses. Valor promocional de R$2.000,00 por R$1.200,00.", icon: Megaphone },
     "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "Ideal para começar. 4 episódios/mês (1h cada) gravados em estúdio, com edição básica e distribuição nas principais plataformas.", icon: Mic },
     "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "Mais conteúdo. 4 episódios/mês (2h cada), com edição completa e criação de cortes estratégicos para redes sociais.", icon: Mic },
     "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "Pacote de produção. Inclui tudo do Prata, com gestão de Youtube e 1 diária de captação externa para conteúdos exclusivos.", icon: Mic },
@@ -274,8 +274,8 @@ export default function ProposalGeneratorV2() {
   ];
 
   return (
-    <div className="flex flex-col gap-8 items-start">
-      <div className="w-full space-y-4 sticky top-8 z-20 bg-background/80 backdrop-blur-sm pb-4">
+    <div className="flex flex-col lg:flex-row gap-8 items-start">
+      <div className="w-full lg:w-1/3 space-y-4 lg:sticky top-8">
           <Card>
             <CardContent className="p-4">
                <Form {...form}>
@@ -414,7 +414,7 @@ export default function ProposalGeneratorV2() {
           </Card>
       </div>
 
-      <div className="w-full">
+      <div className="w-full lg:w-2/3">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
@@ -532,8 +532,10 @@ export default function ProposalGeneratorV2() {
                                         return (
                                             <div key={pkgKey} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
                                                 <div className="flex-grow">
-                                                    <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
-                                                    <h3 className="font-bold text-lg mb-1">{pkg.name}</h3>
+                                                    <div className="flex items-center gap-3 mb-3">
+                                                        <Icon className="h-8 w-8 text-[#FE5412]" />
+                                                        <h3 className="font-bold text-lg">{pkg.name}</h3>
+                                                    </div>
                                                     <p className="text-sm text-gray-400 mt-1 whitespace-pre-line">{pkg.description}</p>
                                                 </div>
                                             </div>
