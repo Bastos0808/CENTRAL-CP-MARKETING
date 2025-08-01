@@ -29,34 +29,14 @@ const proposalGeneratorPrompt = ai.definePrompt({
   output: { schema: GenerateProposalOutputSchema },
   prompt: `
     Você é um Estrategista de Vendas e Copywriter Sênior na agência "CP Marketing Digital".
-    Sua tarefa é criar OPÇÕES de textos persuasivos para uma proposta comercial, com base nos pacotes de serviço que o cliente está contratando.
+    Sua tarefa é criar 3 OPÇÕES de texto para a seção "Sobre a Parceria" de uma proposta comercial destinada ao cliente "{{clientName}}".
 
     **Instruções:**
-    1.  **Seja um Vendedor:** Seus textos devem ser claros, persuasivos e focados em vender o valor da solução, não apenas descrever os serviços. Conecte os serviços aos resultados que o cliente deseja.
-    2.  **Gere 3 Opções para Cada Campo:** Para cada campo de texto da proposta (partnershipDescriptionOptions, objectiveItemsOptions, differentialItemsOptions, idealPlanItemsOptions), você deve gerar 3 opções distintas para o usuário escolher.
-    3.  **Analise os Pacotes:** Use a lista de pacotes contratados para entender o escopo do trabalho e personalizar os textos.
-        -   Se tiver "Social Media", foque em autoridade, engajamento e comunidade.
-        -   Se tiver "Tráfego Pago", foque em leads, vendas rápidas e ROI.
-        -   Se tiver "Podcast", foque em autoridade de marca e conexão profunda.
-        -   Se tiver "Identidade Visual" ou "Website", foque em profissionalismo e percepção de valor.
-    4.  **Objetivos Claros:** Os objetivos devem ser claros, mensuráveis e diretamente ligados aos serviços contratados.
-    5.  **Diferenciais Reais:** Os diferenciais devem destacar o "jeito CP de fazer" e o que nos torna únicos.
-    6.  **Plano Ideal Convincente:** Os benefícios do plano ideal devem ser aspiracionais e mostrar o valor da solução completa.
-
-    **Cliente:**
-    - Nome do Cliente: {{clientName}}
+    1.  **Personalize com o Nome:** Use o nome do cliente, "{{clientName}}", para criar uma conexão pessoal.
+    2.  **Foco no Valor:** Os textos devem ser claros, persuasivos e focados em vender o valor da solução, não apenas descrever os serviços. Conecte a parceria a resultados que o cliente deseja.
+    3.  **Tom de Voz:** Mantenha um tom profissional, confiante e parceiro.
     
-    **Pacotes Contratados:**
-    {{#if packages}}
-      {{#each packages}}
-      - {{this}}
-      {{/each}}
-    {{else}}
-      Nenhum pacote selecionado. Crie opções genéricas de alto valor.
-    {{/if}}
-
-
-    Agora, gere as opções para cada campo da proposta.
+    Agora, gere as 3 opções para o campo "partnershipDescriptionOptions". Os outros campos no schema de saída não precisam ser preenchidos.
   `,
 });
 
@@ -67,7 +47,26 @@ const proposalGeneratorFlow = ai.defineFlow(
     outputSchema: GenerateProposalOutputSchema,
   },
   async (input) => {
-    const { output } = await proposalGeneratorPrompt(input);
-    return output!;
+    try {
+      const { output } = await proposalGeneratorPrompt(input);
+      
+      // Garante que o output não é nulo e que os campos opcionais sejam arrays vazios se não forem gerados
+      return {
+        partnershipDescriptionOptions: output?.partnershipDescriptionOptions || [],
+        objectiveItemsOptions: output?.objectiveItemsOptions || [],
+        differentialItemsOptions: output?.differentialItemsOptions || [],
+        idealPlanItemsOptions: output?.idealPlanItemsOptions || [],
+      };
+
+    } catch (error) {
+      console.error('Error generating proposal content:', error);
+      // Retorna uma estrutura válida em caso de erro para não quebrar o frontend
+      return {
+        partnershipDescriptionOptions: ['Não foi possível gerar a descrição. Tente novamente.'],
+        objectiveItemsOptions: [],
+        differentialItemsOptions: [],
+        idealPlanItemsOptions: [],
+      };
+    }
   }
 );
