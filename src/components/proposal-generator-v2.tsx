@@ -63,18 +63,18 @@ const proposalSchema = z.object({
 type ProposalFormValues = z.infer<typeof proposalSchema>;
 
 const packageOptions = {
-    "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1500, description: "Gestão de Mídias Sociais (Instagram e Facebook), 12 posts mensais, 1 reunião de pauta, relatório mensal e suporte via WhatsApp.", icon: Palette },
-    "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Tudo do Essencial, com 20 posts mensais, 2 reuniões de pauta, gestão de LinkedIn e 1 diária de captação de vídeo externa.", icon: Palette },
-    "marketing_premium": { name: "Plano de Marketing - Premium", price: 4000, description: "Tudo do Performance, com 30 posts mensais, 4 reuniões de pauta, gestão de blog e canal no YouTube.", icon: Palette },
+    "marketing_essencial": { name: "Plano de Marketing - Essencial", price: 1500, description: "Ideal para iniciar. Gestão de Mídias Sociais (Instagram e Facebook), 12 posts mensais, 1 reunião de pauta, relatório mensal e suporte via WhatsApp.", icon: Palette },
+    "marketing_performance": { name: "Plano de Marketing - Performance", price: 2500, description: "Para crescer. Tudo do Essencial, com 20 posts mensais, 2 reuniões de pauta, gestão de LinkedIn e 1 diária de captação de vídeo externa.", icon: Palette },
+    "marketing_premium": { name: "Plano de Marketing - Premium", price: 4000, description: "Para se destacar. Tudo do Performance, com 30 posts mensais, 4 reuniões de pauta, gestão de blog e canal no YouTube.", icon: Palette },
     "marketing_master": { name: "Plano de Marketing - Master", price: 6000, description: "A solução completa. Inclui tudo do Premium, com gestão de Tráfego Pago (até R$ 5.000), criação de Landing Pages e assessoria estratégica contínua.", icon: Palette },
-    "trafego_pago": { name: "Tráfego Pago", price: 2000, description: "Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas e otimização semanal.", icon: Megaphone },
-    "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "4 episódios/mês (1h cada) gravados em estúdio, edição básica e distribuição.", icon: Mic },
-    "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada), edição completa, cortes para redes sociais.", icon: Mic },
-    "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "Tudo do Prata, com gestão de Youtube e 1 diária de captação externa.", icon: Mic },
-    "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "Tudo do Prata, com gestão do canal do YouTube e thumbnails profissionais.", icon: Mic },
-    "identidade_visual": { name: "Identidade Visual", price: 2500, description: "Criação de logo, paleta de cores, tipografia e manual de marca completo.", icon: Sparkles },
-    "website": { name: "Website Institucional", price: 5000, description: "Criação de site com até 5 páginas, design responsivo e otimizado para SEO.", icon: Sparkles },
-    "landing_page": { name: "Landing Page", price: 1800, description: "Página de alta conversão para campanhas específicas, com formulário integrado.", icon: Sparkles }
+    "trafego_pago": { name: "Gestão de Tráfego Pago", price: 2000, description: "Para resultados rápidos. Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas simultâneas e otimização semanal focada em ROI.", icon: Megaphone },
+    "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "Ideal para começar. 4 episódios/mês (1h cada) gravados em estúdio, com edição básica e distribuição nas principais plataformas.", icon: Mic },
+    "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "Mais conteúdo. 4 episódios/mês (2h cada), com edição completa e criação de cortes estratégicos para redes sociais.", icon: Mic },
+    "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "Pacote de produção. Inclui tudo do Prata, com gestão de Youtube e 1 diária de captação externa para conteúdos exclusivos.", icon: Mic },
+    "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "Autoridade máxima. Tudo do Prata, com gestão completa do canal do YouTube, incluindo thumbnails profissionais e otimização de SEO.", icon: Mic },
+    "identidade_visual": { name: "Identidade Visual", price: 2500, description: "A cara da sua marca. Criação de logo, paleta de cores, tipografia e um manual de marca completo para garantir consistência.", icon: Sparkles },
+    "website": { name: "Website Institucional", price: 5000, description: "Sua casa na internet. Criação de site com até 5 páginas, design responsivo e otimizado para os mecanismos de busca (SEO).", icon: Sparkles },
+    "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
 };
 
 
@@ -505,17 +505,17 @@ export default function ProposalGeneratorV2() {
 
                  {/* Page 5: Escopo */}
                 <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[4] = el; }}>
-                        <div className="w-full max-w-6xl">
+                    <Page ref={el => { if(el) pagesRef.current[4] = el; }} className="p-12 items-start justify-start">
+                        <div className="w-full max-w-full">
                             <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
                             {useCustomServices ? (
-                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                                     {customServicesList.map(({ name, fields, icon: Icon }) => (
                                         fields.length > 0 && (
-                                            <div key={name} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700">
+                                            <div key={name} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
                                                 <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
                                                 <h3 className="font-bold text-lg">{name}</h3>
-                                                <ul className="text-sm text-gray-400 mt-2 list-disc pl-4 space-y-1">
+                                                <ul className="text-sm text-gray-400 mt-2 list-disc pl-4 space-y-1 flex-grow">
                                                     {fields.map((field, index) => <li key={index}>{field.value}</li>)}
                                                 </ul>
                                             </div>
@@ -523,16 +523,16 @@ export default function ProposalGeneratorV2() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                                     {watchedValues.packages?.map(pkgKey => {
                                         const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
                                         if (!pkg) return null;
                                         const Icon = pkg.icon;
                                         return (
-                                            <div key={pkgKey} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700">
+                                            <div key={pkgKey} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
                                                 <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
-                                                <h3 className="font-bold text-lg">{pkg.name}</h3>
-                                                <p className="text-sm text-gray-400 mt-1">{pkg.description}</p>
+                                                <h3 className="font-bold text-lg mb-1">{pkg.name}</h3>
+                                                <p className="text-sm text-gray-400 mt-1 flex-grow">{pkg.description}</p>
                                             </div>
                                         )
                                     })}
