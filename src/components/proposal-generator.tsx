@@ -264,20 +264,24 @@ export default function ProposalGenerator() {
         </CardContent>
       </Card>
 
-      <div className="w-full hidden lg:block">
+      <div className="w-full md:block">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
                 {/* Page 1: Capa */}
                 <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center">
-                         <Image 
-                            src={watchedValues.coverImageUrl || "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1920&auto=format&fit=crop"}
-                            alt="Background" 
-                            layout="fill" 
-                            objectFit="cover" 
-                            className="absolute inset-0 z-0"
-                            data-ai-hint="technology dark"
-                        />
+                         {watchedValues.coverImageUrl ? (
+                            <Image 
+                                src={watchedValues.coverImageUrl}
+                                alt="Background" 
+                                layout="fill" 
+                                objectFit="cover" 
+                                className="absolute inset-0 z-0"
+                                data-ai-hint="technology dark"
+                            />
+                         ) : (
+                            <div className="absolute inset-0 bg-black z-0"></div>
+                         )}
                         <div className="absolute inset-0 bg-black/50"></div>
                         <div className="z-10 text-center flex flex-col items-center">
                             <p className="text-[#FE5412] font-semibold tracking-widest mb-2">PROPOSTA COMERCIAL</p>
@@ -491,5 +495,3 @@ export default function ProposalGenerator() {
     </div>
   );
 }
-
-    
