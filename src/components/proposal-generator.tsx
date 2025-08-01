@@ -209,7 +209,7 @@ export default function ProposalGenerator() {
   );
 
   return (
-    <div className="grid grid-cols-1 gap-8">
+    <div className="space-y-8">
       <Card>
         <CardContent className="p-4">
            <Form {...form}>
@@ -291,21 +291,21 @@ export default function ProposalGenerator() {
                             <div className="w-1/2 flex flex-col justify-center items-start p-24">
                                 <h2 className="text-5xl font-bold uppercase mb-6">Sobre a Parceria</h2>
                                 <p className="text-2xl font-light text-gray-300 border-l-4 border-[#FE5412] pl-6">{watchedValues.partnershipDescription}</p>
-                                {watchedValues.clientLogoUrl && (
+                                {watchedValues.clientLogoUrl ? (
                                   <div className="mt-12 flex items-center gap-6">
                                     <div className="relative w-24 h-24">
                                        <Image src={watchedValues.clientLogoUrl} layout="fill" objectFit="contain" alt="Client Logo" />
                                     </div>
                                     <X className="h-8 w-8 text-[#FE5412]" />
-                                    <div className="relative w-24 h-24 flex items-center justify-center rounded-full bg-gray-800">
-                                       <p className="text-3xl font-bold text-[#FE5412]">CP</p>
+                                    <div className="relative w-24 h-24 flex items-center justify-center rounded-full bg-transparent">
+                                       <Image src="/Ativo 6.svg" layout="fill" objectFit="contain" alt="CP Marketing Logo" />
                                     </div>
                                   </div>
-                                )}
+                                ) : null}
                             </div>
                             <div className="w-1/2 h-full relative" style={{ clipPath: 'polygon(20% 0, 100% 0, 100% 100%, 0% 100%)' }}>
                                 <Image
-                                    src="/LOGO PROPOSTA.png"
+                                    src="/Ativo 6.svg"
                                     alt="Partnership"
                                     layout="fill"
                                     objectFit="cover"
