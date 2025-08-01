@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
@@ -19,7 +19,6 @@ import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
 import { Switch } from './ui/switch';
 import {
   Select,
@@ -96,8 +95,6 @@ Page.displayName = 'Page';
 
 export default function ProposalGeneratorV2() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
-  const [isGeneratingWithAi, setIsGeneratingWithAi] = React.useState(false);
-  const [aiBrief, setAiBrief] = React.useState("");
   const pagesRef = React.useRef<(HTMLDivElement | null)[]>([]);
   const { toast } = useToast();
 
@@ -156,50 +153,6 @@ export default function ProposalGeneratorV2() {
 
   }, [watchedValues.packages, watchedValues.discount, watchedValues.useCustomServices, form]);
 
-  const handleGenerateWithAi = async () => {
-    const clientName = form.getValues("clientName");
-    if (!clientName.trim() || !aiBrief.trim()) {
-      toast({
-        title: "Informações Insuficientes",
-        description: "Por favor, preencha o nome do cliente e o briefing rápido para usar a IA.",
-        variant: "destructive"
-      });
-      return;
-    }
-    setIsGeneratingWithAi(true);
-    try {
-      const result = await generateProposalContent({
-        clientName,
-        clientBrief: aiBrief
-      });
-
-      form.setValue("partnershipDescription", result.partnershipDescription);
-      
-      form.reset({
-        ...form.getValues(),
-        partnershipDescription: result.partnershipDescription,
-        objectiveItems: result.objectiveItems,
-        differentialItems: result.differentialItems,
-        idealPlanItems: result.idealPlanItems
-      });
-
-      toast({
-        title: "Conteúdo Gerado com Sucesso!",
-        description: "A IA preencheu os campos da proposta para você."
-      });
-
-    } catch (error) {
-      console.error("Error generating with AI:", error);
-      toast({
-        title: "Erro na Geração",
-        description: "Não foi possível gerar o conteúdo com a IA. Tente novamente.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsGeneratingWithAi(false);
-    }
-  };
-
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
     try {
@@ -248,7 +201,6 @@ export default function ProposalGeneratorV2() {
   };
   
   const formSections = [
-    { name: "Geração com IA", fields: ['aiBrief'], icon: Wand2 },
     { name: "Capa e Parceria", fields: ['clientName', 'partnershipDescription'], icon: Target },
     { name: "Estilo da Proposta", fields: ['clientLogoUrl', 'coverImageUrl'], icon: Palette },
     { name: "Serviços", fields: ['useCustomServices', 'packages', 'customServices'], icon: ListChecks },
@@ -285,26 +237,11 @@ export default function ProposalGeneratorV2() {
             <CardContent className="p-4">
                <Form {...form}>
                 <form className="space-y-4">
-                  <Accordion type="multiple" defaultValue={['item-0', 'item-1', 'item-3']} className="w-full">
+                  <Accordion type="multiple" defaultValue={['item-0', 'item-1', 'item-2']} className="w-full">
                     {formSections.map((section, index) => (
                       <AccordionItem value={`item-${index}`} key={section.name}>
                         <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
                         <AccordionContent className="space-y-4 pt-2">
-                          {section.fields.includes('aiBrief') && (
-                            <div className="space-y-2">
-                              <Label htmlFor="ai-brief">Briefing Rápido</Label>
-                              <Textarea 
-                                id="ai-brief"
-                                placeholder="Descreva o cliente e seus desafios. Ex: Restaurante de luxo que precisa aumentar o movimento durante a semana."
-                                value={aiBrief}
-                                onChange={(e) => setAiBrief(e.target.value)}
-                              />
-                              <Button type="button" onClick={handleGenerateWithAi} disabled={isGeneratingWithAi} className="w-full">
-                                {isGeneratingWithAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Wand2 className="mr-2 h-4 w-4"/>}
-                                {isGeneratingWithAi ? "Gerando..." : "Gerar Conteúdo da Proposta"}
-                              </Button>
-                            </div>
-                          )}
                           {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
                           {section.fields.includes('clientLogoUrl') && <FormField control={form.control} name="clientLogoUrl" render={({ field }) => <FormItem><FormLabel>URL do Logo do Cliente (Opcional)</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>} />}
                           {section.fields.includes('coverImageUrl') && <FormField control={form.control} name="coverImageUrl" render={({ field }) => <FormItem><FormLabel>URL da Imagem de Capa (Opcional)</FormLabel><FormControl><Input placeholder="https://images.unsplash.com/..." {...field} /></FormControl><FormMessage /></FormItem>} />}
@@ -318,7 +255,7 @@ export default function ProposalGeneratorV2() {
                                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                                         <div className="space-y-0.5">
                                             <FormLabel>Usar Serviços Personalizados?</FormLabel>
-                                            <FormDescription>Ative para criar pacotes do zero.</FormDescription>
+                                            
                                         </div>
                                         <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                                     </FormItem>
