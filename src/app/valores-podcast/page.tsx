@@ -29,6 +29,12 @@ const specialAfternoonPrices = [
     { name: "Domingo | 1 Episódio de 1h", value: "R$ 549,00" }
 ];
 
+const specialNightPrices = [
+    { name: "Sábado | 1 Episódio de 1h", value: "R$ 499,00" },
+    { name: "Feriados | 1 Episódio de 1h", value: "R$ 599,00" },
+    { name: "Domingo | 1 Episódio de 1h", value: "R$ 599,00" }
+];
+
 
 export default function ValoresPodcastPage() {
   return (
@@ -86,7 +92,7 @@ export default function ValoresPodcastPage() {
 
              <Card>
                 <CardHeader>
-                    <CardTitle>Especial (Sábados, Domingos e Feriados)</CardTitle>
+                    <CardTitle>Especial (Sábados, Domingos e Feriados) - Manhã</CardTitle>
                     <CardDescription>Valores para gravação em nosso estúdio profissional.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -106,12 +112,32 @@ export default function ValoresPodcastPage() {
 
              <Card>
                 <CardHeader>
-                    <CardTitle>Especial (Sábados, Domingos e Feriados) - Período da Tarde</CardTitle>
+                    <CardTitle>Especial (Sábados, Domingos e Feriados) - Tarde</CardTitle>
                     <CardDescription>Valores para gravação em nosso estúdio profissional.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-4">
                        {specialAfternoonPrices.map((price) => (
+                         <li key={price.name} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                            <span className="flex items-center gap-3 font-medium">
+                                <Check className="h-5 w-5 text-primary"/>
+                                {price.name}
+                            </span>
+                            <span className="font-bold text-lg text-primary">{price.value}</span>
+                         </li>
+                       ))}
+                    </ul>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Especial (Sábados, Domingos e Feriados) - Noite</CardTitle>
+                    <CardDescription>Valores para gravação em nosso estúdio profissional.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ul className="space-y-4">
+                       {specialNightPrices.map((price) => (
                          <li key={price.name} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
                             <span className="flex items-center gap-3 font-medium">
                                 <Check className="h-5 w-5 text-primary"/>
