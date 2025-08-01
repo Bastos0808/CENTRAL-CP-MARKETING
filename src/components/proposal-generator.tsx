@@ -195,7 +195,7 @@ export default function ProposalGenerator() {
         <FormField
           key={field.id}
           control={form.control}
-          name={`${name}.${index}.value`}
+          name={`${name}.${index}.value` as const}
           render={({ field }) => (
             <FormItem className="flex items-center gap-2">
               <FormControl><Input {...field} /></FormControl>
