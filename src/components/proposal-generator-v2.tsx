@@ -13,7 +13,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
-import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette, Percent, Tag, FileText, Bot } from 'lucide-react';
+import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette, Percent, Tag, FileText, Bot, Briefcase, Mic } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { Label } from '@/components/ui/label';
@@ -68,10 +68,10 @@ const packageOptions = {
     "marketing_premium": { name: "Plano de Marketing - Premium", price: 4000, description: "Tudo do Performance, com 30 posts mensais, 4 reuniões de pauta, gestão de blog e canal no YouTube.", icon: Palette },
     "marketing_master": { name: "Plano de Marketing - Master", price: 6000, description: "A solução completa. Inclui tudo do Premium, com gestão de Tráfego Pago (até R$ 5.000), criação de Landing Pages e assessoria estratégica contínua.", icon: Palette },
     "trafego_pago": { name: "Tráfego Pago", price: 2000, description: "Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas e otimização semanal.", icon: Megaphone },
-    "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "4 episódios/mês (1h cada) gravados em estúdio, edição básica e distribuição.", icon: DollarSign },
-    "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada), edição completa, cortes para redes sociais.", icon: DollarSign },
-    "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "Tudo do Prata, com gestão de Youtube e 1 diária de captação externa.", icon: DollarSign },
-    "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "Tudo do Prata, com gestão do canal do YouTube e thumbnails profissionais.", icon: DollarSign },
+    "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "4 episódios/mês (1h cada) gravados em estúdio, edição básica e distribuição.", icon: Mic },
+    "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada), edição completa, cortes para redes sociais.", icon: Mic },
+    "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "Tudo do Prata, com gestão de Youtube e 1 diária de captação externa.", icon: Mic },
+    "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "Tudo do Prata, com gestão do canal do YouTube e thumbnails profissionais.", icon: Mic },
     "identidade_visual": { name: "Identidade Visual", price: 2500, description: "Criação de logo, paleta de cores, tipografia e manual de marca completo.", icon: Sparkles },
     "website": { name: "Website Institucional", price: 5000, description: "Criação de site com até 5 páginas, design responsivo e otimizado para SEO.", icon: Sparkles },
     "landing_page": { name: "Landing Page", price: 1800, description: "Página de alta conversão para campanhas específicas, com formulário integrado.", icon: Sparkles }
@@ -154,6 +154,15 @@ export default function ProposalGeneratorV2() {
     form.setValue('investmentValue', finalTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
 
   }, [watchedValues.packages, watchedValues.discount, watchedValues.useCustomServices, form]);
+  
+  const customServicesList = [
+    { name: "Mídia Social", fieldName: "customServices.socialMedia", fields: smFields, append: appendSm, remove: removeSm, icon: Palette },
+    { name: "Tráfego Pago", fieldName: "customServices.paidTraffic", fields: trafficFields, append: appendTraffic, remove: removeTraffic, icon: Megaphone },
+    { name: "Podcast", fieldName: "customServices.podcast", fields: podcastFields, append: appendPodcast, remove: removePodcast, icon: Mic },
+    { name: "Branding", fieldName: "customServices.branding", fields: brandingFields, append: appendBranding, remove: removeBranding, icon: ImageIcon },
+    { name: "Website", fieldName: "customServices.website", fields: websiteFields, append: appendWebsite, remove: removeWebsite, icon: Sparkles },
+    { name: "Landing Page", fieldName: "customServices.landingPage", fields: lpFields, append: appendLp, remove: removeLp, icon: FileText },
+  ];
 
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
@@ -208,7 +217,7 @@ export default function ProposalGeneratorV2() {
           toast({ title: "Nome do Cliente Faltando", description: "Preencha o nome do cliente para a IA gerar o conteúdo.", variant: "destructive" });
           return;
       }
-       if (!packages || packages.length === 0) {
+       if (!useCustomServices && (!packages || packages.length === 0)) {
           toast({ title: "Nenhum Pacote Selecionado", description: "Selecione pelo menos um pacote de serviço para a IA gerar o conteúdo.", variant: "destructive" });
           return;
       }
@@ -264,7 +273,7 @@ export default function ProposalGeneratorV2() {
   ];
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <div className="w-full">
           <Card>
             <CardContent className="p-4">
@@ -296,39 +305,62 @@ export default function ProposalGeneratorV2() {
                             />
                           )}
 
-                          {section.fields.includes('packages') && !useCustomServices && (
-                             <Controller
-                                control={form.control}
-                                name="packages"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Pacotes de Serviços</FormLabel>
-                                        <Select onValueChange={(value) => field.onChange([...(field.value || []), value])} >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Adicionar pacote..." />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {Object.entries(packageOptions).map(([key, value]) => (
-                                                    <SelectItem key={key} value={key} disabled={(field.value || []).includes(key)}>
-                                                        {value.name}
-                                                    </SelectItem>
+                          {section.fields.includes('packages') && (
+                             useCustomServices ? (
+                                <div className="space-y-4 pt-2">
+                                    {customServicesList.map(({ name, fieldName, fields, append, remove, icon: Icon }) => (
+                                        <div key={name} className="p-4 border rounded-md">
+                                            <Label className="flex items-center gap-2 mb-2 font-semibold"><Icon className="h-5 w-5 text-primary" />{name}</Label>
+                                            <div className="space-y-2">
+                                                {fields.map((field, index) => (
+                                                    <div key={field.id} className="flex items-center gap-2">
+                                                        <FormField
+                                                            control={form.control}
+                                                            name={`${fieldName}.${index}.value` as any}
+                                                            render={({ field }) => <Input {...field} className="flex-1" placeholder={`Item de ${name}`} />}
+                                                        />
+                                                        <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-muted-foreground" /></Button>
+                                                    </div>
                                                 ))}
-                                            </SelectContent>
-                                        </Select>
-                                        <div className="flex flex-wrap gap-2 pt-2">
-                                            {(field.value || []).map((pkg) => (
-                                                <div key={pkg} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm">
-                                                    {packageOptions[pkg as keyof typeof packageOptions].name}
-                                                    <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => field.onChange(field.value?.filter(v => v !== pkg))}>
-                                                        <X className="h-3 w-3"/>
-                                                    </Button>
-                                                </div>
-                                            ))}
+                                                <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => append({ value: '' })}><PlusCircle className="mr-2" />Adicionar Item</Button>
+                                            </div>
                                         </div>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                    ))}
+                                </div>
+                             ) : (
+                                <Controller
+                                    control={form.control}
+                                    name="packages"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Pacotes de Serviços</FormLabel>
+                                            <Select onValueChange={(value) => field.onChange([...(field.value || []), value])} >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Adicionar pacote..." />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {Object.entries(packageOptions).map(([key, value]) => (
+                                                        <SelectItem key={key} value={key} disabled={(field.value || []).includes(key)}>
+                                                            {value.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <div className="flex flex-wrap gap-2 pt-2">
+                                                {(field.value || []).map((pkg) => (
+                                                    <div key={pkg} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm">
+                                                        {packageOptions[pkg as keyof typeof packageOptions].name}
+                                                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => field.onChange(field.value?.filter(v => v !== pkg))}>
+                                                            <X className="h-3 w-3"/>
+                                                        </Button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            )
                           )}
                           
                            {section.fields.includes('generateButton') && (
@@ -352,7 +384,7 @@ export default function ProposalGeneratorV2() {
                           )}
 
                           
-                          {section.fields.includes('investmentValue') && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento (se personalizado)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />}
+                          {section.fields.includes('investmentValue') && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} disabled={!useCustomServices} /></FormControl><FormMessage /></FormItem>} />}
                           {section.fields.includes('discount') && (
                              <FormField
                                 control={form.control}
@@ -472,24 +504,40 @@ export default function ProposalGeneratorV2() {
                 </CarouselItem>
 
                  {/* Page 5: Escopo */}
-                 <CarouselItem>
+                <CarouselItem>
                     <Page ref={el => { if(el) pagesRef.current[4] = el; }}>
                         <div className="w-full max-w-6xl">
                             <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
-                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                                {watchedValues.packages?.map(pkgKey => {
-                                    const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
-                                    if (!pkg) return null;
-                                    const Icon = pkg.icon;
-                                    return (
-                                        <div key={pkgKey} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700">
-                                            <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
-                                            <h3 className="font-bold text-lg">{pkg.name}</h3>
-                                            <p className="text-sm text-gray-400 mt-1">{pkg.description}</p>
-                                        </div>
-                                    )
-                                })}
-                            </div>
+                            {useCustomServices ? (
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                                    {customServicesList.map(({ name, fields, icon: Icon }) => (
+                                        fields.length > 0 && (
+                                            <div key={name} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700">
+                                                <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
+                                                <h3 className="font-bold text-lg">{name}</h3>
+                                                <ul className="text-sm text-gray-400 mt-2 list-disc pl-4 space-y-1">
+                                                    {fields.map((field, index) => <li key={index}>{field.value}</li>)}
+                                                </ul>
+                                            </div>
+                                        )
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                                    {watchedValues.packages?.map(pkgKey => {
+                                        const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+                                        if (!pkg) return null;
+                                        const Icon = pkg.icon;
+                                        return (
+                                            <div key={pkgKey} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700">
+                                                <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
+                                                <h3 className="font-bold text-lg">{pkg.name}</h3>
+                                                <p className="text-sm text-gray-400 mt-1">{pkg.description}</p>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )}
                         </div>
                     </Page>
                 </CarouselItem>
@@ -574,3 +622,5 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
+
+    
