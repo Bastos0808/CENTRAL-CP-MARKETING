@@ -65,17 +65,17 @@ type ProposalFormValues = z.infer<typeof proposalSchema>;
 const packageOptions = {
     "social_media_essencial": { name: "Social Media - Essencial", price: 1500, description: "Gestão completa de Instagram e Facebook, 12 posts/mês, 1 reunião mensal.", icon: Palette },
     "social_media_performance": { name: "Social Media - Performance", price: 2500, description: "Tudo do Essencial, com 20 posts/mês, relatórios avançados e gestão de LinkedIn.", icon: Palette },
-    "social_media_enterprise": { name: "Social Media - Enterprise", price: 4000, description: "Tudo do Performance, com 30 posts/mês, captação de vídeo externa e gestão de blog.", icon: Palette },
-    "trafego_pago_bronze": { name: "Tráfego Pago - Bronze", price: 1000, description: "Gestão de até R$2.000 em Meta Ads, 2 campanhas e relatórios mensais.", icon: Megaphone },
-    "trafego_pago_prata": { name: "Tráfego Pago - Prata", price: 2000, description: "Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas e otimização semanal.", icon: Megaphone },
-    "trafego_pago_diamante": { name: "Tráfego Pago - Diamante", price: 3500, description: "Gestão de até R$10.000, campanhas ilimitadas, funil completo e dashboard em tempo real.", icon: Megaphone },
+    "social_media_premium_plus": { name: "Social Media - Premium Plus", price: 4000, description: "Tudo do Performance, com 30 posts/mês, captação de vídeo externa e gestão de blog.", icon: Palette },
+    "trafego_pago": { name: "Tráfego Pago", price: 2000, description: "Gestão de até R$5.000 em Meta & Google Ads, 4 campanhas e otimização semanal.", icon: Megaphone },
     "podcast_bronze": { name: "Podcast - Bronze", price: 840, description: "4 episódios/mês (1h cada) gravados em estúdio, edição básica e distribuição.", icon: DollarSign },
     "podcast_prata": { name: "Podcast - Prata", price: 1600, description: "4 episódios/mês (2h cada), edição completa, cortes para redes sociais.", icon: DollarSign },
+    "podcast_safira": { name: "Podcast - Safira", price: 2000, description: "Tudo do Prata, com gestão de Youtube e 1 diária de captação externa.", icon: DollarSign },
     "podcast_diamante": { name: "Podcast - Diamante", price: 2500, description: "Tudo do Prata, com gestão do canal do YouTube e thumbnails profissionais.", icon: DollarSign },
     "identidade_visual": { name: "Identidade Visual", price: 2500, description: "Criação de logo, paleta de cores, tipografia e manual de marca completo.", icon: Sparkles },
     "website": { name: "Website Institucional", price: 5000, description: "Criação de site com até 5 páginas, design responsivo e otimizado para SEO.", icon: Sparkles },
     "landing_page": { name: "Landing Page", price: 1800, description: "Página de alta conversão para campanhas específicas, com formulário integrado.", icon: Sparkles }
 };
+
 
 const Page = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, children, ...props }, ref) => (
   <div
@@ -572,5 +572,3 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
-
-    
