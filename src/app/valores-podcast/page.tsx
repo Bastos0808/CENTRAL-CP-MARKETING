@@ -3,12 +3,19 @@ import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check } from 'lucide-react';
 
-const prices = [
+const dayPrices = [
     { name: "1 Episódio de 1h", value: "R$ 249,00" },
     { name: "1 Episódio de 2h", value: "R$ 440,00" },
     { name: "Pacote (4 episódios de 1h)", value: "R$ 840,00" },
     { name: "Pacote (4 episódios de 2h)", value: "R$ 1.600,00" }
-]
+];
+
+const nightPrices = [
+    { name: "1 Episódio de 1h", value: "R$ 399,00" },
+    { name: "1 Episódio de 2h", value: "R$ 740,00" },
+    { name: "Pacote (4 episódios de 1h)", value: "R$ 1.440,00" },
+    { name: "Pacote (4 episódios de 2h)", value: "R$ 2.800,00" }
+];
 
 export default function ValoresPodcastPage() {
   return (
@@ -23,7 +30,7 @@ export default function ValoresPodcastPage() {
             Consulte os preços para gravações de podcast de segunda a sexta.
           </p>
         </header>
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto space-y-8">
              <Card>
                 <CardHeader>
                     <CardTitle>Período da Manhã e da Tarde</CardTitle>
@@ -31,7 +38,27 @@ export default function ValoresPodcastPage() {
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-4">
-                       {prices.map((price) => (
+                       {dayPrices.map((price) => (
+                         <li key={price.name} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                            <span className="flex items-center gap-3 font-medium">
+                                <Check className="h-5 w-5 text-primary"/>
+                                {price.name}
+                            </span>
+                            <span className="font-bold text-lg text-primary">{price.value}</span>
+                         </li>
+                       ))}
+                    </ul>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Período da Noite</CardTitle>
+                    <CardDescription>Valores para gravação em nosso estúdio profissional.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ul className="space-y-4">
+                       {nightPrices.map((price) => (
                          <li key={price.name} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
                             <span className="flex items-center gap-3 font-medium">
                                 <Check className="h-5 w-5 text-primary"/>
