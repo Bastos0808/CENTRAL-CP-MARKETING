@@ -1,6 +1,6 @@
 
 import { BackButton } from '@/components/ui/back-button';
-import ChannelAnalyzer from '@/components/channel-analyzer';
+import ChannelStrategyAnalyzer from '@/components/channel-strategy-analyzer';
 
 export default function AnaliseDeCanaisPage() {
   return (
@@ -9,14 +9,14 @@ export default function AnaliseDeCanaisPage() {
         <BackButton />
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-            Análise de Canais com IA
+            Diagnóstico Estratégico de Canais
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Insira a URL de um canal (Instagram, Site, etc.) para obter uma análise estratégica.
+            Use este framework guiado para analisar os canais de um prospect e gerar insights com IA.
           </p>
         </header>
         <div className="max-w-6xl mx-auto">
-          <ChannelAnalyzer />
+          <ChannelStrategyAnalyzer />
         </div>
       </div>
     </main>

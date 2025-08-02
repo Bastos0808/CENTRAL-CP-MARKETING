@@ -5,3 +5,4 @@ import './flows/client-chat-flow';
 import './flows/onboarding-sdr-flow';
 import './flows/proposal-generator-flow';
 import './flows/channel-analyzer-flow';
+import './flows/channel-strategy-flow';
