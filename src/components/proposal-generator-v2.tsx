@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import * as React from 'react';
@@ -175,12 +174,19 @@ export default function ProposalGeneratorV2() {
       for (let i = 0; i < pagesRef.current.length; i++) {
         const pageElement = pagesRef.current[i];
         if (pageElement) {
+          // Temporarily make the element visible for rendering
+          const originalDisplay = pageElement.parentElement?.style.display;
+          if (pageElement.parentElement) {
+            pageElement.parentElement.style.display = 'block';
+          }
+          
+          // Wait for images to load
           const images = Array.from(pageElement.getElementsByTagName('img'));
           await Promise.all(images.map(img => {
             if (img.complete) return Promise.resolve();
             return new Promise(resolve => {
               img.onload = resolve;
-              img.onerror = resolve;
+              img.onerror = resolve; // Continue even if an image fails to load
             });
           }));
 
@@ -192,6 +198,11 @@ export default function ProposalGeneratorV2() {
             backgroundColor: '#000000',
             logging: false,
           });
+
+          // Restore original display style
+           if (pageElement.parentElement) {
+            pageElement.parentElement.style.display = originalDisplay || '';
+          }
 
           const imgData = canvas.toDataURL('image/png');
 
@@ -257,6 +268,18 @@ export default function ProposalGeneratorV2() {
     { name: "Investimento", fields: ['investmentValue', 'discount'], icon: DollarSign },
   ];
 
+  const allPages = [
+    { id: 'cover' },
+    { id: 'partnership' },
+    { id: 'objective' },
+    { id: 'differential' },
+    { id: 'scope' },
+    { id: 'idealPlan' },
+    { id: 'investment' },
+    { id: 'nextSteps' },
+    { id: 'contact' },
+  ];
+
   return (
     <div className="space-y-8">
       <div className="w-full space-y-4">
@@ -302,7 +325,7 @@ export default function ProposalGeneratorV2() {
                                                         <FormField
                                                             control={form.control}
                                                             name={`${fieldName}.${index}.value` as any}
-                                                            render={({ field }) => <Input {...field} className="flex-1" placeholder={`Item de ${name}`} />}
+                                                            render={({ field }) => <FormItem className="flex-1"><FormControl><Input {...field} placeholder={`Item de ${name}`} /></FormControl></FormItem>}
                                                         />
                                                         <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-muted-foreground" /></Button>
                                                     </div>
@@ -390,184 +413,171 @@ export default function ProposalGeneratorV2() {
           </Card>
       </div>
 
-      <div className="w-full">
+       <div className="w-full">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
-                {/* Page 1: Capa */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[0] = el; }} className="bg-cover bg-center">
-                        <div className="absolute inset-0 bg-black z-0"></div>
-                         {watchedValues.coverImageUrl && (
-                            <Image 
-                                crossOrigin='anonymous'
-                                src={watchedValues.coverImageUrl}
-                                alt="Background" 
-                                layout="fill" 
-                                objectFit="cover" 
-                                className="absolute inset-0 z-0 opacity-40"
-                                data-ai-hint="technology dark"
-                            />
-                         )}
-                        <div className="absolute inset-0 bg-black/50"></div>
-                        <div className="z-10 text-center flex flex-col items-center">
-                            <p className="text-[#FE5412] font-semibold tracking-widest mb-2">PROPOSTA COMERCIAL</p>
-                            <h1 className="text-7xl font-extrabold max-w-4xl">{watchedValues.clientName || '[Cliente]'}</h1>
-                            <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
-                        </div>
-                    </Page>
-                </CarouselItem>
-
-                {/* Page 2: Sobre a Parceria */}
-                 <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[1] = el; }} className="justify-center items-start flex-col">
-                        <h2 className="text-6xl font-bold uppercase mb-10 text-left w-full max-w-5xl mx-auto">Sobre a Parceria</h2>
-                        <div className="flex items-start gap-6 max-w-5xl mx-auto">
-                            <div className="w-1 bg-[#FE5412] self-stretch"></div>
-                            <p className="text-3xl font-light text-gray-200 text-left">{watchedValues.partnershipDescription}</p>
-                        </div>
-                    </Page>
-                </CarouselItem>
-
-                 {/* Page 3: Objetivo */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[2] = el; }}>
-                        <div className="w-full max-w-5xl">
-                            <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
-                             <ul className="space-y-4 text-xl font-light">
-                                {watchedValues.objectiveItems?.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-4"><Goal className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" />{item.value}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    </Page>
-                </CarouselItem>
-
-                {/* Page 4: Diferencial */}
-                 <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[3] = el; }}>
-                         <div className="w-full max-w-5xl">
-                            <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
-                            <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
-                                {watchedValues.differentialItems?.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-4 mb-4 break-inside-avoid"><Sparkles className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" />{item.value}</li>
-                                ))}
-                            </ul>
-                         </div>
-                    </Page>
-                </CarouselItem>
-
-                 {/* Page 5: Escopo */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[4] = el; }} className="p-12 items-start justify-start">
-                        <div className="w-full max-w-full">
-                            <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
-                            {useCustomServices ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                                    {customServicesList.map(({ name, fields, icon: Icon }) => (
-                                        fields.length > 0 && (
-                                            <div key={name} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
-                                                <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
-                                                <h3 className="font-bold text-lg">{name}</h3>
-                                                <ul className="text-sm text-gray-400 mt-2 list-disc pl-4 space-y-1 flex-grow">
-                                                    {fields.map((field, index) => <li key={index}>{field.value}</li>)}
-                                                </ul>
-                                            </div>
-                                        )
-                                    ))}
+                {allPages.map((page, index) => (
+                    <CarouselItem key={page.id}>
+                        {page.id === 'cover' && (
+                            <Page ref={el => { if(el) pagesRef.current[index] = el; }} className="bg-cover bg-center">
+                                <div className="absolute inset-0 bg-black z-0"></div>
+                                {watchedValues.coverImageUrl && (
+                                    <Image 
+                                        crossOrigin='anonymous'
+                                        src={watchedValues.coverImageUrl}
+                                        alt="Background" 
+                                        layout="fill" 
+                                        objectFit="cover" 
+                                        className="absolute inset-0 z-0 opacity-40"
+                                        data-ai-hint="technology dark"
+                                    />
+                                )}
+                                <div className="absolute inset-0 bg-black/50"></div>
+                                <div className="z-10 text-center flex flex-col items-center">
+                                    <p className="text-[#FE5412] font-semibold tracking-widest mb-2">PROPOSTA COMERCIAL</p>
+                                    <h1 className="text-7xl font-extrabold max-w-4xl">{watchedValues.clientName || '[Cliente]'}</h1>
+                                    <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
                                 </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                                    {watchedValues.packages?.map(pkgKey => {
-                                        const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
-                                        if (!pkg) return null;
-                                        const Icon = pkg.icon;
-                                        return (
-                                            <div key={pkgKey} className="bg-gray-900/70 p-4 rounded-lg border border-gray-700 flex flex-col">
-                                                <div className="flex-grow">
-                                                    <div className="flex items-center gap-3 mb-3">
-                                                        <Icon className="h-8 w-8 text-[#FE5412]" />
-                                                        <h3 className="font-bold text-lg">{pkg.name}</h3>
+                            </Page>
+                        )}
+                         {page.id === 'partnership' && (
+                           <Page ref={el => { if(el) pagesRef.current[index] = el; }} className="justify-center items-start flex-col">
+                                <h2 className="text-6xl font-bold uppercase mb-10 text-left w-full max-w-5xl mx-auto">Sobre a Parceria</h2>
+                                <div className="flex items-start gap-6 max-w-5xl mx-auto">
+                                    <div className="w-1 bg-[#FE5412] self-stretch"></div>
+                                    <p className="text-3xl font-light text-gray-200 text-left">{watchedValues.partnershipDescription}</p>
+                                </div>
+                            </Page>
+                        )}
+                        {page.id === 'objective' && (
+                            <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
+                                <div className="w-full max-w-5xl">
+                                    <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
+                                    <ul className="space-y-4 text-xl font-light">
+                                        {watchedValues.objectiveItems?.map((item, i) => (
+                                            <li key={i} className="flex items-start gap-4"><Goal className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" />{item.value}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </Page>
+                        )}
+                        {page.id === 'differential' && (
+                           <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
+                                 <div className="w-full max-w-5xl">
+                                    <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
+                                    <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
+                                        {watchedValues.differentialItems?.map((item, i) => (
+                                            <li key={i} className="flex items-start gap-4 mb-4 break-inside-avoid"><Sparkles className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" />{item.value}</li>
+                                        ))}
+                                    </ul>
+                                 </div>
+                            </Page>
+                        )}
+                        {page.id === 'scope' && (
+                            <Page ref={el => { if(el) pagesRef.current[index] = el; }} className="p-12 items-start justify-start">
+                                <div className="w-full max-w-full">
+                                    <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
+                                    {useCustomServices ? (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                                            {customServicesList.map(({ name, fields, icon: Icon }) => (
+                                                fields.length > 0 && (
+                                                    <div key={name} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
+                                                        <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
+                                                        <h3 className="font-bold text-lg">{name}</h3>
+                                                        <ul className="text-sm text-gray-400 mt-2 list-disc pl-4 space-y-1 flex-grow">
+                                                            {fields.map((field, index) => <li key={index}>{field.value}</li>)}
+                                                        </ul>
                                                     </div>
-                                                    <p className="text-[10px] text-gray-400 mt-1 whitespace-pre-line leading-relaxed">{pkg.description}</p>
-                                                </div>
-                                                <div className="pt-2 mt-auto text-right">
-                                                    <span className="text-lg font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
+                                                )
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                                            {watchedValues.packages?.map(pkgKey => {
+                                                const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+                                                if (!pkg) return null;
+                                                const Icon = pkg.icon;
+                                                return (
+                                                    <div key={pkgKey} className="bg-gray-900/70 p-4 rounded-lg border border-gray-700 flex flex-col">
+                                                        <div className="flex-grow">
+                                                            <div className="flex items-center gap-3 mb-3">
+                                                                <Icon className="h-8 w-8 text-[#FE5412]" />
+                                                                <h3 className="font-bold text-lg">{pkg.name}</h3>
+                                                            </div>
+                                                            <p className="text-[10px] text-gray-400 mt-1 whitespace-pre-line leading-relaxed">{pkg.description}</p>
+                                                        </div>
+                                                        <div className="pt-2 mt-auto text-right">
+                                                            <span className="text-lg font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    </Page>
-                </CarouselItem>
-                
-                {/* Page 6: Plano Ideal */}
-                <CarouselItem>
-                     <Page ref={el => { if(el) pagesRef.current[5] = el; }}>
-                         <div className="w-full max-w-5xl text-center">
-                            <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
-                             <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
-                                {watchedValues.idealPlanItems?.map((item, i) => (
-                                    <li key={i} className="flex items-start gap-4"><Check className="h-7 w-7 text-green-400 mt-1 flex-shrink-0" />{item.value}</li>
-                                ))}
-                            </ul>
-                         </div>
-                    </Page>
-                </CarouselItem>
-
-                {/* Page 7: Investimento */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[6] = el; }}>
-                        <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
-                            <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
-                            <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
-                            <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
-                        </div>
-                    </Page>
-                </CarouselItem>
-
-                {/* Page 8: Próximos Passos */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[7] = el; }}>
-                        <div className="w-full max-w-5xl text-center">
-                            <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
-                            <div className="flex justify-center items-stretch gap-8 text-left">
-                                <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
-                                    <CardContent className="p-8">
-                                        <div className="text-5xl font-extrabold text-[#FE5412] mb-4">1</div>
-                                        <h3 className="font-bold text-xl mb-2">Aprovação</h3>
-                                        <p className="text-gray-300">Análise e aprovação da proposta.</p>
-                                    </CardContent>
-                                </Card>
-                                <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
-                                    <CardContent className="p-8">
-                                        <div className="text-5xl font-extrabold text-[#FE5412] mb-4">2</div>
-                                        <h3 className="font-bold text-xl mb-2">Assinatura</h3>
-                                        <p className="text-gray-300">Assinatura do contrato de prestação de serviços.</p>
-                                    </CardContent>
-                                </Card>
-                                <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
-                                    <CardContent className="p-8">
-                                        <div className="text-5xl font-extrabold text-[#FE5412] mb-4">3</div>
-                                        <h3 className="font-bold text-xl mb-2">Onboarding</h3>
-                                        <p className="text-gray-300">Início da parceria e alinhamento estratégico.</p>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        </div>
-                    </Page>
-                </CarouselItem>
-
-                 {/* Page 9: Contato */}
-                <CarouselItem>
-                    <Page ref={el => { if(el) pagesRef.current[8] = el; }}>
-                        <div className="text-center">
-                            <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
-                            <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
-                        </div>
-                    </Page>
-                </CarouselItem>
+                            </Page>
+                        )}
+                        {page.id === 'idealPlan' && (
+                            <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
+                                 <div className="w-full max-w-5xl text-center">
+                                    <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
+                                     <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
+                                        {watchedValues.idealPlanItems?.map((item, i) => (
+                                            <li key={i} className="flex items-start gap-4"><Check className="h-7 w-7 text-green-400 mt-1 flex-shrink-0" />{item.value}</li>
+                                        ))}
+                                    </ul>
+                                 </div>
+                            </Page>
+                        )}
+                        {page.id === 'investment' && (
+                           <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
+                                <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
+                                    <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
+                                    <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
+                                    <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
+                                </div>
+                            </Page>
+                        )}
+                        {page.id === 'nextSteps' && (
+                            <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
+                                <div className="w-full max-w-5xl text-center">
+                                    <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
+                                    <div className="flex justify-center items-stretch gap-8 text-left">
+                                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                                            <CardContent className="p-8">
+                                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">1</div>
+                                                <h3 className="font-bold text-xl mb-2">Aprovação</h3>
+                                                <p className="text-gray-300">Análise e aprovação da proposta.</p>
+                                            </CardContent>
+                                        </Card>
+                                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                                            <CardContent className="p-8">
+                                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">2</div>
+                                                <h3 className="font-bold text-xl mb-2">Assinatura</h3>
+                                                <p className="text-gray-300">Assinatura do contrato de prestação de serviços.</p>
+                                            </CardContent>
+                                        </Card>
+                                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                                            <CardContent className="p-8">
+                                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">3</div>
+                                                <h3 className="font-bold text-xl mb-2">Onboarding</h3>
+                                                <p className="text-gray-300">Início da parceria e alinhamento estratégico.</p>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </div>
+                            </Page>
+                        )}
+                        {page.id === 'contact' && (
+                            <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
+                                <div className="text-center">
+                                    <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
+                                    <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
+                                </div>
+                            </Page>
+                        )}
+                    </CarouselItem>
+                ))}
             </CarouselContent>
             <CarouselPrevious className="-left-12 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
             <CarouselNext className="-right-12 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
@@ -582,3 +592,5 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
+
+    
