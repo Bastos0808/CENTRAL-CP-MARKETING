@@ -162,6 +162,35 @@ export default function ProposalGeneratorV2() {
     { name: "Website", fieldName: "customServices.website", fields: websiteFields, append: appendWebsite, remove: removeWebsite, icon: Sparkles },
     { name: "Landing Page", fieldName: "customServices.landingPage", fields: lpFields, append: appendLp, remove: removeLp, icon: FileText },
   ];
+  
+  const getImageDataUrl = (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        if (!url) {
+            reject("URL is empty");
+            return;
+        }
+        const img = new window.Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+                ctx.drawImage(img, 0, 0);
+                resolve(canvas.toDataURL("image/png"));
+            } else {
+                reject("Could not get canvas context");
+            }
+        };
+        img.onerror = (e) => {
+            console.error("Error loading image for PDF:", e);
+            reject("Error loading image");
+        };
+        img.src = url;
+    });
+};
+
 
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
@@ -179,20 +208,19 @@ export default function ProposalGeneratorV2() {
         // --- Slide 1: Cover ---
         doc.setFillColor(0, 0, 0);
         doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
         if(formData.coverImageUrl) {
             try {
-                const response = await fetch(formData.coverImageUrl);
-                const blob = await response.blob();
-                const reader = new FileReader();
-                const dataUrl = await new Promise<string>((resolve) => {
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.readAsDataURL(blob);
-                });
-                doc.addImage(dataUrl, 'PNG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
+                const imageDataUrl = await getImageDataUrl(formData.coverImageUrl);
+                doc.addImage(imageDataUrl, 'PNG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
                 doc.setFillColor(0, 0, 0, 0.5);
                 doc.rect(0, 0, pageWidth, pageHeight, 'F');
-            } catch(e) { console.error("Could not load cover image", e); }
+            } catch(e) { 
+                console.error("Could not load cover image", e);
+                toast({ title: "Erro ao carregar imagem", description: "Não foi possível carregar a imagem de capa. Verifique a URL e as permissões de CORS.", variant: "destructive" });
+            }
         }
+        
         doc.setFontSize(14).setFont('helvetica', 'bold').setTextColor('#FE5412');
         doc.text('PROPOSTA COMERCIAL', pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
         doc.setFontSize(48).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
@@ -575,7 +603,7 @@ export default function ProposalGeneratorV2() {
                                                         <FormField
                                                             control={form.control}
                                                             name={`${fieldName}.${index}.value` as any}
-                                                            render={({ field }) => <FormItem className="flex-1"><FormLabel>Item</FormLabel><FormControl><Input {...field} placeholder={`Item de ${name}`} /></FormControl></FormItem>}
+                                                            render={({ field }) => <FormItem className="flex-1"><FormControl><Input {...field} placeholder={`Item de ${name}`} /></FormControl></FormItem>}
                                                         />
                                                         <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-muted-foreground" /></Button>
                                                     </div>
@@ -686,3 +714,5 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
+
+    
