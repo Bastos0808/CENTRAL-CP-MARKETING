@@ -21,9 +21,8 @@ export const InstagramAnalysisSchema = z.object({
   usoDeReels: z.string().optional().describe("Análise da qualidade e frequência do uso de Reels."),
   copywritingLegendas: z.string().optional().describe("Análise da qualidade dos textos e CTAs nas legendas."),
   engajamentoComunidade: z.string().optional().describe("Análise da interação da marca com a comunidade."),
-  pontosFortes: z.string().optional().describe("Resumo dos principais pontos fortes."),
-  pontosFracos: z.string().optional().describe("Resumo das principais fraquezas e oportunidades."),
-  ganchoDeAbordagem: z.string().optional().describe("Sugestão de gancho de prospecção baseado na análise."),
+  oportunidades: z.array(z.string()).optional().describe("Lista de oportunidades de melhoria identificadas."),
+  gancho: z.string().optional().describe("Gancho de prospecção curto e direto baseado nas oportunidades."),
 });
 
 export const WebsiteAnalysisSchema = z.object({
@@ -34,9 +33,8 @@ export const WebsiteAnalysisSchema = z.object({
   otimizacaoSEO: z.string().optional().describe("Análise básica de SEO (títulos, blog, etc.)."),
   designResponsividade: z.string().optional().describe("Análise do design (moderno vs. datado) e da responsividade mobile."),
   provaSocial: z.string().optional().describe("Análise do uso de depoimentos, cases, etc."),
-  pontosFortes: z.string().optional().describe("Resumo dos principais pontos fortes."),
-  pontosFracos: z.string().optional().describe("Resumo das principais fraquezas."),
-  ganchoDeAbordagem: z.string().optional().describe("Sugestão de gancho de prospecção."),
+  oportunidades: z.array(z.string()).optional().describe("Lista de oportunidades de melhoria identificadas."),
+  gancho: z.string().optional().describe("Gancho de prospecção curto e direto baseado nas oportunidades."),
 });
 
 export const YouTubeAnalysisSchema = z.object({
@@ -47,9 +45,8 @@ export const YouTubeAnalysisSchema = z.object({
     usoDeShorts: z.string().optional().describe("Análise do uso estratégico de Shorts para atração."),
     seoVideo: z.string().optional().describe("Análise de descrições, palavras-chave e tags dos vídeos."),
     engajamentoComentarios: z.string().optional().describe("Análise da interação com a comunidade nos comentários."),
-    pontosFortes: z.string().optional().describe("Resumo dos principais pontos fortes do canal."),
-    pontosFracos: z.string().optional().describe("Resumo das principais oportunidades de melhoria."),
-    ganchoDeAbordagem: z.string().optional().describe("Sugestão de gancho de prospecção focada em vídeo."),
+    oportunidades: z.array(z.string()).optional().describe("Lista de oportunidades de melhoria identificadas."),
+    gancho: z.string().optional().describe("Gancho de prospecção curto e direto baseado nas oportunidades."),
 });
 
 export const ChannelStrategyAnalysisSchema = z.union([
@@ -62,5 +59,3 @@ export const ChannelStrategyOutputSchema = z.object({
   analysis: ChannelStrategyAnalysisSchema.describe('The structured analysis containing answers to the framework questions.'),
 });
 export type ChannelStrategyOutput = z.infer<typeof ChannelStrategyOutputSchema>;
-
-    

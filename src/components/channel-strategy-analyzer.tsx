@@ -3,7 +3,7 @@
 
 import { useState, useRef } from "react";
 import Image from 'next/image';
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { analyzeChannelStrategy } from "@/ai/flows/channel-strategy-flow";
@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { 
     Instagram, Youtube, Search, Globe, Loader2, Wand2, Copy, 
-    ThumbsUp, ThumbsDown, Target, BookOpen, Diamond, Tv, BarChart, 
+    Lightbulb, Target, BookOpen, Diamond, Tv, BarChart, 
     Video, MessageSquare, Users, Milestone, Megaphone, CheckCircle, 
     Eye, Image as ImageIcon, PenTool, Edit, SquarePlay, Paperclip, X, Info
 } from "lucide-react";
@@ -60,9 +60,8 @@ const channelConfig = {
       { key: "usoDeReels", label: "Uso de Reels", icon: Video, prompt: "Estão usando o formato? Os vídeos são bem editados?", hint: "Verifique se a empresa aproveita o formato de maior alcance do Instagram. Analise a qualidade da edição, se há legendas, boa iluminação e se o conteúdo é engajante." },
       { key: "copywritingLegendas", label: "Copywriting das Legendas", icon: MessageSquare, prompt: "As legendas geram conexão e têm CTAs claros?", hint: "As legendas são apenas descritivas ou contam uma história, fazem perguntas e incentivam a interação? Procure por chamadas para ação claras como 'Comente aqui' ou 'Clique no link da bio'." },
       { key: "engajamentoComunidade", label: "Engajamento", icon: Users, prompt: "A empresa responde aos comentários? Cria comunidade?", hint: "Veja se os posts têm curtidas e comentários. Mais importante: a empresa responde a esses comentários? Uma marca que dialoga cria uma comunidade fiel." },
-      { key: "pontosFortes", label: "Pontos Fortes (Resumo)", icon: ThumbsUp, prompt: "Resuma os 2-3 principais acertos do canal.", hint: "Com base em toda a análise, sintetize os principais destaques positivos. Onde eles realmente se destacam?" },
-      { key: "pontosFracos", label: "Pontos Fracos (Oportunidades)", icon: ThumbsDown, prompt: "Resuma as 2-3 principais fraquezas que podemos resolver.", hint: "Identifique as maiores oportunidades de melhoria que a nossa agência pode atacar diretamente. Seja específico." },
-      { key: "ganchoDeAbordagem", label: "Gancho de Prospecção", icon: Target, prompt: "Com base na principal fraqueza, crie uma frase de abordagem.", hint: "Transforme o ponto fraco mais crítico em uma pergunta consultiva. Ex: 'Notei que seus Reels têm um ótimo conteúdo, mas a falta de legendas pode estar diminuindo o alcance. Já pensaram em otimizar isso?'" },
+      { key: "oportunidades", label: "Oportunidades de Melhoria", icon: Lightbulb, prompt: "Liste os principais pontos que a agência pode melhorar.", hint: "Com base em toda a análise, liste de 2 a 4 pontos de ação claros e específicos que nossa agência pode resolver para o cliente (ex: 'Profissionalizar a identidade visual do feed', 'Implementar uma estratégia de Reels focada em tutoriais', 'Otimizar a bio com um CTA mais direto')." },
+      { key: "gancho", label: "Gancho de Prospecção", icon: Target, prompt: "Com base na principal oportunidade, crie uma frase de abordagem.", hint: "Transforme a oportunidade mais crítica em uma pergunta consultiva. Ex: 'Notei que seus Reels têm um ótimo conteúdo, mas a falta de legendas pode estar diminuindo o alcance. Já pensaram em otimizar isso?'" },
     ]
   },
   website: {
@@ -76,9 +75,8 @@ const channelConfig = {
       { key: "otimizacaoSEO", label: "Otimização para SEO", icon: Search, prompt: "O site parece otimizado? (Títulos, blog, etc.)", hint: "Verifique os títulos das páginas na aba do navegador. Existe um blog com conteúdo relevante para o público-alvo? As imagens parecem otimizadas?" },
       { key: "designResponsividade", label: "Design e Responsividade", icon: Tv, prompt: "O layout é moderno? Funciona bem em celulares?", hint: "O site parece atual ou datado? Abra o site em um celular (ou use a ferramenta de desenvolvedor do navegador) para verificar se a experiência é boa." },
       { key: "provaSocial", label: "Prova Social", icon: Users, prompt: "O site usa depoimentos, cases ou logos de clientes para gerar confiança?", hint: "Procure por seções de depoimentos, estudos de caso, logos de clientes atendidos ou números que comprovem a eficácia da empresa. A ausência disso é uma grande fraqueza." },
-      { key: "pontosFortes", label: "Pontos Fortes (Resumo)", icon: ThumbsUp, prompt: "Resuma os 2-3 principais acertos do site.", hint: "Com base em toda a análise, sintetize os principais destaques positivos. Onde o site realmente se destaca?" },
-      { key: "pontosFracos", label: "Pontos Fracos (Oportunidades)", icon: ThumbsDown, prompt: "Resuma as 2-3 principais fraquezas que impactam o negócio.", hint: "Identifique as maiores oportunidades de melhoria que a nossa agência pode atacar diretamente (ex: design, falta de prova social, CTAs fracos)." },
-      { key: "ganchoDeAbordagem", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem focada em como a melhoria do site pode impactar os negócios.", hint: "Transforme a principal fraqueza em uma pergunta de negócio. Ex: 'Vi que o site de vocês tem um conteúdo excelente, mas o design parece não refletir a qualidade da marca. Já pensaram em como um site moderno poderia aumentar a conversão?'" },
+      { key: "oportunidades", label: "Oportunidades de Melhoria", icon: Lightbulb, prompt: "Liste os principais pontos que a agência pode melhorar.", hint: "Com base em toda a análise, liste de 2 a 4 pontos de ação claros e específicos que nossa agência pode resolver para o cliente (ex: 'Modernizar o design para refletir a qualidade da marca', 'Adicionar uma seção de prova social com depoimentos', 'Melhorar os CTAs para focar na geração de leads')." },
+      { key: "gancho", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem focada em como a melhoria do site pode impactar os negócios.", hint: "Transforme a oportunidade mais crítica em uma pergunta de negócio. Ex: 'Vi que o site de vocês tem um conteúdo excelente, mas o design parece não refletir a qualidade da marca. Já pensaram em como um site moderno poderia aumentar a conversão?'" },
     ]
   },
   youtube: {
@@ -92,9 +90,8 @@ const channelConfig = {
         { key: "usoDeShorts", label: "Uso de Shorts", icon: SquarePlay, prompt: "O canal utiliza vídeos curtos para atrair novos inscritos?", hint: "Verifique se o canal posta 'Shorts' (vídeos curtos na vertical). É a principal ferramenta do YouTube para alcançar um público novo que ainda não conhece o canal." },
         { key: "seoVideo", label: "SEO dos Vídeos", icon: Search, prompt: "As descrições e tags são usadas de forma estratégica?", hint: "Abra a descrição de alguns vídeos. Ela é bem-feita, com um resumo, links importantes e uso de palavras-chave? Isso é crucial para o YouTube entender e recomendar o vídeo." },
         { key: "engajamentoComentarios", label: "Engajamento nos Comentários", icon: MessageSquare, prompt: "O criador interage com a comunidade nos comentários?", hint: "O dono do canal responde aos comentários, dá 'coração' e cria uma conversa? Isso mostra que ele se importa com a comunidade e incentiva mais interações." },
-        { key: "pontosFortes", label: "Pontos Fortes (Resumo)", icon: ThumbsUp, prompt: "Resuma os 2-3 principais acertos na estratégia do YouTube.", hint: "Com base em toda a análise, sintetize os principais destaques positivos. Onde o canal realmente se destaca?" },
-        { key: "pontosFracos", label: "Pontos Fracos (Oportunidades)", icon: ThumbsDown, prompt: "Resuma as principais oportunidades perdidas.", hint: "Identifique as maiores oportunidades de melhoria que a nossa agência pode atacar diretamente (ex: thumbnails, SEO, qualidade de edição)." },
-        { key: "ganchoDeAbordagem", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem consultiva focada em vídeo.", hint: "Transforme o ponto fraco mais crítico em uma pergunta consultiva. Ex: 'Adorei seu conteúdo sobre X, mas sinto que as thumbnails não fazem jus à qualidade do vídeo. Já pensaram em como profissionalizar isso para aumentar os cliques?'" },
+        { key: "oportunidades", label: "Oportunidades de Melhoria", icon: Lightbulb, prompt: "Liste os principais pontos que a agência pode melhorar.", hint: "Com base em toda a análise, liste de 2 a 4 pontos de ação claros e específicos que nossa agência pode resolver para o cliente (ex: 'Profissionalizar as thumbnails para aumentar a taxa de cliques', 'Otimizar o SEO dos vídeos para ser encontrado pelo público certo', 'Melhorar a qualidade de áudio das gravações')." },
+        { key: "gancho", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem consultiva focada em vídeo.", hint: "Transforme o ponto fraco mais crítico em uma pergunta consultiva. Ex: 'Adorei seu conteúdo sobre X, mas sinto que as thumbnails não fazem jus à qualidade do vídeo. Já pensaram em como profissionalizar isso para aumentar os cliques?'" },
     ]
   },
 };
@@ -203,6 +200,9 @@ export default function ChannelStrategyAnalyzer() {
     
     const analysisText = config.formSections.map(section => {
         const value = analysis[section.key as keyof typeof analysis];
+        if (Array.isArray(value)) {
+             return `**${section.label.toUpperCase()}**\n${value.map(v => `- ${v}`).join('\n') || 'Não preenchido'}`;
+        }
         return `**${section.label.toUpperCase()}**\n${value || 'Não preenchido'}`;
     }).join('\n\n---\n');
 
@@ -227,6 +227,11 @@ ${analysisText}
     const isLoading = loadingChannel === channel;
     const analysisExists = !!form.watch(`${channel}.analysis`);
     const screenshotPreview = form.watch(`${channel}.screenshotDataUri`);
+    
+    const { fields: opportunityFields, append: appendOpportunity, remove: removeOpportunity } = useFieldArray({
+        control: form.control,
+        name: `${channel}.analysis.oportunidades` as any,
+    });
 
     return (
       <TooltipProvider>
@@ -297,9 +302,16 @@ ${analysisText}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 pt-4 border-t">
               {config.formSections.map(({ key, label, icon: Icon, prompt, hint }) => {
-                const isSummaryField = key.includes('pontos') || key.includes('gancho');
+                const isOpportunityField = key === 'oportunidades';
+                const isHookField = key === 'gancho';
+                const isRegularField = !isOpportunityField && !isHookField;
+                
+                const fieldClassName = cn({
+                  "md:col-span-2": isOpportunityField || isHookField
+                });
+                
                 return (
-                  <div key={key} className={cn(isSummaryField ? "md:col-span-2" : "")}>
+                  <div key={key} className={fieldClassName}>
                       <Label htmlFor={`${channel}-${key}`} className="flex items-center gap-2 mb-2 font-semibold text-primary/90">
                           <Icon className="h-5 w-5" />
                           {label}
@@ -314,19 +326,34 @@ ${analysisText}
                               </TooltipContent>
                           </Tooltip>
                       </Label>
-                    <Controller
-                      name={`${channel}.analysis.${key as keyof typeof analysisExists}`}
-                      control={form.control}
-                      render={({ field }) => (
-                        <Textarea
-                          id={`${channel}-${key}`}
-                          {...field}
-                          placeholder={prompt}
-                          className="min-h-[100px] text-sm"
-                          value={field.value || ''}
-                        />
+
+                      {isRegularField && <Controller
+                          name={`${channel}.analysis.${key as keyof typeof analysisExists}`}
+                          control={form.control}
+                          render={({ field }) => <Textarea id={`${channel}-${key}`} {...field} placeholder={prompt} className="min-h-[100px] text-sm" value={field.value || ''} />}
+                      />}
+
+                      {isOpportunityField && (
+                        <div className="space-y-2">
+                           {opportunityFields.map((field, index) => (
+                               <div key={field.id} className="flex items-center gap-2">
+                                  <Controller
+                                      name={`${channel}.analysis.oportunidades.${index}`}
+                                      control={form.control}
+                                      render={({ field: controllerField }) => <Input {...controllerField} placeholder={`Oportunidade #${index + 1}`} className="text-sm" />}
+                                  />
+                                   <Button type="button" variant="ghost" size="icon" onClick={() => removeOpportunity(index)}><Trash2 className="h-4 w-4" /></Button>
+                               </div>
+                           ))}
+                           <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => appendOpportunity({value: ''})}>Adicionar Oportunidade</Button>
+                        </div>
                       )}
-                    />
+
+                      {isHookField && <Controller
+                          name={`${channel}.analysis.gancho` as any}
+                          control={form.control}
+                          render={({ field }) => <Textarea id={`${channel}-${key}`} {...field} placeholder={prompt} className="min-h-[100px] text-sm" value={field.value || ''} />}
+                      />}
                   </div>
               )})}
             </div>

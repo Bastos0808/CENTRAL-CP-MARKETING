@@ -45,6 +45,10 @@ const channelStrategyPrompt = ai.definePrompt({
 
     Preencha CADA CAMPO do objeto de saída 'analysis' com uma análise clara, objetiva e profissional. Baseie-se no framework abaixo correspondente ao tipo de canal.
 
+    **Após analisar todos os pontos, preencha os campos finais:**
+    -   **oportunidades:** Liste de 2 a 4 oportunidades claras de melhoria, que nossa agência poderia resolver. Seja específico.
+    -   **gancho:** Com base na oportunidade mais crítica, crie UMA frase de abordagem consultiva para o primeiro contato.
+
     ---
     **Framework de Análise para {{channelType}} como 'Instagram'**
 
@@ -55,9 +59,6 @@ const channelStrategyPrompt = ai.definePrompt({
     5.  **usoDeReels:** Eles estão utilizando o formato que mais entrega alcance (Reels)? Os vídeos são bem editados, com legendas e áudio em alta, ou parecem improvisados?
     6.  **copywritingLegendas:** As legendas são bem escritas? Elas contam uma história, geram conexão e incluem CTAs claros, ou são apenas descritivas?
     7.  **engajamentoComunidade:** Como está o engajamento? Os posts têm curtidas e comentários? A empresa responde aos comentários, criando uma comunidade?
-    8.  **pontosFortes:** Resuma os 2-3 principais pontos em que o canal se destaca.
-    9.  **pontosFracos:** Resuma as 2-3 principais fraquezas ou oportunidades de melhoria que nossa agência poderia resolver.
-    10. **ganchoDeAbordagem:** Com base na fraqueza mais crítica, crie uma frase de abordagem consultiva para o primeiro contato. Ex: "Notei que vocês têm uma fotografia de produto excelente, mas não encontrei conteúdo em vídeo. Existe uma razão estratégica para não explorarem o formato que mais engaja hoje?".
 
     ---
     **Framework de Análise para {{channelType}} como 'Website'**
@@ -69,9 +70,6 @@ const channelStrategyPrompt = ai.definePrompt({
     5.  **otimizacaoSEO:** O site parece otimizado para o Google? Os títulos das páginas (title tags) são claros? As imagens têm texto alternativo? Existe um blog com conteúdo relevante?
     6.  **designResponsividade:** O layout é moderno e profissional ou parece datado? O site funciona bem e se adapta a telas de celular?
     7.  **provaSocial:** O site utiliza depoimentos, estudos de caso, logos de clientes ou outros elementos para gerar confiança e provar que a solução funciona?
-    8.  **pontosFortes:** Resuma os 2-3 principais pontos em que o site se destaca.
-    9.  **pontosFracos:** Resuma as 2-3 principais fraquezas que impactam a geração de leads ou a credibilidade do negócio.
-    10. **ganchoDeAbordagem:** Com base no problema mais evidente (ex: design datado, falta de prova social), crie uma frase de abordagem. Ex: "Vi que a [Nome da Empresa] tem uma história incrível, mas senti que o design atual do site talvez não faça jus à qualidade do trabalho de vocês. Já pensaram em modernizá-lo?".
 
     ---
     **Framework de Análise para {{channelType}} como 'youtube'**
@@ -83,9 +81,6 @@ const channelStrategyPrompt = ai.definePrompt({
     5.  **usoDeShorts:** O canal utiliza vídeos curtos (Shorts) para atrair novos inscritos? Os Shorts são cortes de vídeos longos ou conteúdo original?
     6.  **seoVideo:** As descrições dos vídeos são bem-feitas, com links relevantes e palavras-chave? As tags são usadas de forma estratégica?
     7.  **engajamentoComentarios:** O criador responde aos comentários? Existe uma comunidade se formando em torno do conteúdo?
-    8.  **pontosFortes:** Resuma os 2-3 principais acertos na estratégia do YouTube.
-    9.  **pontosFracos:** Resuma as 2-3 principais oportunidades perdidas (ex: thumbnails ruins, falta de SEO, áudio de baixa qualidade).
-    10. **ganchoDeAbordagem:** Crie uma abordagem consultiva focada em vídeo. Ex: "Adorei o conteúdo do seu vídeo sobre [Tópico], mas sinto que as thumbnails atuais não estão no mesmo nível de qualidade, o que pode estar limitando seu alcance. Já pensaram em profissionalizar essa parte?".
 
     Agora, preencha o formulário de análise para o **{{channelType}}** em **{{{channelUrl}}}**.
   `
@@ -103,5 +98,3 @@ const channelStrategyFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    
