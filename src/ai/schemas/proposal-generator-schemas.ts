@@ -4,20 +4,20 @@
  */
 import { z } from 'zod';
 
-const serviceItemSchema = z.object({ value: z.string() });
+const serviceItemSchema = z.object({ value: z.string().min(1, "O item não pode ser vazio.") });
 
 // Define the input schema for the flow
 export const GenerateProposalInputSchema = z.object({
   clientName: z.string().describe('O nome do cliente para quem a proposta se destina.'),
-  packages: z.array(z.string()).describe('Uma lista das chaves dos pacotes de serviços selecionados. Ex: ["social_media_prata", "trafego_pago_bronze"]').optional(),
+  packages: z.array(z.string()).describe('Uma lista dos nomes dos pacotes de serviços selecionados. Ex: ["Plano de Marketing - Essencial", "Podcast - Bronze"]').optional(),
 });
 export type GenerateProposalInput = z.infer<typeof GenerateProposalInputSchema>;
 
 // Define the output schema for the flow
 export const GenerateProposalOutputSchema = z.object({
-  partnershipDescriptionOptions: z.array(z.string()).describe('Uma lista de 3 opções para a descrição da parceria.'),
-  objectiveItemsOptions: z.array(serviceItemSchema).describe('Uma lista de 3 opções para os objetivos da parceria.'),
-  differentialItemsOptions: z.array(serviceItemSchema).describe('Uma lista de 3 opções para os diferenciais.'),
-  idealPlanItemsOptions: z.array(serviceItemSchema).describe('Uma lista de 3 opções para os benefícios do plano ideal.'),
+  partnershipDescription: z.string().describe('O texto gerado para a seção "Sobre a Parceria".'),
+  objectiveItems: z.array(serviceItemSchema).describe('Uma lista de objetivos da parceria.'),
+  differentialItems: z.array(serviceItemSchema).describe('Uma lista de diferenciais.'),
+  idealPlanItems: z.array(serviceItemSchema).describe('Uma lista de argumentos para "Por que este plano é ideal?".'),
 });
 export type GenerateProposalOutput = z.infer<typeof GenerateProposalOutputSchema>;

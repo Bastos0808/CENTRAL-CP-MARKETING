@@ -100,7 +100,6 @@ Page.displayName = 'Page';
 export default function ProposalGeneratorV2() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
   const [isGeneratingAi, setIsGeneratingAi] = React.useState(false);
-  const [aiOptions, setAiOptions] = React.useState<any>(null);
 
   const pagesRef = React.useRef<(HTMLDivElement | null)[]>([]);
   const { toast } = useToast();
@@ -225,46 +224,30 @@ export default function ProposalGeneratorV2() {
       }
 
       setIsGeneratingAi(true);
-      setAiOptions(null);
+
+      const packageNames = packages?.reduce((acc: string[], key: string) => {
+        const pkg = packageOptions[key as keyof typeof packageOptions];
+        if (pkg) {
+          acc.push(pkg.name);
+        }
+        return acc;
+      }, []);
+
       try {
-          const result = await generateProposalContent({ clientName, packages });
-          setAiOptions(result);
-          toast({ title: "Opções Geradas!", description: "A IA criou opções de texto para você. Selecione as que mais gostar." });
+          const result = await generateProposalContent({ clientName, packages: packageNames });
+          
+          form.setValue('partnershipDescription', result.partnershipDescription);
+          form.setValue('objectiveItems', result.objectiveItems);
+          form.setValue('differentialItems', result.differentialItems);
+          form.setValue('idealPlanItems', result.idealPlanItems);
+
+          toast({ title: "Conteúdo Gerado!", description: "A IA preencheu os campos da proposta com textos persuasivos." });
       } catch (error) {
           console.error("AI Generation Error: ", error);
           toast({ title: "Erro na Geração", description: "Não foi possível gerar o conteúdo com a IA. Tente novamente.", variant: "destructive" });
       } finally {
           setIsGeneratingAi(false);
       }
-  }
-  
-  const AiOptionsSelector = ({ title, fieldName, options }: { title: string, fieldName: any, options: string[] | {value: string}[] }) => {
-    if (!options || options.length === 0) return null;
-    return (
-        <Card className="bg-muted/50 p-4">
-            <Label className="text-md font-semibold text-primary">{title}</Label>
-            <div className="space-y-2 mt-2">
-                {options.map((option, index) => {
-                    const value = typeof option === 'string' ? option : option.value;
-                    return (
-                        <div 
-                            key={index}
-                            className="flex items-start gap-2 p-2 rounded-md hover:bg-primary/10 cursor-pointer border border-transparent hover:border-primary/50"
-                            onClick={() => {
-                                const currentValue = form.getValues(fieldName);
-                                const newValue = Array.isArray(currentValue) ? [{value}] : value;
-                                form.setValue(fieldName, newValue, { shouldDirty: true });
-                                toast({ title: "Texto Atualizado!", description: `'${title}' foi atualizado na proposta.`});
-                            }}
-                        >
-                             <Bot className="h-4 w-4 mt-1 flex-shrink-0 text-primary" />
-                             <p className="text-sm">{value}</p>
-                        </div>
-                    )
-                })}
-            </div>
-        </Card>
-    )
   }
 
   const formSections = [
@@ -368,20 +351,12 @@ export default function ProposalGeneratorV2() {
                            {section.fields.includes('generateButton') && (
                             <div className="p-4 border rounded-md bg-muted/30 space-y-3">
                                 <FormLabel className="flex items-center gap-2"><Bot />Geração de Textos com IA</FormLabel>
-                                <FormDescription>Com base no cliente e nos pacotes selecionados, a IA irá gerar opções de textos persuasivos para a proposta.</FormDescription>
+                                <FormDescription>Com base no cliente e nos pacotes selecionados, a IA irá gerar textos persuasivos e preencherá os campos da proposta automaticamente.</FormDescription>
                                <Button type="button" onClick={handleGenerateContent} disabled={isGeneratingAi}>
                                   {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                                  {isGeneratingAi ? 'Gerando Opções...' : 'Gerar Textos com IA'}
+                                  {isGeneratingAi ? 'Gerando Conteúdo...' : 'Gerar Textos com IA'}
                                </Button>
                                {isGeneratingAi && <p className="text-xs text-muted-foreground">Isso pode levar alguns segundos...</p>}
-                               {aiOptions && (
-                                   <div className='pt-4 mt-4 border-t space-y-4'>
-                                       <AiOptionsSelector title="Descrição da Parceria" fieldName="partnershipDescription" options={aiOptions.partnershipDescriptionOptions} />
-                                       <AiOptionsSelector title="Objetivos" fieldName="objectiveItems" options={aiOptions.objectiveItemsOptions} />
-                                       <AiOptionsSelector title="Diferenciais" fieldName="differentialItems" options={aiOptions.differentialItemsOptions} />
-                                       <AiOptionsSelector title="Argumentos do Plano Ideal" fieldName="idealPlanItems" options={aiOptions.idealPlanItemsOptions} />
-                                   </div>
-                               )}
                             </div>
                           )}
 
