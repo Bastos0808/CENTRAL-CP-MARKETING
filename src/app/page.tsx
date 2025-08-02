@@ -109,7 +109,7 @@ export default function Home() {
         setActiveTab(enabledTabs[0].value);
     }
     
-    if (enabledTabs.length === 0) {
+    if (enabledTabs.length === 0 && !loading) {
       return (
         <div className="text-center text-muted-foreground mt-10">
           <ShieldAlert className="h-12 w-12 mx-auto mb-4" />
