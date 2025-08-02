@@ -27,7 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
-import html2canvas from 'html2canvas';
 
 
 // Schema Definition
@@ -165,64 +164,159 @@ export default function ProposalGeneratorV2() {
   ];
   
   const handleDownloadPdf = async () => {
-    setIsGeneratingPdf(true);
-    const { clientName, coverImageUrl, partnershipDescription, objectiveItems, differentialItems, idealPlanItems, useCustomServices, packages, customServices, investmentValue } = form.getValues();
+      setIsGeneratingPdf(true);
+      const { clientName, coverImageUrl, partnershipDescription, objectiveItems, differentialItems, idealPlanItems, investmentValue } = form.getValues();
 
-    const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: [1920 / 2, 1080 / 2] // Standard 16:9 aspect ratio at a smaller size
-    });
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 40;
+      const doc = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [1920 / 2, 1080 / 2] // Standard 16:9 aspect ratio
+      });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 40;
 
-    try {
-        // Slide 1: Cover
-        if (coverImageUrl) {
-            try {
-                // Use a CORS proxy to prevent tainted canvas errors
-                const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(coverImageUrl)}`;
-                const response = await fetch(proxyUrl);
-                const blob = await response.blob();
-                const dataUrl = await new Promise<string>((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result as string);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                });
-                
-                doc.addImage(dataUrl, 'PNG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
-            } catch (e) {
-                console.error("Error loading cover image:", e);
-                // Fallback to a black background if image fails
-                doc.setFillColor(0, 0, 0);
-                doc.rect(0, 0, pageWidth, pageHeight, 'F');
-            }
-        } else {
-             doc.setFillColor(0, 0, 0);
-             doc.rect(0, 0, pageWidth, pageHeight, 'F');
-        }
-       
-        doc.setTextColor("#FE5412");
-        doc.setFontSize(14);
-        doc.text("PROPOSTA COMERCIAL", pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
-        doc.setTextColor("#FFFFFF");
-        doc.setFontSize(50);
-        doc.setFont('helvetica', 'bold');
-        doc.text(clientName || '[Cliente]', pageWidth / 2, pageHeight / 2 - 10, { align: 'center' });
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'normal');
-        doc.text("Gestão Estratégica de Marketing Digital", pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
+      try {
+          // Slide 1: Cover
+          doc.setFillColor(0, 0, 0);
+          doc.rect(0, 0, pageWidth, pageHeight, 'F');
+          
+          if (coverImageUrl) {
+              try {
+                  const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(coverImageUrl)}`;
+                  const imgData = await fetch(proxyUrl)
+                      .then(res => res.blob())
+                      .then(blob => new Promise<string>((resolve, reject) => {
+                          const reader = new FileReader();
+                          reader.onloadend = () => resolve(reader.result as string);
+                          reader.onerror = reject;
+                          reader.readAsDataURL(blob);
+                      }));
+                  
+                  doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
+              } catch (e) {
+                  console.error("Error loading cover image via proxy:", e);
+                  // If proxy fails, we still have the black background
+              }
+          }
+          
+          doc.setFillColor(0, 0, 0, 0.5);
+          doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
-        doc.save(`Proposta_${clientName.replace(/\s+/g, '_') || 'Cliente'}.pdf`);
+          doc.setTextColor("#FE5412");
+          doc.setFontSize(14);
+          doc.text("PROPOSTA COMERCIAL", pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
+          doc.setTextColor("#FFFFFF");
+          doc.setFontSize(50);
+          doc.setFont('helvetica', 'bold');
+          doc.text(clientName || '[Cliente]', pageWidth / 2, pageHeight / 2 - 10, { align: 'center' });
+          doc.setFontSize(16);
+          doc.setFont('helvetica', 'normal');
+          doc.text("Gestão Estratégica de Marketing Digital", pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
+          
+          // --- SLIDE 2: Sobre a Parceria ---
+          doc.addPage();
+          doc.setFillColor(0, 0, 0);
+          doc.rect(0, 0, pageWidth, pageHeight, 'F');
+          doc.setTextColor("#FFFFFF");
+          doc.setFontSize(40);
+          doc.setFont('helvetica', 'bold');
+          doc.text("Sobre a Parceria", margin, margin + 20);
 
-    } catch (error) {
-        console.error("PDF Generation Error:", error);
-        toast({ title: "Erro ao Gerar PDF", description: "Não foi possível gerar o documento. Tente novamente.", variant: "destructive" });
-    } finally {
-        setIsGeneratingPdf(false);
-    }
+          doc.setFontSize(18);
+          doc.setFont('helvetica', 'normal');
+          const partnershipLines = doc.splitTextToSize(partnershipDescription, pageWidth - margin * 2 - 20);
+          doc.setDrawColor("#FE5412");
+          doc.setLineWidth(2);
+          doc.line(margin, margin + 50, margin, margin + 50 + (partnershipLines.length * 20));
+          doc.text(partnershipLines, margin + 15, margin + 65);
+
+          // --- SLIDE 3: Objetivos ---
+          doc.addPage();
+          doc.setFillColor(0, 0, 0);
+          doc.rect(0, 0, pageWidth, pageHeight, 'F');
+          doc.setTextColor("#FFFFFF");
+          doc.setFontSize(40);
+          doc.setFont('helvetica', 'bold');
+          doc.text("Nosso Objetivo", margin, margin + 20);
+          doc.setFontSize(14);
+          doc.setFont('helvetica', 'normal');
+          
+          let y = margin + 80;
+          objectiveItems?.forEach(item => {
+              const textLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 30);
+              if (y + (textLines.length * 16) > pageHeight - margin) {
+                  doc.addPage();
+                  doc.setFillColor(0,0,0);
+                  doc.rect(0,0,pageWidth,pageHeight,'F');
+                  y = margin + 20;
+              }
+              doc.setTextColor("#FE5412");
+              doc.text("•", margin, y);
+              doc.setTextColor("#FFFFFF");
+              doc.text(textLines, margin + 20, y);
+              y += (textLines.length * 16) + 10;
+          });
+
+          // --- SLIDE 4: Diferenciais ---
+           doc.addPage();
+           doc.setFillColor(0, 0, 0);
+           doc.rect(0, 0, pageWidth, pageHeight, 'F');
+           doc.setTextColor("#FFFFFF");
+           doc.setFontSize(40);
+           doc.setFont('helvetica', 'bold');
+           doc.text("Nossos Diferenciais", margin, margin + 20);
+           doc.setFontSize(14);
+           doc.setFont('helvetica', 'normal');
+
+           y = margin + 80;
+           differentialItems?.forEach(item => {
+               const textLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 30);
+               if (y + (textLines.length * 16) > pageHeight - margin) {
+                   doc.addPage();
+                   doc.setFillColor(0,0,0);
+                   doc.rect(0,0,pageWidth,pageHeight,'F');
+                   y = margin + 20;
+               }
+               doc.setTextColor("#FE5412");
+               doc.text("•", margin, y);
+               doc.setTextColor("#FFFFFF");
+               doc.text(textLines, margin + 20, y);
+               y += (textLines.length * 16) + 10;
+           });
+           
+          // --- SLIDE 5: Investimento ---
+          doc.addPage();
+          doc.setFillColor(0, 0, 0);
+          doc.rect(0, 0, pageWidth, pageHeight, 'F');
+          
+          doc.setDrawColor("#FE5412");
+          doc.setLineWidth(4);
+          doc.rect(pageWidth / 2 - 200, pageHeight / 2 - 100, 400, 200, 'S');
+
+          doc.setTextColor("#FFFFFF");
+          doc.setFontSize(28);
+          doc.setFont('helvetica', 'bold');
+          doc.text("Investimento Mensal", pageWidth / 2, pageHeight / 2 - 40, { align: 'center' });
+
+          doc.setTextColor("#FE5412");
+          doc.setFontSize(60);
+          doc.text(investmentValue || 'R$ 0,00', pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
+
+          doc.setTextColor("#AAAAAA");
+          doc.setFontSize(10);
+          doc.text("INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.", pageWidth / 2, pageHeight / 2 + 60, { align: 'center' });
+
+
+          // --- Final ---
+          doc.save(`Proposta_${clientName.replace(/\s+/g, '_') || 'Cliente'}.pdf`);
+
+      } catch (error) {
+          console.error("PDF Generation Error:", error);
+          toast({ title: "Erro ao Gerar PDF", description: "Não foi possível gerar o documento. Tente novamente.", variant: "destructive" });
+      } finally {
+          setIsGeneratingPdf(false);
+      }
   };
 
   const handleGenerateContent = async () => {
