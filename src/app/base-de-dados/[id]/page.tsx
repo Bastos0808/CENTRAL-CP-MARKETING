@@ -3,6 +3,7 @@
 
 import { useEffect, useState, useRef, type ChangeEvent, use } from 'react';
 import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { ref, uploadString, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from '@/lib/firebase';
 import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -290,27 +291,85 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     setVisualIdentity(prevState => ({...prevState, [field]: value}));
   };
 
-  const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>, fieldName: 'logoUrl' | 'secondaryLogoUrl') => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 1024 * 1024) { // 1MB limit
-        toast({
-          title: "Arquivo Muito Grande",
-          description: "Por favor, selecione um logo com menos de 1MB.",
-          variant: "destructive",
-        });
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        handleVisualIdentityChange(fieldName, reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>, fieldName: 'logoUrl' | 'secondaryLogoUrl') => {
+      const file = e.target.files?.[0];
+      if (!file || !client) return;
   
-  const handleRemoveLogo = (fieldName: 'logoUrl' | 'secondaryLogoUrl') => {
-    setVisualIdentity(prevState => ({...prevState, [fieldName]: undefined}));
+      if (file.size > 2 * 1024 * 1024) { // 2MB limit
+          toast({
+              title: "Arquivo Muito Grande",
+              description: "Por favor, selecione um logo com menos de 2MB.",
+              variant: "destructive",
+          });
+          return;
+      }
+  
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+          const dataUrl = reader.result as string;
+  
+          // Show preview immediately
+          setVisualIdentity(prevState => ({...prevState, [fieldName]: dataUrl}));
+  
+          // Upload to storage and update Firestore with the final URL
+          const storagePath = `clients/${client.id}/visualIdentity/${fieldName}_${Date.now()}`;
+          const storageRef = ref(storage, storagePath);
+  
+          try {
+              // If there was an old image, delete it from storage
+              const oldUrl = client.visualIdentity?.[fieldName];
+              if (oldUrl && oldUrl.includes('firebasestorage')) {
+                  const oldStorageRef = ref(storage, oldUrl);
+                  await deleteObject(oldStorageRef).catch(err => console.warn("Old image not found, skipping deletion:", err));
+              }
+
+              const snapshot = await uploadString(storageRef, dataUrl, 'data_url');
+              const downloadURL = await getDownloadURL(snapshot.ref);
+  
+              // Update state again with final URL, then save to DB
+              setVisualIdentity(prevState => ({...prevState, [fieldName]: downloadURL}));
+              await updateDoc(doc(db, "clients", client.id), {
+                [`visualIdentity.${fieldName}`]: downloadURL
+              });
+
+              toast({ title: "Logo Enviado!", description: "A nova imagem foi salva com sucesso." });
+          } catch (error) {
+              console.error("Error uploading image:", error);
+              toast({ title: "Erro no Upload", description: "Não foi possível enviar a imagem. Tente novamente.", variant: "destructive" });
+              // Revert preview if upload fails
+              setVisualIdentity(prevState => ({...prevState, [fieldName]: client.visualIdentity?.[fieldName]}));
+          }
+      };
+  };
+
+  const handleRemoveImage = async (fieldName: 'logoUrl' | 'secondaryLogoUrl') => {
+      if (!client) return;
+  
+      const urlToRemove = visualIdentity[fieldName];
+      if (!urlToRemove) return;
+  
+      // Optimistically update UI
+      setVisualIdentity(prevState => ({...prevState, [fieldName]: undefined}));
+  
+      try {
+          // Delete from storage if it's a firebase storage URL
+          if (urlToRemove.includes('firebasestorage')) {
+              const storageRef = ref(storage, urlToRemove);
+              await deleteObject(storageRef);
+          }
+  
+          // Remove from Firestore
+          await updateDoc(doc(db, "clients", client.id), {
+              [`visualIdentity.${fieldName}`]: "" // Use empty string or deleteField()
+          });
+          toast({ title: "Imagem Removida!", description: "O logo foi removido com sucesso." });
+      } catch (error) {
+          console.error("Error removing image: ", error);
+          toast({ title: "Erro ao Remover", description: "Não foi possível remover a imagem. Tente novamente.", variant: "destructive"});
+          // Revert UI change on error
+          setVisualIdentity(prevState => ({...prevState, [fieldName]: urlToRemove}));
+      }
   };
 
 
@@ -319,24 +378,31 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
       setIsSavingVisual(true);
       const clientDocRef = doc(db, "clients", client.id);
 
-      const dataToSave: Partial<VisualIdentity> = {};
-      Object.entries(visualIdentity).forEach(([key, value]) => {
-          if (value !== undefined) {
-              dataToSave[key as keyof VisualIdentity] = value;
-          }
-      });
+      const dataToSave = {
+          primaryColor: visualIdentity.primaryColor || '',
+          secondaryColor: visualIdentity.secondaryColor || '',
+          accentColor: visualIdentity.accentColor || '',
+          primaryFont: visualIdentity.primaryFont || '',
+          secondaryFont: visualIdentity.secondaryFont || '',
+      };
 
       try {
-          await updateDoc(clientDocRef, { visualIdentity: dataToSave });
+          await updateDoc(clientDocRef, { 
+              "visualIdentity.primaryColor": dataToSave.primaryColor,
+              "visualIdentity.secondaryColor": dataToSave.secondaryColor,
+              "visualIdentity.accentColor": dataToSave.accentColor,
+              "visualIdentity.primaryFont": dataToSave.primaryFont,
+              "visualIdentity.secondaryFont": dataToSave.secondaryFont,
+           });
           toast({
-              title: "Identidade Visual Salva!",
-              description: "As informações de identidade visual foram atualizadas.",
+              title: "Informações Salvas!",
+              description: "As cores e fontes foram atualizadas.",
           });
       } catch (error) {
           console.error("Error updating visual identity: ", error);
           toast({
               title: "Erro ao Salvar",
-              description: "Não foi possível salvar a identidade visual. Tente novamente.",
+              description: "Não foi possível salvar as informações. Tente novamente.",
               variant: "destructive",
           });
       } finally {
@@ -592,17 +658,17 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                                                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
                                                             <Upload className="w-8 h-8 mb-4" />
                                                             <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
-                                                            <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
+                                                            <p className="text-xs">PNG, JPG, SVG (MAX. 2MB)</p>
                                                         </div>
                                                     )}
-                                                    <input ref={fileInputRef1} id="logo-upload-1" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'logoUrl')} />
+                                                    <input ref={fileInputRef1} id="logo-upload-1" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleImageUpload(e, 'logoUrl')} />
                                                 </div>
                                                 {visualIdentity.logoUrl && (
                                                     <Button
                                                         variant="destructive"
                                                         size="icon"
                                                         className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        onClick={(e) => { e.stopPropagation(); handleRemoveLogo('logoUrl'); }}
+                                                        onClick={(e) => { e.stopPropagation(); handleRemoveImage('logoUrl'); }}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -626,17 +692,17 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                                                         <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
                                                             <Upload className="w-8 h-8 mb-4" />
                                                             <p className="mb-2 text-sm">Clique ou arraste para enviar</p>
-                                                            <p className="text-xs">PNG, JPG, SVG (MAX. 1MB)</p>
+                                                            <p className="text-xs">PNG, JPG, SVG (MAX. 2MB)</p>
                                                         </div>
                                                     )}
-                                                    <input ref={fileInputRef2} id="logo-upload-2" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleLogoUpload(e, 'secondaryLogoUrl')} />
+                                                    <input ref={fileInputRef2} id="logo-upload-2" type="file" className="hidden" accept="image/png, image/jpeg, image/svg+xml" onChange={(e) => handleImageUpload(e, 'secondaryLogoUrl')} />
                                                 </div>
                                                 {visualIdentity.secondaryLogoUrl && (
                                                     <Button
                                                         variant="destructive"
                                                         size="icon"
                                                         className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                        onClick={(e) => { e.stopPropagation(); handleRemoveLogo('secondaryLogoUrl'); }}
+                                                        onClick={(e) => { e.stopPropagation(); handleRemoveImage('secondaryLogoUrl'); }}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -694,7 +760,7 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                         <div className="flex justify-end pt-4">
                             <Button onClick={handleVisualIdentityUpdate} disabled={isSavingVisual}>
                                 {isSavingVisual ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                                {isSavingVisual ? 'Salvando...' : 'Salvar Identidade Visual'}
+                                {isSavingVisual ? 'Salvando...' : 'Salvar Cores e Fontes'}
                             </Button>
                         </div>
                     </CardContent>
