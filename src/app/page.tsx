@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -136,6 +136,14 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 relative">
+       <div className="absolute top-4 left-4">
+        {user && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background/50 border rounded-full px-3 py-1.5">
+            <Mail className="h-4 w-4"/>
+            <span>{user.email}</span>
+          </div>
+        )}
+      </div>
       <div className="absolute top-4 right-4">
         {user && (
             <Button variant="outline" onClick={logout}>
