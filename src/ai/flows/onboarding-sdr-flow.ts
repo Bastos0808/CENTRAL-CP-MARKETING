@@ -28,37 +28,38 @@ const sdrMessageGeneratorPrompt = ai.definePrompt({
   input: { schema: SdrMessageInputSchema },
   output: { schema: SdrMessageOutputSchema },
   prompt: `
-    Você é um Copywriter Sênior especialista em prospecção B2B (cold outreach). Sua missão é criar uma mensagem curta, direta e altamente persuasiva para um SDR da agência "CP Marketing Digital".
+    Você é um Copywriter Sênior e Estrategista de Conteúdo especialista em prospecção B2B (cold outreach) para a agência "CP Marketing Digital". Sua missão é criar uma mensagem curta, direta e altamente persuasiva para um SDR.
 
     **Instruções Críticas:**
-    1.  **Mensagem Curta e Direta:** A mensagem deve ser concisa e fácil de ler. Menos é mais. Esqueça textos longos.
-    2.  **Personalização é a Chave:** O campo 'hook' (gancho) é a informação mais importante. A mensagem DEVE começar com ele para provar que a pesquisa foi feita e quebrar o gelo imediatamente.
-    3.  **Adapte ao Canal:** A estrutura da mensagem deve ser perfeitamente adaptada ao canal:
-        -   **WhatsApp/LinkedIn:** Informal e direto. Use quebras de linha.
-        -   **Email:** Levemente mais formal, com um "Assunto:" impactante e direto.
 
-    4.  **Estrutura da Mensagem:**
-        a.  **Gancho Imediato:** Comece com o 'hook'. Ex: "Olá, {{decisionMakerName}}. Vi que a {{companyName}} participou do evento X..."
-        b.  **Conexão Rápida com a Dor:** Conecte o gancho ao 'problema observado' em uma única frase. Mostre que você entende o desafio. Ex: "... e sei que o maior desafio pós-evento é transformar esses contatos em clientes."
-        c.  **Apresente a Oferta (Isca de Valor):** Ofereça a 'valueOffer' como uma solução clara.
+    1.  **Inteligência Artificial Adaptativa:**
+        *   **Se o campo 'hook' (gancho) e 'observedProblem' (problema observado) forem preenchidos:** Use essas informações como a base principal da sua mensagem. A personalização fornecida pelo SDR é a prioridade máxima.
+        *   **Se os campos 'hook' e 'observedProblem' estiverem VAZIOS:** Sua tarefa é ser proativo. Com base no 'companySector' (setor da empresa), infira um gancho e um problema/oportunidade relevante para justificar o convite para o podcast. Demonstre que você entende o mercado do prospect. Ex: Para um médico, o gancho pode ser a importância de construir autoridade; para um B2B, a necessidade de gerar leads qualificados.
+
+    2.  **Foco no Desejo (Convite para Podcast):**
+        *   O objetivo NÃO é vender, mas sim despertar o desejo e o senso de oportunidade.
+        *   Posicione o convite para o podcast como um reconhecimento da autoridade e expertise do prospect. Use frases como "Vimos que você é uma referência no setor de [companySector]..." ou "Acreditamos que sua experiência em [companySector] merece uma plataforma de maior alcance...".
+        *   A mensagem deve ser um elogio estratégico que abre a porta para o convite.
+
+    3.  **Estrutura da Mensagem (Curta e Direta):**
+        a.  **Saudação Personalizada:** "Olá, {{decisionMakerName}}."
+        b.  **Elogio/Gancho Estratégico:** Conecte o nome da empresa e o setor a um elogio que demonstre pesquisa (real ou inferida).
+        c.  **Apresente a Oportunidade (O Podcast):** Apresente o podcast não como um serviço, mas como um palco, uma oportunidade para ele brilhar.
         d.  **CTA de Baixo Esforço:** Termine com uma pergunta simples para iniciar a conversa.
 
-    5.  **Lógica da Oferta de Valor:**
-        -   Se **'valueOffer' for 'consultoria'**: Ofereça o diagnóstico gratuito. Ex: "Faz sentido agendarmos uma consultoria estratégica rápida e gratuita para te mostrarmos como fazer isso?"
-        -   Se **'valueOffer' for 'podcast'**: Ofereça a gravação do episódio. Ex: "Acreditamos que sua expertise em [setor] merece um podcast. Gostaria de gravar um episódio piloto em nosso estúdio, sem custo, para ver o potencial disso?"
-        -   Se **'valueOffer' for 'ambos'**: Dê o poder de escolha ao prospect de forma clara. Ex: "Para te ajudar com isso, temos duas opções: uma consultoria estratégica gratuita ou a gravação de um episódio de podcast para você se posicionar como autoridade. Qual das duas te interessa mais?"
-
-    **Dados Fornecidos pelo SDR:**
+    **Dados Fornecidos pelo SDR (pode haver campos vazios):**
     - **Canal de Comunicação:** {{communicationChannel}}
     - **Nome do Decisor:** {{decisionMakerName}}
     - **Nome da Empresa:** {{companyName}}
     - **Setor da Empresa:** {{companySector}}
-    - **Gancho Personalizado:** {{hook}}
-    - **Problema Observado:** {{observedProblem}}
-    - **Oferta de Valor (Isca):** {{valueOffer}}
+    - **Gancho Personalizado (Opcional):** {{hook}}
+    - **Problema Observado (Opcional):** {{observedProblem}}
+    - **Oferta de Valor (Opcional, padrão é 'podcast'):** {{valueOffer}}
 
-    **Agora, gere o campo "message" com o texto da mensagem de prospecção, seguindo rigorosamente as instruções para ser curta, direta e personalizada.**
-    Se o canal for email, inicie a mensagem com "Assunto: [Assunto Sugerido]".
+    **Exemplo de Mensagem (com poucas informações):**
+    "Olá, [Nome do Decisor]. Acompanhando a [CompanyName], percebemos como vocês são uma referência no setor de [companySector]. Acreditamos que sua expertise tem um potencial incrível para um podcast, posicionando você como a principal voz na área. Para que você veja o poder disso na prática, estamos oferecendo a especialistas como você a oportunidade de gravar um episódio piloto em nosso estúdio, sem custo. O que acha da ideia?"
+
+    **Agora, gere o campo "message" com o texto da mensagem de prospecção, seguindo rigorosamente as instruções para ser curta, persuasiva e despertar o desejo.**
   `,
 });
 
@@ -73,4 +74,3 @@ const sdrMessageGeneratorFlow = ai.defineFlow(
     return output!;
   }
 );
-

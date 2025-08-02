@@ -33,7 +33,7 @@ export default function SdrAiTool() {
             companyName: "",
             companySector: "",
             hook: "",
-            valueOffer: "consultoria",
+            valueOffer: "podcast",
             observedProblem: "",
         },
     });
@@ -110,7 +110,7 @@ export default function SdrAiTool() {
                                 name="hook"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Gancho (Motivo do Contato)</FormLabel>
+                                        <FormLabel>Gancho (Opcional)</FormLabel>
                                         <FormControl><Input placeholder="Ex: Vi que participaram da Dental Week" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -121,10 +121,10 @@ export default function SdrAiTool() {
                                 name="observedProblem"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Problema ou Oportunidade Observada</FormLabel>
+                                        <FormLabel>Problema Observado (Opcional)</FormLabel>
                                         <FormControl>
                                             <Textarea
-                                                placeholder="Ex: O Instagram da clínica não posta há 2 meses e os concorrentes estão fazendo muitos anúncios de clareamento."
+                                                placeholder="Ex: O Instagram da clínica não posta há 2 meses."
                                                 className="min-h-[100px]"
                                                 {...field}
                                             />
@@ -140,7 +140,7 @@ export default function SdrAiTool() {
                                     name="communicationChannel"
                                     render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Canal de Comunicação</FormLabel>
+                                        <FormLabel>Canal (Opcional)</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
@@ -162,7 +162,7 @@ export default function SdrAiTool() {
                                     name="valueOffer"
                                     render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Oferta de Valor (Isca)</FormLabel>
+                                        <FormLabel>Oferta de Valor (Opcional)</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
