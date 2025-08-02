@@ -28,29 +28,25 @@ const sdrMessageGeneratorPrompt = ai.definePrompt({
   input: { schema: SdrMessageInputSchema },
   output: { schema: SdrMessageOutputSchema },
   prompt: `
-    Você é um especialista em prospecção B2B e copywriting, atuando como mentor para um novo Sales Development Representative (SDR) da agência "CP Marketing Digital".
-
-    Sua tarefa é construir uma mensagem de prospecção altamente personalizada e eficaz, com base nas informações detalhadas fornecidas pelo SDR.
+    Você é um Copywriter Sênior especialista em prospecção B2B (cold outreach). Sua missão é criar uma mensagem curta, direta e altamente persuasiva para um SDR da agência "CP Marketing Digital".
 
     **Instruções Críticas:**
-    1.  **Adapte ao Canal:** A estrutura da mensagem deve ser perfeitamente adaptada ao canal de comunicação escolhido:
-        -   **WhatsApp:** Mais informal, direto e curto. Use quebras de linha para facilitar a leitura no celular.
-        -   **Email:** Um pouco mais formal, com uma linha de assunto (subject) clara e um corpo de texto bem estruturado.
-        -   **LinkedIn:** Profissional e conciso. Focado em gerar uma conexão e levar para o chat.
+    1.  **Mensagem Curta e Direta:** A mensagem deve ser concisa e fácil de ler. Menos é mais. Esqueça textos longos.
+    2.  **Personalização é a Chave:** O campo 'hook' (gancho) é a informação mais importante. A mensagem DEVE começar com ele para provar que a pesquisa foi feita e quebrar o gelo imediatamente.
+    3.  **Adapte ao Canal:** A estrutura da mensagem deve ser perfeitamente adaptada ao canal:
+        -   **WhatsApp/LinkedIn:** Informal e direto. Use quebras de linha.
+        -   **Email:** Levemente mais formal, com um "Assunto:" impactante e direto.
 
-    2.  **Personalização é Rei:** A mensagem NUNCA deve parecer um template. Siga esta estrutura lógica:
-        a.  **Saudação Pessoal:** Comece com "Olá, {{decisionMakerName}}, tudo bem?".
-        b.  **Apresentação Rápida:** Apresente-se e a agência.
-        c.  **O Gancho (Hook):** Use o campo 'hook' como a primeira frase do corpo da mensagem. Esta é a prova de que a pesquisa foi feita e é o ponto mais importante para quebrar o gelo.
-        d.  **Conexão com a Dor:** Conecte o 'gancho' com o 'problema observado'. Mostre que você entende as implicações daquela observação para o negócio do prospect.
-        e.  **Introduza a Isca (Oferta de Valor):** Apresente a 'oferta de valor' escolhida ('consultoria' ou 'podcast') como uma solução direta para a dor que você apontou. Deixe claro o benefício.
-        f.  **Call to Action (CTA) Leve:** Termine com uma pergunta de baixo compromisso para facilitar a resposta. O objetivo é iniciar um diálogo.
+    4.  **Estrutura da Mensagem:**
+        a.  **Gancho Imediato:** Comece com o 'hook'. Ex: "Olá, {{decisionMakerName}}. Vi que a {{companyName}} participou do evento X..."
+        b.  **Conexão Rápida com a Dor:** Conecte o gancho ao 'problema observado' em uma única frase. Mostre que você entende o desafio. Ex: "... e sei que o maior desafio pós-evento é transformar esses contatos em clientes."
+        c.  **Apresente a Oferta (Isca de Valor):** Ofereça a 'valueOffer' como uma solução clara.
+        d.  **CTA de Baixo Esforço:** Termine com uma pergunta simples para iniciar a conversa.
 
-    3.  **Lógica da Oferta de Valor:**
-        -   Se **'valueOffer' for 'consultoria'**: O CTA deve direcionar para o envio de um formulário de qualificação. Ex: "Para garantir que a consultoria seja 100% focada no seu desafio, usamos um formulário rápido. Faz sentido eu te enviar o link?".
-        -   Se **'valueOffer' for 'podcast'**: O CTA deve ser mais direto e aspiracional, vendendo a visão de se tornar uma autoridade. Ex: "Gostaria de explorar como sua expertise pode se transformar em um podcast de referência? O que acha da ideia?".
-
-    4.  **Tom de Voz:** Profissional, mas humano e consultivo. Evite jargões de marketing. Você é um especialista querendo ajudar, não um vendedor desesperado.
+    5.  **Lógica da Oferta de Valor:**
+        -   Se **'valueOffer' for 'consultoria'**: Ofereça o diagnóstico gratuito. Ex: "Faz sentido agendarmos uma consultoria estratégica rápida e gratuita para te mostrarmos como fazer isso?"
+        -   Se **'valueOffer' for 'podcast'**: Ofereça a gravação do episódio. Ex: "Acreditamos que sua expertise em [setor] merece um podcast. Gostaria de gravar um episódio piloto em nosso estúdio, sem custo, para ver o potencial disso?"
+        -   Se **'valueOffer' for 'ambos'**: Dê o poder de escolha ao prospect de forma clara. Ex: "Para te ajudar com isso, temos duas opções: uma consultoria estratégica gratuita ou a gravação de um episódio de podcast para você se posicionar como autoridade. Qual das duas te interessa mais?"
 
     **Dados Fornecidos pelo SDR:**
     - **Canal de Comunicação:** {{communicationChannel}}
@@ -61,7 +57,7 @@ const sdrMessageGeneratorPrompt = ai.definePrompt({
     - **Problema Observado:** {{observedProblem}}
     - **Oferta de Valor (Isca):** {{valueOffer}}
 
-    **Agora, gere o campo "message" com o texto da mensagem de prospecção, seguindo rigorosamente as instruções, adaptando a mensagem para o canal e a oferta de valor escolhida.**
+    **Agora, gere o campo "message" com o texto da mensagem de prospecção, seguindo rigorosamente as instruções para ser curta, direta e personalizada.**
     Se o canal for email, inicie a mensagem com "Assunto: [Assunto Sugerido]".
   `,
 });
@@ -77,3 +73,4 @@ const sdrMessageGeneratorFlow = ai.defineFlow(
     return output!;
   }
 );
+

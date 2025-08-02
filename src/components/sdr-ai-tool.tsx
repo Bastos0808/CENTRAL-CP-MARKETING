@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Wand2, Bot, Mail, MessageSquare, Linkedin, Podcast, FileText } from "lucide-react";
+import { Loader2, Wand2, Bot, Mail, MessageSquare, Linkedin, Podcast, FileText, Handshake } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -172,6 +172,7 @@ export default function SdrAiTool() {
                                         <SelectContent>
                                             <SelectItem value="consultoria"><div className="flex items-center gap-2"><FileText/> Consultoria Estratégica</div></SelectItem>
                                             <SelectItem value="podcast"><div className="flex items-center gap-2"><Podcast/> Episódio de Podcast</div></SelectItem>
+                                            <SelectItem value="ambos"><div className="flex items-center gap-2"><Handshake/> Ambos (Consultoria e Podcast)</div></SelectItem>
                                         </SelectContent>
                                         </Select>
                                         <FormMessage />
