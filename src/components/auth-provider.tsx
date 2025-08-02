@@ -55,8 +55,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (loading) return;
 
         const isLoginPage = pathname === '/login';
+        const isHomePage = pathname === '/'; // The home page is now the password page
 
-        if (!user && !isLoginPage) {
+        if (!user && !isLoginPage && !isHomePage) {
             router.push('/login');
         } else if (user && isLoginPage) {
             router.push('/');
@@ -86,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout: handleLogout
     };
     
-    const isPublicPage = pathname === '/login';
+    const isPublicPage = pathname === '/login' || pathname === '/';
     if(loading && !isPublicPage){
         return (
             <div className="flex min-h-screen w-full items-center justify-center">
@@ -100,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null; // or a loading indicator
     }
 
-    if (user && isPublicPage) {
+    if (user && isPublicPage && pathname !== '/') {
         return null; // or a loading indicator
     }
 

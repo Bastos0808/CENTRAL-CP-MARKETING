@@ -81,20 +81,18 @@ export default function Home() {
     setActiveTab(value);
   };
   
-  const renderTabs = () => {
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-40">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="flex min-h-screen w-full items-center justify-center">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
             </div>
-        )
+        );
     }
-
+    
     const userRole = user?.role;
     const canAccessStrategy = userRole === 'admin' || userRole === 'estrategia';
     const canAccessPodcast = userRole === 'admin' || userRole === 'podcast';
     const canAccessCommercial = userRole === 'admin' || userRole === 'comercial';
-
 
     const allTabs = [
         { value: 'strategy', label: 'Estratégia', icon: Briefcase, content: strategicTools, enabled: canAccessStrategy },
@@ -109,85 +107,64 @@ export default function Home() {
         setActiveTab(enabledTabs[0].value);
     }
     
-    if (enabledTabs.length === 0 && !loading) {
-      return (
-        <div className="text-center text-muted-foreground mt-10">
-          <ShieldAlert className="h-12 w-12 mx-auto mb-4" />
-          <p className="text-lg">Você não tem permissão para acessar nenhuma área.</p>
-          <p>Entre em contato com um administrador.</p>
-        </div>
-      )
-    }
-
     return (
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className={`grid w-full h-auto grid-cols-${enabledTabs.length > 0 ? enabledTabs.length : 1}`}>
-                {enabledTabs.map(tab => (
-                    <TabsTrigger key={tab.value} value={tab.value} className="py-2.5">
-                        <tab.icon className="mr-2"/> {tab.label}
-                    </TabsTrigger>
-                ))}
-            </TabsList>
-            
-            {enabledTabs.map(tab => (
-                <TabsContent key={tab.value} value={tab.value} className="mt-8">
-                    <div className={`grid gap-6 md:grid-cols-2 ${tab.content.length === 1 ? 'lg:grid-cols-3' : 'lg:grid-cols-3'}`}>
-                        {tab.content.map(tool => (
-                            <Card key={tool.title} className={`${tab.content.length === 1 ? 'lg:col-start-2' : ''} flex flex-col`}>
-                                <CardHeader className="flex-grow">
-                                    <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
-                                    <tool.icon className="h-7 w-7" />
-                                    </div>
-                                    <CardTitle>{tool.title}</CardTitle>
-                                    <CardDescription>{tool.description}</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <Link href={tool.href} passHref>
-                                    <Button className="w-full">
-                                        Acessar <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                    </Link>
-                                </CardContent>
-                            </Card>
+        <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 relative">
+             <div className="absolute top-4 right-4 z-10">
+                <Button onClick={logout} variant="outline" size="sm">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sair
+                </Button>
+            </div>
+            <div className="w-full max-w-6xl text-center mb-12 mt-12 sm:mt-8">
+                <h1 className="text-5xl font-bold tracking-tight text-primary sm:text-6xl">
+                  Central da Agência
+                </h1>
+                <p className="mt-6 text-lg text-muted-foreground max-w-3xl mx-auto">
+                  Recursos e ferramentas para as equipes da CP Marketing Digital.
+                </p>
+            </div>
+            {enabledTabs.length === 0 && !loading ? (
+                 <div className="text-center text-muted-foreground mt-10">
+                  <ShieldAlert className="h-12 w-12 mx-auto mb-4" />
+                  <p className="text-lg">Você não tem permissão para acessar nenhuma área.</p>
+                  <p>Entre em contato com um administrador.</p>
+                </div>
+            ) : (
+                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full max-w-5xl">
+                    <TabsList className={`grid w-full h-auto grid-cols-${enabledTabs.length > 0 ? enabledTabs.length : 1}`}>
+                        {enabledTabs.map(tab => (
+                            <TabsTrigger key={tab.value} value={tab.value} className="py-2.5">
+                                <tab.icon className="mr-2"/> {tab.label}
+                            </TabsTrigger>
                         ))}
-                    </div>
-                </TabsContent>
-            ))}
-        </Tabs>
-    )
-  }
-
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 relative">
-       <div className="absolute top-4 left-4">
-        {user && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background/50 border rounded-full px-3 py-1.5">
-            <Mail className="h-4 w-4"/>
-            <span>{user.email}</span>
-          </div>
-        )}
-      </div>
-      <div className="absolute top-4 right-4">
-        {user && (
-            <Button variant="outline" onClick={logout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-            </Button>
-        )}
-      </div>
-      
-      <div className="w-full max-w-6xl text-center mb-12 mt-12 sm:mt-8">
-        <h1 className="text-5xl font-bold tracking-tight text-primary sm:text-6xl">
-          Bem-vindo à Central CP Marketing
-        </h1>
-        <p className="mt-6 text-lg text-muted-foreground max-w-3xl mx-auto">
-          Navegue pelas abas abaixo para acessar as ferramentas e recursos específicos do seu setor de atuação.
-        </p>
-      </div>
-
-      <div className="w-full max-w-5xl">
-         {renderTabs()}
-      </div>
-    </main>
-  );
+                    </TabsList>
+                    
+                    {enabledTabs.map(tab => (
+                        <TabsContent key={tab.value} value={tab.value} className="mt-8">
+                            <div className={`grid gap-6 md:grid-cols-2 ${tab.content.length === 1 ? 'lg:grid-cols-3' : 'lg:grid-cols-3'}`}>
+                                {tab.content.map(tool => (
+                                    <Card key={tool.title} className={`${tab.content.length === 1 ? 'lg:col-start-2' : ''} flex flex-col`}>
+                                        <CardHeader className="flex-grow">
+                                            <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                                            <tool.icon className="h-7 w-7" />
+                                            </div>
+                                            <CardTitle>{tool.title}</CardTitle>
+                                            <CardDescription>{tool.description}</CardDescription>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <Link href={tool.href} passHref>
+                                            <Button className="w-full">
+                                                Acessar <ArrowRight className="ml-2 h-4 w-4" />
+                                            </Button>
+                                            </Link>
+                                        </CardContent>
+                                    </Card>
+                                ))}
+                            </div>
+                        </TabsContent>
+                    ))}
+                </Tabs>
+            )}
+        </main>
+    );
 }
