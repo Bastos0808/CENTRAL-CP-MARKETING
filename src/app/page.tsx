@@ -5,14 +5,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Home() {
   const { user, logout, loading } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<string>('strategy');
+  const [activeTab, setActiveTab] = useState<string>('commercial');
   
   const strategicTools = [
       {
@@ -75,7 +75,7 @@ export default function Home() {
         href: "/gerador-propostas",
         icon: FileSignature
       }
-  ]
+  ];
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -90,23 +90,46 @@ export default function Home() {
         )
     }
 
+    const userRole = user?.role;
+    const canAccessStrategy = userRole === 'admin' || userRole === 'estrategia';
+    const canAccessPodcast = userRole === 'admin' || userRole === 'podcast';
+    const canAccessCommercial = userRole === 'admin' || userRole === 'comercial';
+
+
     const allTabs = [
-        { value: 'strategy', label: 'Estratégia', icon: Briefcase, content: strategicTools },
-        { value: 'podcast', label: 'Podcast', icon: Podcast, content: podcastTools },
-        { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools }
+        { value: 'strategy', label: 'Estratégia', icon: Briefcase, content: strategicTools, enabled: canAccessStrategy },
+        { value: 'podcast', label: 'Podcast', icon: Podcast, content: podcastTools, enabled: canAccessPodcast },
+        { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, enabled: canAccessCommercial }
     ];
+
+    const enabledTabs = allTabs.filter(tab => tab.enabled);
+
+    // If the active tab is not enabled anymore, switch to the first available one
+    if (enabledTabs.length > 0 && !enabledTabs.find(t => t.value === activeTab)) {
+        setActiveTab(enabledTabs[0].value);
+    }
+    
+    if (enabledTabs.length === 0) {
+      return (
+        <div className="text-center text-muted-foreground mt-10">
+          <ShieldAlert className="h-12 w-12 mx-auto mb-4" />
+          <p className="text-lg">Você não tem permissão para acessar nenhuma área.</p>
+          <p>Entre em contato com um administrador.</p>
+        </div>
+      )
+    }
 
     return (
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className={`grid w-full h-auto grid-cols-${allTabs.length}`}>
-                {allTabs.map(tab => (
+            <TabsList className={`grid w-full h-auto grid-cols-${enabledTabs.length}`}>
+                {enabledTabs.map(tab => (
                     <TabsTrigger key={tab.value} value={tab.value} className="py-2.5">
                         <tab.icon className="mr-2"/> {tab.label}
                     </TabsTrigger>
                 ))}
             </TabsList>
             
-            {allTabs.map(tab => (
+            {enabledTabs.map(tab => (
                 <TabsContent key={tab.value} value={tab.value} className="mt-8">
                     <div className={`grid gap-6 md:grid-cols-2 ${tab.content.length === 1 ? 'lg:grid-cols-3' : 'lg:grid-cols-3'}`}>
                         {tab.content.map(tool => (

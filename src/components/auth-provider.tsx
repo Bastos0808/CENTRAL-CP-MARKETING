@@ -3,13 +3,18 @@
 
 import { createContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut, type User as FirebaseAuthUser } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import { usePathname, useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { doc, getDoc } from 'firebase/firestore';
+
+interface AppUser extends FirebaseAuthUser {
+    role?: 'admin' | 'estrategia' | 'podcast' | 'comercial';
+}
 
 interface AuthContextType {
-    user: FirebaseAuthUser | null;
+    user: AppUser | null;
     loading: boolean;
     logout: () => void;
 }
@@ -17,15 +22,29 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<FirebaseAuthUser | null>(null);
+    const [user, setUser] = useState<AppUser | null>(null);
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     const pathname = usePathname();
     const { toast } = useToast();
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (fbUser) => {
-            setUser(fbUser);
+        const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
+            if (fbUser) {
+                // User is signed in, now fetch their role from Firestore
+                const userDocRef = doc(db, 'users', fbUser.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    setUser({ ...fbUser, role: userData.role || 'comercial' });
+                } else {
+                    // Default role if no document is found
+                    setUser({ ...fbUser, role: 'comercial' }); 
+                }
+            } else {
+                setUser(null);
+            }
             setLoading(false);
         });
 
