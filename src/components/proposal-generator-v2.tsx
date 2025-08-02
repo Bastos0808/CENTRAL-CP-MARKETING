@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
+import html2canvas from 'html2canvas';
 
 
 // Schema Definition
@@ -163,35 +164,6 @@ export default function ProposalGeneratorV2() {
     { name: "Landing Page", fieldName: "customServices.landingPage", fields: lpFields, append: appendLp, remove: removeLp, icon: FileText },
   ];
   
-  const getImageDataUrl = (url: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        if (!url) {
-            reject("URL is empty");
-            return;
-        }
-        const img = new window.Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext("2d");
-            if (ctx) {
-                ctx.drawImage(img, 0, 0);
-                resolve(canvas.toDataURL("image/png"));
-            } else {
-                reject("Could not get canvas context");
-            }
-        };
-        img.onerror = (e) => {
-            console.error("Error loading image for PDF:", e);
-            reject("Error loading image");
-        };
-        img.src = url;
-    });
-};
-
-
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
     const formData = form.getValues();
@@ -200,168 +172,44 @@ export default function ProposalGeneratorV2() {
         unit: 'px',
         format: 'a4'
     });
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 40;
+
+    const slides = document.querySelectorAll('.pdf-slide-capture');
+    if (!slides.length) {
+        toast({ title: "Erro", description: "Nenhum slide encontrado para gerar o PDF.", variant: "destructive" });
+        setIsGeneratingPdf(false);
+        return;
+    }
 
     try {
-        // --- Slide 1: Cover ---
-        doc.setFillColor(0, 0, 0);
-        doc.rect(0, 0, pageWidth, pageHeight, 'F');
-
-        if(formData.coverImageUrl) {
-            try {
-                const imageDataUrl = await getImageDataUrl(formData.coverImageUrl);
-                doc.addImage(imageDataUrl, 'PNG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
-                doc.setFillColor(0, 0, 0, 0.5);
-                doc.rect(0, 0, pageWidth, pageHeight, 'F');
-            } catch(e) { 
-                console.error("Could not load cover image", e);
-                toast({ title: "Erro ao carregar imagem", description: "Não foi possível carregar a imagem de capa. Verifique a URL e as permissões de CORS.", variant: "destructive" });
-            }
-        }
-        
-        doc.setFontSize(14).setFont('helvetica', 'bold').setTextColor('#FE5412');
-        doc.text('PROPOSTA COMERCIAL', pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
-        doc.setFontSize(48).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
-        doc.text(formData.clientName || '[Cliente]', pageWidth / 2, pageHeight / 2, { align: 'center' });
-        doc.setFontSize(16).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
-        doc.text('Gestão Estratégica de Marketing Digital', pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
-        
-        // --- Slide 2: Partnership ---
-        doc.addPage();
-        doc.setFillColor(0, 0, 0);
-        doc.rect(0, 0, pageWidth, pageHeight, 'F');
-        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
-        doc.text('SOBRE A PARCERIA', margin, 80);
-        doc.setDrawColor('#FE5412').setLineWidth(3);
-        doc.line(margin, 100, margin, 180);
-        doc.setFontSize(20).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
-        const partnershipLines = doc.splitTextToSize(formData.partnershipDescription, pageWidth - margin * 3);
-        doc.text(partnershipLines, margin + 20, 120);
-
-        // --- Slide 3: Objectives ---
-        doc.addPage();
-        doc.setFillColor(0, 0, 0);
-        doc.rect(0, 0, pageWidth, pageHeight, 'F');
-        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
-        doc.text('NOSSO OBJETIVO', margin, 80);
-        let y = 120;
-        doc.setFontSize(16).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
-        formData.objectiveItems?.forEach(item => {
-            if (y > pageHeight - margin) { doc.addPage(); y = margin; }
-            doc.setTextColor('#FE5412').setFont('helvetica', 'bold');
-            doc.text('•', margin, y);
-            doc.setTextColor('#DDDDDD').setFont('helvetica', 'normal');
-            const itemLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 20);
-            doc.text(itemLines, margin + 20, y);
-            y += (itemLines.length * 20) + 10;
-        });
-
-        // --- Slide 4: Differentials ---
-        doc.addPage();
-        doc.setFillColor(0, 0, 0);
-        doc.rect(0, 0, pageWidth, pageHeight, 'F');
-        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
-        doc.text('NOSSOS DIFERENCIAIS', margin, 80);
-        y = 120;
-        doc.setFontSize(16).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
-        formData.differentialItems?.forEach(item => {
-            if (y > pageHeight - margin) { doc.addPage(); y = margin; }
-            doc.setTextColor('#FE5412').setFont('helvetica', 'bold');
-            doc.text('•', margin, y);
-            doc.setTextColor('#DDDDDD').setFont('helvetica', 'normal');
-            const itemLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 20);
-            doc.text(itemLines, margin + 20, y);
-            y += (itemLines.length * 20) + 10;
-        });
-
-        // --- Slide 5: Services ---
-        doc.addPage();
-        doc.setFillColor(0, 0, 0);
-        doc.rect(0, 0, pageWidth, pageHeight, 'F');
-        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
-        doc.text('ESCOPO DOS SERVIÇOS', pageWidth/2, 80, {align: 'center'});
-        y = 120;
-        if(useCustomServices) {
-            // Logic for custom services
-        } else {
-            formData.packages?.forEach((pkgKey, index) => {
-                const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
-                if (!pkg) return;
-                const col = index % 3;
-                const row = Math.floor(index / 3);
-                const x = margin + (col * ((pageWidth - margin*2) / 3));
-                y = 120 + (row * 150);
-
-                doc.setFillColor(17, 17, 17).setDrawColor(50,50,50);
-                doc.roundedRect(x, y, (pageWidth - margin*2)/3 - 10, 140, 5, 5, 'FD');
-
-                doc.setFontSize(14).setTextColor('#FE5412').setFont('helvetica', 'bold');
-                doc.text(pkg.name, x + 10, y + 20);
-                doc.setFontSize(8).setTextColor('#AAAAAA').setFont('helvetica', 'normal');
-                const descLines = doc.splitTextToSize(pkg.description, (pageWidth - margin*2)/3 - 30);
-                doc.text(descLines, x + 10, y + 35);
-                
-                doc.setFontSize(12).setTextColor('#FE5412').setFont('helvetica', 'bold');
-                doc.text(pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), x + (pageWidth - margin*2)/3 - 20, y + 130, {align: 'right'});
+        for (let i = 0; i < slides.length; i++) {
+            const slide = slides[i] as HTMLElement;
+            const canvas = await html2canvas(slide, {
+                allowTaint: true,
+                useCORS: true,
+                scale: 2, // Aumenta a resolução da captura
+                backgroundColor: '#000000',
             });
+            
+            const imgData = canvas.toDataURL('image/png');
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            
+            if (i > 0) {
+                doc.addPage();
+            }
+            
+            doc.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
         }
-        
-        // --- Slide 6: Ideal Plan ---
-        doc.addPage();
-        doc.setFillColor(0, 0, 0);
-        doc.rect(0, 0, pageWidth, pageHeight, 'F');
-        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
-        doc.text('POR QUE ESTE PLANO É', pageWidth / 2, pageHeight / 2 - 100, { align: 'center' });
-        doc.setTextColor('#FE5412');
-        doc.text('IDEAL', pageWidth / 2, pageHeight / 2 - 50, { align: 'center' });
-        doc.setTextColor('#FFFFFF');
-        doc.text('PARA SEU NEGÓCIO?', pageWidth / 2, pageHeight / 2 - 0, { align: 'center' });
-        y = pageHeight / 2 + 50;
-        doc.setFontSize(16).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
-        formData.idealPlanItems?.forEach(item => {
-            if (y > pageHeight - margin) { doc.addPage(); y = margin; }
-            doc.setTextColor('#22c55e').setFont('helvetica', 'bold'); // Green check
-            doc.text('✓', pageWidth / 2 - 150, y);
-            doc.setTextColor('#DDDDDD').setFont('helvetica', 'normal');
-            doc.text(item.value, pageWidth / 2 - 130, y);
-            y += 25;
-        });
-
-        // --- Slide 7: Investment ---
-        doc.addPage();
-        doc.setFillColor(0, 0, 0);
-        doc.rect(0, 0, pageWidth, pageHeight, 'F');
-        doc.setDrawColor('#FE5412').setLineWidth(4);
-        doc.roundedRect(pageWidth / 2 - 150, pageHeight / 2 - 100, 300, 150, 10, 10, 'S');
-        doc.setFontSize(24).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
-        doc.text('INVESTIMENTO MENSAL', pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
-        doc.setFontSize(60).setFont('helvetica', 'bold').setTextColor('#FE5412');
-        doc.text(formData.investmentValue || 'R$ 0,00', pageWidth / 2, pageHeight / 2 + 10, { align: 'center' });
-        doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor('#AAAAAA');
-        doc.text('INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA', pageWidth / 2, pageHeight / 2 + 40, { align: 'center' });
-        
-        // --- Final Slides ---
-        doc.addPage();
-        doc.setFillColor(0,0,0);
-        doc.rect(0,0,pageWidth, pageHeight, 'F');
-        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
-        doc.text("E AGORA?", pageWidth/2, pageHeight/2 - 50, {align: 'center'});
-        doc.setFontSize(18).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
-        const finalText = "O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.";
-        doc.text(doc.splitTextToSize(finalText, pageWidth - margin*4), pageWidth/2, pageHeight/2, {align: 'center'});
-
 
         doc.save(`Proposta_${formData.clientName.replace(/\s+/g, '_')}.pdf`);
-
     } catch(e) {
-        console.error(e);
+        console.error("Erro ao gerar PDF com html2canvas:", e);
         toast({ title: "Erro ao gerar PDF", description: "Ocorreu um problema ao criar o documento. Verifique o console para mais detalhes.", variant: "destructive" });
     } finally {
         setIsGeneratingPdf(false);
     }
-  };
+};
+
 
 
   const handleGenerateContent = async () => {
@@ -411,7 +259,7 @@ export default function ProposalGeneratorV2() {
   
    const proposalContent = (
       <>
-          <Page className="bg-cover bg-center">
+          <Page className="pdf-slide-capture bg-cover bg-center">
               <div className="absolute inset-0 bg-black z-0"></div>
               {watchedValues.coverImageUrl && (
                   <Image 
@@ -431,7 +279,7 @@ export default function ProposalGeneratorV2() {
                   <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
               </div>
           </Page>
-          <Page className="justify-center items-start flex-col">
+          <Page className="pdf-slide-capture justify-center items-start flex-col">
               <h2 className="text-6xl font-bold uppercase mb-10 text-left w-full max-w-5xl mx-auto">Sobre a Parceria</h2>
               <div className="flex items-start gap-6 max-w-5xl mx-auto">
                   <div className="w-1 bg-[#FE5412] self-stretch"></div>
@@ -442,7 +290,7 @@ export default function ProposalGeneratorV2() {
                   />
               </div>
           </Page>
-          <Page>
+          <Page className="pdf-slide-capture">
               <div className="w-full max-w-5xl">
                   <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
                   <ul className="space-y-4 text-xl font-light">
@@ -452,7 +300,7 @@ export default function ProposalGeneratorV2() {
                   </ul>
               </div>
           </Page>
-          <Page>
+          <Page className="pdf-slide-capture">
                <div className="w-full max-w-5xl">
                   <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
                   <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
@@ -462,7 +310,7 @@ export default function ProposalGeneratorV2() {
                   </ul>
                </div>
           </Page>
-          <Page className="p-12 items-start justify-start">
+          <Page className="pdf-slide-capture p-12 items-start justify-start">
               <div className="w-full max-w-full">
                   <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
                   {useCustomServices ? (
@@ -504,7 +352,7 @@ export default function ProposalGeneratorV2() {
                   )}
               </div>
           </Page>
-          <Page>
+          <Page className="pdf-slide-capture">
                <div className="w-full max-w-5xl text-center">
                   <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
                    <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
@@ -514,14 +362,14 @@ export default function ProposalGeneratorV2() {
                   </ul>
                </div>
           </Page>
-          <Page>
+          <Page className="pdf-slide-capture">
               <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
                   <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
                   <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
                   <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
               </div>
           </Page>
-          <Page>
+          <Page className="pdf-slide-capture">
               <div className="w-full max-w-5xl text-center">
                   <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
                   <div className="flex justify-center items-stretch gap-8 text-left">
@@ -549,7 +397,7 @@ export default function ProposalGeneratorV2() {
                   </div>
               </div>
           </Page>
-          <Page>
+          <Page className="pdf-slide-capture">
               <div className="text-center">
                   <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
                   <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
@@ -692,10 +540,14 @@ export default function ProposalGeneratorV2() {
       </div>
       
       <div className="w-full">
+         <div className="hidden">
+            {/* Hidden render area for PDF generation */}
+            <div id="pdf-render-area"></div>
+         </div>
          <Carousel className="w-full max-w-4xl mx-auto" setApi={setCarouselApi}>
             <CarouselContent>
                 {React.Children.map(proposalContent.props.children, (child, index) => (
-                    <CarouselItem key={index}>
+                    <CarouselItem key={index} className="pdf-slide-capture">
                         <div className="p-1">{child}</div>
                     </CarouselItem>
                 ))}
@@ -714,5 +566,3 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
-
-    
