@@ -19,7 +19,8 @@ import {
     Instagram, Youtube, Search, Globe, Loader2, Wand2, Copy, 
     Lightbulb, Target, BookOpen, Diamond, Tv, BarChart, 
     Video, MessageSquare, Users, Milestone, Megaphone, CheckCircle, 
-    Eye, Image as ImageIcon, PenTool, Edit, SquarePlay, Paperclip, X, Info
+    Eye, Image as ImageIcon, PenTool, Edit, SquarePlay, Paperclip, X, Info,
+    Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema } from "@/ai/schemas/channel-strategy-schemas";
