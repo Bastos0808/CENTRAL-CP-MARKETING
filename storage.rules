@@ -1,13 +1,15 @@
-
 rules_version = '2';
 
+// O serviço do Cloud Storage para Firebase
 service firebase.storage {
+  // Corresponde a qualquer arquivo em qualquer bucket do seu projeto
   match /b/{bucket}/o {
-    // Permite que qualquer usuário autenticado leia e escreva arquivos
-    // Para um ambiente de produção, você pode querer restringir isso mais,
-    // por exemplo, permitindo que um usuário escreva apenas em sua própria pasta.
+    // Permite a leitura por qualquer pessoa, mas apenas a escrita por usuários autenticados.
+    // Isso é útil para que imagens públicas (como logos) possam ser vistas por todos.
+    // Restrinja ainda mais se você tiver arquivos sensíveis.
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read;
+      allow write: if request.auth != null;
     }
   }
 }
