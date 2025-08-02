@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { analyzeChannelStrategy } from "@/ai/flows/channel-strategy-flow";
@@ -14,31 +14,30 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Instagram, Linkedin, Search, Globe, Loader2, Wand2, Copy, ThumbsUp, ThumbsDown, Target } from "lucide-react";
-import { ChannelStrategyOutput } from "@/ai/schemas/channel-strategy-schemas";
+import { 
+    Instagram, Linkedin, Search, Globe, Loader2, Wand2, Copy, 
+    ThumbsUp, ThumbsDown, Target, BookOpen, Diamond, Tv, BarChart, 
+    Video, MessageSquare, Users, Milestone, Megaphone, CheckCircle, 
+    Eye, User, Building
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import { InstagramAnalysisSchema, WebsiteAnalysisSchema, LinkedInAnalysisSchema } from "@/ai/schemas/channel-strategy-schemas";
 
 
 type ChannelType = "instagram" | "website" | "linkedin";
 
-const analysisSchema = z.object({
-  strengths: z.string(),
-  weaknesses: z.string(),
-  hook: z.string(),
-});
-
 const formSchema = z.object({
   instagram: z.object({
     url: z.string().optional(),
-    analysis: analysisSchema.optional(),
+    analysis: InstagramAnalysisSchema.optional(),
   }).optional(),
   website: z.object({
     url: z.string().optional(),
-    analysis: analysisSchema.optional(),
+    analysis: WebsiteAnalysisSchema.optional(),
   }).optional(),
   linkedin: z.object({
     url: z.string().optional(),
-    analysis: analysisSchema.optional(),
+    analysis: LinkedInAnalysisSchema.optional(),
   }).optional(),
 });
 
@@ -48,28 +47,47 @@ const channelConfig = {
   instagram: {
     icon: Instagram,
     name: "Instagram",
-    questions: [
-      { key: "strengths", label: "Pontos Fortes", icon: ThumbsUp, color: "green", prompt: "Quais são os pontos fortes mais evidentes deste perfil? (Ex: Identidade visual, frequência, qualidade das fotos)" },
-      { key: "weaknesses", label: "Pontos Fracos / Dores", icon: ThumbsDown, color: "red", prompt: "Quais são as fraquezas e oportunidades de melhoria mais claras? (Ex: Falta de vídeos, bio confusa, sem CTA, engajamento baixo)" },
-      { key: "hook", label: "Gancho de Prospecção", icon: Target, color: "blue", prompt: "Com base nas fraquezas, crie uma frase de abordagem consultiva para iniciar a conversa." },
+    formSections: [
+      { key: "analiseBio", label: "Análise da Bio", icon: BookOpen, prompt: "A bio comunica a proposta de valor? Tem CTA e link?" },
+      { key: "analiseDestaques", label: "Análise dos Destaques", icon: Diamond, prompt: "São usados de forma estratégica? Funcionam como menu?" },
+      { key: "qualidadeFeed", label: "Qualidade do Feed", icon: Tv, prompt: "A identidade visual é coesa e profissional? A qualidade é alta?" },
+      { key: "estrategiaConteudo", label: "Estratégia de Conteúdo", icon: BarChart, prompt: "Qual o foco (educar, vender)? A frequência é boa?" },
+      { key: "usoDeReels", label: "Uso de Reels", icon: Video, prompt: "Estão usando o formato? Os vídeos são bem editados?" },
+      { key: "copywritingLegendas", label: "Copywriting das Legendas", icon: MessageSquare, prompt: "As legendas geram conexão e têm CTAs claros?" },
+      { key: "engajamentoComunidade", label: "Engajamento", icon: Users, prompt: "A empresa responde aos comentários? Cria comunidade?" },
+      { key: "pontosFortes", label: "Pontos Fortes (Resumo)", icon: ThumbsUp, prompt: "Resuma os 2-3 principais acertos do canal." },
+      { key: "pontosFracos", label: "Pontos Fracos (Oportunidades)", icon: ThumbsDown, prompt: "Resuma as 2-3 principais fraquezas que podemos resolver." },
+      { key: "ganchoDeAbordagem", label: "Gancho de Prospecção", icon: Target, prompt: "Com base na principal fraqueza, crie uma frase de abordagem." },
     ]
   },
   website: {
     icon: Globe,
     name: "Website",
-    questions: [
-      { key: "strengths", label: "Pontos Fortes", icon: ThumbsUp, color: "green", prompt: "O que o site faz bem? (Ex: Design moderno, carregamento rápido, mensagem clara, bom SEO)" },
-      { key: "weaknesses", label: "Pontos Fracos / Dores", icon: ThumbsDown, color: "red", prompt: "Quais são os principais problemas do site? (Ex: Layout antigo, não responsivo, falta de blog, CTAs inexistentes, difícil navegação)" },
-      { key: "hook", label: "Gancho de Prospecção", icon: Target, color: "blue", prompt: "Crie uma abordagem focada em como a melhoria do site pode impactar os negócios do prospect." },
+    formSections: [
+      { key: "primeiraDobra", label: "Primeira Dobra (Acima da dobra)", icon: Milestone, prompt: "A primeira impressão é impactante? A proposta de valor e o CTA são claros?" },
+      { key: "propostaDeValor", label: "Proposta de Valor", icon: Megaphone, prompt: "O site responde claramente 'O que faz?', 'Para quem?' e 'Qual o diferencial?'" },
+      { key: "chamadasParaAcao", label: "Chamadas para Ação (CTAs)", icon: CheckCircle, prompt: "Os botões são visíveis, persuasivos e estão em locais estratégicos?" },
+      { key: "clarezaNavegacao", label: "Navegação e Usabilidade", icon: Eye, prompt: "O menu é simples e intuitivo? É fácil encontrar as informações?" },
+      { key: "otimizacaoSEO", label: "Otimização para SEO", icon: Search, prompt: "O site parece otimizado? (Títulos, blog, etc.)" },
+      { key: "designResponsividade", label: "Design e Responsividade", icon: Tv, prompt: "O layout é moderno? Funciona bem em celulares?" },
+      { key: "provaSocial", label: "Prova Social", icon: Users, prompt: "O site usa depoimentos, cases ou logos de clientes para gerar confiança?" },
+      { key: "pontosFortes", label: "Pontos Fortes (Resumo)", icon: ThumbsUp, prompt: "Resuma os 2-3 principais acertos do site." },
+      { key: "pontosFracos", label: "Pontos Fracos (Oportunidades)", icon: ThumbsDown, prompt: "Resuma as 2-3 principais fraquezas que impactam o negócio." },
+      { key: "ganchoDeAbordagem", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem focada em como a melhoria do site pode impactar os negócios." },
     ]
   },
   linkedin: {
     icon: Linkedin,
     name: "LinkedIn",
-    questions: [
-      { key: "strengths", label: "Pontos Fortes", icon: ThumbsUp, color: "green", prompt: "Quais os pontos fortes do perfil do decisor ou da company page? (Ex: Perfil completo, posta com frequência, bom networking)" },
-      { key: "weaknesses", label: "Pontos Fracos / Dores", icon: ThumbsDown, color: "red", prompt: "Onde estão as oportunidades? (Ex: Perfil desatualizado, sem conteúdo de autoridade, não engaja com a rede, company page abandonada)" },
-      { key: "hook", label: "Gancho de Prospecção", icon: Target, color: "blue", prompt: "Crie uma abordagem B2B focada em geração de leads ou autoridade através do LinkedIn." },
+    formSections: [
+        { key: "perfilDoDecisor", label: "Perfil do Decisor", icon: User, prompt: "O perfil do decisor está otimizado? (Foto, título, sobre)" },
+        { key: "companyPage", label: "Company Page", icon: Building, prompt: "A página da empresa está completa e ativa? Compartilha conteúdo relevante?" },
+        { key: "estrategiaConteudo", label: "Estratégia de Conteúdo", icon: BarChart, prompt: "Postam conteúdo de autoridade? A frequência é consistente?" },
+        { key: "engajamentoRede", label: "Engajamento na Rede", icon: MessageSquare, prompt: "Interagem com outros, participam de discussões ou são passivos?" },
+        { key: "networking", label: "Networking Estratégico", icon: Users, prompt: "A rede de conexões do decisor parece estratégica e alinhada ao público-alvo?" },
+        { key: "pontosFortes", label: "Pontos Fortes (Resumo)", icon: ThumbsUp, prompt: "Resuma os 2-3 principais acertos na estratégia do LinkedIn." },
+        { key: "pontosFracos", label: "Pontos Fracos (Oportunidades)", icon: ThumbsDown, prompt: "Resuma as principais oportunidades perdidas (ex: perfil abandonado)." },
+        { key: "ganchoDeAbordagem", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem B2B consultiva focada em autoridade ou geração de leads." },
     ]
   },
 };
@@ -82,9 +100,9 @@ export default function ChannelStrategyAnalyzer() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      instagram: { url: '', analysis: { strengths: '', weaknesses: '', hook: '' } },
-      website: { url: '', analysis: { strengths: '', weaknesses: '', hook: '' } },
-      linkedin: { url: '', analysis: { strengths: '', weaknesses: '', hook: '' } },
+      instagram: { url: '', analysis: {} },
+      website: { url: '', analysis: {} },
+      linkedin: { url: '', analysis: {} },
     }
   });
 
@@ -106,7 +124,7 @@ export default function ChannelStrategyAnalyzer() {
       form.setValue(`${channel}.analysis`, result.analysis, { shouldValidate: true });
       toast({
         title: "Análise Concluída!",
-        description: `A IA analisou o canal e preencheu as respostas.`,
+        description: `A IA analisou o canal e preencheu o formulário.`,
       });
     } catch (error) {
       console.error(`Error analyzing ${channel}:`, error);
@@ -123,30 +141,27 @@ export default function ChannelStrategyAnalyzer() {
   const copyToClipboard = (channel: ChannelType) => {
     const analysis = form.getValues(`${channel}.analysis`);
     const url = form.getValues(`${channel}.url`);
+    const config = channelConfig[channel];
 
     if (!analysis) return;
+    
+    const analysisText = config.formSections.map(section => {
+        const value = analysis[section.key as keyof typeof analysis];
+        return `**${section.label.toUpperCase()}**\n${value || 'Não preenchido'}`;
+    }).join('\n\n---\n');
 
     const text = `
-**Diagnóstico Estratégico de Canal: ${channelConfig[channel].name}**
+**Diagnóstico Estratégico de Canal: ${config.name}**
 **URL:** ${url}
 
 ---
-**PONTOS FORTES**
-${analysis.strengths}
-
----
-**PONTOS FRACOS (OPORTUNIDADES)**
-${analysis.weaknesses}
-
----
-**GANCHO DE PROSPECÇÃO**
-${analysis.hook}
+${analysisText}
     `.trim();
 
     navigator.clipboard.writeText(text);
     toast({
       title: "Análise Copiada!",
-      description: `O diagnóstico de ${channelConfig[channel].name} foi copiado.`,
+      description: `O diagnóstico de ${config.name} foi copiado.`,
     });
   }
 
@@ -163,7 +178,7 @@ ${analysis.hook}
             <config.icon className="h-6 w-6 text-primary" />
             <CardTitle>{config.name}</CardTitle>
           </div>
-          <CardDescription>Insira a URL do canal e gere uma análise ou preencha manualmente.</CardDescription>
+          <CardDescription>Insira a URL do canal, gere uma análise com IA ou preencha o formulário manualmente.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center gap-2">
@@ -188,33 +203,28 @@ ${analysis.hook}
             )}
           </div>
 
-          <div className="space-y-4 pt-4 border-t">
-            {config.questions.map(({ key, label, icon: Icon, color, prompt }) => {
-               const colorClasses = {
-                green: "text-green-700 dark:text-green-400 focus:border-green-500/50 bg-green-500/5 border-green-500/20",
-                red: "text-red-700 dark:text-red-400 focus:border-red-500/50 bg-red-500/5 border-red-500/20",
-                blue: "text-blue-700 dark:text-blue-400 focus:border-blue-500/50 bg-blue-500/5 border-blue-500/20",
-              }[color] || "";
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 pt-4 border-t">
+            {config.formSections.map(({ key, label, icon: Icon, prompt }) => {
+              const isSummaryField = key.includes('pontos') || key.includes('gancho');
               return (
-              <div key={key}>
-                <Label htmlFor={`${channel}-${key}`} className={cn("flex items-center gap-2 mb-2 font-semibold", colorClasses.split(' ')[0], colorClasses.split(' ')[1])}>
-                    <Icon className="h-5 w-5" />
-                    {label}
-                </Label>
-                <Controller
-                  name={`${channel}.analysis.${key as 'strengths' | 'weaknesses' | 'hook'}`}
-                  control={form.control}
-                  render={({ field }) => (
-                    <Textarea
-                      id={`${channel}-${key}`}
-                      {...field}
-                      placeholder={prompt}
-                      className={cn("min-h-[120px]", colorClasses)}
-                    />
-                  )}
-                />
-              </div>
+                <div key={key} className={cn(isSummaryField ? "md:col-span-2" : "")}>
+                  <Label htmlFor={`${channel}-${key}`} className="flex items-center gap-2 mb-2 font-semibold text-primary/90">
+                      <Icon className="h-5 w-5" />
+                      {label}
+                  </Label>
+                  <Controller
+                    name={`${channel}.analysis.${key as keyof typeof analysisExists}`}
+                    control={form.control}
+                    render={({ field }) => (
+                      <Textarea
+                        id={`${channel}-${key}`}
+                        {...field}
+                        placeholder={prompt}
+                        className="min-h-[100px] text-sm"
+                      />
+                    )}
+                  />
+                </div>
             )})}
           </div>
 
