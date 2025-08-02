@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Wand2, Bot, Mail, MessageSquare, Linkedin, Podcast, FileText, Handshake } from "lucide-react";
+import { Loader2, Wand2, Bot, Mail, MessageSquare, Linkedin, Podcast, FileText, Handshake, Copy } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -22,7 +22,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function SdrAiTool() {
     const [isLoading, setIsLoading] = useState(false);
-    const [generatedMessage, setGeneratedMessage] = useState("");
+    const [generatedMessages, setGeneratedMessages] = useState<string[]>([]);
     const { toast } = useToast();
 
     const form = useForm<FormValues>({
@@ -40,13 +40,13 @@ export default function SdrAiTool() {
 
     async function onSubmit(values: FormValues) {
         setIsLoading(true);
-        setGeneratedMessage("");
+        setGeneratedMessages([]);
         try {
             const result = await generateSdrMessage(values);
-            setGeneratedMessage(result.message);
+            setGeneratedMessages(result.messages);
             toast({
-                title: "Mensagem Gerada!",
-                description: "Sua mensagem personalizada está pronta.",
+                title: "Cadência Gerada!",
+                description: "Sua sequência de mensagens está pronta.",
             });
         } catch (error) {
             console.error("Error generating message:", error);
@@ -59,13 +59,18 @@ export default function SdrAiTool() {
             setIsLoading(false);
         }
     }
+    
+    const handleCopy = (text: string, index: number) => {
+        navigator.clipboard.writeText(text);
+        toast({ title: `Mensagem ${index + 1} Copiada!`, description: "A mensagem foi copiada para a área de transferência." });
+    };
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             <Card>
                 <CardHeader>
                     <CardTitle>Assistente de Prospecção com IA</CardTitle>
-                    <CardDescription>Preencha o máximo de informações para a IA criar uma mensagem altamente personalizada.</CardDescription>
+                    <CardDescription>Preencha o máximo de informações para a IA criar uma cadência de mensagens altamente personalizada.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
@@ -183,7 +188,7 @@ export default function SdrAiTool() {
 
                             <Button type="submit" disabled={isLoading} className="w-full">
                                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                                {isLoading ? "Gerando..." : "Gerar Mensagem com IA"}
+                                {isLoading ? "Gerando..." : "Gerar Cadência com IA"}
                             </Button>
                         </form>
                     </Form>
@@ -192,23 +197,33 @@ export default function SdrAiTool() {
 
             <Card className="flex flex-col sticky top-8">
                 <CardHeader>
-                    <CardTitle>Mensagem Gerada</CardTitle>
-                    <CardDescription>Use esta mensagem como inspiração. Adapte-a com sua própria voz antes de enviar.</CardDescription>
+                    <CardTitle>Cadência Gerada</CardTitle>
+                    <CardDescription>Use esta sequência de mensagens na sua prospecção. Adapte-a com sua própria voz antes de enviar.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 flex items-center justify-center min-h-[300px]">
+                <CardContent className="flex-1 flex flex-col items-center justify-center min-h-[300px] space-y-4">
                     {isLoading ? (
                         <div className="text-center text-muted-foreground">
                             <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4" />
-                            <p>A IA está escrevendo...</p>
+                            <p>A IA está escrevendo a sequência...</p>
                         </div>
-                    ) : generatedMessage ? (
-                        <div className="p-4 bg-muted/50 rounded-lg w-full">
-                            <p className="whitespace-pre-wrap text-foreground">{generatedMessage}</p>
-                        </div>
+                    ) : generatedMessages.length > 0 ? (
+                       <div className="w-full space-y-4">
+                           {generatedMessages.map((message, index) => (
+                               <div key={index} className="p-4 bg-muted/50 rounded-lg w-full">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <h3 className="font-semibold text-sm">Mensagem {index + 1}</h3>
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleCopy(message, index)}>
+                                            <Copy className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                    <p className="whitespace-pre-wrap text-foreground text-sm">{message}</p>
+                               </div>
+                           ))}
+                       </div>
                     ) : (
                         <div className="text-center text-muted-foreground p-8">
                             <Bot className="h-10 w-10 mx-auto mb-4"/>
-                            <p>Sua mensagem personalizada pela IA aparecerá aqui após preencher os campos e clicar em "Gerar".</p>
+                            <p>Sua cadência de mensagens aparecerá aqui após preencher os campos e clicar em "Gerar".</p>
                         </div>
                     )}
                 </CardContent>

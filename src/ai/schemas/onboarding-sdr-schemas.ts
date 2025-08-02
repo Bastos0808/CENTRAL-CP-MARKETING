@@ -18,8 +18,8 @@ export type SdrMessageInput = z.infer<typeof SdrMessageInputSchema>;
 
 // Define the output schema for the flow
 export const SdrMessageOutputSchema = z.object({
-  message: z.string().describe(
-    'A mensagem de prospecção personalizada gerada pela IA.'
+  messages: z.array(z.string()).describe(
+    'Uma sequência de mensagens de prospecção (cadência) gerada pela IA.'
   ),
 });
 export type SdrMessageOutput = z.infer<typeof SdrMessageOutputSchema>;
