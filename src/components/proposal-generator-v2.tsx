@@ -165,50 +165,61 @@ export default function ProposalGeneratorV2() {
   ];
   
   const handleDownloadPdf = async () => {
-    setIsGeneratingPdf(true);
-    const formData = form.getValues();
-    const doc = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: 'a4'
-    });
-
-    const slides = document.querySelectorAll('.pdf-slide-capture');
-    if (!slides.length) {
-        toast({ title: "Erro", description: "Nenhum slide encontrado para gerar o PDF.", variant: "destructive" });
-        setIsGeneratingPdf(false);
-        return;
-    }
-
-    try {
-        for (let i = 0; i < slides.length; i++) {
-            const slide = slides[i] as HTMLElement;
-            const canvas = await html2canvas(slide, {
-                allowTaint: true,
-                useCORS: true,
-                scale: 2, // Aumenta a resolução da captura
-                backgroundColor: '#000000',
-            });
-            
-            const imgData = canvas.toDataURL('image/png');
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-            
-            if (i > 0) {
-                doc.addPage();
-            }
-            
-            doc.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
-        }
-
-        doc.save(`Proposta_${formData.clientName.replace(/\s+/g, '_')}.pdf`);
-    } catch(e) {
-        console.error("Erro ao gerar PDF com html2canvas:", e);
-        toast({ title: "Erro ao gerar PDF", description: "Ocorreu um problema ao criar o documento. Verifique o console para mais detalhes.", variant: "destructive" });
-    } finally {
-        setIsGeneratingPdf(false);
-    }
-};
+      setIsGeneratingPdf(true);
+      const slides = Array.from(document.querySelectorAll('.pdf-slide-capture'));
+      if (!slides.length) {
+          toast({ title: "Erro", description: "Nenhum slide encontrado.", variant: "destructive" });
+          setIsGeneratingPdf(false);
+          return;
+      }
+  
+      const doc = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [1920, 1080], // Proporção 16:9
+      });
+  
+      // Área de renderização oculta
+      const renderArea = document.createElement('div');
+      renderArea.id = 'pdf-render-area';
+      renderArea.style.position = 'absolute';
+      renderArea.style.left = '-9999px';
+      renderArea.style.top = '-9999px';
+      document.body.appendChild(renderArea);
+  
+      try {
+          for (let i = 0; i < slides.length; i++) {
+              // Limpa a área de renderização a cada iteração
+              renderArea.innerHTML = ''; 
+              const slideClone = slides[i].cloneNode(true) as HTMLElement;
+              renderArea.appendChild(slideClone);
+              
+              const canvas = await html2canvas(slideClone, {
+                  scale: 2,
+                  useCORS: true,
+                  allowTaint: true,
+                  backgroundColor: '#000000',
+              });
+  
+              const imgData = canvas.toDataURL('image/png');
+              const pageWidth = doc.internal.pageSize.getWidth();
+              const pageHeight = doc.internal.pageSize.getHeight();
+  
+              if (i > 0) {
+                  doc.addPage();
+              }
+              doc.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
+          }
+          const { clientName } = form.getValues();
+          doc.save(`Proposta_${clientName.replace(/\s+/g, '_') || 'Cliente'}.pdf`);
+      } catch (error) {
+          console.error("PDF Generation Error:", error);
+          toast({ title: "Erro ao Gerar PDF", description: "Não foi possível gerar o documento. Tente novamente.", variant: "destructive" });
+      } finally {
+          setIsGeneratingPdf(false);
+          document.body.removeChild(renderArea);
+      }
+  };
 
 
 
@@ -540,10 +551,7 @@ export default function ProposalGeneratorV2() {
       </div>
       
       <div className="w-full">
-         <div className="hidden">
-            {/* Hidden render area for PDF generation */}
-            <div id="pdf-render-area"></div>
-         </div>
+         
          <Carousel className="w-full max-w-4xl mx-auto" setApi={setCarouselApi}>
             <CarouselContent>
                 {React.Children.map(proposalContent.props.children, (child, index) => (
