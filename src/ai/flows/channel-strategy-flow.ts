@@ -31,8 +31,17 @@ const channelStrategyPrompt = ai.definePrompt({
   prompt: `
     Você é um Estrategista de Marketing Sênior e um detetive de negócios. Sua missão é fazer um diagnóstico profundo e detalhado de um canal digital de um prospect, preenchendo um formulário de análise completo.
 
+    A fonte primária de análise deve ser a imagem fornecida. Use-a para extrair o máximo de informações visuais possíveis.
+
+    **Imagem para Análise:**
+    {{#if screenshotDataUri}}
+      {{media url=screenshotDataUri}}
+    {{else}}
+      Nenhuma imagem fornecida. Baseie sua análise nas melhores práticas para um canal do tipo **{{channelType}}**.
+    {{/if}}
+
     O canal a ser analisado é um **{{channelType}}**.
-    A URL é: **{{{channelUrl}}}**
+    A URL (contexto adicional) é: **{{{channelUrl}}}**
 
     Preencha CADA CAMPO do objeto de saída 'analysis' com uma análise clara, objetiva e profissional. Baseie-se no framework abaixo correspondente ao tipo de canal.
 
@@ -65,7 +74,7 @@ const channelStrategyPrompt = ai.definePrompt({
     10. **ganchoDeAbordagem:** Com base no problema mais evidente (ex: design datado, falta de prova social), crie uma frase de abordagem. Ex: "Vi que a [Nome da Empresa] tem uma história incrível, mas senti que o design atual do site talvez não faça jus à qualidade do trabalho de vocês. Já pensaram em modernizá-lo?".
 
     ---
-    **Framework de Análise para {{channelType}} como 'Youtube'**
+    **Framework de Análise para {{channelType}} como 'youtube'**
     
     1.  **identidadeVisualCanal:** O banner e o ícone do canal são profissionais e comunicam sobre o que é o canal? A identidade visual é consistente?
     2.  **qualidadeThumbnails:** As miniaturas (thumbnails) dos vídeos são atraentes, legíveis e chamam a atenção? Elas seguem um padrão visual, criando uma marca?
@@ -94,3 +103,5 @@ const channelStrategyFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

@@ -1,7 +1,8 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import Image from 'next/image';
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -18,7 +19,7 @@ import {
     Instagram, Youtube, Search, Globe, Loader2, Wand2, Copy, 
     ThumbsUp, ThumbsDown, Target, BookOpen, Diamond, Tv, BarChart, 
     Video, MessageSquare, Users, Milestone, Megaphone, CheckCircle, 
-    Eye, Image, PenTool, Edit, SquarePlay
+    Eye, Image as ImageIcon, PenTool, Edit, SquarePlay, Paperclip, X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema } from "@/ai/schemas/channel-strategy-schemas";
@@ -29,14 +30,17 @@ type ChannelType = "instagram" | "website" | "youtube";
 const formSchema = z.object({
   instagram: z.object({
     url: z.string().optional(),
+    screenshotDataUri: z.string().optional(),
     analysis: InstagramAnalysisSchema.optional(),
   }).optional(),
   website: z.object({
     url: z.string().optional(),
+    screenshotDataUri: z.string().optional(),
     analysis: WebsiteAnalysisSchema.optional(),
   }).optional(),
   youtube: z.object({
     url: z.string().optional(),
+    screenshotDataUri: z.string().optional(),
     analysis: YouTubeAnalysisSchema.optional(),
   }).optional(),
 });
@@ -81,7 +85,7 @@ const channelConfig = {
     name: "YouTube",
     formSections: [
         { key: "identidadeVisualCanal", label: "Identidade Visual do Canal", icon: PenTool, prompt: "O banner e o ícone do canal são profissionais e alinhados?" },
-        { key: "qualidadeThumbnails", label: "Qualidade das Thumbnails", icon: Image, prompt: "As miniaturas são atraentes, legíveis e seguem um padrão?" },
+        { key: "qualidadeThumbnails", label: "Qualidade das Thumbnails", icon: ImageIcon, prompt: "As miniaturas são atraentes, legíveis e seguem um padrão?" },
         { key: "titulosVideos", label: "Títulos dos Vídeos", icon: Edit, prompt: "Os títulos são otimizados para SEO e geram curiosidade?" },
         { key: "qualidadeEdicao", label: "Qualidade da Edição", icon: Video, prompt: "O ritmo, áudio e elementos visuais dos vídeos são profissionais?" },
         { key: "usoDeShorts", label: "Uso de Shorts", icon: SquarePlay, prompt: "O canal utiliza vídeos curtos para atrair novos inscritos?" },
@@ -98,18 +102,54 @@ const channelConfig = {
 export default function ChannelStrategyAnalyzer() {
   const [loadingChannel, setLoadingChannel] = useState<ChannelType | null>(null);
   const { toast } = useToast();
+  const fileInputRefs = {
+    instagram: useRef<HTMLInputElement>(null),
+    website: useRef<HTMLInputElement>(null),
+    youtube: useRef<HTMLInputElement>(null),
+  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      instagram: { url: '', analysis: {} },
-      website: { url: '', analysis: {} },
-      youtube: { url: '', analysis: {} },
+      instagram: { url: '', analysis: {}, screenshotDataUri: undefined },
+      website: { url: '', analysis: {}, screenshotDataUri: undefined },
+      youtube: { url: '', analysis: {}, screenshotDataUri: undefined },
     }
   });
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, channel: ChannelType) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        if (file.size > 4 * 1024 * 1024) { // 4MB limit
+            toast({
+                title: "Arquivo muito grande",
+                description: "Por favor, selecione uma imagem com menos de 4MB.",
+                variant: "destructive"
+            });
+            return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const dataUri = reader.result as string;
+            form.setValue(`${channel}.screenshotDataUri`, dataUri);
+        };
+        reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveScreenshot = (channel: ChannelType) => {
+      form.setValue(`${channel}.screenshotDataUri`, undefined);
+      const ref = fileInputRefs[channel];
+      if (ref.current) {
+          ref.current.value = '';
+      }
+  }
+
 
   const handleAnalyze = async (channel: ChannelType) => {
     const url = form.getValues(`${channel}.url`);
+    const screenshot = form.getValues(`${channel}.screenshotDataUri`);
+    
     if (!url || !url.startsWith('http')) {
       toast({
         title: "URL Inválida",
@@ -118,11 +158,24 @@ export default function ChannelStrategyAnalyzer() {
       });
       return;
     }
+    
+     if (!screenshot) {
+      toast({
+        title: "Print da Tela Faltando",
+        description: `Por favor, anexe um print da tela do canal para a IA analisar.`,
+        variant: "destructive",
+      });
+      return;
+    }
 
     setLoadingChannel(channel);
 
     try {
-      const result = await analyzeChannelStrategy({ channelUrl: url, channelType: channel });
+      const result = await analyzeChannelStrategy({ 
+          channelUrl: url, 
+          channelType: channel,
+          screenshotDataUri: screenshot,
+      });
       form.setValue(`${channel}.analysis`, result.analysis, { shouldValidate: true });
       toast({
         title: "Análise Concluída!",
@@ -132,7 +185,7 @@ export default function ChannelStrategyAnalyzer() {
       console.error(`Error analyzing ${channel}:`, error);
       toast({
         title: "Erro na Análise",
-        description: `Não foi possível analisar o canal. Verifique a URL e tente novamente.`,
+        description: `Não foi possível analisar o canal. Verifique os dados e tente novamente.`,
         variant: "destructive",
       });
     } finally {
@@ -172,6 +225,7 @@ ${analysisText}
     const config = channelConfig[channel];
     const isLoading = loadingChannel === channel;
     const analysisExists = !!form.watch(`${channel}.analysis`);
+    const screenshotPreview = form.watch(`${channel}.screenshotDataUri`);
 
     return (
       <Card>
@@ -180,29 +234,63 @@ ${analysisText}
             <config.icon className="h-6 w-6 text-primary" />
             <CardTitle>{config.name}</CardTitle>
           </div>
-          <CardDescription>Insira a URL do canal, gere uma análise com IA ou preencha o formulário manualmente.</CardDescription>
+          <CardDescription>Insira a URL, anexe um print da tela e gere uma análise com IA ou preencha o formulário manualmente.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Controller
-                name={`${channel}.url`}
-                control={form.control}
-                render={({ field }) => (
-                    <Input placeholder={`https://www.${channel}.com/prospect`} {...field} className="pl-10" />
-                )}
-              />
+          <div className="flex flex-col md:flex-row items-start gap-4">
+            <div className="flex-1 w-full">
+              <Label htmlFor={`${channel}-url`} className="mb-2 block">URL do Canal</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Controller
+                  name={`${channel}.url`}
+                  control={form.control}
+                  render={({ field }) => (
+                      <Input id={`${channel}-url`} placeholder={`https://www.${channel}.com/prospect`} {...field} className="pl-10" />
+                  )}
+                />
+              </div>
             </div>
-            <Button onClick={() => handleAnalyze(channel)} disabled={isLoading}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-              {isLoading ? "Analisando..." : "Analisar com IA"}
-            </Button>
-            {analysisExists && (
-                <Button variant="outline" size="icon" onClick={() => copyToClipboard(channel)}>
-                    <Copy className="h-4 w-4"/>
+             <div className="flex-1 w-full">
+                <Label className="mb-2 block">Print da Tela</Label>
+                {screenshotPreview ? (
+                    <div className="relative group">
+                        <Image src={screenshotPreview} alt="Preview do print" width={200} height={150} className="rounded-md object-contain max-h-24 w-full border" />
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => handleRemoveScreenshot(channel)}
+                        >
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </div>
+                ) : (
+                    <Button type="button" variant="outline" onClick={() => fileInputRefs[channel].current?.click()} className="w-full">
+                        <Paperclip className="mr-2 h-4 w-4" />
+                        Anexar Print
+                    </Button>
+                )}
+                <input
+                    type="file"
+                    ref={fileInputRefs[channel]}
+                    className="hidden"
+                    accept="image/png, image/jpeg, image/webp"
+                    onChange={(e) => handleFileChange(e, channel)}
+                />
+            </div>
+            <div className="flex w-full md:w-auto items-end h-full gap-2 pt-2 md:pt-0">
+                <Button onClick={() => handleAnalyze(channel)} disabled={isLoading} className="w-full md:w-auto self-end">
+                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                  {isLoading ? "Analisando..." : "Analisar com IA"}
                 </Button>
-            )}
+                {analysisExists && (
+                    <Button variant="outline" size="icon" onClick={() => copyToClipboard(channel)} className="self-end">
+                        <Copy className="h-4 w-4"/>
+                    </Button>
+                )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 pt-4 border-t">
@@ -254,3 +342,5 @@ ${analysisText}
     </Tabs>
   );
 }
+
+    
