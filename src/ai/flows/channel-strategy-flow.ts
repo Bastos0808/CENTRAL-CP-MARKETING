@@ -65,19 +65,21 @@ const channelStrategyPrompt = ai.definePrompt({
     10. **ganchoDeAbordagem:** Com base no problema mais evidente (ex: design datado, falta de prova social), crie uma frase de abordagem. Ex: "Vi que a [Nome da Empresa] tem uma história incrível, mas senti que o design atual do site talvez não faça jus à qualidade do trabalho de vocês. Já pensaram em modernizá-lo?".
 
     ---
-    **Framework de Análise para {{channelType}} como 'LinkedIn'**
-
-    1.  **perfilDoDecisor:** O perfil do decisor (se aplicável) está otimizado? A foto é profissional? O título (headline) é claro e atraente? A seção "Sobre" vende sua expertise?
-    2.  **companyPage:** A Company Page da empresa está completa e ativa? Ela compartilha conteúdo relevante sobre a cultura e as soluções da empresa?
-    3.  **estrategiaConteudo:** A empresa ou o decisor postam conteúdo de autoridade (artigos, análises, insights do setor)? Ou apenas compartilham notícias de terceiros? A frequência é consistente?
-    4.  **engajamentoRede:** Eles interagem com outras pessoas do setor? Comentam em posts, participam de discussões? Ou o perfil é passivo?
-    5.  **networking:** A rede de conexões do decisor parece estratégica e alinhada com seu público-alvo?
-    6.  **pontosFortes:** Resuma os 2-3 principais acertos na estratégia do LinkedIn.
-    7.  **pontosFracos:** Resuma as 2-3 principais oportunidades perdidas (ex: perfil abandonado, falta de conteúdo autoral, não usa a plataforma para gerar leads).
-    8.  **ganchoDeAbordagem:** Crie uma abordagem B2B consultiva. Ex: "Vi seu perfil e o da [Nome da Empresa] no LinkedIn. Vocês têm uma base sólida, mas não encontrei artigos ou posts que mostrem a fundo a expertise que vocês têm em [Setor]. É uma estratégia não explorar o conteúdo de autoridade na plataforma?".
+    **Framework de Análise para {{channelType}} como 'Youtube'**
+    
+    1.  **identidadeVisualCanal:** O banner e o ícone do canal são profissionais e comunicam sobre o que é o canal? A identidade visual é consistente?
+    2.  **qualidadeThumbnails:** As miniaturas (thumbnails) dos vídeos são atraentes, legíveis e chamam a atenção? Elas seguem um padrão visual, criando uma marca?
+    3.  **titulosVideos:** Os títulos são otimizados para busca (SEO) e para a curiosidade? Eles usam palavras-chave que a audiência procuraria?
+    4.  **qualidadeEdicao:** A edição dos vídeos é profissional? O áudio é claro? O ritmo é bom? Existem elementos visuais de apoio (gráficos, textos)?
+    5.  **usoDeShorts:** O canal utiliza vídeos curtos (Shorts) para atrair novos inscritos? Os Shorts são cortes de vídeos longos ou conteúdo original?
+    6.  **seoVideo:** As descrições dos vídeos são bem-feitas, com links relevantes e palavras-chave? As tags são usadas de forma estratégica?
+    7.  **engajamentoComentarios:** O criador responde aos comentários? Existe uma comunidade se formando em torno do conteúdo?
+    8.  **pontosFortes:** Resuma os 2-3 principais acertos na estratégia do YouTube.
+    9.  **pontosFracos:** Resuma as 2-3 principais oportunidades perdidas (ex: thumbnails ruins, falta de SEO, áudio de baixa qualidade).
+    10. **ganchoDeAbordagem:** Crie uma abordagem consultiva focada em vídeo. Ex: "Adorei o conteúdo do seu vídeo sobre [Tópico], mas sinto que as thumbnails atuais não estão no mesmo nível de qualidade, o que pode estar limitando seu alcance. Já pensaram em profissionalizar essa parte?".
 
     Agora, preencha o formulário de análise para o **{{channelType}}** em **{{{channelUrl}}}**.
-  `,
+  `
 });
 
 // Define the flow that orchestrates the call to the AI

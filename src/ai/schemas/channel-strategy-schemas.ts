@@ -5,8 +5,8 @@
 import { z } from 'zod';
 
 export const ChannelStrategyInputSchema = z.object({
-  channelUrl: z.string().url().describe('The URL of the channel to be analyzed (e.g., Instagram, Website, LinkedIn).'),
-  channelType: z.enum(['instagram', 'website', 'linkedin']).describe('The type of the channel being analyzed.'),
+  channelUrl: z.string().url().describe('The URL of the channel to be analyzed (e.g., Instagram, Website, YouTube).'),
+  channelType: z.enum(['instagram', 'website', 'youtube']).describe('The type of the channel being analyzed.'),
 });
 export type ChannelStrategyInput = z.infer<typeof ChannelStrategyInputSchema>;
 
@@ -36,21 +36,23 @@ export const WebsiteAnalysisSchema = z.object({
   ganchoDeAbordagem: z.string().optional().describe("Sugestão de gancho de prospecção."),
 });
 
-export const LinkedInAnalysisSchema = z.object({
-    perfilDoDecisor: z.string().optional().describe("Análise do perfil do tomador de decisão (headline, sobre, etc)."),
-    companyPage: z.string().optional().describe("Análise da Company Page da empresa."),
-    estrategiaConteudo: z.string().optional().describe("Análise do tipo e frequência do conteúdo postado."),
-    engajamentoRede: z.string().optional().describe("Análise da interação com a rede."),
-    networking: z.string().optional().describe("Análise da estratégia de conexões."),
-    pontosFortes: z.string().optional().describe("Resumo dos principais acertos na estratégia."),
-    pontosFracos: z.string().optional().describe("Resumo das principais oportunidades perdidas."),
-    ganchoDeAbordagem: z.string().optional().describe("Sugestão de gancho de prospecção B2B."),
+export const YouTubeAnalysisSchema = z.object({
+    identidadeVisualCanal: z.string().optional().describe("Análise do banner e ícone do canal."),
+    qualidadeThumbnails: z.string().optional().describe("Análise da atratividade e padrão visual das thumbnails."),
+    titulosVideos: z.string().optional().describe("Análise da otimização de SEO e curiosidade dos títulos."),
+    qualidadeEdicao: z.string().optional().describe("Análise da edição, áudio e ritmo dos vídeos."),
+    usoDeShorts: z.string().optional().describe("Análise do uso estratégico de Shorts para atração."),
+    seoVideo: z.string().optional().describe("Análise de descrições, palavras-chave e tags dos vídeos."),
+    engajamentoComentarios: z.string().optional().describe("Análise da interação com a comunidade nos comentários."),
+    pontosFortes: z.string().optional().describe("Resumo dos principais pontos fortes do canal."),
+    pontosFracos: z.string().optional().describe("Resumo das principais oportunidades de melhoria."),
+    ganchoDeAbordagem: z.string().optional().describe("Sugestão de gancho de prospecção focada em vídeo."),
 });
 
 export const ChannelStrategyAnalysisSchema = z.union([
     InstagramAnalysisSchema,
     WebsiteAnalysisSchema,
-    LinkedInAnalysisSchema,
+    YouTubeAnalysisSchema,
 ]);
 
 export const ChannelStrategyOutputSchema = z.object({

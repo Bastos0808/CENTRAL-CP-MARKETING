@@ -15,16 +15,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { 
-    Instagram, Linkedin, Search, Globe, Loader2, Wand2, Copy, 
+    Instagram, Youtube, Search, Globe, Loader2, Wand2, Copy, 
     ThumbsUp, ThumbsDown, Target, BookOpen, Diamond, Tv, BarChart, 
     Video, MessageSquare, Users, Milestone, Megaphone, CheckCircle, 
-    Eye, User, Building
+    Eye, Image, PenTool, Edit, SquarePlay
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { InstagramAnalysisSchema, WebsiteAnalysisSchema, LinkedInAnalysisSchema } from "@/ai/schemas/channel-strategy-schemas";
+import { InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema } from "@/ai/schemas/channel-strategy-schemas";
 
 
-type ChannelType = "instagram" | "website" | "linkedin";
+type ChannelType = "instagram" | "website" | "youtube";
 
 const formSchema = z.object({
   instagram: z.object({
@@ -35,9 +35,9 @@ const formSchema = z.object({
     url: z.string().optional(),
     analysis: WebsiteAnalysisSchema.optional(),
   }).optional(),
-  linkedin: z.object({
+  youtube: z.object({
     url: z.string().optional(),
-    analysis: LinkedInAnalysisSchema.optional(),
+    analysis: YouTubeAnalysisSchema.optional(),
   }).optional(),
 });
 
@@ -76,18 +76,20 @@ const channelConfig = {
       { key: "ganchoDeAbordagem", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem focada em como a melhoria do site pode impactar os negócios." },
     ]
   },
-  linkedin: {
-    icon: Linkedin,
-    name: "LinkedIn",
+  youtube: {
+    icon: Youtube,
+    name: "YouTube",
     formSections: [
-        { key: "perfilDoDecisor", label: "Perfil do Decisor", icon: User, prompt: "O perfil do decisor está otimizado? (Foto, título, sobre)" },
-        { key: "companyPage", label: "Company Page", icon: Building, prompt: "A página da empresa está completa e ativa? Compartilha conteúdo relevante?" },
-        { key: "estrategiaConteudo", label: "Estratégia de Conteúdo", icon: BarChart, prompt: "Postam conteúdo de autoridade? A frequência é consistente?" },
-        { key: "engajamentoRede", label: "Engajamento na Rede", icon: MessageSquare, prompt: "Interagem com outros, participam de discussões ou são passivos?" },
-        { key: "networking", label: "Networking Estratégico", icon: Users, prompt: "A rede de conexões do decisor parece estratégica e alinhada ao público-alvo?" },
-        { key: "pontosFortes", label: "Pontos Fortes (Resumo)", icon: ThumbsUp, prompt: "Resuma os 2-3 principais acertos na estratégia do LinkedIn." },
-        { key: "pontosFracos", label: "Pontos Fracos (Oportunidades)", icon: ThumbsDown, prompt: "Resuma as principais oportunidades perdidas (ex: perfil abandonado)." },
-        { key: "ganchoDeAbordagem", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem B2B consultiva focada em autoridade ou geração de leads." },
+        { key: "identidadeVisualCanal", label: "Identidade Visual do Canal", icon: PenTool, prompt: "O banner e o ícone do canal são profissionais e alinhados?" },
+        { key: "qualidadeThumbnails", label: "Qualidade das Thumbnails", icon: Image, prompt: "As miniaturas são atraentes, legíveis e seguem um padrão?" },
+        { key: "titulosVideos", label: "Títulos dos Vídeos", icon: Edit, prompt: "Os títulos são otimizados para SEO e geram curiosidade?" },
+        { key: "qualidadeEdicao", label: "Qualidade da Edição", icon: Video, prompt: "O ritmo, áudio e elementos visuais dos vídeos são profissionais?" },
+        { key: "usoDeShorts", label: "Uso de Shorts", icon: SquarePlay, prompt: "O canal utiliza vídeos curtos para atrair novos inscritos?" },
+        { key: "seoVideo", label: "SEO dos Vídeos", icon: Search, prompt: "As descrições e tags são usadas de forma estratégica?" },
+        { key: "engajamentoComentarios", label: "Engajamento nos Comentários", icon: MessageSquare, prompt: "O criador interage com a comunidade nos comentários?" },
+        { key: "pontosFortes", label: "Pontos Fortes (Resumo)", icon: ThumbsUp, prompt: "Resuma os 2-3 principais acertos na estratégia do YouTube." },
+        { key: "pontosFracos", label: "Pontos Fracos (Oportunidades)", icon: ThumbsDown, prompt: "Resuma as principais oportunidades perdidas." },
+        { key: "ganchoDeAbordagem", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem consultiva focada em vídeo." },
     ]
   },
 };
@@ -102,7 +104,7 @@ export default function ChannelStrategyAnalyzer() {
     defaultValues: {
       instagram: { url: '', analysis: {} },
       website: { url: '', analysis: {} },
-      linkedin: { url: '', analysis: {} },
+      youtube: { url: '', analysis: {} },
     }
   });
 
@@ -238,7 +240,7 @@ ${analysisText}
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="instagram"><Instagram className="mr-2"/> Instagram</TabsTrigger>
         <TabsTrigger value="website"><Globe className="mr-2"/> Website</TabsTrigger>
-        <TabsTrigger value="linkedin"><Linkedin className="mr-2"/> LinkedIn</TabsTrigger>
+        <TabsTrigger value="youtube"><Youtube className="mr-2"/> YouTube</TabsTrigger>
       </TabsList>
       <TabsContent value="instagram" className="mt-4">
         {renderChannelTab("instagram")}
@@ -246,8 +248,8 @@ ${analysisText}
       <TabsContent value="website" className="mt-4">
         {renderChannelTab("website")}
       </TabsContent>
-      <TabsContent value="linkedin" className="mt-4">
-        {renderChannelTab("linkedin")}
+      <TabsContent value="youtube" className="mt-4">
+        {renderChannelTab("youtube")}
       </TabsContent>
     </Tabs>
   );
