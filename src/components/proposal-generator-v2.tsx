@@ -165,63 +165,65 @@ export default function ProposalGeneratorV2() {
   ];
   
   const handleDownloadPdf = async () => {
-      setIsGeneratingPdf(true);
-      const slides = Array.from(document.querySelectorAll('.pdf-slide-capture'));
-      if (!slides.length) {
-          toast({ title: "Erro", description: "Nenhum slide encontrado.", variant: "destructive" });
-          setIsGeneratingPdf(false);
-          return;
-      }
-  
-      const doc = new jsPDF({
-          orientation: 'landscape',
-          unit: 'px',
-          format: [1920, 1080], // Proporção 16:9
-      });
-  
-      // Área de renderização oculta
-      const renderArea = document.createElement('div');
-      renderArea.id = 'pdf-render-area';
-      renderArea.style.position = 'absolute';
-      renderArea.style.left = '-9999px';
-      renderArea.style.top = '-9999px';
-      document.body.appendChild(renderArea);
-  
-      try {
-          for (let i = 0; i < slides.length; i++) {
-              // Limpa a área de renderização a cada iteração
-              renderArea.innerHTML = ''; 
-              const slideClone = slides[i].cloneNode(true) as HTMLElement;
-              renderArea.appendChild(slideClone);
-              
-              const canvas = await html2canvas(slideClone, {
-                  scale: 2,
-                  useCORS: true,
-                  allowTaint: true,
-                  backgroundColor: '#000000',
-              });
-  
-              const imgData = canvas.toDataURL('image/png');
-              const pageWidth = doc.internal.pageSize.getWidth();
-              const pageHeight = doc.internal.pageSize.getHeight();
-  
-              if (i > 0) {
-                  doc.addPage();
-              }
-              doc.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
-          }
-          const { clientName } = form.getValues();
-          doc.save(`Proposta_${clientName.replace(/\s+/g, '_') || 'Cliente'}.pdf`);
-      } catch (error) {
-          console.error("PDF Generation Error:", error);
-          toast({ title: "Erro ao Gerar PDF", description: "Não foi possível gerar o documento. Tente novamente.", variant: "destructive" });
-      } finally {
-          setIsGeneratingPdf(false);
-          document.body.removeChild(renderArea);
-      }
+    setIsGeneratingPdf(true);
+    const { clientName, coverImageUrl, partnershipDescription, objectiveItems, differentialItems, idealPlanItems, useCustomServices, packages, customServices, investmentValue } = form.getValues();
+
+    const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [1920 / 2, 1080 / 2] // Standard 16:9 aspect ratio at a smaller size
+    });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 40;
+
+    try {
+        // Slide 1: Cover
+        if (coverImageUrl) {
+            try {
+                // Use a CORS proxy to prevent tainted canvas errors
+                const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(coverImageUrl)}`;
+                const response = await fetch(proxyUrl);
+                const blob = await response.blob();
+                const dataUrl = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+                
+                doc.addImage(dataUrl, 'PNG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
+            } catch (e) {
+                console.error("Error loading cover image:", e);
+                // Fallback to a black background if image fails
+                doc.setFillColor(0, 0, 0);
+                doc.rect(0, 0, pageWidth, pageHeight, 'F');
+            }
+        } else {
+             doc.setFillColor(0, 0, 0);
+             doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        }
+       
+        doc.setTextColor("#FE5412");
+        doc.setFontSize(14);
+        doc.text("PROPOSTA COMERCIAL", pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
+        doc.setTextColor("#FFFFFF");
+        doc.setFontSize(50);
+        doc.setFont('helvetica', 'bold');
+        doc.text(clientName || '[Cliente]', pageWidth / 2, pageHeight / 2 - 10, { align: 'center' });
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'normal');
+        doc.text("Gestão Estratégica de Marketing Digital", pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
+
+        doc.save(`Proposta_${clientName.replace(/\s+/g, '_') || 'Cliente'}.pdf`);
+
+    } catch (error) {
+        console.error("PDF Generation Error:", error);
+        toast({ title: "Erro ao Gerar PDF", description: "Não foi possível gerar o documento. Tente novamente.", variant: "destructive" });
+    } finally {
+        setIsGeneratingPdf(false);
+    }
   };
-
-
 
   const handleGenerateContent = async () => {
       const { clientName, packages } = form.getValues();
@@ -270,7 +272,7 @@ export default function ProposalGeneratorV2() {
   
    const proposalContent = (
       <>
-          <Page className="pdf-slide-capture bg-cover bg-center">
+          <Page className="bg-cover bg-center">
               <div className="absolute inset-0 bg-black z-0"></div>
               {watchedValues.coverImageUrl && (
                   <Image 
@@ -290,7 +292,7 @@ export default function ProposalGeneratorV2() {
                   <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
               </div>
           </Page>
-          <Page className="pdf-slide-capture justify-center items-start flex-col">
+          <Page className="justify-center items-start flex-col">
               <h2 className="text-6xl font-bold uppercase mb-10 text-left w-full max-w-5xl mx-auto">Sobre a Parceria</h2>
               <div className="flex items-start gap-6 max-w-5xl mx-auto">
                   <div className="w-1 bg-[#FE5412] self-stretch"></div>
@@ -301,7 +303,7 @@ export default function ProposalGeneratorV2() {
                   />
               </div>
           </Page>
-          <Page className="pdf-slide-capture">
+          <Page className="">
               <div className="w-full max-w-5xl">
                   <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
                   <ul className="space-y-4 text-xl font-light">
@@ -311,7 +313,7 @@ export default function ProposalGeneratorV2() {
                   </ul>
               </div>
           </Page>
-          <Page className="pdf-slide-capture">
+          <Page className="">
                <div className="w-full max-w-5xl">
                   <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
                   <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
@@ -321,7 +323,7 @@ export default function ProposalGeneratorV2() {
                   </ul>
                </div>
           </Page>
-          <Page className="pdf-slide-capture p-12 items-start justify-start">
+          <Page className="p-12 items-start justify-start">
               <div className="w-full max-w-full">
                   <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
                   {useCustomServices ? (
@@ -363,7 +365,7 @@ export default function ProposalGeneratorV2() {
                   )}
               </div>
           </Page>
-          <Page className="pdf-slide-capture">
+          <Page className="">
                <div className="w-full max-w-5xl text-center">
                   <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
                    <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
@@ -373,14 +375,14 @@ export default function ProposalGeneratorV2() {
                   </ul>
                </div>
           </Page>
-          <Page className="pdf-slide-capture">
+          <Page className="">
               <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
                   <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
                   <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
                   <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
               </div>
           </Page>
-          <Page className="pdf-slide-capture">
+          <Page className="">
               <div className="w-full max-w-5xl text-center">
                   <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
                   <div className="flex justify-center items-stretch gap-8 text-left">
@@ -408,7 +410,7 @@ export default function ProposalGeneratorV2() {
                   </div>
               </div>
           </Page>
-          <Page className="pdf-slide-capture">
+          <Page className="">
               <div className="text-center">
                   <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
                   <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
@@ -555,7 +557,7 @@ export default function ProposalGeneratorV2() {
          <Carousel className="w-full max-w-4xl mx-auto" setApi={setCarouselApi}>
             <CarouselContent>
                 {React.Children.map(proposalContent.props.children, (child, index) => (
-                    <CarouselItem key={index} className="pdf-slide-capture">
+                    <CarouselItem key={index}>
                         <div className="p-1">{child}</div>
                     </CarouselItem>
                 ))}
@@ -574,3 +576,5 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
+
+    
