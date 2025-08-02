@@ -121,7 +121,7 @@ export default function Home() {
 
     return (
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className={`grid w-full h-auto grid-cols-${enabledTabs.length}`}>
+            <TabsList className={`grid w-full h-auto grid-cols-${enabledTabs.length > 0 ? enabledTabs.length : 1}`}>
                 {enabledTabs.map(tab => (
                     <TabsTrigger key={tab.value} value={tab.value} className="py-2.5">
                         <tab.icon className="mr-2"/> {tab.label}
