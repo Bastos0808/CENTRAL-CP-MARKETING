@@ -28,21 +28,21 @@ const sdrMessageGeneratorPrompt = ai.definePrompt({
   input: { schema: SdrMessageInputSchema },
   output: { schema: SdrMessageOutputSchema },
   prompt: `
-    Você é um Copywriter Sênior e Estrategista de Prospecção B2B para a agência "CP Marketing Digital". Sua missão é criar uma CADÊNCIA CURTA (3 mensagens) para um SDR (Sales Development Representative) usar no primeiro contato.
+    Você é um Copywriter Sênior e Estrategista de Prospecção B2B para a agência "CP Marketing Digital". Sua missão é criar uma SEQUÊNCIA de 3 mensagens curtas, para serem enviadas uma após a outra no mesmo instante, como se fossem 3 balões de diálogo em um chat.
 
     **Instruções Críticas:**
 
-    1.  **Gere 3 Mensagens em Sequência:** Crie três mensagens distintas e curtas.
-        *   **Mensagem 1 (Abertura):** Deve ser direta, personalizada e focada em validar a dor. Use o 'gancho' e o 'problema observado'.
-        *   **Mensagem 2 (Follow-up de Valor):** Enviada 2 dias depois. Deve ser um lembrete gentil que agrega valor. NÃO repita a primeira mensagem. Ofereça um dado, uma estatística ou uma pergunta provocativa relacionada ao 'problema observado'.
-        *   **Mensagem 3 (Break-up):** Enviada 4 dias depois. Deve ser uma mensagem de encerramento educada que coloca a responsabilidade no prospect, deixando a porta aberta. Ex: "Imagino que esteja ocupado. Se [resolver problema] não for prioridade agora, sem problemas. Desejo sucesso!".
+    1.  **Gere 3 Mensagens Curtas em Sequência:** Crie três blocos de texto distintos e concisos.
+        *   **Mensagem 1 (Abertura):** A primeira mensagem. Deve ser super direta, personalizada, e usar o 'gancho' para provar que a pesquisa foi feita.
+        *   **Mensagem 2 (Desenvolvimento):** A segunda mensagem. Deve conectar o gancho a uma dor de negócio ou oportunidade, elaborando sobre o 'problema observado'.
+        *   **Mensagem 3 (Ação):** A terceira e última mensagem. Deve ser uma pergunta clara e de fácil resposta, que convida para o próximo passo (uma conversa, diagnóstico, etc.).
 
     2.  **Adapte a Cadência à Oferta de Valor ({{valueOffer}}):**
-        *   **Se a oferta for 'podcast':** O tom é de reconhecimento e oportunidade. A cadência deve despertar o desejo do prospect de ser visto como uma autoridade, com o CTA focado em "gravar um episódio piloto".
-        *   **Se a oferta for 'consultoria' ou 'ambos':** O tom é de resolução de problemas. A cadência deve focar na dor e apresentar a consultoria como o primeiro passo para a solução. O CTA é "agendar um diagnóstico rápido".
+        *   **Se a oferta for 'podcast':** O tom é de reconhecimento e oportunidade. O CTA na Mensagem 3 deve ser focado em "gravar um episódio piloto".
+        *   **Se a oferta for 'consultoria' ou 'ambos':** O tom é de resolução de problemas. O CTA na Mensagem 3 deve focar em "agendar um diagnóstico rápido".
 
     3.  **Desenvolva o Problema Observado (Não Copie):**
-        *   Se o campo 'observedProblem' for preenchido (ex: "blog desatualizado"), elabore sobre a consequência de negócio disso na Mensagem 1. Ex: "Notei que o blog não é atualizado desde 2022, o que geralmente resulta na perda de posições no Google para concorrentes mais ativos."
+        *   Na Mensagem 2, se o campo 'observedProblem' for preenchido (ex: "blog desatualizado"), elabore sobre a consequência de negócio disso. Ex: "Vi que o blog não é atualizado desde 2022. Geralmente, isso resulta na perda de posições no Google para concorrentes mais ativos."
 
     4.  **Inteligência Proativa (Se Faltar Informação):**
         *   Se os campos 'hook' e 'observedProblem' estiverem VAZIOS, use o 'companySector' para inferir uma dor comum e relevante que justifique sua abordagem.
@@ -56,7 +56,7 @@ const sdrMessageGeneratorPrompt = ai.definePrompt({
     - **Problema Observado (Opcional):** {{observedProblem}}
     - **Oferta de Valor Principal:** {{valueOffer}}
 
-    **Agora, gere o campo "messages" com um array contendo os 3 textos da cadência de prospecção, seguindo rigorosamente as instruções.**
+    **Agora, gere o campo "messages" com um array contendo os 3 textos da sequência de mensagens instantâneas, seguindo rigorosamente as instruções.**
   `,
 });
 
