@@ -36,16 +36,22 @@ const sdrMessageGeneratorPrompt = ai.definePrompt({
         *   **Mensagem 1 (Abertura):** A primeira mensagem. Deve ser super direta, personalizada, e usar o 'gancho' para provar que a pesquisa foi feita.
         *   **Mensagem 2 (Desenvolvimento):** A segunda mensagem. Deve conectar o gancho a uma dor de negócio ou oportunidade, elaborando sobre o 'problema observado'.
         *   **Mensagem 3 (Ação):** A terceira e última mensagem. Deve ser uma pergunta clara e de fácil resposta, que convida para o próximo passo (uma conversa, diagnóstico, etc.).
+    
+    2.  **Análise de Imagem (Se Fornecida):**
+        *   {{#if screenshotDataUri}}
+        *   Analise esta imagem de um perfil ou site: {{media url=screenshotDataUri}}.
+        *   Use a imagem para extrair o 'gancho' e o 'problema observado'. Por exemplo, se for um perfil do LinkedIn, procure o cargo, posts recentes, ou sinais de contratação. Se for um site, procure por design antigo ou falta de conteúdo. Seja um detetive de negócios.
+        *   {{/if}}
 
-    2.  **Adapte a Cadência à Oferta de Valor ({{valueOffer}}):**
+    3.  **Adapte a Cadência à Oferta de Valor ({{valueOffer}}):**
         *   **Se a oferta for 'podcast':** O tom é de reconhecimento e oportunidade. O CTA na Mensagem 3 deve ser focado em "gravar um episódio piloto".
         *   **Se a oferta for 'consultoria' ou 'ambos':** O tom é de resolução de problemas. O CTA na Mensagem 3 deve focar em "agendar um diagnóstico rápido".
 
-    3.  **Desenvolva o Problema Observado (Não Copie):**
+    4.  **Desenvolva o Problema Observado (Não Copie):**
         *   Na Mensagem 2, se o campo 'observedProblem' for preenchido (ex: "blog desatualizado"), elabore sobre a consequência de negócio disso. Ex: "Vi que o blog não é atualizado desde 2022. Geralmente, isso resulta na perda de posições no Google para concorrentes mais ativos."
 
-    4.  **Inteligência Proativa (Se Faltar Informação):**
-        *   Se os campos 'hook' e 'observedProblem' estiverem VAZIOS, use o 'companySector' para inferir uma dor comum e relevante que justifique sua abordagem.
+    5.  **Inteligência Proativa (Se Faltar Informação):**
+        *   Se os campos 'hook' e 'observedProblem' estiverem VAZIOS e não houver imagem, use o 'companySector' para inferir uma dor comum e relevante que justifique sua abordagem.
 
     **Dados Fornecidos pelo SDR:**
     - **Canal de Comunicação:** {{communicationChannel}}

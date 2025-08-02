@@ -9,12 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Wand2, Bot, Mail, MessageSquare, Linkedin, Podcast, FileText, Handshake, Copy } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Wand2, Bot, Mail, MessageSquare, Linkedin, Podcast, FileText, Handshake, Copy, Paperclip, X } from "lucide-react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { SdrMessageInputSchema } from "@/ai/schemas/onboarding-sdr-schemas";
+import Image from "next/image";
 
 const formSchema = SdrMessageInputSchema;
 
@@ -23,6 +24,8 @@ type FormValues = z.infer<typeof formSchema>;
 export default function SdrAiTool() {
     const [isLoading, setIsLoading] = useState(false);
     const [generatedMessages, setGeneratedMessages] = useState<string[]>([]);
+    const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const { toast } = useToast();
 
     const form = useForm<FormValues>({
@@ -35,8 +38,38 @@ export default function SdrAiTool() {
             hook: "",
             valueOffer: "podcast",
             observedProblem: "",
+            screenshotDataUri: undefined,
         },
     });
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) { // 2MB limit
+                toast({
+                    title: "Arquivo muito grande",
+                    description: "Por favor, selecione uma imagem com menos de 2MB.",
+                    variant: "destructive"
+                });
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const dataUri = reader.result as string;
+                form.setValue('screenshotDataUri', dataUri);
+                setScreenshotPreview(dataUri);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    const handleRemoveScreenshot = () => {
+        form.setValue('screenshotDataUri', undefined);
+        setScreenshotPreview(null);
+        if(fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    }
 
     async function onSubmit(values: FormValues) {
         setIsLoading(true);
@@ -110,34 +143,68 @@ export default function SdrAiTool() {
                                     </FormItem>
                                 )}
                             />
-                             <FormField
-                                control={form.control}
-                                name="hook"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Gancho (Opcional)</FormLabel>
-                                        <FormControl><Input placeholder="Ex: Vi que participaram da Dental Week" {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
+
+                             <div className="p-4 border rounded-md space-y-3 bg-muted/30">
+                                <FormLabel className="font-semibold">Contexto (Opcional)</FormLabel>
+                                <FormDescription>Forneça um print ou descreva o gancho e o problema manualmente para uma mensagem mais precisa.</FormDescription>
+                                
+                                {screenshotPreview ? (
+                                    <div className="relative group mt-2">
+                                        <Image src={screenshotPreview} alt="Preview do print" width={500} height={300} className="rounded-md object-contain max-h-48 w-full border" />
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="icon"
+                                            className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={handleRemoveScreenshot}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full">
+                                        <Paperclip className="mr-2 h-4 w-4" />
+                                        Anexar Print do Perfil/Site
+                                    </Button>
                                 )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="observedProblem"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Problema Observado (Opcional)</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                placeholder="Ex: O Instagram da clínica não posta há 2 meses."
-                                                className="min-h-[100px]"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept="image/png, image/jpeg, image/webp"
+                                    onChange={handleFileChange}
+                                />
+                                
+                                <FormField
+                                    control={form.control}
+                                    name="hook"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs">Gancho Manual</FormLabel>
+                                            <FormControl><Input placeholder="Ex: Vi que participaram da Dental Week" {...field} /></FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="observedProblem"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel className="text-xs">Problema Observado</FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Ex: O Instagram da clínica não posta há 2 meses."
+                                                    className="min-h-[80px]"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                             </div>
 
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                  <FormField
