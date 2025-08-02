@@ -13,6 +13,7 @@ import {
   GenerateProposalOutput,
   GenerateProposalOutputSchema,
 } from '@/ai/schemas/proposal-generator-schemas';
+import { googleAI } from '@genkit-ai/googleai';
 
 // Exported function that the frontend will call
 export async function generateProposalContent(
@@ -23,10 +24,7 @@ export async function generateProposalContent(
 
 const proposalGeneratorPrompt = ai.definePrompt({
   name: 'proposalGeneratorPrompt',
-<<<<<<< HEAD
   model: googleAI.model('gemini-1.5-pro-latest'),
-=======
->>>>>>> 1563a8413bb64b129ef02de1aa4e47c11ec12c05
   input: { schema: GenerateProposalInputSchema },
   output: { schema: GenerateProposalOutputSchema },
   prompt: `
