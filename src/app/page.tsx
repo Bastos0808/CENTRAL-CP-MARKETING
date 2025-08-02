@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -68,6 +68,12 @@ export default function Home() {
         description: "Crie mensagens de prospecção com a ajuda da IA.",
         href: "/ferramentas",
         icon: Wand2
+      },
+      {
+        title: "Análise de Canais",
+        description: "Obtenha uma análise de pontos fortes e fracos de um canal.",
+        href: "/analise-de-canais",
+        icon: Search
       },
       {
         title: "Gerador de Propostas",
