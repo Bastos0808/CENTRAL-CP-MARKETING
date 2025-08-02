@@ -100,7 +100,7 @@ export default function ProposalGeneratorV2() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
   const [isGeneratingAi, setIsGeneratingAi] = React.useState(false);
 
-  const pagesRef = React.useRef<(HTMLDivElement | null)[]>([]);
+  const pdfRenderRef = React.useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const form = useForm<ProposalFormValues>({
@@ -167,50 +167,36 @@ export default function ProposalGeneratorV2() {
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
     try {
+      if (!pdfRenderRef.current) {
+        throw new Error("PDF render reference is not available.");
+      }
+      
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1920, 1080] });
       const canvasWidth = 1920;
       const canvasHeight = 1080;
+      
+      const pageElements = Array.from(pdfRenderRef.current.children) as HTMLDivElement[];
 
-      for (let i = 0; i < pagesRef.current.length; i++) {
-        const pageElement = pagesRef.current[i];
-        if (pageElement) {
-          // Temporarily make the element visible for rendering
-          const originalDisplay = pageElement.parentElement?.style.display;
-          if (pageElement.parentElement) {
-            pageElement.parentElement.style.display = 'block';
-          }
-          
-          // Wait for images to load
-          const images = Array.from(pageElement.getElementsByTagName('img'));
-          await Promise.all(images.map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise(resolve => {
-              img.onload = resolve;
-              img.onerror = resolve; // Continue even if an image fails to load
-            });
-          }));
-
-          const canvas = await html2canvas(pageElement, {
+      for (let i = 0; i < pageElements.length; i++) {
+        const pageElement = pageElements[i];
+        
+        const canvas = await html2canvas(pageElement, {
             width: canvasWidth,
             height: canvasHeight,
             scale: 2,
             useCORS: true,
             backgroundColor: '#000000',
             logging: false,
-          });
+        });
 
-          // Restore original display style
-           if (pageElement.parentElement) {
-            pageElement.parentElement.style.display = originalDisplay || '';
-          }
+        const imgData = canvas.toDataURL('image/png');
 
-          const imgData = canvas.toDataURL('image/png');
-
-          if (i > 0) pdf.addPage([canvasWidth, canvasHeight], 'landscape');
-          pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight, undefined, 'FAST');
-        }
+        if (i > 0) pdf.addPage([canvasWidth, canvasHeight], 'landscape');
+        pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight, undefined, 'FAST');
       }
+
       pdf.save(`Proposta_${watchedValues.clientName.replace(/\s+/g, '_')}.pdf`);
+
     } catch (error) {
       console.error("PDF Generation Error: ", error);
       toast({
@@ -248,9 +234,9 @@ export default function ProposalGeneratorV2() {
           const result = await generateProposalContent({ clientName, packages: packageNames });
           
           form.setValue('partnershipDescription', result.partnershipDescription);
-          form.setValue('objectiveItems', result.objectiveItems);
-          form.setValue('differentialItems', result.differentialItems);
-          form.setValue('idealPlanItems', result.idealPlanItems);
+          form.setValue('objectiveItems', result.objectiveItems.map(item => ({value: item})));
+          form.setValue('differentialItems', result.differentialItems.map(item => ({value: item})));
+          form.setValue('idealPlanItems', result.idealPlanItems.map(item => ({value: item})));
 
           toast({ title: "Conteúdo Gerado!", description: "A IA preencheu os campos da proposta com textos persuasivos." });
       } catch (error) {
@@ -268,20 +254,169 @@ export default function ProposalGeneratorV2() {
     { name: "Investimento", fields: ['investmentValue', 'discount'], icon: DollarSign },
   ];
 
-  const allPages = [
-    { id: 'cover' },
-    { id: 'partnership' },
-    { id: 'objective' },
-    { id: 'differential' },
-    { id: 'scope' },
-    { id: 'idealPlan' },
-    { id: 'investment' },
-    { id: 'nextSteps' },
-    { id: 'contact' },
-  ];
+  const renderProposalContent = () => {
+    return (
+        <>
+            <Page className="bg-cover bg-center">
+                <div className="absolute inset-0 bg-black z-0"></div>
+                {watchedValues.coverImageUrl && (
+                    <Image 
+                        crossOrigin='anonymous'
+                        src={watchedValues.coverImageUrl}
+                        alt="Background" 
+                        layout="fill" 
+                        objectFit="cover" 
+                        className="absolute inset-0 z-0 opacity-40"
+                        data-ai-hint="technology dark"
+                    />
+                )}
+                <div className="absolute inset-0 bg-black/50"></div>
+                <div className="z-10 text-center flex flex-col items-center">
+                    <p className="text-[#FE5412] font-semibold tracking-widest mb-2">PROPOSTA COMERCIAL</p>
+                    <h1 className="text-7xl font-extrabold max-w-4xl">{watchedValues.clientName || '[Cliente]'}</h1>
+                    <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
+                </div>
+            </Page>
+            <Page className="justify-center items-start flex-col">
+                <h2 className="text-6xl font-bold uppercase mb-10 text-left w-full max-w-5xl mx-auto">Sobre a Parceria</h2>
+                <div className="flex items-start gap-6 max-w-5xl mx-auto">
+                    <div className="w-1 bg-[#FE5412] self-stretch"></div>
+                    <Textarea 
+                        {...form.register('partnershipDescription')} 
+                        className="text-3xl font-light text-gray-200 text-left bg-transparent border-none p-0 h-auto resize-none focus-visible:ring-0" 
+                        rows={4}
+                    />
+                </div>
+            </Page>
+            <Page>
+                <div className="w-full max-w-5xl">
+                    <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
+                    <ul className="space-y-4 text-xl font-light">
+                        {watchedValues.objectiveItems?.map((item, i) => (
+                            <li key={i} className="flex items-start gap-4"><Goal className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" /><Textarea {...form.register(`objectiveItems.${i}.value`)} className="bg-transparent border-none p-0 h-auto text-xl font-light resize-none focus-visible:ring-0" rows={1}/></li>
+                        ))}
+                    </ul>
+                </div>
+            </Page>
+            <Page>
+                 <div className="w-full max-w-5xl">
+                    <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
+                    <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
+                        {watchedValues.differentialItems?.map((item, i) => (
+                            <li key={i} className="flex items-start gap-4 mb-4 break-inside-avoid"><Sparkles className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" /><Textarea {...form.register(`differentialItems.${i}.value`)} className="bg-transparent border-none p-0 h-auto text-xl font-light resize-none focus-visible:ring-0" rows={2}/></li>
+                        ))}
+                    </ul>
+                 </div>
+            </Page>
+            <Page className="p-12 items-start justify-start">
+                <div className="w-full max-w-full">
+                    <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
+                    {useCustomServices ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                            {customServicesList.map(({ name, fields, icon: Icon }) => (
+                                fields.length > 0 && (
+                                    <div key={name} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
+                                        <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
+                                        <h3 className="font-bold text-lg">{name}</h3>
+                                        <ul className="text-sm text-gray-400 mt-2 list-disc pl-4 space-y-1 flex-grow">
+                                            {fields.map((field, index) => <li key={index}>{field.value}</li>)}
+                                        </ul>
+                                    </div>
+                                )
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                            {watchedValues.packages?.map(pkgKey => {
+                                const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+                                if (!pkg) return null;
+                                const Icon = pkg.icon;
+                                return (
+                                    <div key={pkgKey} className="bg-gray-900/70 p-4 rounded-lg border border-gray-700 flex flex-col">
+                                        <div className="flex-grow">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <Icon className="h-8 w-8 text-[#FE5412]" />
+                                                <h3 className="font-bold text-lg">{pkg.name}</h3>
+                                            </div>
+                                            <p className="text-[10px] text-gray-400 mt-1 whitespace-pre-line leading-relaxed">{pkg.description}</p>
+                                        </div>
+                                        <div className="pt-2 mt-auto text-right">
+                                            <span className="text-lg font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
+                </div>
+            </Page>
+            <Page>
+                 <div className="w-full max-w-5xl text-center">
+                    <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
+                     <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
+                        {watchedValues.idealPlanItems?.map((item, i) => (
+                            <li key={i} className="flex items-start gap-4"><Check className="h-7 w-7 text-green-400 mt-1 flex-shrink-0" /><Textarea {...form.register(`idealPlanItems.${i}.value`)} className="bg-transparent border-none p-0 h-auto text-xl font-light resize-none focus-visible:ring-0" rows={1}/></li>
+                        ))}
+                    </ul>
+                 </div>
+            </Page>
+            <Page>
+                <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
+                    <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
+                    <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
+                    <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
+                </div>
+            </Page>
+            <Page>
+                <div className="w-full max-w-5xl text-center">
+                    <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
+                    <div className="flex justify-center items-stretch gap-8 text-left">
+                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                            <CardContent className="p-8">
+                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">1</div>
+                                <h3 className="font-bold text-xl mb-2">Aprovação</h3>
+                                <p className="text-gray-300">Análise e aprovação da proposta.</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                            <CardContent className="p-8">
+                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">2</div>
+                                <h3 className="font-bold text-xl mb-2">Assinatura</h3>
+                                <p className="text-gray-300">Assinatura do contrato de prestação de serviços.</p>
+                            </CardContent>
+                        </Card>
+                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                            <CardContent className="p-8">
+                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">3</div>
+                                <h3 className="font-bold text-xl mb-2">Onboarding</h3>
+                                <p className="text-gray-300">Início da parceria e alinhamento estratégico.</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </Page>
+            <Page>
+                <div className="text-center">
+                    <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
+                    <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
+                </div>
+            </Page>
+        </>
+    );
+};
 
   return (
     <div className="space-y-8">
+      {/* Hidden Render Area for PDF */}
+      <div 
+        ref={pdfRenderRef} 
+        className="absolute left-[-9999px] top-0"
+        aria-hidden="true"
+      >
+        {renderProposalContent()}
+      </div>
+
+      {/* Visible Form and Carousel */}
       <div className="w-full space-y-4">
           <Card>
             <CardContent className="p-4">
@@ -416,166 +551,14 @@ export default function ProposalGeneratorV2() {
        <div className="w-full">
          <Carousel className="w-full max-w-4xl mx-auto">
             <CarouselContent>
-                {allPages.map((page, index) => (
-                    <CarouselItem key={page.id}>
-                        {page.id === 'cover' && (
-                            <Page ref={el => { if(el) pagesRef.current[index] = el; }} className="bg-cover bg-center">
-                                <div className="absolute inset-0 bg-black z-0"></div>
-                                {watchedValues.coverImageUrl && (
-                                    <Image 
-                                        crossOrigin='anonymous'
-                                        src={watchedValues.coverImageUrl}
-                                        alt="Background" 
-                                        layout="fill" 
-                                        objectFit="cover" 
-                                        className="absolute inset-0 z-0 opacity-40"
-                                        data-ai-hint="technology dark"
-                                    />
-                                )}
-                                <div className="absolute inset-0 bg-black/50"></div>
-                                <div className="z-10 text-center flex flex-col items-center">
-                                    <p className="text-[#FE5412] font-semibold tracking-widest mb-2">PROPOSTA COMERCIAL</p>
-                                    <h1 className="text-7xl font-extrabold max-w-4xl">{watchedValues.clientName || '[Cliente]'}</h1>
-                                    <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
-                                </div>
-                            </Page>
-                        )}
-                         {page.id === 'partnership' && (
-                           <Page ref={el => { if(el) pagesRef.current[index] = el; }} className="justify-center items-start flex-col">
-                                <h2 className="text-6xl font-bold uppercase mb-10 text-left w-full max-w-5xl mx-auto">Sobre a Parceria</h2>
-                                <div className="flex items-start gap-6 max-w-5xl mx-auto">
-                                    <div className="w-1 bg-[#FE5412] self-stretch"></div>
-                                    <p className="text-3xl font-light text-gray-200 text-left">{watchedValues.partnershipDescription}</p>
-                                </div>
-                            </Page>
-                        )}
-                        {page.id === 'objective' && (
-                            <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
-                                <div className="w-full max-w-5xl">
-                                    <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
-                                    <ul className="space-y-4 text-xl font-light">
-                                        {watchedValues.objectiveItems?.map((item, i) => (
-                                            <li key={i} className="flex items-start gap-4"><Goal className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" />{item.value}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </Page>
-                        )}
-                        {page.id === 'differential' && (
-                           <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
-                                 <div className="w-full max-w-5xl">
-                                    <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
-                                    <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
-                                        {watchedValues.differentialItems?.map((item, i) => (
-                                            <li key={i} className="flex items-start gap-4 mb-4 break-inside-avoid"><Sparkles className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" />{item.value}</li>
-                                        ))}
-                                    </ul>
-                                 </div>
-                            </Page>
-                        )}
-                        {page.id === 'scope' && (
-                            <Page ref={el => { if(el) pagesRef.current[index] = el; }} className="p-12 items-start justify-start">
-                                <div className="w-full max-w-full">
-                                    <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
-                                    {useCustomServices ? (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                                            {customServicesList.map(({ name, fields, icon: Icon }) => (
-                                                fields.length > 0 && (
-                                                    <div key={name} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
-                                                        <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
-                                                        <h3 className="font-bold text-lg">{name}</h3>
-                                                        <ul className="text-sm text-gray-400 mt-2 list-disc pl-4 space-y-1 flex-grow">
-                                                            {fields.map((field, index) => <li key={index}>{field.value}</li>)}
-                                                        </ul>
-                                                    </div>
-                                                )
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                                            {watchedValues.packages?.map(pkgKey => {
-                                                const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
-                                                if (!pkg) return null;
-                                                const Icon = pkg.icon;
-                                                return (
-                                                    <div key={pkgKey} className="bg-gray-900/70 p-4 rounded-lg border border-gray-700 flex flex-col">
-                                                        <div className="flex-grow">
-                                                            <div className="flex items-center gap-3 mb-3">
-                                                                <Icon className="h-8 w-8 text-[#FE5412]" />
-                                                                <h3 className="font-bold text-lg">{pkg.name}</h3>
-                                                            </div>
-                                                            <p className="text-[10px] text-gray-400 mt-1 whitespace-pre-line leading-relaxed">{pkg.description}</p>
-                                                        </div>
-                                                        <div className="pt-2 mt-auto text-right">
-                                                            <span className="text-lg font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })}
-                                        </div>
-                                    )}
-                                </div>
-                            </Page>
-                        )}
-                        {page.id === 'idealPlan' && (
-                            <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
-                                 <div className="w-full max-w-5xl text-center">
-                                    <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
-                                     <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
-                                        {watchedValues.idealPlanItems?.map((item, i) => (
-                                            <li key={i} className="flex items-start gap-4"><Check className="h-7 w-7 text-green-400 mt-1 flex-shrink-0" />{item.value}</li>
-                                        ))}
-                                    </ul>
-                                 </div>
-                            </Page>
-                        )}
-                        {page.id === 'investment' && (
-                           <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
-                                <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
-                                    <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
-                                    <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
-                                    <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
-                                </div>
-                            </Page>
-                        )}
-                        {page.id === 'nextSteps' && (
-                            <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
-                                <div className="w-full max-w-5xl text-center">
-                                    <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
-                                    <div className="flex justify-center items-stretch gap-8 text-left">
-                                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
-                                            <CardContent className="p-8">
-                                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">1</div>
-                                                <h3 className="font-bold text-xl mb-2">Aprovação</h3>
-                                                <p className="text-gray-300">Análise e aprovação da proposta.</p>
-                                            </CardContent>
-                                        </Card>
-                                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
-                                            <CardContent className="p-8">
-                                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">2</div>
-                                                <h3 className="font-bold text-xl mb-2">Assinatura</h3>
-                                                <p className="text-gray-300">Assinatura do contrato de prestação de serviços.</p>
-                                            </CardContent>
-                                        </Card>
-                                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
-                                            <CardContent className="p-8">
-                                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">3</div>
-                                                <h3 className="font-bold text-xl mb-2">Onboarding</h3>
-                                                <p className="text-gray-300">Início da parceria e alinhamento estratégico.</p>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </div>
-                            </Page>
-                        )}
-                        {page.id === 'contact' && (
-                            <Page ref={el => { if(el) pagesRef.current[index] = el; }}>
-                                <div className="text-center">
-                                    <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
-                                    <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
-                                </div>
-                            </Page>
-                        )}
+                {Array.from({ length: 9 }).map((_, index) => (
+                    <CarouselItem key={index}>
+                      <div className="opacity-0 w-0 h-0 overflow-hidden">
+                        {renderProposalContent()}
+                      </div>
+                      <div className="p-1">
+                        {React.createElement(Page, {}, React.Children.toArray(renderProposalContent())[index])}
+                      </div>
                     </CarouselItem>
                 ))}
             </CarouselContent>
@@ -592,5 +575,3 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
-
-    
