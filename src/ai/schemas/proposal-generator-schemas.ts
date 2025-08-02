@@ -4,10 +4,15 @@
  */
 import { z } from 'zod';
 
+const packageSchema = z.object({
+  name: z.string().describe("Nome do pacote. Ex: Plano de Marketing - Essencial"),
+  description: z.string().describe("Descrição detalhada do que o pacote inclui.")
+});
+
 // Define the input schema for the flow
 export const GenerateProposalInputSchema = z.object({
   clientName: z.string().describe('O nome do cliente para quem a proposta se destina.'),
-  packages: z.array(z.string()).describe('Uma lista dos nomes dos pacotes de serviços selecionados. Ex: ["Plano de Marketing - Essencial", "Podcast - Bronze"]').optional(),
+  packages: z.array(packageSchema).optional().describe('Uma lista dos pacotes de serviços selecionados com nome e descrição.'),
 });
 export type GenerateProposalInput = z.infer<typeof GenerateProposalInputSchema>;
 

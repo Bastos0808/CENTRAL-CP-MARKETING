@@ -164,159 +164,214 @@ export default function ProposalGeneratorV2() {
   ];
   
   const handleDownloadPdf = async () => {
-      setIsGeneratingPdf(true);
-      const { clientName, coverImageUrl, partnershipDescription, objectiveItems, differentialItems, idealPlanItems, investmentValue } = form.getValues();
+    setIsGeneratingPdf(true);
+    const { clientName, coverImageUrl, partnershipDescription, objectiveItems, differentialItems, idealPlanItems, investmentValue, useCustomServices, packages, customServices } = form.getValues();
 
-      const doc = new jsPDF({
-          orientation: 'landscape',
-          unit: 'px',
-          format: [1920 / 2, 1080 / 2] // Standard 16:9 aspect ratio
-      });
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const margin = 40;
+    const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: [1920 / 2, 1080 / 2] // Standard 16:9 aspect ratio
+    });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 40;
 
-      try {
-          // Slide 1: Cover
-          doc.setFillColor(0, 0, 0);
-          doc.rect(0, 0, pageWidth, pageHeight, 'F');
-          
-          if (coverImageUrl) {
-              try {
-                  const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(coverImageUrl)}`;
-                  const imgData = await fetch(proxyUrl)
-                      .then(res => res.blob())
-                      .then(blob => new Promise<string>((resolve, reject) => {
-                          const reader = new FileReader();
-                          reader.onloadend = () => resolve(reader.result as string);
-                          reader.onerror = reject;
-                          reader.readAsDataURL(blob);
-                      }));
-                  
-                  doc.addImage(imgData, 'JPEG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
-              } catch (e) {
-                  console.error("Error loading cover image via proxy:", e);
-                  // If proxy fails, we still have the black background
-              }
-          }
-          
-          doc.setFillColor(0, 0, 0, 0.5);
-          doc.rect(0, 0, pageWidth, pageHeight, 'F');
+    try {
+        // --- SLIDE 1: Cover ---
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        
+        if (coverImageUrl) {
+            try {
+                // Use a proxy to avoid CORS issues
+                const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(coverImageUrl)}`;
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = proxyUrl;
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                });
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0);
+                const dataUrl = canvas.toDataURL('image/jpeg');
 
-          doc.setTextColor("#FE5412");
-          doc.setFontSize(14);
-          doc.text("PROPOSTA COMERCIAL", pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
-          doc.setTextColor("#FFFFFF");
-          doc.setFontSize(50);
-          doc.setFont('helvetica', 'bold');
-          doc.text(clientName || '[Cliente]', pageWidth / 2, pageHeight / 2 - 10, { align: 'center' });
-          doc.setFontSize(16);
-          doc.setFont('helvetica', 'normal');
-          doc.text("Gestão Estratégica de Marketing Digital", pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
-          
-          // --- SLIDE 2: Sobre a Parceria ---
-          doc.addPage();
-          doc.setFillColor(0, 0, 0);
-          doc.rect(0, 0, pageWidth, pageHeight, 'F');
-          doc.setTextColor("#FFFFFF");
-          doc.setFontSize(40);
-          doc.setFont('helvetica', 'bold');
-          doc.text("Sobre a Parceria", margin, margin + 20);
+                doc.addImage(dataUrl, 'JPEG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
+            } catch (e) {
+                console.error("Error loading cover image:", e);
+                // Fallback to black background if image fails
+            }
+        }
+        
+        doc.setFillColor(0, 0, 0, 0.5);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
 
-          doc.setFontSize(18);
-          doc.setFont('helvetica', 'normal');
-          const partnershipLines = doc.splitTextToSize(partnershipDescription, pageWidth - margin * 2 - 20);
-          doc.setDrawColor("#FE5412");
-          doc.setLineWidth(2);
-          doc.line(margin, margin + 50, margin, margin + 50 + (partnershipLines.length * 20));
-          doc.text(partnershipLines, margin + 15, margin + 65);
+        doc.setTextColor("#FE5412");
+        doc.setFontSize(14);
+        doc.text("PROPOSTA COMERCIAL", pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
+        doc.setTextColor("#FFFFFF");
+        doc.setFontSize(50);
+        doc.setFont('helvetica', 'bold');
+        doc.text(clientName || '[Cliente]', pageWidth / 2, pageHeight / 2 - 10, { align: 'center' });
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'normal');
+        doc.text("Gestão Estratégica de Marketing Digital", pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
+        
+        // --- SLIDE 2: Sobre a Parceria ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setTextColor("#FFFFFF");
+        doc.setFontSize(40);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Sobre a Parceria", margin, margin + 20);
 
-          // --- SLIDE 3: Objetivos ---
-          doc.addPage();
-          doc.setFillColor(0, 0, 0);
-          doc.rect(0, 0, pageWidth, pageHeight, 'F');
-          doc.setTextColor("#FFFFFF");
-          doc.setFontSize(40);
-          doc.setFont('helvetica', 'bold');
-          doc.text("Nosso Objetivo", margin, margin + 20);
-          doc.setFontSize(14);
-          doc.setFont('helvetica', 'normal');
-          
-          let y = margin + 80;
-          objectiveItems?.forEach(item => {
-              const textLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 30);
-              if (y + (textLines.length * 16) > pageHeight - margin) {
-                  doc.addPage();
-                  doc.setFillColor(0,0,0);
-                  doc.rect(0,0,pageWidth,pageHeight,'F');
-                  y = margin + 20;
-              }
-              doc.setTextColor("#FE5412");
-              doc.text("•", margin, y);
-              doc.setTextColor("#FFFFFF");
-              doc.text(textLines, margin + 20, y);
-              y += (textLines.length * 16) + 10;
-          });
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'normal');
+        const partnershipLines = doc.splitTextToSize(partnershipDescription, pageWidth - margin * 2 - 20);
+        doc.setDrawColor("#FE5412");
+        doc.setLineWidth(2);
+        doc.line(margin, margin + 50, margin, margin + 50 + (partnershipLines.length * 20));
+        doc.text(partnershipLines, margin + 15, margin + 65);
 
-          // --- SLIDE 4: Diferenciais ---
-           doc.addPage();
-           doc.setFillColor(0, 0, 0);
-           doc.rect(0, 0, pageWidth, pageHeight, 'F');
-           doc.setTextColor("#FFFFFF");
-           doc.setFontSize(40);
-           doc.setFont('helvetica', 'bold');
-           doc.text("Nossos Diferenciais", margin, margin + 20);
-           doc.setFontSize(14);
-           doc.setFont('helvetica', 'normal');
+        // --- SLIDE 3: Objetivos ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setTextColor("#FFFFFF");
+        doc.setFontSize(40);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Nosso Objetivo", margin, margin + 20);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'normal');
+        
+        let y = margin + 80;
+        objectiveItems?.forEach(item => {
+            const textLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 30);
+            if (y + (textLines.length * 16) > pageHeight - margin) {
+                doc.addPage();
+                doc.setFillColor(0,0,0);
+                doc.rect(0,0,pageWidth,pageHeight,'F');
+                y = margin + 20;
+            }
+            doc.setTextColor("#FE5412");
+            doc.text("•", margin, y);
+            doc.setTextColor("#FFFFFF");
+            doc.text(textLines, margin + 20, y);
+            y += (textLines.length * 16) + 10;
+        });
 
-           y = margin + 80;
-           differentialItems?.forEach(item => {
-               const textLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 30);
-               if (y + (textLines.length * 16) > pageHeight - margin) {
-                   doc.addPage();
-                   doc.setFillColor(0,0,0);
-                   doc.rect(0,0,pageWidth,pageHeight,'F');
-                   y = margin + 20;
-               }
-               doc.setTextColor("#FE5412");
-               doc.text("•", margin, y);
-               doc.setTextColor("#FFFFFF");
-               doc.text(textLines, margin + 20, y);
-               y += (textLines.length * 16) + 10;
-           });
-           
-          // --- SLIDE 5: Investimento ---
-          doc.addPage();
-          doc.setFillColor(0, 0, 0);
-          doc.rect(0, 0, pageWidth, pageHeight, 'F');
-          
-          doc.setDrawColor("#FE5412");
-          doc.setLineWidth(4);
-          doc.rect(pageWidth / 2 - 200, pageHeight / 2 - 100, 400, 200, 'S');
+        // --- SLIDE 4: Diferenciais ---
+         doc.addPage();
+         doc.setFillColor(0, 0, 0);
+         doc.rect(0, 0, pageWidth, pageHeight, 'F');
+         doc.setTextColor("#FFFFFF");
+         doc.setFontSize(40);
+         doc.setFont('helvetica', 'bold');
+         doc.text("Nossos Diferenciais", margin, margin + 20);
+         doc.setFontSize(14);
+         doc.setFont('helvetica', 'normal');
 
-          doc.setTextColor("#FFFFFF");
-          doc.setFontSize(28);
-          doc.setFont('helvetica', 'bold');
-          doc.text("Investimento Mensal", pageWidth / 2, pageHeight / 2 - 40, { align: 'center' });
+         y = margin + 80;
+         differentialItems?.forEach(item => {
+             const textLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 30);
+             if (y + (textLines.length * 16) > pageHeight - margin) {
+                 doc.addPage();
+                 doc.setFillColor(0,0,0);
+                 doc.rect(0,0,pageWidth,pageHeight,'F');
+                 y = margin + 20;
+             }
+             doc.setTextColor("#FE5412");
+             doc.text("•", margin, y);
+             doc.setTextColor("#FFFFFF");
+             doc.text(textLines, margin + 20, y);
+             y += (textLines.length * 16) + 10;
+         });
+         
+        // --- SLIDE 5: Escopo de Servicos ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setTextColor("#FFFFFF");
+        doc.setFontSize(40);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Escopo dos Serviços", margin, margin + 20);
+        y = margin + 80;
 
-          doc.setTextColor("#FE5412");
-          doc.setFontSize(60);
-          doc.text(investmentValue || 'R$ 0,00', pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
+        if (useCustomServices) {
+            customServicesList.forEach(({ name, fields }) => {
+                if (fields && fields.length > 0) {
+                    if (y + 30 > pageHeight - margin) { doc.addPage(); doc.setFillColor(0,0,0); doc.rect(0,0,pageWidth,pageHeight,'F'); y = margin; }
+                    doc.setFontSize(18);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(name, margin, y);
+                    y += 20;
+                    fields.forEach(item => {
+                        const textLines = doc.splitTextToSize(`- ${item.value}`, pageWidth - margin * 2 - 30);
+                        if (y + (textLines.length * 16) > pageHeight - margin) { doc.addPage(); doc.setFillColor(0,0,0); doc.rect(0,0,pageWidth,pageHeight,'F'); y = margin; }
+                        doc.setFontSize(12);
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(textLines, margin + 15, y);
+                        y += (textLines.length * 16) + 5;
+                    });
+                    y += 15;
+                }
+            });
+        } else {
+            packages?.forEach(pkgKey => {
+                const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+                if (pkg) {
+                    const descLines = doc.splitTextToSize(pkg.description, pageWidth - margin * 2 - 30);
+                    if (y + 40 + (descLines.length * 12) > pageHeight - margin) { doc.addPage(); doc.setFillColor(0,0,0); doc.rect(0,0,pageWidth,pageHeight,'F'); y = margin; }
+                    doc.setFontSize(18);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(pkg.name, margin, y);
+                    y += 20;
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(descLines, margin, y);
+                    y += (descLines.length * 12) + 20;
+                }
+            });
+        }
 
-          doc.setTextColor("#AAAAAA");
-          doc.setFontSize(10);
-          doc.text("INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.", pageWidth / 2, pageHeight / 2 + 60, { align: 'center' });
+
+        // --- SLIDE 6: Investimento ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        
+        doc.setDrawColor("#FE5412");
+        doc.setLineWidth(4);
+        doc.rect(pageWidth / 2 - 200, pageHeight / 2 - 100, 400, 200, 'S');
+
+        doc.setTextColor("#FFFFFF");
+        doc.setFontSize(28);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Investimento Mensal", pageWidth / 2, pageHeight / 2 - 40, { align: 'center' });
+
+        doc.setTextColor("#FE5412");
+        doc.setFontSize(60);
+        doc.text(investmentValue || 'R$ 0,00', pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
+
+        doc.setTextColor("#AAAAAA");
+        doc.setFontSize(10);
+        doc.text("INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.", pageWidth / 2, pageHeight / 2 + 60, { align: 'center' });
 
 
-          // --- Final ---
-          doc.save(`Proposta_${clientName.replace(/\s+/g, '_') || 'Cliente'}.pdf`);
+        // --- Final ---
+        doc.save(`Proposta_${clientName.replace(/\s+/g, '_') || 'Cliente'}.pdf`);
 
-      } catch (error) {
-          console.error("PDF Generation Error:", error);
-          toast({ title: "Erro ao Gerar PDF", description: "Não foi possível gerar o documento. Tente novamente.", variant: "destructive" });
-      } finally {
-          setIsGeneratingPdf(false);
-      }
+    } catch (error) {
+        console.error("PDF Generation Error:", error);
+        toast({ title: "Erro ao Gerar PDF", description: "Não foi possível gerar o documento. Tente novamente.", variant: "destructive" });
+    } finally {
+        setIsGeneratingPdf(false);
+    }
   };
 
   const handleGenerateContent = async () => {
@@ -332,16 +387,16 @@ export default function ProposalGeneratorV2() {
 
       setIsGeneratingAi(true);
 
-      const packageNames = packages?.reduce((acc: string[], key: string) => {
+      const packagesWithDetails = packages?.reduce((acc: {name: string, description: string}[], key: string) => {
         const pkg = packageOptions[key as keyof typeof packageOptions];
         if (pkg) {
-          acc.push(pkg.name);
+          acc.push({ name: pkg.name, description: pkg.description });
         }
         return acc;
       }, []);
 
       try {
-          const result = await generateProposalContent({ clientName, packages: packageNames });
+          const result = await generateProposalContent({ clientName, packages: packagesWithDetails });
           
           form.setValue('partnershipDescription', result.partnershipDescription);
           form.setValue('objectiveItems', result.objectiveItems.map(item => ({value: item})));
@@ -670,5 +725,3 @@ export default function ProposalGeneratorV2() {
     </div>
   );
 }
-
-    
