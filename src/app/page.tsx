@@ -64,8 +64,8 @@ export default function Home() {
         icon: Users
       },
       {
-        title: "Ferramentas de IA",
-        description: "Recursos para potencializar sua prospecção.",
+        title: "Gerador de Mensagens",
+        description: "Crie mensagens de prospecção com a ajuda da IA.",
         href: "/ferramentas",
         icon: Wand2
       },

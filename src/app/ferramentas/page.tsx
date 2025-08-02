@@ -9,10 +9,10 @@ export default function FerramentasPage() {
         <BackButton />
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-            Ferramentas de IA
+            Geração de Mensagem Personalizada
           </h1>
           <p className="mt-4 text-lg text-muted-foreground">
-            Recursos inteligentes para potencializar sua prospecção.
+            Crie mensagens de prospecção personalizadas com a ajuda da IA.
           </p>
         </header>
         <div className="max-w-6xl mx-auto">
