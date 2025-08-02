@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette, Percent, Tag, FileText, Bot, Briefcase, Mic } from 'lucide-react';
 import jsPDF from 'jspdf';
@@ -99,8 +99,8 @@ Page.displayName = 'Page';
 export default function ProposalGeneratorV2() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
   const [isGeneratingAi, setIsGeneratingAi] = React.useState(false);
+  const [carouselApi, setCarouselApi] = React.useState<CarouselApi>()
 
-  const pdfRenderRef = React.useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const form = useForm<ProposalFormValues>({
@@ -167,47 +167,65 @@ export default function ProposalGeneratorV2() {
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
     try {
-      if (!pdfRenderRef.current) {
-        throw new Error("PDF render reference is not available.");
-      }
-      
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1920, 1080] });
-      const canvasWidth = 1920;
-      const canvasHeight = 1080;
-      
-      const pageElements = Array.from(pdfRenderRef.current.children) as HTMLDivElement[];
-
-      for (let i = 0; i < pageElements.length; i++) {
-        const pageElement = pageElements[i];
+        if (!carouselApi) {
+            throw new Error("Carousel API not available");
+        }
         
-        const canvas = await html2canvas(pageElement, {
-            width: canvasWidth,
-            height: canvasHeight,
-            scale: 2,
-            useCORS: true,
-            backgroundColor: '#000000',
-            logging: false,
+        const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [1920, 1080]
         });
+        
+        const slideNodes = carouselApi.slideNodes();
+        
+        for (let i = 0; i < slideNodes.length; i++) {
+            const node = slideNodes[i];
+            
+            // Forçar o reflow para garantir que os estilos sejam aplicados
+            // antes da captura pelo html2canvas.
+            node.style.display = 'block';
 
-        const imgData = canvas.toDataURL('image/png');
+            const canvas = await html2canvas(node, {
+                width: 1920,
+                height: 1080,
+                scale: 1, 
+                useCORS: true,
+                backgroundColor: '#000000',
+                logging: false,
+                onclone: (document) => {
+                    // Tentar corrigir problemas de imagem no clone
+                    const images = document.getElementsByTagName('img');
+                    for (let j = 0; j < images.length; j++) {
+                        const img = images[j];
+                        img.crossOrigin = 'anonymous';
+                    }
+                }
+            });
 
-        if (i > 0) pdf.addPage([canvasWidth, canvasHeight], 'landscape');
-        pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight, undefined, 'FAST');
-      }
+            node.style.display = ''; // Reverter o estilo
 
-      pdf.save(`Proposta_${watchedValues.clientName.replace(/\s+/g, '_')}.pdf`);
+            const imgData = canvas.toDataURL('image/png', 1.0);
+
+            if (i > 0) {
+                pdf.addPage([1920, 1080], 'landscape');
+            }
+            pdf.addImage(imgData, 'PNG', 0, 0, 1920, 1080, undefined, 'FAST');
+        }
+
+        pdf.save(`Proposta_${watchedValues.clientName.replace(/\s+/g, '_')}.pdf`);
 
     } catch (error) {
-      console.error("PDF Generation Error: ", error);
-      toast({
-        title: "Erro ao Gerar PDF",
-        description: "Ocorreu um problema ao exportar a proposta. Tente novamente.",
-        variant: "destructive"
-      });
+        console.error("PDF Generation Error: ", error);
+        toast({
+            title: "Erro ao Gerar PDF",
+            description: "Ocorreu um problema ao exportar a proposta. Tente novamente.",
+            variant: "destructive"
+        });
     } finally {
-      setIsGeneratingPdf(false);
+        setIsGeneratingPdf(false);
     }
-  };
+};
 
   const handleGenerateContent = async () => {
       const { clientName, packages } = form.getValues();
@@ -253,170 +271,158 @@ export default function ProposalGeneratorV2() {
     { name: "Geração com IA", fields: ['generateButton'], icon: Wand2 },
     { name: "Investimento", fields: ['investmentValue', 'discount'], icon: DollarSign },
   ];
-
-  const renderProposalContent = () => {
-    return (
-        <>
-            <Page className="bg-cover bg-center">
-                <div className="absolute inset-0 bg-black z-0"></div>
-                {watchedValues.coverImageUrl && (
-                    <Image 
-                        crossOrigin='anonymous'
-                        src={watchedValues.coverImageUrl}
-                        alt="Background" 
-                        layout="fill" 
-                        objectFit="cover" 
-                        className="absolute inset-0 z-0 opacity-40"
-                        data-ai-hint="technology dark"
-                    />
-                )}
-                <div className="absolute inset-0 bg-black/50"></div>
-                <div className="z-10 text-center flex flex-col items-center">
-                    <p className="text-[#FE5412] font-semibold tracking-widest mb-2">PROPOSTA COMERCIAL</p>
-                    <h1 className="text-7xl font-extrabold max-w-4xl">{watchedValues.clientName || '[Cliente]'}</h1>
-                    <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
-                </div>
-            </Page>
-            <Page className="justify-center items-start flex-col">
-                <h2 className="text-6xl font-bold uppercase mb-10 text-left w-full max-w-5xl mx-auto">Sobre a Parceria</h2>
-                <div className="flex items-start gap-6 max-w-5xl mx-auto">
-                    <div className="w-1 bg-[#FE5412] self-stretch"></div>
-                    <Textarea 
-                        {...form.register('partnershipDescription')} 
-                        className="text-3xl font-light text-gray-200 text-left bg-transparent border-none p-0 h-auto resize-none focus-visible:ring-0" 
-                        rows={4}
-                    />
-                </div>
-            </Page>
-            <Page>
-                <div className="w-full max-w-5xl">
-                    <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
-                    <ul className="space-y-4 text-xl font-light">
-                        {watchedValues.objectiveItems?.map((item, i) => (
-                            <li key={i} className="flex items-start gap-4"><Goal className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" /><Textarea {...form.register(`objectiveItems.${i}.value`)} className="bg-transparent border-none p-0 h-auto text-xl font-light resize-none focus-visible:ring-0" rows={1}/></li>
-                        ))}
-                    </ul>
-                </div>
-            </Page>
-            <Page>
-                 <div className="w-full max-w-5xl">
-                    <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
-                    <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
-                        {watchedValues.differentialItems?.map((item, i) => (
-                            <li key={i} className="flex items-start gap-4 mb-4 break-inside-avoid"><Sparkles className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" /><Textarea {...form.register(`differentialItems.${i}.value`)} className="bg-transparent border-none p-0 h-auto text-xl font-light resize-none focus-visible:ring-0" rows={2}/></li>
-                        ))}
-                    </ul>
-                 </div>
-            </Page>
-            <Page className="p-12 items-start justify-start">
-                <div className="w-full max-w-full">
-                    <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
-                    {useCustomServices ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                            {customServicesList.map(({ name, fields, icon: Icon }) => (
-                                fields.length > 0 && (
-                                    <div key={name} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
-                                        <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
-                                        <h3 className="font-bold text-lg">{name}</h3>
-                                        <ul className="text-sm text-gray-400 mt-2 list-disc pl-4 space-y-1 flex-grow">
-                                            {fields.map((field, index) => <li key={index}>{field.value}</li>)}
-                                        </ul>
-                                    </div>
-                                )
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                            {watchedValues.packages?.map(pkgKey => {
-                                const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
-                                if (!pkg) return null;
-                                const Icon = pkg.icon;
-                                return (
-                                    <div key={pkgKey} className="bg-gray-900/70 p-4 rounded-lg border border-gray-700 flex flex-col">
-                                        <div className="flex-grow">
-                                            <div className="flex items-center gap-3 mb-3">
-                                                <Icon className="h-8 w-8 text-[#FE5412]" />
-                                                <h3 className="font-bold text-lg">{pkg.name}</h3>
-                                            </div>
-                                            <p className="text-[10px] text-gray-400 mt-1 whitespace-pre-line leading-relaxed">{pkg.description}</p>
-                                        </div>
-                                        <div className="pt-2 mt-auto text-right">
-                                            <span className="text-lg font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )}
-                </div>
-            </Page>
-            <Page>
-                 <div className="w-full max-w-5xl text-center">
-                    <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
-                     <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
-                        {watchedValues.idealPlanItems?.map((item, i) => (
-                            <li key={i} className="flex items-start gap-4"><Check className="h-7 w-7 text-green-400 mt-1 flex-shrink-0" /><Textarea {...form.register(`idealPlanItems.${i}.value`)} className="bg-transparent border-none p-0 h-auto text-xl font-light resize-none focus-visible:ring-0" rows={1}/></li>
-                        ))}
-                    </ul>
-                 </div>
-            </Page>
-            <Page>
-                <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
-                    <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
-                    <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
-                    <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
-                </div>
-            </Page>
-            <Page>
-                <div className="w-full max-w-5xl text-center">
-                    <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
-                    <div className="flex justify-center items-stretch gap-8 text-left">
-                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
-                            <CardContent className="p-8">
-                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">1</div>
-                                <h3 className="font-bold text-xl mb-2">Aprovação</h3>
-                                <p className="text-gray-300">Análise e aprovação da proposta.</p>
-                            </CardContent>
-                        </Card>
-                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
-                            <CardContent className="p-8">
-                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">2</div>
-                                <h3 className="font-bold text-xl mb-2">Assinatura</h3>
-                                <p className="text-gray-300">Assinatura do contrato de prestação de serviços.</p>
-                            </CardContent>
-                        </Card>
-                        <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
-                            <CardContent className="p-8">
-                                <div className="text-5xl font-extrabold text-[#FE5412] mb-4">3</div>
-                                <h3 className="font-bold text-xl mb-2">Onboarding</h3>
-                                <p className="text-gray-300">Início da parceria e alinhamento estratégico.</p>
-                            </CardContent>
-                        </Card>
-                    </div>
-                </div>
-            </Page>
-            <Page>
-                <div className="text-center">
-                    <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
-                    <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
-                </div>
-            </Page>
-        </>
-    );
-};
+  
+   const proposalContent = (
+      <>
+          <Page className="bg-cover bg-center">
+              <div className="absolute inset-0 bg-black z-0"></div>
+              {watchedValues.coverImageUrl && (
+                  <Image 
+                      crossOrigin='anonymous'
+                      src={watchedValues.coverImageUrl}
+                      alt="Background" 
+                      layout="fill" 
+                      objectFit="cover" 
+                      className="absolute inset-0 z-0 opacity-40"
+                      data-ai-hint="technology dark"
+                  />
+              )}
+              <div className="absolute inset-0 bg-black/50"></div>
+              <div className="z-10 text-center flex flex-col items-center">
+                  <p className="text-[#FE5412] font-semibold tracking-widest mb-2">PROPOSTA COMERCIAL</p>
+                  <h1 className="text-7xl font-extrabold max-w-4xl">{watchedValues.clientName || '[Cliente]'}</h1>
+                  <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
+              </div>
+          </Page>
+          <Page className="justify-center items-start flex-col">
+              <h2 className="text-6xl font-bold uppercase mb-10 text-left w-full max-w-5xl mx-auto">Sobre a Parceria</h2>
+              <div className="flex items-start gap-6 max-w-5xl mx-auto">
+                  <div className="w-1 bg-[#FE5412] self-stretch"></div>
+                  <Textarea 
+                      {...form.register('partnershipDescription')} 
+                      className="text-3xl font-light text-gray-200 text-left bg-transparent border-none p-0 h-auto resize-none focus-visible:ring-0" 
+                      rows={4}
+                  />
+              </div>
+          </Page>
+          <Page>
+              <div className="w-full max-w-5xl">
+                  <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
+                  <ul className="space-y-4 text-xl font-light">
+                      {watchedValues.objectiveItems?.map((item, i) => (
+                          <li key={i} className="flex items-start gap-4"><Goal className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" /><Textarea {...form.register(`objectiveItems.${i}.value`)} className="bg-transparent border-none p-0 h-auto text-xl font-light resize-none focus-visible:ring-0" rows={1}/></li>
+                      ))}
+                  </ul>
+              </div>
+          </Page>
+          <Page>
+               <div className="w-full max-w-5xl">
+                  <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
+                  <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
+                      {watchedValues.differentialItems?.map((item, i) => (
+                          <li key={i} className="flex items-start gap-4 mb-4 break-inside-avoid"><Sparkles className="h-7 w-7 text-[#FE5412] mt-1 flex-shrink-0" /><Textarea {...form.register(`differentialItems.${i}.value`)} className="bg-transparent border-none p-0 h-auto text-xl font-light resize-none focus-visible:ring-0" rows={2}/></li>
+                      ))}
+                  </ul>
+               </div>
+          </Page>
+          <Page className="p-12 items-start justify-start">
+              <div className="w-full max-w-full">
+                  <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
+                  {useCustomServices ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                          {customServicesList.map(({ name, fields, icon: Icon }) => (
+                              fields.length > 0 && (
+                                  <div key={name} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
+                                      <Icon className="h-8 w-8 text-[#FE5412] mb-3" />
+                                      <h3 className="font-bold text-lg">{name}</h3>
+                                      <ul className="text-sm text-gray-400 mt-2 list-disc pl-4 space-y-1 flex-grow">
+                                          {fields.map((field, index) => <li key={index}>{field.value}</li>)}
+                                      </ul>
+                                  </div>
+                              )
+                          ))}
+                      </div>
+                  ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                          {watchedValues.packages?.map(pkgKey => {
+                              const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+                              if (!pkg) return null;
+                              const Icon = pkg.icon;
+                              return (
+                                  <div key={pkgKey} className="bg-gray-900/70 p-4 rounded-lg border border-gray-700 flex flex-col">
+                                      <div className="flex-grow">
+                                          <div className="flex items-center gap-3 mb-3">
+                                              <Icon className="h-8 w-8 text-[#FE5412]" />
+                                              <h3 className="font-bold text-lg">{pkg.name}</h3>
+                                          </div>
+                                          <p className="text-[10px] text-gray-400 mt-1 whitespace-pre-line leading-relaxed">{pkg.description}</p>
+                                      </div>
+                                      <div className="pt-2 mt-auto text-right">
+                                          <span className="text-lg font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                      </div>
+                                  </div>
+                              )
+                          })}
+                      </div>
+                  )}
+              </div>
+          </Page>
+          <Page>
+               <div className="w-full max-w-5xl text-center">
+                  <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
+                   <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
+                      {watchedValues.idealPlanItems?.map((item, i) => (
+                          <li key={i} className="flex items-start gap-4"><Check className="h-7 w-7 text-green-400 mt-1 flex-shrink-0" /><Textarea {...form.register(`idealPlanItems.${i}.value`)} className="bg-transparent border-none p-0 h-auto text-xl font-light resize-none focus-visible:ring-0" rows={1}/></li>
+                      ))}
+                  </ul>
+               </div>
+          </Page>
+          <Page>
+              <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
+                  <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
+                  <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
+                  <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
+              </div>
+          </Page>
+          <Page>
+              <div className="w-full max-w-5xl text-center">
+                  <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
+                  <div className="flex justify-center items-stretch gap-8 text-left">
+                      <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                          <CardContent className="p-8">
+                              <div className="text-5xl font-extrabold text-[#FE5412] mb-4">1</div>
+                              <h3 className="font-bold text-xl mb-2">Aprovação</h3>
+                              <p className="text-gray-300">Análise e aprovação da proposta.</p>
+                          </CardContent>
+                      </Card>
+                      <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                          <CardContent className="p-8">
+                              <div className="text-5xl font-extrabold text-[#FE5412] mb-4">2</div>
+                              <h3 className="font-bold text-xl mb-2">Assinatura</h3>
+                              <p className="text-gray-300">Assinatura do contrato de prestação de serviços.</p>
+                          </CardContent>
+                      </Card>
+                      <Card className="bg-gray-800/50 border-gray-700 !shadow-none w-1/3">
+                          <CardContent className="p-8">
+                              <div className="text-5xl font-extrabold text-[#FE5412] mb-4">3</div>
+                              <h3 className="font-bold text-xl mb-2">Onboarding</h3>
+                              <p className="text-gray-300">Início da parceria e alinhamento estratégico.</p>
+                          </CardContent>
+                      </Card>
+                  </div>
+              </div>
+          </Page>
+          <Page>
+              <div className="text-center">
+                  <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
+                  <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
+              </div>
+          </Page>
+      </>
+  );
 
   return (
     <div className="space-y-8">
-      {/* Hidden Render Area for PDF */}
-      <div 
-        ref={pdfRenderRef} 
-        className="absolute left-[-9999px] top-0"
-        aria-hidden="true"
-      >
-        {renderProposalContent()}
-      </div>
-
-      {/* Visible Form and Carousel */}
       <div className="w-full space-y-4">
           <Card>
             <CardContent className="p-4">
@@ -460,7 +466,7 @@ export default function ProposalGeneratorV2() {
                                                         <FormField
                                                             control={form.control}
                                                             name={`${fieldName}.${index}.value` as any}
-                                                            render={({ field }) => <FormItem className="flex-1"><FormControl><Input {...field} placeholder={`Item de ${name}`} /></FormControl></FormItem>}
+                                                            render={({ field }) => <FormItem className="flex-1"><FormLabel>Item</FormLabel><FormControl><Input {...field} placeholder={`Item de ${name}`} /></FormControl></FormItem>}
                                                         />
                                                         <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-muted-foreground" /></Button>
                                                     </div>
@@ -549,16 +555,11 @@ export default function ProposalGeneratorV2() {
       </div>
 
        <div className="w-full">
-         <Carousel className="w-full max-w-4xl mx-auto">
+         <Carousel className="w-full max-w-4xl mx-auto" setApi={setCarouselApi}>
             <CarouselContent>
-                {Array.from({ length: 9 }).map((_, index) => (
+                {React.Children.map(proposalContent.props.children, (child, index) => (
                     <CarouselItem key={index}>
-                      <div className="opacity-0 w-0 h-0 overflow-hidden">
-                        {renderProposalContent()}
-                      </div>
-                      <div className="p-1">
-                        {React.createElement(Page, {}, React.Children.toArray(renderProposalContent())[index])}
-                      </div>
+                        <div className="p-1">{child}</div>
                     </CarouselItem>
                 ))}
             </CarouselContent>
