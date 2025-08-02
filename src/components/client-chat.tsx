@@ -1,14 +1,16 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect }d from 'react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Send, User, Bot, Loader2 } from 'lucide-react';
-import { chatWithClientData } from '@/ai/flows/client-chat-flow';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { ScrollArea } from './ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/use-auth';
 
 interface Client {
     id: string;
@@ -18,11 +20,13 @@ interface Client {
 }
 
 interface Message {
+  id?: string;
   role: 'user' | 'model';
   content: string;
+  createdAt?: any;
+  status?: 'processing' | 'error' | 'completed';
 }
 
-// Simple markdown to HTML converter, can be extracted to utils if used elsewhere
 const markdownToHtml = (markdown: string) => {
     if (!markdown) return '';
     let html = markdown
@@ -50,12 +54,53 @@ export default function ClientChat({ client }: { client: Client }) {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  
+  // Effect to start a new conversation or load an existing one
+  useEffect(() => {
+    const newConversationId = `user_${user?.uid}_client_${client.id}`;
+    setConversationId(newConversationId);
+    setMessages([initialMessage]); // Reset messages for new client chat
+  }, [client.id, user?.uid]);
+
+  // Effect to listen for new messages in the current conversation
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const messagesCollectionRef = collection(db, 'conversations', conversationId, 'messages');
+    const q = query(messagesCollectionRef, orderBy('createdAt', 'asc'));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const newMessages: Message[] = [];
+        querySnapshot.forEach((doc) => {
+            newMessages.push({ id: doc.id, ...doc.data() } as Message);
+        });
+        
+        // Only update if there are new messages, keeping the initial greeting
+        if(newMessages.length > 0) {
+           setMessages([initialMessage, ...newMessages]);
+        } else {
+           setMessages([initialMessage]);
+        }
+
+        const latestMessage = newMessages[newMessages.length - 1];
+        if (latestMessage?.role === 'model') {
+            setIsLoading(false);
+        } else if(latestMessage?.role === 'user' && latestMessage?.status !== 'error') {
+            setIsLoading(true);
+        }
+    }, (error) => {
+        console.error("Error listening to messages:", error);
+        toast({ title: "Erro de Conexão", description: "Não foi possível carregar o histórico do chat.", variant: "destructive" });
+    });
+
+    return () => unsubscribe();
+  }, [conversationId, toast]);
 
   useEffect(() => {
-    // Scroll to bottom when messages change
     if (scrollAreaRef.current) {
-        // Use a small timeout to allow the DOM to update before scrolling
         setTimeout(() => {
             if (scrollAreaRef.current) {
                 scrollAreaRef.current.scrollTo({
@@ -69,36 +114,28 @@ export default function ClientChat({ client }: { client: Client }) {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || !conversationId) return;
 
-    const userMessage: Message = { role: 'user', content: input };
-    const newMessages: Message[] = [...messages, userMessage];
-    
-    setMessages(newMessages);
+    const userMessageContent = input;
     setInput('');
     setIsLoading(true);
 
     try {
-      // Pass the message history without the initial welcome message
-      const historyForAI = newMessages.slice(1);
-      
-      const result = await chatWithClientData({
-        client,
-        history: historyForAI,
+      const messagesCollectionRef = collection(db, 'conversations', conversationId, 'messages');
+      await addDoc(messagesCollectionRef, {
+        role: 'user',
+        content: userMessageContent,
+        createdAt: serverTimestamp()
       });
-      const aiMessage: Message = { role: 'model', content: result.response };
-      setMessages((prev) => [...prev, aiMessage]);
+      // The onSnapshot listener will handle the UI update and loading state
     } catch (error) {
-      console.error('Error in chat:', error);
+      console.error('Error sending message:', error);
       toast({
-        title: 'Erro no Chat',
-        description: 'A IA não conseguiu responder. Tente novamente.',
+        title: 'Erro ao Enviar',
+        description: 'Não foi possível enviar sua mensagem. Tente novamente.',
         variant: 'destructive',
       });
-       // Remove the user's message if the AI fails and restore input
-       setMessages(prev => prev.slice(0, -1));
-       setInput(input);
-    } finally {
+      setInput(userMessageContent); // Restore input on error
       setIsLoading(false);
     }
   };
@@ -129,6 +166,7 @@ export default function ClientChat({ client }: { client: Client }) {
                 )}
               >
                 <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{__html: markdownToHtml(message.content) }} />
+                 {message.status === 'error' && <p className="text-xs text-destructive mt-1">Falha ao gerar resposta.</p>}
               </div>
                {message.role === 'user' && (
                 <div className="bg-muted text-foreground rounded-full h-8 w-8 flex-shrink-0 flex items-center justify-center">
@@ -165,8 +203,9 @@ export default function ClientChat({ client }: { client: Client }) {
               handleSendMessage(e);
             }
           }}
+          disabled={!conversationId}
         />
-        <Button type="submit" disabled={isLoading || !input.trim()} size="icon">
+        <Button type="submit" disabled={isLoading || !input.trim() || !conversationId} size="icon">
           <Send size={20} />
         </Button>
       </form>
