@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Palette, CheckCircle, UserCheck, AlertTriangle, BookOpen, MessageSquare, Edit, Bot, TrendingUp, Instagram, Linkedin, MicVocal } from "lucide-react";
+import { Palette, CheckCircle, UserCheck, AlertTriangle, BookOpen, MessageSquare, Edit, Bot, TrendingUp, Instagram, Linkedin, MicVocal, Search } from "lucide-react";
 
 export default function GestaoMidiasPage() {
   return (
@@ -38,6 +38,10 @@ export default function GestaoMidiasPage() {
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><Bot className="h-4 w-4 text-primary" /> Algoritmo</h3>
             <p className="text-sm text-muted-foreground pl-6">É o sistema da rede social que decide qual conteúdo será exibido para os usuários. Nosso trabalho é criar publicações de alta qualidade que o algoritmo considere relevantes e mostre para mais pessoas.</p>
+          </div>
+           <div>
+            <h3 className="font-semibold text-foreground flex items-center gap-2"><Search className="h-4 w-4 text-primary" /> SEO (Search Engine Optimization)</h3>
+            <p className="text-sm text-muted-foreground pl-6">É o conjunto de técnicas para otimizar um conteúdo para que ele seja encontrado mais facilmente em mecanismos de busca como o Google ou a própria busca do Instagram. Envolve o uso de palavras-chave e hashtags relevantes.</p>
           </div>
           <div>
             <h3 className="font-semibold text-foreground flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" /> Engajamento</h3>
@@ -100,7 +104,7 @@ export default function GestaoMidiasPage() {
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary font-bold mt-1 flex-shrink-0">2</div>
                 <div>
                     <span className="font-semibold text-lg">Produção de Conteúdo de Alta Qualidade</span>
-                    <p className="text-sm text-muted-foreground">Nossa equipe cria o conteúdo do zero. Isso inclui o design das artes e a edição dos vídeos, e também o <strong>Copywriting</strong>, que é a técnica de escrever os textos (legendas) de forma persuasiva, para gerar engajamento e levar o seguidor a uma ação (comprar, perguntar, etc.).</p>
+                    <p className="text-sm text-muted-foreground">Nossa equipe cria o conteúdo do zero. Isso inclui o design das artes no <strong>Adobe Photoshop</strong> e a edição profissional dos vídeos no <strong>Adobe Premiere e After Effects</strong>. Também aplicamos o <strong>Copywriting</strong>, que é a técnica de escrever os textos (legendas) de forma persuasiva, para gerar engajamento e levar o seguidor a uma ação (comprar, perguntar, etc.).</p>
                 </div>
             </li>
             <li className="flex items-start gap-4">
