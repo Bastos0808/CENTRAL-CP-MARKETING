@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect }d from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Send, User, Bot, Loader2 } from 'lucide-react';
