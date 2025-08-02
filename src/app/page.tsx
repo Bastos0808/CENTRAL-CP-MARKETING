@@ -109,7 +109,12 @@ export default function Home() {
     
     return (
         <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 relative">
-             <div className="absolute top-4 right-4 z-10">
+             <div className="absolute top-4 right-4 z-10 flex items-center gap-4">
+                {user && (
+                    <span className="text-sm text-muted-foreground">
+                        Olá, {user.displayName || user.email}
+                    </span>
+                )}
                 <Button onClick={logout} variant="outline" size="sm">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sair
