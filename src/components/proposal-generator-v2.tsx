@@ -15,10 +15,9 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { cn } from '@/lib/utils';
 import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette, Percent, Tag, FileText, Bot, Briefcase, Mic } from 'lucide-react';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
-import { useToast } from '@/hooks/use-toast';
 import { Switch } from './ui/switch';
 import {
   Select,
@@ -166,66 +165,176 @@ export default function ProposalGeneratorV2() {
 
   const handleDownloadPdf = async () => {
     setIsGeneratingPdf(true);
+    const formData = form.getValues();
+    const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: 'a4'
+    });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 40;
+
     try {
-        if (!carouselApi) {
-            throw new Error("Carousel API not available");
+        // --- Slide 1: Cover ---
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        if(formData.coverImageUrl) {
+            try {
+                const response = await fetch(formData.coverImageUrl);
+                const blob = await response.blob();
+                const reader = new FileReader();
+                const dataUrl = await new Promise<string>((resolve) => {
+                    reader.onload = () => resolve(reader.result as string);
+                    reader.readAsDataURL(blob);
+                });
+                doc.addImage(dataUrl, 'PNG', 0, 0, pageWidth, pageHeight, undefined, 'FAST');
+                doc.setFillColor(0, 0, 0, 0.5);
+                doc.rect(0, 0, pageWidth, pageHeight, 'F');
+            } catch(e) { console.error("Could not load cover image", e); }
         }
+        doc.setFontSize(14).setFont('helvetica', 'bold').setTextColor('#FE5412');
+        doc.text('PROPOSTA COMERCIAL', pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
+        doc.setFontSize(48).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
+        doc.text(formData.clientName || '[Cliente]', pageWidth / 2, pageHeight / 2, { align: 'center' });
+        doc.setFontSize(16).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
+        doc.text('Gestão Estratégica de Marketing Digital', pageWidth / 2, pageHeight / 2 + 30, { align: 'center' });
         
-        const pdf = new jsPDF({
-            orientation: 'landscape',
-            unit: 'px',
-            format: [1920, 1080]
-        });
-        
-        const slideNodes = carouselApi.slideNodes();
-        
-        for (let i = 0; i < slideNodes.length; i++) {
-            const node = slideNodes[i];
-            
-            // Forçar o reflow para garantir que os estilos sejam aplicados
-            // antes da captura pelo html2canvas.
-            node.style.display = 'block';
+        // --- Slide 2: Partnership ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
+        doc.text('SOBRE A PARCERIA', margin, 80);
+        doc.setDrawColor('#FE5412').setLineWidth(3);
+        doc.line(margin, 100, margin, 180);
+        doc.setFontSize(20).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
+        const partnershipLines = doc.splitTextToSize(formData.partnershipDescription, pageWidth - margin * 3);
+        doc.text(partnershipLines, margin + 20, 120);
 
-            const canvas = await html2canvas(node, {
-                width: 1920,
-                height: 1080,
-                scale: 1, 
-                useCORS: true,
-                backgroundColor: '#000000',
-                logging: false,
-                onclone: (document) => {
-                    // Tentar corrigir problemas de imagem no clone
-                    const images = document.getElementsByTagName('img');
-                    for (let j = 0; j < images.length; j++) {
-                        const img = images[j];
-                        img.crossOrigin = 'anonymous';
-                    }
-                }
+        // --- Slide 3: Objectives ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
+        doc.text('NOSSO OBJETIVO', margin, 80);
+        let y = 120;
+        doc.setFontSize(16).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
+        formData.objectiveItems?.forEach(item => {
+            if (y > pageHeight - margin) { doc.addPage(); y = margin; }
+            doc.setTextColor('#FE5412').setFont('helvetica', 'bold');
+            doc.text('•', margin, y);
+            doc.setTextColor('#DDDDDD').setFont('helvetica', 'normal');
+            const itemLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 20);
+            doc.text(itemLines, margin + 20, y);
+            y += (itemLines.length * 20) + 10;
+        });
+
+        // --- Slide 4: Differentials ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
+        doc.text('NOSSOS DIFERENCIAIS', margin, 80);
+        y = 120;
+        doc.setFontSize(16).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
+        formData.differentialItems?.forEach(item => {
+            if (y > pageHeight - margin) { doc.addPage(); y = margin; }
+            doc.setTextColor('#FE5412').setFont('helvetica', 'bold');
+            doc.text('•', margin, y);
+            doc.setTextColor('#DDDDDD').setFont('helvetica', 'normal');
+            const itemLines = doc.splitTextToSize(item.value, pageWidth - margin * 2 - 20);
+            doc.text(itemLines, margin + 20, y);
+            y += (itemLines.length * 20) + 10;
+        });
+
+        // --- Slide 5: Services ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
+        doc.text('ESCOPO DOS SERVIÇOS', pageWidth/2, 80, {align: 'center'});
+        y = 120;
+        if(useCustomServices) {
+            // Logic for custom services
+        } else {
+            formData.packages?.forEach((pkgKey, index) => {
+                const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+                if (!pkg) return;
+                const col = index % 3;
+                const row = Math.floor(index / 3);
+                const x = margin + (col * ((pageWidth - margin*2) / 3));
+                y = 120 + (row * 150);
+
+                doc.setFillColor(17, 17, 17).setDrawColor(50,50,50);
+                doc.roundedRect(x, y, (pageWidth - margin*2)/3 - 10, 140, 5, 5, 'FD');
+
+                doc.setFontSize(14).setTextColor('#FE5412').setFont('helvetica', 'bold');
+                doc.text(pkg.name, x + 10, y + 20);
+                doc.setFontSize(8).setTextColor('#AAAAAA').setFont('helvetica', 'normal');
+                const descLines = doc.splitTextToSize(pkg.description, (pageWidth - margin*2)/3 - 30);
+                doc.text(descLines, x + 10, y + 35);
+                
+                doc.setFontSize(12).setTextColor('#FE5412').setFont('helvetica', 'bold');
+                doc.text(pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }), x + (pageWidth - margin*2)/3 - 20, y + 130, {align: 'right'});
             });
-
-            node.style.display = ''; // Reverter o estilo
-
-            const imgData = canvas.toDataURL('image/png', 1.0);
-
-            if (i > 0) {
-                pdf.addPage([1920, 1080], 'landscape');
-            }
-            pdf.addImage(imgData, 'PNG', 0, 0, 1920, 1080, undefined, 'FAST');
         }
-
-        pdf.save(`Proposta_${watchedValues.clientName.replace(/\s+/g, '_')}.pdf`);
-
-    } catch (error) {
-        console.error("PDF Generation Error: ", error);
-        toast({
-            title: "Erro ao Gerar PDF",
-            description: "Ocorreu um problema ao exportar a proposta. Tente novamente.",
-            variant: "destructive"
+        
+        // --- Slide 6: Ideal Plan ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
+        doc.text('POR QUE ESTE PLANO É', pageWidth / 2, pageHeight / 2 - 100, { align: 'center' });
+        doc.setTextColor('#FE5412');
+        doc.text('IDEAL', pageWidth / 2, pageHeight / 2 - 50, { align: 'center' });
+        doc.setTextColor('#FFFFFF');
+        doc.text('PARA SEU NEGÓCIO?', pageWidth / 2, pageHeight / 2 - 0, { align: 'center' });
+        y = pageHeight / 2 + 50;
+        doc.setFontSize(16).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
+        formData.idealPlanItems?.forEach(item => {
+            if (y > pageHeight - margin) { doc.addPage(); y = margin; }
+            doc.setTextColor('#22c55e').setFont('helvetica', 'bold'); // Green check
+            doc.text('✓', pageWidth / 2 - 150, y);
+            doc.setTextColor('#DDDDDD').setFont('helvetica', 'normal');
+            doc.text(item.value, pageWidth / 2 - 130, y);
+            y += 25;
         });
+
+        // --- Slide 7: Investment ---
+        doc.addPage();
+        doc.setFillColor(0, 0, 0);
+        doc.rect(0, 0, pageWidth, pageHeight, 'F');
+        doc.setDrawColor('#FE5412').setLineWidth(4);
+        doc.roundedRect(pageWidth / 2 - 150, pageHeight / 2 - 100, 300, 150, 10, 10, 'S');
+        doc.setFontSize(24).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
+        doc.text('INVESTIMENTO MENSAL', pageWidth / 2, pageHeight / 2 - 60, { align: 'center' });
+        doc.setFontSize(60).setFont('helvetica', 'bold').setTextColor('#FE5412');
+        doc.text(formData.investmentValue || 'R$ 0,00', pageWidth / 2, pageHeight / 2 + 10, { align: 'center' });
+        doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor('#AAAAAA');
+        doc.text('INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA', pageWidth / 2, pageHeight / 2 + 40, { align: 'center' });
+        
+        // --- Final Slides ---
+        doc.addPage();
+        doc.setFillColor(0,0,0);
+        doc.rect(0,0,pageWidth, pageHeight, 'F');
+        doc.setFontSize(40).setFont('helvetica', 'bold').setTextColor('#FFFFFF');
+        doc.text("E AGORA?", pageWidth/2, pageHeight/2 - 50, {align: 'center'});
+        doc.setFontSize(18).setFont('helvetica', 'normal').setTextColor('#DDDDDD');
+        const finalText = "O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.";
+        doc.text(doc.splitTextToSize(finalText, pageWidth - margin*4), pageWidth/2, pageHeight/2, {align: 'center'});
+
+
+        doc.save(`Proposta_${formData.clientName.replace(/\s+/g, '_')}.pdf`);
+
+    } catch(e) {
+        console.error(e);
+        toast({ title: "Erro ao gerar PDF", description: "Ocorreu um problema ao criar o documento. Verifique o console para mais detalhes.", variant: "destructive" });
     } finally {
         setIsGeneratingPdf(false);
     }
-};
+  };
+
 
   const handleGenerateContent = async () => {
       const { clientName, packages } = form.getValues();
@@ -553,8 +662,8 @@ export default function ProposalGeneratorV2() {
             </CardContent>
           </Card>
       </div>
-
-       <div className="w-full">
+      
+      <div className="w-full">
          <Carousel className="w-full max-w-4xl mx-auto" setApi={setCarouselApi}>
             <CarouselContent>
                 {React.Children.map(proposalContent.props.children, (child, index) => (
@@ -573,6 +682,7 @@ export default function ProposalGeneratorV2() {
             </Button>
         </div>
       </div>
+      
     </div>
   );
 }
