@@ -229,110 +229,111 @@ ${analysisText}
     const screenshotPreview = form.watch(`${channel}.screenshotDataUri`);
 
     return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <config.icon className="h-6 w-6 text-primary" />
-            <CardTitle>{config.name}</CardTitle>
-          </div>
-          <CardDescription>Insira a URL, anexe um print da tela e gere uma análise com IA ou preencha o formulário manualmente.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex flex-col md:flex-row items-start gap-4">
-            <div className="flex-1 w-full">
-              <Label htmlFor={`${channel}-url`} className="mb-2 block">URL do Canal</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Controller
-                  name={`${channel}.url`}
-                  control={form.control}
-                  render={({ field }) => (
-                      <Input id={`${channel}-url`} placeholder={`https://www.${channel}.com/prospect`} {...field} className="pl-10" />
-                  )}
-                />
-              </div>
+      <TooltipProvider>
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <config.icon className="h-6 w-6 text-primary" />
+              <CardTitle>{config.name}</CardTitle>
             </div>
-             <div className="flex-1 w-full">
-                <Label className="mb-2 block">Print da Tela</Label>
-                {screenshotPreview ? (
-                    <div className="relative group">
-                        <Image src={screenshotPreview} alt="Preview do print" width={200} height={150} className="rounded-md object-contain max-h-24 w-full border" />
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => handleRemoveScreenshot(channel)}
-                        >
-                            <X className="h-3 w-3" />
-                        </Button>
-                    </div>
-                ) : (
-                    <Button type="button" variant="outline" onClick={() => fileInputRefs[channel].current?.click()} className="w-full">
-                        <Paperclip className="mr-2 h-4 w-4" />
-                        Anexar Print
-                    </Button>
-                )}
-                <input
-                    type="file"
-                    ref={fileInputRefs[channel]}
-                    className="hidden"
-                    accept="image/png, image/jpeg, image/webp"
-                    onChange={(e) => handleFileChange(e, channel)}
-                />
-            </div>
-            <div className="flex w-full md:w-auto items-end h-full gap-2 pt-2 md:pt-0">
-                <Button onClick={() => handleAnalyze(channel)} disabled={isLoading} className="w-full md:w-auto self-end">
-                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                  {isLoading ? "Analisando..." : "Analisar com IA"}
-                </Button>
-                {analysisExists && (
-                    <Button variant="outline" size="icon" onClick={() => copyToClipboard(channel)} className="self-end">
-                        <Copy className="h-4 w-4"/>
-                    </Button>
-                )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 pt-4 border-t">
-            {config.formSections.map(({ key, label, icon: Icon, prompt, hint }) => {
-              const isSummaryField = key.includes('pontos') || key.includes('gancho');
-              return (
-                <div key={key} className={cn(isSummaryField ? "md:col-span-2" : "")}>
-                    <Label htmlFor={`${channel}-${key}`} className="flex items-center gap-2 mb-2 font-semibold text-primary/90">
-                        <Icon className="h-5 w-5" />
-                        {label}
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <button type="button" className="text-muted-foreground hover:text-primary">
-                                        <Info className="h-4 w-4" />
-                                    </button>
-                                </TooltipTrigger>
-                                <TooltipContent className="max-w-xs" side="top">
-                                    <p>{hint}</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </Label>
+            <CardDescription>Insira a URL, anexe um print da tela e gere uma análise com IA ou preencha o formulário manualmente.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex flex-col md:flex-row items-start gap-4">
+              <div className="flex-1 w-full">
+                <Label htmlFor={`${channel}-url`} className="mb-2 block">URL do Canal</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Controller
-                    name={`${channel}.analysis.${key as keyof typeof analysisExists}`}
+                    name={`${channel}.url`}
                     control={form.control}
                     render={({ field }) => (
-                      <Textarea
-                        id={`${channel}-${key}`}
-                        {...field}
-                        placeholder={prompt}
-                        className="min-h-[100px] text-sm"
-                      />
+                        <Input id={`${channel}-url`} placeholder={`https://www.${channel}.com/prospect`} {...field} className="pl-10" />
                     )}
                   />
                 </div>
-            )})}
-          </div>
+              </div>
+               <div className="flex-1 w-full">
+                  <Label className="mb-2 block">Print da Tela</Label>
+                  {screenshotPreview ? (
+                      <div className="relative group">
+                          <Image src={screenshotPreview} alt="Preview do print" width={200} height={150} className="rounded-md object-contain max-h-24 w-full border" />
+                          <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => handleRemoveScreenshot(channel)}
+                          >
+                              <X className="h-3 w-3" />
+                          </Button>
+                      </div>
+                  ) : (
+                      <Button type="button" variant="outline" onClick={() => fileInputRefs[channel].current?.click()} className="w-full">
+                          <Paperclip className="mr-2 h-4 w-4" />
+                          Anexar Print
+                      </Button>
+                  )}
+                  <input
+                      type="file"
+                      ref={fileInputRefs[channel]}
+                      className="hidden"
+                      accept="image/png, image/jpeg, image/webp"
+                      onChange={(e) => handleFileChange(e, channel)}
+                  />
+              </div>
+              <div className="flex w-full md:w-auto items-end h-full gap-2 pt-2 md:pt-0">
+                  <Button onClick={() => handleAnalyze(channel)} disabled={isLoading} className="w-full md:w-auto self-end">
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                    {isLoading ? "Analisando..." : "Analisar com IA"}
+                  </Button>
+                  {analysisExists && (
+                      <Button variant="outline" size="icon" onClick={() => copyToClipboard(channel)} className="self-end">
+                          <Copy className="h-4 w-4"/>
+                      </Button>
+                  )}
+              </div>
+            </div>
 
-        </CardContent>
-      </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 pt-4 border-t">
+              {config.formSections.map(({ key, label, icon: Icon, prompt, hint }) => {
+                const isSummaryField = key.includes('pontos') || key.includes('gancho');
+                return (
+                  <div key={key} className={cn(isSummaryField ? "md:col-span-2" : "")}>
+                      <Label htmlFor={`${channel}-${key}`} className="flex items-center gap-2 mb-2 font-semibold text-primary/90">
+                          <Icon className="h-5 w-5" />
+                          {label}
+                          <Tooltip>
+                              <TooltipTrigger asChild>
+                                  <span className="cursor-help text-muted-foreground hover:text-primary">
+                                      <Info className="h-4 w-4" />
+                                  </span>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs" side="top">
+                                  <p>{hint}</p>
+                              </TooltipContent>
+                          </Tooltip>
+                      </Label>
+                    <Controller
+                      name={`${channel}.analysis.${key as keyof typeof analysisExists}`}
+                      control={form.control}
+                      render={({ field }) => (
+                        <Textarea
+                          id={`${channel}-${key}`}
+                          {...field}
+                          placeholder={prompt}
+                          className="min-h-[100px] text-sm"
+                          value={field.value || ''}
+                        />
+                      )}
+                    />
+                  </div>
+              )})}
+            </div>
+
+          </CardContent>
+        </Card>
+      </TooltipProvider>
     );
   };
 
