@@ -1,24 +1,30 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Permite que qualquer usuário autenticado leia os dados dos clientes
+    // Permite que qualquer usuário autenticado leia ou escreva nos dados dos clientes
+    // Para um app em produção, as regras de escrita devem ser mais granulares.
     match /clients/{clientId} {
-      allow read: if request.auth != null;
-      // A escrita pode ser mais restrita, mas vamos permitir por enquanto
-      allow write: if request.auth != null; 
+      allow read, write: if request.auth != null;
+    }
+
+    // Permite que usuários autenticados leiam e escrevam nos seus próprios perfis de usuário
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
     // Regras para as conversas do chatbot
     match /conversations/{conversationId} {
-      // Permite acesso se o ID do usuário autenticado estiver no nome do documento da conversa
-      allow read, write: if request.auth != null && request.auth.uid == conversationId.split('_')[1];
+      // Permite ao usuário ler e escrever no documento da conversa se o UID dele fizer parte do ID da conversa.
+      allow read, write: if request.auth != null && request.auth.uid in conversationId.split('_');
 
       // Regras para as mensagens dentro de uma conversa
       match /messages/{messageId} {
-        // Permite acesso se o usuário tiver acesso à conversa pai
-        allow read, write: if request.auth != null && request.auth.uid == conversationId.split('_')[1];
+        // Permite acesso de leitura, escrita e deleção às mensagens se o usuário
+        // for o dono do documento da conversa pai.
+        allow read, create, update, delete: if request.auth != null && get(/databases/$(database)/documents/conversations/$(conversationId)).data.userId == request.auth.uid;
       }
     }
   }

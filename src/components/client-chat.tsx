@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Send, User, Bot, Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, setDoc, getDoc } from 'firebase/firestore';
 import { ScrollArea } from './ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -60,9 +60,11 @@ export default function ClientChat({ client }: { client: Client }) {
   
   // Effect to start a new conversation or load an existing one
   useEffect(() => {
-    const newConversationId = `user_${user?.uid}_client_${client.id}`;
-    setConversationId(newConversationId);
-    setMessages([initialMessage]); // Reset messages for new client chat
+    if (user?.uid && client.id) {
+        const newConversationId = `user_${user.uid}_client_${client.id}`;
+        setConversationId(newConversationId);
+        setMessages([initialMessage]); // Reset messages for new client chat
+    }
   }, [client.id, user?.uid]);
 
   // Effect to listen for new messages in the current conversation
@@ -93,7 +95,7 @@ export default function ClientChat({ client }: { client: Client }) {
         }
     }, (error) => {
         console.error("Error listening to messages:", error);
-        toast({ title: "Erro de Conexão", description: "Não foi possível carregar o histórico do chat.", variant: "destructive" });
+        toast({ title: "Erro de Conexão", description: "Não foi possível carregar o histórico do chat. Verifique suas permissões.", variant: "destructive" });
     });
 
     return () => unsubscribe();
@@ -114,20 +116,32 @@ export default function ClientChat({ client }: { client: Client }) {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading || !conversationId) return;
+    if (!input.trim() || isLoading || !conversationId || !user) return;
 
     const userMessageContent = input;
     setInput('');
     setIsLoading(true);
 
     try {
+      // Ensure the conversation document exists with the userId
+      const conversationDocRef = doc(db, 'conversations', conversationId);
+      const conversationSnap = await getDoc(conversationDocRef);
+      if (!conversationSnap.exists()) {
+          await setDoc(conversationDocRef, { 
+            userId: user.uid,
+            clientId: client.id,
+            createdAt: serverTimestamp()
+          });
+      }
+
+      // Add the user's message
       const messagesCollectionRef = collection(db, 'conversations', conversationId, 'messages');
       await addDoc(messagesCollectionRef, {
         role: 'user',
         content: userMessageContent,
         createdAt: serverTimestamp()
       });
-      // The onSnapshot listener will handle the UI update and loading state
+      // The onSnapshot listener will handle the UI update and loading state for the response
     } catch (error) {
       console.error('Error sending message:', error);
       toast({
@@ -168,7 +182,7 @@ export default function ClientChat({ client }: { client: Client }) {
                 <div className="prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{__html: markdownToHtml(message.content) }} />
                  {message.status === 'error' && <p className="text-xs text-destructive mt-1">Falha ao gerar resposta.</p>}
               </div>
-               {message.role === 'user' && (
+               {message.role === 'user' && user && (
                 <div className="bg-muted text-foreground rounded-full h-8 w-8 flex-shrink-0 flex items-center justify-center">
                   <User size={18} />
                 </div>
@@ -203,7 +217,7 @@ export default function ClientChat({ client }: { client: Client }) {
               handleSendMessage(e);
             }
           }}
-          disabled={!conversationId}
+          disabled={!conversationId || isLoading}
         />
         <Button type="submit" disabled={isLoading || !input.trim() || !conversationId} size="icon">
           <Send size={20} />
