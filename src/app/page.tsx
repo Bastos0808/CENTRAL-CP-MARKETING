@@ -18,7 +18,7 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const { toast } = useToast();
   
-  const UNLOCK_PASSWORD = "modus";
+  const UNLOCK_PASSWORD = "1201";
 
   const commercialTools = [
       {
