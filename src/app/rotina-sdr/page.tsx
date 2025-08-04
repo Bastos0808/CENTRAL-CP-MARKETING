@@ -185,10 +185,15 @@ export default function RotinaSDRPage() {
             const q = query(usersRef, where('role', '==', 'comercial'));
             const usersSnapshot = await getDocs(q);
             usersSnapshot.forEach(userDoc => {
+                const userData = userDoc.data();
+                let displayName = userData.displayName || '';
+                if (!displayName && userData.email) {
+                    displayName = userData.email.split('@')[0];
+                }
                 newSdrList.push({
                     id: userDoc.id,
-                    name: userDoc.data().displayName || userDoc.data().email,
-                    email: userDoc.data().email
+                    name: displayName,
+                    email: userData.email
                 });
             });
 
@@ -695,7 +700,7 @@ export default function RotinaSDRPage() {
             </div>
             
              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                <TabsList className="inline-flex flex-wrap w-full h-auto gap-1 bg-transparent p-0">
+                 <TabsList className="inline-flex flex-wrap w-full h-auto gap-1 bg-transparent p-0">
                   {TABS_ORDER.filter(tab => isAdmin || tab !== 'Visão Geral').map((tab) => {
                     const isDayTab = ptDays.includes(tab);
                     const isPodcastTab = tab === 'Podcast';
@@ -706,12 +711,12 @@ export default function RotinaSDRPage() {
                         <TabsTrigger 
                             key={tab} 
                             value={tab} 
-                            className={cn("text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:text-foreground",
+                            className={cn("text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg",
                                 {
-                                    "data-[state=active]:bg-primary": isDayTab,
-                                    "data-[state=active]:bg-purple-600": isPodcastTab,
-                                    "data-[state=active]:bg-green-600": isWeeklyTab,
-                                    "data-[state=active]:bg-blue-600": isMonthlyTab,
+                                    "data-[state=active]:bg-primary data-[state=active]:text-foreground": isDayTab,
+                                    "data-[state=active]:bg-purple-600 data-[state=active]:text-white": isPodcastTab,
+                                    "data-[state=active]:bg-green-600 data-[state=active]:text-white": isWeeklyTab,
+                                    "data-[state=active]:bg-blue-600 data-[state=active]:text-white": isMonthlyTab,
                                     "hover:bg-primary/10": isDayTab,
                                     "hover:bg-purple-600/10": isPodcastTab,
                                     "hover:bg-green-600/10": isWeeklyTab,
