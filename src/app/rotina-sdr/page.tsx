@@ -134,7 +134,6 @@ export default function RotinaSDRPage() {
   
   const [sdrList, setSdrList] = useState<SdrUser[]>([]);
   const [allSdrData, setAllSdrData] = useState<Record<string, YearData>>({});
-  const [selectedSdrId, setSelectedSdrId] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState(TABS_ORDER[1]); // Default to Monday
@@ -145,7 +144,7 @@ export default function RotinaSDRPage() {
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   
   const isAdmin = user?.role === 'admin';
-  const effectiveUserId = isAdmin && selectedSdrId !== 'all' ? selectedSdrId : user?.uid;
+  const effectiveUserId = user?.uid;
 
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -179,11 +178,12 @@ export default function RotinaSDRPage() {
         if (!user) return;
         setIsLoading(true);
         const newAllSdrData: Record<string, YearData> = {};
-
+        
         if (isAdmin) {
             const usersRef = collection(db, 'users');
             const q = query(usersRef, where('role', '==', 'comercial'));
             const usersSnapshot = await getDocs(q);
+            
             const fetchedSdrList = usersSnapshot.docs.map(userDoc => {
                 const userData = userDoc.data();
                 let displayName = userData.displayName || '';
@@ -202,19 +202,20 @@ export default function RotinaSDRPage() {
                 const perfDoc = await getDoc(doc(db, 'sdr_performance', sdr.id));
                 newAllSdrData[sdr.id] = perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData();
             }
+
+        } else if (user?.uid) { // Fetch only current user's data if not admin
+             const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
+             newAllSdrData[user.uid] = userPerfDoc.exists() ? (userPerfDoc.data() as YearData) : createInitialYearData();
         }
-        
-        const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
-        newAllSdrData[user.uid] = userPerfDoc.exists() ? (userPerfDoc.data() as YearData) : createInitialYearData();
         
         setAllSdrData(newAllSdrData);
         setIsLoading(false);
     };
 
-    if (!authLoading && user) {
+    if (!authLoading) {
         fetchAllData();
     }
-}, [user, isAdmin, authLoading]);
+  }, [user, isAdmin, authLoading]);
 
   useEffect(() => {
     const today = new Date();
@@ -337,7 +338,7 @@ export default function RotinaSDRPage() {
             
             let totalMeetings = 0;
             ptDays.forEach(day => {
-                totalMeetings += weekData.counterTasks[day]?.['daily_meetings'] || 0;
+                totalMeetings += weekData.counterTasks?.[day]?.['daily_meetings'] || 0;
             });
             weekData.meetingsBooked = totalMeetings;
         });
@@ -415,127 +416,46 @@ export default function RotinaSDRPage() {
       if (nextMonthIndex < 0) nextMonthIndex = ptMonths.length - 1;
       setCurrentMonth(ptMonths[nextMonthIndex]);
   }
-  
-  const aggregateAllSdrData = useMemo(() => {
-    const aggregatedData: MonthlyData = JSON.parse(JSON.stringify(initialMonthlyData));
-    
-    sdrList.forEach(sdr => {
-        const sdrData = allSdrData[sdr.id]?.[currentMonth];
-        if (!sdrData) return;
-        
-        (['semana1', 'semana2', 'semana3', 'semana4'] as const).forEach(weekKey => {
-            const sdrWeekData = sdrData[weekKey];
-            const aggWeekData = aggregatedData[weekKey];
 
-            aggWeekData.meetingsBooked += sdrWeekData.meetingsBooked || 0;
+  const AdminView = () => {
+      const sdrsToDisplay = sdrList.filter(sdr => 
+        sdr.name.includes('comercial02') || 
+        sdr.name.includes('comercial03') || 
+        sdr.name.includes('comercial04')
+      );
 
-            ptDays.forEach(day => {
-                const sdrDayCounters = sdrWeekData.counterTasks?.[day] || {};
-                if (!aggWeekData.counterTasks[day]) aggWeekData.counterTasks[day] = {};
-
-                Object.entries(sdrDayCounters).forEach(([taskId, value]) => {
-                    aggWeekData.counterTasks[day][taskId] = (aggWeekData.counterTasks[day][taskId] || 0) + value;
-                });
-            });
-             if (sdrWeekData.podcasts) {
-                Object.keys(sdrWeekData.podcasts).forEach(podcastKey => {
-                    const key = podcastKey as keyof PodcastData;
-                    if (sdrWeekData.podcasts[key].done) {
-                        if (!aggWeekData.podcasts[key].done) aggWeekData.podcasts[key].done = false;
-                         aggWeekData.podcasts[key].done = true;
-                    }
-                });
-            }
-        });
-    });
-
-    return aggregatedData;
-  }, [allSdrData, currentMonth, sdrList]);
-  
-  const TeamRanking = () => {
-      const ranking = sdrList.map(sdr => {
-          const sdrData = allSdrData[sdr.id]?.[currentMonth];
-          let totalMeetings = 0;
-          if (sdrData) {
-              totalMeetings = (sdrData.semana1?.meetingsBooked || 0) + (sdrData.semana2?.meetingsBooked || 0) + (sdrData.semana3?.meetingsBooked || 0) + (sdrData.semana4?.meetingsBooked || 0);
-          }
-          return { id: sdr.id, name: sdr.name, meetings: totalMeetings };
-      }).sort((a, b) => b.meetings - a.meetings);
+      if (isLoading) {
+          return (
+              <div className="flex justify-center items-center h-48">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+          );
+      }
 
       return (
-          <Card>
-              <CardHeader>
-                  <CardTitle>Ranking de Agendamentos do Mês</CardTitle>
-              </CardHeader>
-              <CardContent>
-                  <Table>
-                      <TableHeader>
-                          <TableRow>
-                              <TableHead>Posição</TableHead>
-                              <TableHead>SDR</TableHead>
-                              <TableHead className="text-right">Consultorias Agendadas</TableHead>
-                          </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                          {ranking.map((sdr, index) => (
-                              <TableRow key={sdr.id}>
-                                  <TableCell className="font-bold">{index + 1}º</TableCell>
-                                  <TableCell>{sdr.name}</TableCell>
-                                  <TableCell className="text-right font-bold text-lg">{sdr.meetings}</TableCell>
-                              </TableRow>
-                          ))}
-                      </TableBody>
-                  </Table>
-              </CardContent>
-          </Card>
+          <div className="space-y-6">
+              {sdrsToDisplay.map(sdr => {
+                  const sdrMonthlyData = allSdrData[sdr.id]?.[currentMonth];
+                  return (
+                      <Card key={sdr.id}>
+                          <CardHeader>
+                              <CardTitle>{sdr.name}</CardTitle>
+                              <CardDescription>Performance de {currentMonth}</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                              {sdrMonthlyData ? (
+                                  <WeeklyProgress monthlyData={sdrMonthlyData} isMonthlyView={true} />
+                              ) : (
+                                  <p>Dados não disponíveis para este SDR.</p>
+                              )}
+                          </CardContent>
+                      </Card>
+                  )
+              })}
+          </div>
       );
-  }
+  };
 
-
-  const AdminView = () => (
-    <div className="space-y-6">
-        <Card>
-            <CardHeader>
-                <CardTitle>Visão Geral do Time de SDRs</CardTitle>
-                <CardDescription>Selecione um SDR para ver sua performance individual ou veja a performance do time completo.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {isLoading || sdrList.length === 0 ? (
-                    <Skeleton className="h-10 w-full md:w-1/2" />
-                ) : (
-                    <Select onValueChange={setSelectedSdrId} value={selectedSdrId}>
-                        <SelectTrigger className="w-full md:w-1/2">
-                            <SelectValue placeholder="Selecione um SDR..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">Time Completo</SelectItem>
-                            {sdrList.map(sdr => (
-                                <SelectItem key={sdr.id} value={sdr.id}>{sdr.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                )}
-            </CardContent>
-        </Card>
-        
-        {isLoading ? (
-             <div className="flex justify-center items-center h-48">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        ) : selectedSdrId === 'all' ? (
-             <div className="space-y-6">
-                 <WeeklyProgress monthlyData={aggregateAllSdrData} isMonthlyView={true} teamMultiplier={sdrList.length}/>
-                 <TeamRanking />
-            </div>
-        ) : (
-             <div className="mt-6 border-t pt-6">
-                <h3 className="text-xl font-bold mb-4">Performance de {sdrList.find(s => s.id === selectedSdrId)?.name}</h3>
-                <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />
-            </div>
-        )}
-
-    </div>
-  );
 
   const SDRView = () => {
     const weekData = monthlyData?.[activeWeekKey];
@@ -677,14 +597,14 @@ export default function RotinaSDRPage() {
                 className={cn(
                     "text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg",
                     {
-                        "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground": isDayTab,
-                        "data-[state=active]:bg-purple-500 data-[state=active]:text-purple-50": isPodcast,
-                        "data-[state=active]:bg-green-500 data-[state=active]:text-green-50": isWeekly,
-                        "data-[state=active]:bg-blue-500 data-[state=active]:text-blue-50": isMonthly,
+                        "data-[state=active]:bg-primary data-[state=active]:text-foreground": isDayTab,
+                        "data-[state=active]:bg-purple-600 data-[state=active]:text-foreground": isPodcast,
+                        "data-[state=active]:bg-green-600 data-[state=active]:text-foreground": isWeekly,
+                        "data-[state=active]:bg-blue-600 data-[state=active]:text-foreground": isMonthly,
                         "hover:bg-primary/10": isDayTab,
-                        "hover:bg-purple-500/10": isPodcast,
-                        "hover:bg-green-500/10": isWeekly,
-                        "hover:bg-blue-500/10": isMonthly,
+                        "hover:bg-purple-600/10": isPodcast,
+                        "hover:bg-green-600/10": isWeekly,
+                        "hover:bg-blue-600/10": isMonthly,
                         "data-[state=active]:bg-gray-400": isAdminTab,
                         "hover:bg-gray-400/10": isAdminTab,
                     }
@@ -775,5 +695,5 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
- 
+
     
