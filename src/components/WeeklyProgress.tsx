@@ -62,11 +62,16 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false,
       
       counterTasksList.forEach(task => {
           const dailyGoal = task.dailyGoal || 0;
-          totalMonthlyGoals[task.id].goal -= dailyGoal * totalHolidays * teamMultiplier;
+          if (totalMonthlyGoals[task.id]) {
+            totalMonthlyGoals[task.id].goal -= dailyGoal * totalHolidays * teamMultiplier;
+          }
       });
 
       const dailyMeetingGoal = WEEKLY_MEETING_GOAL / 5;
-      totalMonthlyGoals['meetings'].goal -= dailyMeetingGoal * totalHolidays * teamMultiplier;
+      if(totalMonthlyGoals['meetings']) {
+        totalMonthlyGoals['meetings'].goal -= dailyMeetingGoal * totalHolidays * teamMultiplier;
+      }
+
 
       monthlyTotals['meetings'] = totalMeetingsBooked;
       monthlyTotals['podcasts'] = totalPodcastsDone;
@@ -93,11 +98,16 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false,
         const adjustedWeeklyGoals = JSON.parse(JSON.stringify(weeklyGoalsDef));
         counterTasksList.forEach(task => {
             const dailyGoal = task.dailyGoal || 0;
-            adjustedWeeklyGoals[task.id].goal = task.weeklyGoal - (dailyGoal * holidaysInWeek);
+             if (adjustedWeeklyGoals[task.id]) {
+                adjustedWeeklyGoals[task.id].goal = task.weeklyGoal - (dailyGoal * holidaysInWeek);
+             }
         });
         
         const dailyMeetingGoal = WEEKLY_MEETING_GOAL / 5;
-        adjustedWeeklyGoals['meetings'].goal -= dailyMeetingGoal * holidaysInWeek;
+        if(adjustedWeeklyGoals['meetings']) {
+            adjustedWeeklyGoals['meetings'].goal -= dailyMeetingGoal * holidaysInWeek;
+        }
+
 
         ptDays.forEach(day => {
             const dailyCounters = weeklyData.counterTasks?.[day] || {};

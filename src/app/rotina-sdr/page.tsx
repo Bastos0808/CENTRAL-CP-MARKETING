@@ -144,7 +144,7 @@ export default function RotinaSDRPage() {
   
   const yearData = useMemo(() => {
     if (selectedSdrId === 'all' || !effectiveUserId) {
-        return initialYearData; // Or some aggregated data structure if needed
+        return initialYearData;
     }
     return allSdrData[effectiveUserId] || initialYearData;
   }, [allSdrData, selectedSdrId, effectiveUserId]);
@@ -152,16 +152,16 @@ export default function RotinaSDRPage() {
 
   // Save data to Firestore on change
   useEffect(() => {
-    // Do not save if admin is just viewing, or if there's no user, or if it's still loading.
-    if (isAdmin || !user?.uid || isLoading) return;
-
-    const saveData = async () => {
-        const docRef = doc(db, 'sdr_performance', user.uid);
-        await setDoc(docRef, allSdrData[user.uid], { merge: true });
-    };
+    if (isLoading) return;
 
     const handler = setTimeout(() => {
-        saveData();
+        if (!isAdmin && user?.uid) {
+            const saveData = async () => {
+                const docRef = doc(db, 'sdr_performance', user.uid);
+                await setDoc(docRef, allSdrData[user.uid], { merge: true });
+            };
+            saveData();
+        }
     }, 2000); // Debounce saves
 
     return () => {
@@ -169,48 +169,52 @@ export default function RotinaSDRPage() {
     };
   }, [allSdrData, user?.uid, isLoading, isAdmin]);
   
-  // Fetch SDR list and all their data for admin view
+  // Fetch SDR list and all their data
   useEffect(() => {
-      const fetchAllSdrData = async () => {
-        if (!isAdmin && user?.uid) { // Fetch data for the current logged-in SDR
-            setIsLoading(true);
-            const docRef = doc(db, 'sdr_performance', user.uid);
-            const docSnap = await getDoc(docRef);
-            const userYearData = docSnap.exists() ? docSnap.data() as YearData : initialYearData;
-            setAllSdrData({ [user.uid]: userYearData });
-            setIsLoading(false);
-        } else if (isAdmin) { // Fetch data for all SDRs for admin
-            setIsLoading(true);
-            try {
-              const usersRef = collection(db, 'users');
-              const q = query(usersRef, where('role', '==', 'comercial'));
-              const querySnapshot = await getDocs(q);
-              
-              const sdrs: SdrUser[] = [];
-              const sdrDataPromises = querySnapshot.docs.map(async (userDoc) => {
-                  sdrs.push({ id: userDoc.id, name: userDoc.data().displayName || userDoc.data().email, email: userDoc.data().email });
-                  const performanceDocRef = doc(db, 'sdr_performance', userDoc.id);
-                  const performanceDocSnap = await getDoc(performanceDocRef);
-                  return { [userDoc.id]: performanceDocSnap.exists() ? performanceDocSnap.data() as YearData : initialYearData };
-              });
-  
-              const allDataArray = await Promise.all(sdrDataPromises);
-              const allData = allDataArray.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-  
-              setSdrList(sdrs);
-              setAllSdrData(allData);
-            } catch (e) {
-                console.error("Failed to fetch SDRs:", e);
-                toast({ title: "Erro ao buscar dados dos SDRs", variant: "destructive" });
-            } finally {
-                setIsLoading(false);
+      const fetchAllData = async () => {
+        setIsLoading(true);
+        if (user?.uid) {
+            // All users (including admin) need to fetch their own data first
+            const userDocRef = doc(db, 'sdr_performance', user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            const userYearData = userDocSnap.exists() ? userDocSnap.data() as YearData : initialYearData;
+            
+            setAllSdrData(prev => ({ ...prev, [user.uid]: userYearData }));
+
+            if (isAdmin) {
+                // Admin fetches everyone else's data
+                try {
+                  const usersRef = collection(db, 'users');
+                  const q = query(usersRef, where('role', '==', 'comercial'));
+                  const querySnapshot = await getDocs(q);
+                  
+                  const sdrs: SdrUser[] = [];
+                  const sdrDataPromises = querySnapshot.docs.map(async (userDoc) => {
+                      sdrs.push({ id: userDoc.id, name: userDoc.data().displayName || userDoc.data().email, email: userDoc.data().email });
+                      if (userDoc.id === user.uid) return { [user.id]: userYearData }; // already fetched
+                      
+                      const performanceDocRef = doc(db, 'sdr_performance', userDoc.id);
+                      const performanceDocSnap = await getDoc(performanceDocRef);
+                      return { [userDoc.id]: performanceDocSnap.exists() ? performanceDocSnap.data() as YearData : initialYearData };
+                  });
+      
+                  const allDataArray = await Promise.all(sdrDataPromises);
+                  const allData = allDataArray.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+      
+                  setSdrList(sdrs);
+                  setAllSdrData(prev => ({...prev, ...allData}));
+                } catch (e) {
+                    console.error("Failed to fetch SDRs:", e);
+                    toast({ title: "Erro ao buscar dados dos SDRs", variant: "destructive" });
+                }
             }
         }
+        setIsLoading(false);
       };
       
       if (user) {
-        fetchAllSdrData();
-      } else if (!user && !isLoading) { // If there's no user and we are not loading, finish.
+        fetchAllData();
+      } else if (!user && !isLoading) {
         setIsLoading(false);
       }
   }, [isAdmin, toast, user]);
@@ -259,7 +263,7 @@ export default function RotinaSDRPage() {
                 prevMonth = ptMonths[currentMonthIndex - 1];
                 prevWeekKey = 'semana4';
             } else {
-                return ""; // No previous month data in this year
+                return "";
             }
         }
     }
@@ -374,7 +378,7 @@ export default function RotinaSDRPage() {
 
       const remainingTaskLabels = allTasks
         .filter(task => {
-            if (isHoliday || task.saturdayOnly) return false;
+            if (isHoliday || (task.saturdayOnly && activeTab !== 'Sábado') || (!task.saturdayOnly && activeTab === 'Sábado')) return false;
             if (task.type === 'checkbox') {
                 return !checkedTasksForToday[task.id];
             }
@@ -428,7 +432,7 @@ export default function RotinaSDRPage() {
             aggWeekData.meetingsBooked += sdrWeekData.meetingsBooked || 0;
 
             ptDays.forEach(day => {
-                const sdrDayCounters = sdrWeekData.counterTasks[day] || {};
+                const sdrDayCounters = sdrWeekData.counterTasks?.[day] || {};
                 if (!aggWeekData.counterTasks[day]) aggWeekData.counterTasks[day] = {};
 
                 Object.entries(sdrDayCounters).forEach(([taskId, value]) => {
@@ -439,8 +443,8 @@ export default function RotinaSDRPage() {
                 Object.keys(sdrWeekData.podcasts).forEach(podcastKey => {
                     const key = podcastKey as keyof PodcastData;
                     if (sdrWeekData.podcasts[key].done) {
-                        if (!aggWeekData.podcasts[key].done) aggWeekData.podcasts[key].done = false; // Initialize if not present
-                         aggWeekData.podcasts[key].done = true; // For simplicity, we mark as done if any SDR did it
+                        if (!aggWeekData.podcasts[key].done) aggWeekData.podcasts[key].done = false;
+                         aggWeekData.podcasts[key].done = true;
                     }
                 });
             }
@@ -455,7 +459,7 @@ export default function RotinaSDRPage() {
           const sdrData = allSdrData[sdr.id]?.[currentMonth];
           let totalMeetings = 0;
           if (sdrData) {
-              totalMeetings = (sdrData.semana1.meetingsBooked || 0) + (sdrData.semana2.meetingsBooked || 0) + (sdrData.semana3.meetingsBooked || 0) + (sdrData.semana4.meetingsBooked || 0);
+              totalMeetings = (sdrData.semana1?.meetingsBooked || 0) + (sdrData.semana2?.meetingsBooked || 0) + (sdrData.semana3?.meetingsBooked || 0) + (sdrData.semana4?.meetingsBooked || 0);
           }
           return { name: sdr.name, meetings: totalMeetings };
       }).sort((a, b) => b.meetings - a.meetings);
@@ -535,9 +539,9 @@ export default function RotinaSDRPage() {
     const weekData = monthlyData?.[activeWeekKey];
     if(!weekData) return <div className="flex justify-center items-center h-48"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
-    const dailyMeetings = weekData.counterTasks[activeDay]?.['daily_meetings'] || 0;
+    const dailyMeetings = weekData.counterTasks?.[activeDay]?.['daily_meetings'] || 0;
     const isSaturday = activeTab === 'Sábado';
-    const totalWeeklyMeetings = weekData.meetingsBooked;
+    const totalWeeklyMeetings = weekData.meetingsBooked || 0;
     const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
     
     return(
@@ -561,7 +565,7 @@ export default function RotinaSDRPage() {
                 <CardContent className="p-0">
                   <div className="space-y-4">
                      {allTasks
-                        .filter(task => isSaturday ? task.saturdayOnly : !task.saturdayOnly)
+                        .filter(task => isSaturday ? task.saturdayOnly === true : task.saturdayOnly !== true)
                         .map((task) => (
                             <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
                                 {task.type === 'checkbox' ? (
@@ -569,7 +573,7 @@ export default function RotinaSDRPage() {
                                         <div className="flex items-center space-x-4">
                                             <Checkbox
                                                 id={`${activeDay}-${task.id}`}
-                                                checked={weekData.checkedTasks[activeDay]?.[task.id] || false}
+                                                checked={weekData.checkedTasks?.[activeDay]?.[task.id] || false}
                                                 onCheckedChange={(checked) => handleTaskCheck(task.id, !!checked)}
                                                 className="h-6 w-6 rounded-md border-2 border-primary"
                                                 disabled={isHoliday}
@@ -579,7 +583,7 @@ export default function RotinaSDRPage() {
                                         {task.id === 'a-7' && (
                                              <Textarea
                                                 placeholder="Digite as tarefas para o dia seguinte aqui..."
-                                                value={weekData.extraTasks[activeDay] || ''}
+                                                value={weekData.extraTasks?.[activeDay] || ''}
                                                 onChange={(e) => handleExtraTasksChange(e.target.value)}
                                                 className="w-full sm:w-1/2 bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
                                                 disabled={isHoliday}
@@ -590,8 +594,8 @@ export default function RotinaSDRPage() {
                                     <>
                                         <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
                                         <div className="flex items-center gap-3 w-full sm:w-auto">
-                                            <Input type="number" id={`${activeDay}-${task.id}`} value={weekData.counterTasks[activeDay]?.[task.id] || ''} onChange={(e) => handleCounterChange(task.id, e.target.value)} className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" disabled={isHoliday} />
-                                            <span className={cn("text-lg font-semibold", (weekData.counterTasks[activeDay]?.[task.id] || 0) >= task.dailyGoal ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
+                                            <Input type="number" id={`${activeDay}-${task.id}`} value={weekData.counterTasks?.[activeDay]?.[task.id] || ''} onChange={(e) => handleCounterChange(task.id, e.target.value)} className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" disabled={isHoliday} />
+                                            <span className={cn("text-lg font-semibold", (weekData.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
                                         </div>
                                     </>
                                 )}
@@ -644,6 +648,14 @@ export default function RotinaSDRPage() {
                 </CardContent>
               </Card>
             </div>
+        </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+        <div className="flex min-h-screen w-full items-center justify-center">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
         </div>
     );
   }
@@ -712,10 +724,10 @@ export default function RotinaSDRPage() {
                 <PodcastTab podcastData={monthlyData?.[activeWeekKey]?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />
             </TabsContent>
             <TabsContent value="Progresso Semanal" className="mt-0">
-                 <WeeklyProgress weeklyData={monthlyData} />
+                 <WeeklyProgress weeklyData={monthlyData?.[activeWeekKey]} />
              </TabsContent>
              <TabsContent value="Progresso Mensal" className="mt-0">
-                <WeeklyProgress monthlyData={yearData} isMonthlyView={true} />
+                <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />
              </TabsContent>
         </Tabs>
       </main>
