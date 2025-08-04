@@ -127,7 +127,7 @@ interface SdrUser {
 
 export default function RotinaSDRPage() {
   const { toast } = useToast();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, logout } = useAuth();
   
   const [sdrList, setSdrList] = useState<SdrUser[]>([]);
   const [allSdrData, setAllSdrData] = useState<Record<string, YearData>>({});
@@ -528,7 +528,7 @@ export default function RotinaSDRPage() {
         ) : (
              <div className="mt-6 border-t pt-6">
                 <h3 className="text-xl font-bold mb-4">Performance de {sdrList.find(s => s.id === selectedSdrId)?.name}</h3>
-                <WeeklyProgress monthlyData={yearData} isMonthlyView={true} />
+                <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />
             </div>
         )}
 
