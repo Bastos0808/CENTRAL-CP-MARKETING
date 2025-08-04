@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -275,5 +274,3 @@ export function WeeklyProgress({ monthlyData, isMonthlyView = false, onMeetingsC
     </Card>
   );
 }
-
-    
