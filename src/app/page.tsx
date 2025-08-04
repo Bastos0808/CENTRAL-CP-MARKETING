@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -64,9 +63,9 @@ export default function Home() {
         icon: Users
       },
        {
-        title: "SDR Dashboard",
+        title: "Rotina SDR",
         description: "Acompanhe a rotina e as metas de performance do SDR.",
-        href: "/sdr-dashboard",
+        href: "/rotina-sdr",
         icon: BarChart
       },
       {
