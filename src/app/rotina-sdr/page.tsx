@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import Image from 'next/image';
 import {
   BarChart,
@@ -63,6 +64,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { produce } from 'immer';
 
 
 const TABS_ORDER = ['Visão Geral', ...ptDays, 'Podcast', 'Progresso Semanal', 'Progresso Mensal'];
@@ -112,7 +114,7 @@ const initialMonthlyData: MonthlyData = {
   semana3: JSON.parse(JSON.stringify(initialWeeklyData)),
   semana4: JSON.parse(JSON.stringify(initialWeeklyData)),
 };
-const initialYearData: YearData = ptMonths.reduce((acc, month) => {
+const createInitialYearData = (): YearData => ptMonths.reduce((acc, month) => {
     acc[month] = JSON.parse(JSON.stringify(initialMonthlyData));
     return acc;
 }, {} as YearData);
@@ -125,7 +127,7 @@ interface SdrUser {
 
 export default function RotinaSDRPage() {
   const { toast } = useToast();
-  const { user, logout } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   
   const [sdrList, setSdrList] = useState<SdrUser[]>([]);
   const [allSdrData, setAllSdrData] = useState<Record<string, YearData>>({});
@@ -141,48 +143,45 @@ export default function RotinaSDRPage() {
   
   const isAdmin = user?.role === 'admin';
   const effectiveUserId = isAdmin && selectedSdrId !== 'all' ? selectedSdrId : user?.uid;
-  
+
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const yearData = useMemo(() => {
-    if (selectedSdrId === 'all' || !effectiveUserId) {
-        return initialYearData;
+    if (!effectiveUserId) return createInitialYearData();
+    return allSdrData[effectiveUserId] || createInitialYearData();
+  }, [allSdrData, effectiveUserId]);
+
+
+  // Debounced save function
+  const triggerSave = useCallback(() => {
+    if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
     }
-    return allSdrData[effectiveUserId] || initialYearData;
-  }, [allSdrData, selectedSdrId, effectiveUserId]);
-
-
-  // Save data to Firestore on change
-  useEffect(() => {
-    if (isLoading) return;
-
-    const handler = setTimeout(() => {
+    saveTimeoutRef.current = setTimeout(async () => {
         if (!isAdmin && user?.uid) {
-            const saveData = async () => {
+            const dataToSave = allSdrData[user.uid];
+            if (dataToSave) {
                 const docRef = doc(db, 'sdr_performance', user.uid);
-                await setDoc(docRef, allSdrData[user.uid], { merge: true });
-            };
-            saveData();
+                await setDoc(docRef, dataToSave, { merge: true });
+                // Optional: add a saving indicator toast
+            }
         }
-    }, 2000); // Debounce saves
+    }, 2000); // 2-second debounce
+  }, [allSdrData, isAdmin, user?.uid]);
 
-    return () => {
-        clearTimeout(handler);
-    };
-  }, [allSdrData, user?.uid, isLoading, isAdmin]);
-  
+
   // Fetch SDR list and all their data
   useEffect(() => {
       const fetchAllData = async () => {
         setIsLoading(true);
         if (user?.uid) {
-            // All users (including admin) need to fetch their own data first
             const userDocRef = doc(db, 'sdr_performance', user.uid);
             const userDocSnap = await getDoc(userDocRef);
-            const userYearData = userDocSnap.exists() ? userDocSnap.data() as YearData : initialYearData;
+            const userYearData = userDocSnap.exists() ? userDocSnap.data() as YearData : createInitialYearData();
             
             setAllSdrData(prev => ({ ...prev, [user.uid]: userYearData }));
 
             if (isAdmin) {
-                // Admin fetches everyone else's data
                 try {
                   const usersRef = collection(db, 'users');
                   const q = query(usersRef, where('role', '==', 'comercial'));
@@ -191,11 +190,11 @@ export default function RotinaSDRPage() {
                   const sdrs: SdrUser[] = [];
                   const sdrDataPromises = querySnapshot.docs.map(async (userDoc) => {
                       sdrs.push({ id: userDoc.id, name: userDoc.data().displayName || userDoc.data().email, email: userDoc.data().email });
-                      if (userDoc.id === user.uid) return { [user.id]: userYearData }; // already fetched
+                      if (userDoc.id === user.uid) return { [userDoc.id]: userYearData };
                       
                       const performanceDocRef = doc(db, 'sdr_performance', userDoc.id);
                       const performanceDocSnap = await getDoc(performanceDocRef);
-                      return { [userDoc.id]: performanceDocSnap.exists() ? performanceDocSnap.data() as YearData : initialYearData };
+                      return { [userDoc.id]: performanceDocSnap.exists() ? performanceDocSnap.data() as YearData : createInitialYearData() };
                   });
       
                   const allDataArray = await Promise.all(sdrDataPromises);
@@ -214,10 +213,10 @@ export default function RotinaSDRPage() {
       
       if (user) {
         fetchAllData();
-      } else if (!user && !isLoading) {
+      } else if (!user && !authLoading) {
         setIsLoading(false);
       }
-  }, [isAdmin, toast, user]);
+  }, [isAdmin, toast, user, authLoading]);
 
   useEffect(() => {
     const today = new Date();
@@ -234,7 +233,7 @@ export default function RotinaSDRPage() {
     } else if (dayOfWeek >= 1 && dayOfWeek <= 6) { 
         setActiveTab(ptDays[dayOfWeek - 1]);
     } else {
-        setActiveTab(ptDays[0]); // Default to Monday on weekends for non-admins
+        setActiveTab(ptDays[0]);
     }
   }, [isAdmin]);
 
@@ -271,16 +270,17 @@ export default function RotinaSDRPage() {
     return allSdrData[effectiveUserId]?.[prevMonth]?.[prevWeekKey]?.extraTasks[previousDay] || "";
   }, [activeDay, currentWeek, allSdrData, currentMonth, previousDay, activeWeekKey, effectiveUserId]);
 
-  const handleUpdateYearData = useCallback((updater: (draft: YearData) => void) => {
+  const handleUpdateYearData = (updater: (draft: YearData) => void) => {
     if (!effectiveUserId) return;
-    setAllSdrData(currentData => {
-        const draft = JSON.parse(JSON.stringify(currentData));
-        const userDraft = draft[effectiveUserId] || initialYearData;
-        updater(userDraft);
-        draft[effectiveUserId] = userDraft;
-        return draft;
+    const newState = produce(allSdrData, draft => {
+        if (!draft[effectiveUserId]) {
+            draft[effectiveUserId] = createInitialYearData();
+        }
+        updater(draft[effectiveUserId]);
     });
-  }, [effectiveUserId]);
+    setAllSdrData(newState);
+    triggerSave();
+  };
 
   const handleTaskCheck = (taskId: string, isChecked: boolean) => {
     handleUpdateYearData(draft => {
@@ -652,7 +652,7 @@ export default function RotinaSDRPage() {
     );
   }
 
-  if (isLoading) {
+  if (isLoading || authLoading) {
     return (
         <div className="flex min-h-screen w-full items-center justify-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
