@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -50,7 +51,7 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false,
 
           counterTasksList.forEach(task => {
               ptDays.forEach(day => {
-                  const dailyCounters = week.counterTasks[day] || {};
+                  const dailyCounters = week.counterTasks?.[day] || {};
                   if (dailyCounters[task.id]) {
                       if (!monthlyTotals[task.id]) monthlyTotals[task.id] = 0;
                       monthlyTotals[task.id] += dailyCounters[task.id];
@@ -99,7 +100,7 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false,
         adjustedWeeklyGoals['meetings'].goal -= dailyMeetingGoal * holidaysInWeek;
 
         ptDays.forEach(day => {
-            const dailyCounters = weeklyData.counterTasks[day] || {};
+            const dailyCounters = weeklyData.counterTasks?.[day] || {};
             counterTasksList.forEach(task => {
                 if (dailyCounters[task.id]) {
                     if (!weeklyTotals[task.id]) weeklyTotals[task.id] = 0;
