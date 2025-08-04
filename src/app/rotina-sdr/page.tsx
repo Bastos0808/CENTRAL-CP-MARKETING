@@ -172,58 +172,47 @@ export default function RotinaSDRPage() {
 
   // Fetch SDR list and all their data
   useEffect(() => {
-      const fetchAllData = async () => {
-        if (!user) {
-            setIsLoading(false);
-            return;
-        }
-
+    const fetchAllData = async () => {
+        if (!user) return;
         setIsLoading(true);
 
-        // Fetch current user's performance data first
-        const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
-        const userYearData = userPerfDoc.exists() ? (userPerfDoc.data() as YearData) : createInitialYearData();
-        setAllSdrData(prev => produce(prev, draft => {
-            draft[user.uid] = userYearData;
-        }));
+        const newSdrList: SdrUser[] = [];
+        const newAllSdrData: Record<string, YearData> = {};
 
         if (isAdmin) {
-            try {
-                // First, get all SDR users
-                const usersRef = collection(db, 'users');
-                const q = query(usersRef, where('role', '==', 'comercial'));
-                const usersSnapshot = await getDocs(q);
-                const sdrsFromDb: SdrUser[] = usersSnapshot.docs.map(userDoc => ({
+            // 1. Fetch all SDR users first
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('role', '==', 'comercial'));
+            const usersSnapshot = await getDocs(q);
+            usersSnapshot.forEach(userDoc => {
+                newSdrList.push({
                     id: userDoc.id,
                     name: userDoc.data().displayName || userDoc.data().email,
                     email: userDoc.data().email
-                }));
-                setSdrList(sdrsFromDb);
-
-                // Then, fetch performance data for each SDR
-                const performancePromises = sdrsFromDb.map(async (sdr) => {
-                    if (sdr.id === user.uid) return { [sdr.id]: userYearData };
-                    const perfDoc = await getDoc(doc(db, 'sdr_performance', sdr.id));
-                    return { [sdr.id]: perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData() };
                 });
+            });
 
-                const allPerformances = await Promise.all(performancePromises);
-                const allPerformanceData = allPerformances.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-
-                setAllSdrData(prev => ({...prev, ...allPerformanceData}));
-
-            } catch (e) {
-                console.error("Failed to fetch SDRs:", e);
-                toast({ title: "Erro ao buscar dados dos SDRs", variant: "destructive" });
+            // 2. Fetch performance data for each SDR
+            for (const sdr of newSdrList) {
+                const perfDoc = await getDoc(doc(db, 'sdr_performance', sdr.id));
+                newAllSdrData[sdr.id] = perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData();
             }
         }
+
+        // 3. Fetch current user's performance data
+        const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
+        newAllSdrData[user.uid] = userPerfDoc.exists() ? (userPerfDoc.data() as YearData) : createInitialYearData();
+        
+        // 4. Update state once with all data
+        setSdrList(newSdrList);
+        setAllSdrData(newAllSdrData);
         setIsLoading(false);
-      };
-      
-      if (!authLoading) {
+    };
+
+    if (!authLoading) {
         fetchAllData();
-      }
-  }, [isAdmin, toast, user, authLoading]);
+    }
+}, [user, isAdmin, authLoading]);
 
   useEffect(() => {
     const today = new Date();
@@ -659,7 +648,7 @@ export default function RotinaSDRPage() {
     );
   }
 
-  if (authLoading) {
+  if (authLoading || isLoading) {
     return (
         <div className="flex min-h-screen w-full items-center justify-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
