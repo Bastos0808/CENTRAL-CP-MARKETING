@@ -698,8 +698,8 @@ export default function RotinaSDRPage() {
               <Button variant="outline" size="icon" onClick={() => handleMonthChange('next')}><ChevronRight className="h-4 w-4" /></Button>
             </div>
             
-             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto self-start sm:self-center">
-                <TabsList className="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:flex-wrap w-full lg:w-auto h-auto gap-2 bg-transparent p-0">
+             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
+                <TabsList className="inline-flex flex-wrap w-full h-auto gap-1 bg-transparent p-0">
                   {TABS_ORDER.filter(tab => isAdmin || tab !== 'Visão Geral').map((tab) => {
                     const isDayTab = ptDays.includes(tab);
                     const isPodcastTab = tab === 'Podcast';
@@ -710,7 +710,7 @@ export default function RotinaSDRPage() {
                         <TabsTrigger 
                             key={tab} 
                             value={tab} 
-                            className={cn("w-full text-base py-3 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:text-white",
+                            className={cn("text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:text-foreground",
                                 {
                                     "data-[state=active]:bg-primary": isDayTab,
                                     "data-[state=active]:bg-purple-600": isPodcastTab,
