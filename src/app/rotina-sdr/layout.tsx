@@ -1,8 +1,8 @@
 "use client";
 
+import { AuthProvider } from '@/components/auth-provider';
 import '../globals.css';
 import { Toaster } from "@/components/ui/toaster"
-import { AuthProvider } from '@/components/auth-provider';
 
 export default function SDRLayout({
   children,
@@ -10,13 +10,8 @@ export default function SDRLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className='dark' suppressHydrationWarning>
-      <body>
-        <AuthProvider>
-            {children}
-            <Toaster />
-        </AuthProvider>
-      </body>
-    </html>
+    <>
+        {children}
+    </>
   );
 }
