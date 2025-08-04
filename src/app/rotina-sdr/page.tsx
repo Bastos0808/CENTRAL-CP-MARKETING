@@ -673,10 +673,10 @@ export default function RotinaSDRPage() {
                 className={cn(
                     "text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:text-foreground",
                     {
-                        "data-[state=active]:bg-primary": isDayTab,
-                        "data-[state=active]:bg-purple-500": isPodcast,
-                        "data-[state=active]:bg-green-500": isWeekly,
-                        "data-[state=active]:bg-blue-500": isMonthly,
+                        "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground": isDayTab,
+                        "data-[state=active]:bg-purple-500 data-[state=active]:text-white": isPodcast,
+                        "data-[state=active]:bg-green-500 data-[state=active]:text-white": isWeekly,
+                        "data-[state=active]:bg-blue-500 data-[state=active]:text-white": isMonthly,
                         "hover:bg-primary/10": isDayTab,
                         "hover:bg-purple-500/10": isPodcast,
                         "hover:bg-green-500/10": isWeekly,
@@ -734,16 +734,16 @@ export default function RotinaSDRPage() {
             </div>
             
              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                 <div className="flex flex-wrap gap-2">
+                 <div className="flex flex-wrap items-center gap-4">
                     {isAdmin && (
-                        <TabsList className="bg-transparent p-0">
+                        <TabsList>
                             {renderTabTrigger('Visão Geral')}
                         </TabsList>
                     )}
-                    <TabsList className="bg-transparent p-0 flex-wrap h-auto">
+                    <TabsList className="h-auto flex-wrap">
                          {DAY_TABS.map(renderTabTrigger)}
                     </TabsList>
-                    <TabsList className="bg-transparent p-0 flex-wrap h-auto">
+                    <TabsList className="h-auto flex-wrap">
                          {FUNCTION_TABS.map(renderTabTrigger)}
                     </TabsList>
                  </div>
@@ -772,3 +772,4 @@ export default function RotinaSDRPage() {
   );
 }
  
+    
