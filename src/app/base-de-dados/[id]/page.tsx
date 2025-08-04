@@ -210,8 +210,8 @@ const InfoCard = ({ title, value, icon: Icon, children }: { title: string; value
 
 
 export default function ClientDossierPage({ params }: { params: { id: string } }) {
+  const { id: clientId } = use(params);
   const router = useRouter();
-  const clientId = use(params).id;
   const [client, setClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
