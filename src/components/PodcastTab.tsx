@@ -6,23 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mic, Loader2 } from "lucide-react";
 import { Separator } from "./ui/separator";
+import type { PodcastData } from "@/lib/types";
 
-export type GuestInfo = {
-  guestName: string;
-  instagram: string;
-};
-
-export type PodcastEpisode = {
-  guests: GuestInfo[];
-  done: boolean;
-};
-
-export type PodcastData = {
-  podcast1: PodcastEpisode;
-  podcast2: PodcastEpisode;
-  podcast3: PodcastEpisode;
-  podcast4: PodcastEpisode;
-};
+export type { PodcastData };
 
 interface PodcastTabProps {
   podcastData?: PodcastData;

@@ -8,41 +8,21 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { allTasks, AnyTask, ptDays, weeklyGoals as weeklyGoalsDef, WEEKLY_MEETING_GOAL } from '@/lib/tasks';
 import { cn } from '@/lib/utils';
 import { ScoreIndicator } from './ScoreIndicator';
-import type { PodcastData } from './PodcastTab';
+import type { PodcastData, WeeklyData, MonthlyData } from '@/lib/types';
 
-type CheckedTasksState = Record<string, boolean>;
-type CounterTasksState = Record<string, number>;
-type ExtraTasksState = Record<string, string>;
-type HolidaysState = Record<string, boolean>;
-
-export type WeeklyData = {
-  checkedTasks: Record<string, CheckedTasksState>;
-  counterTasks: Record<string, CounterTasksState>;
-  extraTasks: Record<string, ExtraTasksState>;
-  holidays: HolidaysState;
-  meetingsBooked: number;
-  podcasts: PodcastData;
-};
-
-export type MonthlyData = {
-  semana1: WeeklyData;
-  semana2: WeeklyData;
-  semana3: WeeklyData;
-  semana4: WeeklyData;
-};
 
 interface WeeklyProgressProps {
   monthlyData?: MonthlyData;
   weeklyData?: WeeklyData;
   isMonthlyView?: boolean;
+  teamMultiplier?: number;
 }
 
-export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false }: WeeklyProgressProps) {
+export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false, teamMultiplier = 1 }: WeeklyProgressProps) {
   
   const { progressItems, overallScore } = useMemo(() => {
     const counterTasksList = allTasks.filter((t): t is AnyTask & { type: 'counter' } => t.type === 'counter' && !t.saturdayOnly);
-    const weeklyGoals = JSON.parse(JSON.stringify(weeklyGoalsDef));
-
+    
     if (isMonthlyView) {
       if (!monthlyData) return { progressItems: [], overallScore: 0 };
       
@@ -51,9 +31,9 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false 
       let totalHolidays = 0;
       let totalPodcastsDone = 0;
       
-      let totalMonthlyGoals = JSON.parse(JSON.stringify(weeklyGoals));
+      let totalMonthlyGoals = JSON.parse(JSON.stringify(weeklyGoalsDef));
       Object.keys(totalMonthlyGoals).forEach(key => {
-          totalMonthlyGoals[key].goal *= 4;
+          totalMonthlyGoals[key].goal *= (4 * teamMultiplier);
       });
 
       (['semana1', 'semana2', 'semana3', 'semana4'] as const).forEach(weekKey => {
@@ -81,11 +61,11 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false 
       
       counterTasksList.forEach(task => {
           const dailyGoal = task.dailyGoal || 0;
-          totalMonthlyGoals[task.id].goal -= dailyGoal * totalHolidays;
+          totalMonthlyGoals[task.id].goal -= dailyGoal * totalHolidays * teamMultiplier;
       });
 
       const dailyMeetingGoal = WEEKLY_MEETING_GOAL / 5;
-      totalMonthlyGoals['meetings'].goal -= dailyMeetingGoal * totalHolidays;
+      totalMonthlyGoals['meetings'].goal -= dailyMeetingGoal * totalHolidays * teamMultiplier;
 
       monthlyTotals['meetings'] = totalMeetingsBooked;
       monthlyTotals['podcasts'] = totalPodcastsDone;
@@ -109,7 +89,7 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false 
 
         const holidaysInWeek = Object.keys(weeklyData.holidays || {}).filter(day => weeklyData.holidays[day] && ptDays.slice(0, 5).includes(day)).length;
         
-        const adjustedWeeklyGoals = JSON.parse(JSON.stringify(weeklyGoals));
+        const adjustedWeeklyGoals = JSON.parse(JSON.stringify(weeklyGoalsDef));
         counterTasksList.forEach(task => {
             const dailyGoal = task.dailyGoal || 0;
             adjustedWeeklyGoals[task.id].goal = task.weeklyGoal - (dailyGoal * holidaysInWeek);
@@ -138,7 +118,7 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false 
         const score = items.length > 0 ? totalProgress / items.length : 0;
         return { progressItems: items, overallScore: score };
     }
-  }, [monthlyData, weeklyData, isMonthlyView]);
+  }, [monthlyData, weeklyData, isMonthlyView, teamMultiplier]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -149,7 +129,7 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false 
             Progresso e Metas
           </CardTitle>
           <CardDescription>
-            Acompanhe seu progresso em direção às metas. Os feriados são descontados das metas.
+            Acompanhe o progresso em direção às metas. Os feriados são descontados das metas.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -171,7 +151,7 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false 
       <Card>
         <CardHeader>
           <CardTitle className="font-headline text-primary">Nota de Performance</CardTitle>
-          <CardDescription>Sua pontuação geral para o período.</CardDescription>
+          <CardDescription>Pontuação geral para o período.</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center">
           <ScoreIndicator score={overallScore} />
