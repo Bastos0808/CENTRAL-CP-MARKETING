@@ -1,15 +1,14 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BarChart } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { allTasks, AnyTask, ptDays, weeklyGoals as weeklyGoalsDef, WEEKLY_MEETING_GOAL } from '@/lib/tasks';
 import { cn } from '@/lib/utils';
 import { ScoreIndicator } from './ScoreIndicator';
-import type { PodcastData, WeeklyData, MonthlyData } from '@/lib/types';
+import type { MonthlyData, WeeklyData } from '@/lib/types';
 
 
 interface WeeklyProgressProps {
@@ -52,7 +51,7 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false,
           counterTasksList.forEach(task => {
               ptDays.forEach(day => {
                   const dailyCounters = week.counterTasks?.[day] || {};
-                  if (dailyCounters[task.id]) {
+                  if (dailyCounters?.[task.id]) {
                       if (!monthlyTotals[task.id]) monthlyTotals[task.id] = 0;
                       monthlyTotals[task.id] += dailyCounters[task.id];
                   }
@@ -130,6 +129,12 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false,
         return { progressItems: items, overallScore: score };
     }
   }, [monthlyData, weeklyData, isMonthlyView, teamMultiplier]);
+  
+  const getProgressColor = (progress: number) => {
+    if (progress < 40) return 'bg-red-500';
+    if (progress < 100) return 'bg-yellow-500';
+    return 'bg-green-500';
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -149,11 +154,11 @@ export function WeeklyProgress({ monthlyData, weeklyData, isMonthlyView = false,
               <div key={item.id} className="p-4 rounded-lg bg-secondary">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium">{item.label}</span>
-                  <span className={cn("text-sm font-bold", item.achieved ? "text-green-500" : "text-red-500")}>
+                  <span className={cn("text-sm font-bold", item.achieved ? "text-green-500" : "text-foreground/80")}>
                     {item.current} / {item.goal}
                   </span>
                 </div>
-                <Progress value={item.progress} className={cn(item.achieved ? '[&>div]:bg-green-500' : '[&>div]:bg-primary')} />
+                <Progress value={item.progress} className={cn('[&>div]:transition-all [&>div]:duration-500', `[&>div]:${getProgressColor(item.progress)}`)} />
               </div>
             ))}
           </div>

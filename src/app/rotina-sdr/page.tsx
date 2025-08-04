@@ -699,16 +699,38 @@ export default function RotinaSDRPage() {
             </div>
             
              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto self-start sm:self-center">
-                <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full sm:w-auto h-auto flex-wrap gap-2 bg-transparent p-0">
-                  {TABS_ORDER.filter(tab => isAdmin || tab !== 'Visão Geral').map((tab) => (
-                    <TabsTrigger key={tab} value={tab} className="w-full text-base py-3 data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-lg">
-                      {tab === 'Visão Geral' && <Users className="mr-2 h-4 w-4" />}
-                      {ptDays.includes(tab) && <CalendarDays className="mr-2 h-4 w-4" />}
-                      {tab === 'Podcast' && <Mic className="mr-2 h-4 w-4" />}
-                      {tab.includes('Progresso') && <BarChart className="mr-2 h-4 w-4" />}
-                      {tab}
-                    </TabsTrigger>
-                  ))}
+                <TabsList className="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:flex-wrap w-full lg:w-auto h-auto gap-2 bg-transparent p-0">
+                  {TABS_ORDER.filter(tab => isAdmin || tab !== 'Visão Geral').map((tab) => {
+                    const isDayTab = ptDays.includes(tab);
+                    const isPodcastTab = tab === 'Podcast';
+                    const isWeeklyTab = tab === 'Progresso Semanal';
+                    const isMonthlyTab = tab === 'Progresso Mensal';
+
+                    return (
+                        <TabsTrigger 
+                            key={tab} 
+                            value={tab} 
+                            className={cn("w-full text-base py-3 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:text-white",
+                                {
+                                    "data-[state=active]:bg-primary": isDayTab,
+                                    "data-[state=active]:bg-purple-600": isPodcastTab,
+                                    "data-[state=active]:bg-green-600": isWeeklyTab,
+                                    "data-[state=active]:bg-blue-600": isMonthlyTab,
+                                    "hover:bg-primary/10": isDayTab,
+                                    "hover:bg-purple-600/10": isPodcastTab,
+                                    "hover:bg-green-600/10": isWeeklyTab,
+                                    "hover:bg-blue-600/10": isMonthlyTab,
+                                }
+                            )}
+                        >
+                            {tab === 'Visão Geral' && <Users className="mr-2 h-4 w-4" />}
+                            {isDayTab && <CalendarDays className="mr-2 h-4 w-4" />}
+                            {isPodcastTab && <Mic className="mr-2 h-4 w-4" />}
+                            {(isWeeklyTab || isMonthlyTab) && <BarChart className="mr-2 h-4 w-4" />}
+                            {tab}
+                        </TabsTrigger>
+                    )
+                  })}
                 </TabsList>
             </Tabs>
         </div>
