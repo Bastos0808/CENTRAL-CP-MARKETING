@@ -500,17 +500,21 @@ export default function RotinaSDRPage() {
                 <CardDescription>Selecione um SDR para ver sua performance individual ou veja a performance do time completo.</CardDescription>
             </CardHeader>
             <CardContent>
-                <Select onValueChange={setSelectedSdrId} value={selectedSdrId}>
-                    <SelectTrigger className="w-full md:w-1/2">
-                        <SelectValue placeholder="Selecione um SDR..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">Time Completo</SelectItem>
-                        {sdrList.map(sdr => (
-                            <SelectItem key={sdr.id} value={sdr.id}>{sdr.name}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                {isLoading || sdrList.length === 0 ? (
+                    <Skeleton className="h-10 w-full md:w-1/2" />
+                ) : (
+                    <Select onValueChange={setSelectedSdrId} value={selectedSdrId}>
+                        <SelectTrigger className="w-full md:w-1/2">
+                            <SelectValue placeholder="Selecione um SDR..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">Time Completo</SelectItem>
+                            {sdrList.map(sdr => (
+                                <SelectItem key={sdr.id} value={sdr.id}>{sdr.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                )}
             </CardContent>
         </Card>
         
@@ -671,12 +675,12 @@ export default function RotinaSDRPage() {
                 key={tab}
                 value={tab}
                 className={cn(
-                    "text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:text-foreground",
+                    "text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg",
                     {
                         "data-[state=active]:bg-primary data-[state=active]:text-primary-foreground": isDayTab,
-                        "data-[state=active]:bg-purple-500 data-[state=active]:text-white": isPodcast,
-                        "data-[state=active]:bg-green-500 data-[state=active]:text-white": isWeekly,
-                        "data-[state=active]:bg-blue-500 data-[state=active]:text-white": isMonthly,
+                        "data-[state=active]:bg-purple-500 data-[state=active]:text-purple-50": isPodcast,
+                        "data-[state=active]:bg-green-500 data-[state=active]:text-green-50": isWeekly,
+                        "data-[state=active]:bg-blue-500 data-[state=active]:text-blue-50": isMonthly,
                         "hover:bg-primary/10": isDayTab,
                         "hover:bg-purple-500/10": isPodcast,
                         "hover:bg-green-500/10": isWeekly,
@@ -740,10 +744,10 @@ export default function RotinaSDRPage() {
                             {renderTabTrigger('Visão Geral')}
                         </TabsList>
                     )}
-                    <TabsList className="h-auto flex-wrap">
+                    <TabsList>
                          {DAY_TABS.map(renderTabTrigger)}
                     </TabsList>
-                    <TabsList className="h-auto flex-wrap">
+                    <TabsList>
                          {FUNCTION_TABS.map(renderTabTrigger)}
                     </TabsList>
                  </div>
