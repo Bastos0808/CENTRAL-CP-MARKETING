@@ -31,17 +31,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
             if (fbUser) {
-                // User is signed in, now fetch their role from Firestore
+                // User is signed in, now fetch their role and displayName from Firestore
                 const userDocRef = doc(db, 'users', fbUser.uid);
                 const userDocSnap = await getDoc(userDocRef);
                 
+                let displayName = fbUser.displayName || '';
+                let role: AppUser['role'] = 'comercial';
+
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();
-                    setUser({ ...fbUser, role: userData.role || 'comercial' });
-                } else {
-                    // Default role if no document is found
-                    setUser({ ...fbUser, role: 'comercial' }); 
+                    role = userData.role || 'comercial';
+                    displayName = userData.displayName || displayName;
                 }
+
+                // If displayName is still empty, derive it from the email
+                if (!displayName && fbUser.email) {
+                    displayName = fbUser.email.split('@')[0];
+                }
+
+                setUser({ ...fbUser, displayName, role });
             } else {
                 setUser(null);
             }
