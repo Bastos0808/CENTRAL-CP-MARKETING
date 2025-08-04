@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -461,7 +462,7 @@ export default function RotinaSDRPage() {
           if (sdrData) {
               totalMeetings = (sdrData.semana1?.meetingsBooked || 0) + (sdrData.semana2?.meetingsBooked || 0) + (sdrData.semana3?.meetingsBooked || 0) + (sdrData.semana4?.meetingsBooked || 0);
           }
-          return { name: sdr.name, meetings: totalMeetings };
+          return { id: sdr.id, name: sdr.name, meetings: totalMeetings };
       }).sort((a, b) => b.meetings - a.meetings);
 
       return (
@@ -480,7 +481,7 @@ export default function RotinaSDRPage() {
                       </TableHeader>
                       <TableBody>
                           {ranking.map((sdr, index) => (
-                              <TableRow key={sdr.name}>
+                              <TableRow key={sdr.id}>
                                   <TableCell className="font-bold">{index + 1}º</TableCell>
                                   <TableCell>{sdr.name}</TableCell>
                                   <TableCell className="text-right font-bold text-lg">{sdr.meetings}</TableCell>
@@ -756,3 +757,4 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
+
