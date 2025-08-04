@@ -68,6 +68,9 @@ import { produce } from 'immer';
 
 
 const TABS_ORDER = ['Visão Geral', ...ptDays, 'Podcast', 'Progresso Semanal', 'Progresso Mensal'];
+const DAY_TABS = ptDays;
+const FUNCTION_TABS = ['Podcast', 'Progresso Semanal', 'Progresso Mensal'];
+const ADMIN_TABS = ['Visão Geral'];
 
 
 type CheckedTasksState = Record<string, boolean>;
@@ -175,46 +178,40 @@ export default function RotinaSDRPage() {
     const fetchAllData = async () => {
         if (!user) return;
         setIsLoading(true);
-
-        const newSdrList: SdrUser[] = [];
         const newAllSdrData: Record<string, YearData> = {};
 
         if (isAdmin) {
-            // 1. Fetch all SDR users first
             const usersRef = collection(db, 'users');
             const q = query(usersRef, where('role', '==', 'comercial'));
             const usersSnapshot = await getDocs(q);
-            usersSnapshot.forEach(userDoc => {
+            const fetchedSdrList = usersSnapshot.docs.map(userDoc => {
                 const userData = userDoc.data();
                 let displayName = userData.displayName || '';
                 if (!displayName && userData.email) {
                     displayName = userData.email.split('@')[0];
                 }
-                newSdrList.push({
+                return {
                     id: userDoc.id,
                     name: displayName,
-                    email: userData.email
-                });
+                    email: userData.email,
+                };
             });
+            setSdrList(fetchedSdrList);
 
-            // 2. Fetch performance data for each SDR
-            for (const sdr of newSdrList) {
+            for (const sdr of fetchedSdrList) {
                 const perfDoc = await getDoc(doc(db, 'sdr_performance', sdr.id));
                 newAllSdrData[sdr.id] = perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData();
             }
         }
-
-        // 3. Fetch current user's performance data
+        
         const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
         newAllSdrData[user.uid] = userPerfDoc.exists() ? (userPerfDoc.data() as YearData) : createInitialYearData();
         
-        // 4. Update state once with all data
-        setSdrList(newSdrList);
         setAllSdrData(newAllSdrData);
         setIsLoading(false);
     };
 
-    if (!authLoading) {
+    if (!authLoading && user) {
         fetchAllData();
     }
 }, [user, isAdmin, authLoading]);
@@ -661,6 +658,43 @@ export default function RotinaSDRPage() {
     );
   }
 
+  const renderTabTrigger = (tab: string) => {
+        const isDayTab = DAY_TABS.includes(tab);
+        const isAdminTab = ADMIN_TABS.includes(tab);
+        const isFunctionTab = FUNCTION_TABS.includes(tab);
+        const isPodcast = tab === 'Podcast';
+        const isWeekly = tab === 'Progresso Semanal';
+        const isMonthly = tab === 'Progresso Mensal';
+
+        return (
+            <TabsTrigger
+                key={tab}
+                value={tab}
+                className={cn(
+                    "text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:text-foreground",
+                    {
+                        "data-[state=active]:bg-primary": isDayTab,
+                        "data-[state=active]:bg-purple-500": isPodcast,
+                        "data-[state=active]:bg-green-500": isWeekly,
+                        "data-[state=active]:bg-blue-500": isMonthly,
+                        "hover:bg-primary/10": isDayTab,
+                        "hover:bg-purple-500/10": isPodcast,
+                        "hover:bg-green-500/10": isWeekly,
+                        "hover:bg-blue-500/10": isMonthly,
+                        "data-[state=active]:bg-gray-400": isAdminTab,
+                        "hover:bg-gray-400/10": isAdminTab,
+                    }
+                )}
+            >
+                {isAdminTab && <Users className="mr-2 h-4 w-4" />}
+                {isDayTab && <CalendarDays className="mr-2 h-4 w-4" />}
+                {isPodcast && <Mic className="mr-2 h-4 w-4" />}
+                {(isWeekly || isMonthly) && <BarChart className="mr-2 h-4 w-4" />}
+                {tab}
+            </TabsTrigger>
+        );
+    };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6 justify-between">
@@ -700,39 +734,19 @@ export default function RotinaSDRPage() {
             </div>
             
              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                 <TabsList className="inline-flex flex-wrap w-full h-auto gap-1 bg-transparent p-0">
-                  {TABS_ORDER.filter(tab => isAdmin || tab !== 'Visão Geral').map((tab) => {
-                    const isDayTab = ptDays.includes(tab);
-                    const isPodcastTab = tab === 'Podcast';
-                    const isWeeklyTab = tab === 'Progresso Semanal';
-                    const isMonthlyTab = tab === 'Progresso Mensal';
-
-                    return (
-                        <TabsTrigger 
-                            key={tab} 
-                            value={tab} 
-                            className={cn("text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg",
-                                {
-                                    "data-[state=active]:bg-primary data-[state=active]:text-foreground": isDayTab,
-                                    "data-[state=active]:bg-purple-600 data-[state=active]:text-white": isPodcastTab,
-                                    "data-[state=active]:bg-green-600 data-[state=active]:text-white": isWeeklyTab,
-                                    "data-[state=active]:bg-blue-600 data-[state=active]:text-white": isMonthlyTab,
-                                    "hover:bg-primary/10": isDayTab,
-                                    "hover:bg-purple-600/10": isPodcastTab,
-                                    "hover:bg-green-600/10": isWeeklyTab,
-                                    "hover:bg-blue-600/10": isMonthlyTab,
-                                }
-                            )}
-                        >
-                            {tab === 'Visão Geral' && <Users className="mr-2 h-4 w-4" />}
-                            {isDayTab && <CalendarDays className="mr-2 h-4 w-4" />}
-                            {isPodcastTab && <Mic className="mr-2 h-4 w-4" />}
-                            {(isWeeklyTab || isMonthlyTab) && <BarChart className="mr-2 h-4 w-4" />}
-                            {tab}
-                        </TabsTrigger>
-                    )
-                  })}
-                </TabsList>
+                 <div className="flex flex-wrap gap-2">
+                    {isAdmin && (
+                        <TabsList className="bg-transparent p-0">
+                            {renderTabTrigger('Visão Geral')}
+                        </TabsList>
+                    )}
+                    <TabsList className="bg-transparent p-0 flex-wrap h-auto">
+                         {DAY_TABS.map(renderTabTrigger)}
+                    </TabsList>
+                    <TabsList className="bg-transparent p-0 flex-wrap h-auto">
+                         {FUNCTION_TABS.map(renderTabTrigger)}
+                    </TabsList>
+                 </div>
             </Tabs>
         </div>
 
