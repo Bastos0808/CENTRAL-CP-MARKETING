@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Image from 'next/image';
 import {
   BarChart,
@@ -21,6 +22,7 @@ import {
   LogOut,
   Home,
   User,
+  Users,
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth } from 'date-fns';
 
@@ -52,6 +54,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
+import { db } from "@/lib/firebase";
+import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
 
 
 const TABS = [...ptDays, 'Podcast', 'Progresso Semanal', 'Progresso Mensal'];
@@ -105,9 +109,20 @@ const initialYearData: YearData = ptMonths.reduce((acc, month) => {
     return acc;
 }, {} as YearData);
 
+interface SdrUser {
+    id: string;
+    name: string;
+    email: string;
+}
+
 export default function RotinaSDRPage() {
   const { toast } = useToast();
   const { user, logout } = useAuth();
+  
+  const [sdrList, setSdrList] = useState<SdrUser[]>([]);
+  const [selectedSdrId, setSelectedSdrId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [activeTab, setActiveTab] = useState(TABS[0]);
   const [currentWeek, setCurrentWeek] = useState(1);
   const [currentMonth, setCurrentMonth] = useState(ptMonths[new Date().getMonth()]);
@@ -115,6 +130,64 @@ export default function RotinaSDRPage() {
   
   const [aiResponse, setAiResponse] = useState<PrioritizeTasksOutput | null>(null);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+  
+  const isAdmin = user?.role === 'admin';
+  const effectiveUserId = isAdmin && selectedSdrId ? selectedSdrId : user?.uid;
+
+  // Load data from Firestore
+  useEffect(() => {
+    if (!effectiveUserId) return;
+
+    const fetchData = async () => {
+        setIsLoading(true);
+        const docRef = doc(db, 'sdr_performance', effectiveUserId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            setYearData(docSnap.data() as YearData);
+        } else {
+            setYearData(initialYearData);
+        }
+        setIsLoading(false);
+    };
+
+    fetchData();
+  }, [effectiveUserId]);
+
+  // Save data to Firestore on change
+  useEffect(() => {
+    if (!effectiveUserId || isLoading) return;
+
+    const saveData = async () => {
+        const docRef = doc(db, 'sdr_performance', effectiveUserId);
+        await setDoc(docRef, yearData, { merge: true });
+    };
+
+    const handler = setTimeout(() => {
+        saveData();
+    }, 2000); // Debounce saves
+
+    return () => {
+        clearTimeout(handler);
+    };
+  }, [yearData, effectiveUserId, isLoading]);
+  
+  // Fetch SDR list for admin view
+  useEffect(() => {
+      if (isAdmin) {
+          const fetchSdrList = async () => {
+              const usersRef = collection(db, 'users');
+              const q = query(usersRef, where('role', '==', 'comercial'));
+              const querySnapshot = await getDocs(q);
+              const sdrs = querySnapshot.docs.map(doc => ({
+                  id: doc.id,
+                  name: doc.data().displayName || doc.data().email,
+                  email: doc.data().email,
+              }));
+              setSdrList(sdrs);
+          };
+          fetchSdrList();
+      }
+  }, [isAdmin]);
 
   useEffect(() => {
     const today = new Date();
@@ -126,12 +199,14 @@ export default function RotinaSDRPage() {
     setCurrentWeek(Math.min(4, Math.max(1, week)));
     setCurrentMonth(ptMonths[month]);
 
-    if (dayOfWeek >= 1 && dayOfWeek <= 6) { 
+    if(isAdmin) {
+        setActiveTab("Visão Geral");
+    } else if (dayOfWeek >= 1 && dayOfWeek <= 6) { 
         setActiveTab(ptDays[dayOfWeek - 1]);
     } else {
         setActiveTab(ptDays[0]);
     }
-  }, []);
+  }, [isAdmin]);
 
   const monthlyData = yearData[currentMonth];
   const activeWeekKey = `semana${currentWeek}` as keyof MonthlyData;
@@ -151,11 +226,10 @@ export default function RotinaSDRPage() {
         if(currentWeek > 1) {
             prevWeekKey = `semana${currentWeek - 1}` as keyof MonthlyData;
         } else {
-            // Previous month logic
             const currentMonthIndex = ptMonths.indexOf(currentMonth);
             if (currentMonthIndex > 0) {
                 prevMonth = ptMonths[currentMonthIndex - 1];
-                prevWeekKey = 'semana4'; // Last week of previous month
+                prevWeekKey = 'semana4';
             }
         }
     }
@@ -233,7 +307,6 @@ export default function RotinaSDRPage() {
           const weekData = monthData[activeWeekKey];
           weekData.podcasts[podcastId].done = isChecked;
           
-          // Also update the correct month's data
           newYearData[currentMonth].semana1.podcasts[podcastId].done = isChecked;
 
           return newYearData;
@@ -571,6 +644,51 @@ export default function RotinaSDRPage() {
   }
 
 
+  const AdminView = () => (
+    <Card>
+        <CardHeader>
+            <CardTitle>Visão Geral do Time de SDRs</CardTitle>
+            <CardDescription>Selecione um SDR para ver sua performance.</CardDescription>
+        </CardHeader>
+        <CardContent>
+             <Select onValueChange={setSelectedSdrId}>
+                <SelectTrigger className="w-full md:w-1/2">
+                    <SelectValue placeholder="Selecione um SDR..." />
+                </SelectTrigger>
+                <SelectContent>
+                    {sdrList.map(sdr => (
+                        <SelectItem key={sdr.id} value={sdr.id}>{sdr.name}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+
+            {isLoading && selectedSdrId && (
+                <div className="flex justify-center items-center h-48">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+            )}
+            
+            {!isLoading && selectedSdrId && (
+                <div className="mt-6 border-t pt-6">
+                    <h3 className="text-xl font-bold mb-4">Performance de {sdrList.find(s => s.id === selectedSdrId)?.name}</h3>
+                    <Tabs defaultValue="semanal" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                          <TabsTrigger value="semanal">Progresso Semanal</TabsTrigger>
+                          <TabsTrigger value="mensal">Progresso Mensal</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="semanal" className="mt-4">
+                           <WeeklyProgress monthlyData={monthlyData} onMeetingsChange={handleMeetingsChange} />
+                        </TabsContent>
+                        <TabsContent value="mensal" className="mt-4">
+                          <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} onMeetingsChange={handleMeetingsChange} />
+                        </TabsContent>
+                      </Tabs>
+                </div>
+            )}
+        </CardContent>
+    </Card>
+  );
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6 justify-between">
@@ -630,22 +748,21 @@ export default function RotinaSDRPage() {
                   <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto self-start sm:self-center">
+            
+             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto self-start sm:self-center">
                 <TabsList className="grid grid-cols-2 sm:grid-cols-3 w-full sm:w-auto h-auto flex-wrap gap-2 bg-transparent p-0">
-                {ptDays.slice(0, 3).map((tab) => (
-                    <TabsTrigger key={tab} value={tab} className="w-full text-base py-3 data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-lg">
-                    <CalendarDays className="mr-2 h-4 w-4" />
-                    {tab}
-                    </TabsTrigger>
-                ))}
-                </TabsList>
-                <TabsList className="grid grid-cols-2 sm:grid-cols-3 w-full sm:w-auto h-auto flex-wrap mt-2 gap-2 bg-transparent p-0">
-                {ptDays.slice(3, 6).map((tab) => (
-                    <TabsTrigger key={tab} value={tab} className="w-full text-base py-3 data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-lg">
-                    <CalendarDays className="mr-2 h-4 w-4" />
-                    {tab}
-                    </TabsTrigger>
-                ))}
+                  {isAdmin && (
+                      <TabsTrigger value="Visão Geral" className="w-full text-base py-3 data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-lg">
+                          <Users className="mr-2 h-4 w-4" />
+                          Visão Geral
+                      </TabsTrigger>
+                  )}
+                  {ptDays.map((tab) => (
+                      <TabsTrigger key={tab} value={tab} className="w-full text-base py-3 data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-lg">
+                          <CalendarDays className="mr-2 h-4 w-4" />
+                          {tab}
+                      </TabsTrigger>
+                  ))}
                 </TabsList>
             </Tabs>
         </div>
@@ -653,6 +770,9 @@ export default function RotinaSDRPage() {
          <Separator />
         
         <Tabs value={activeTab} className="w-full">
+            <TabsContent value="Visão Geral">
+                {isAdmin ? <AdminView /> : <p>Você não tem permissão para ver esta área.</p>}
+            </TabsContent>
             <TabsContent value={activeTab} className="mt-0">
                <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-3">
                 <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
