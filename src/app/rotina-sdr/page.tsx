@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
@@ -58,7 +57,8 @@ import { db } from "@/lib/firebase";
 import { doc, setDoc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
 
 
-const TABS = [...ptDays, 'Podcast', 'Progresso Semanal', 'Progresso Mensal'];
+const TABS_ORDER = ['Visão Geral', ...ptDays, 'Podcast', 'Progresso Semanal', 'Progresso Mensal'];
+
 
 type CheckedTasksState = Record<string, boolean>;
 type CounterTasksState = Record<string, number>;
@@ -123,7 +123,7 @@ export default function RotinaSDRPage() {
   const [selectedSdrId, setSelectedSdrId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const [activeTab, setActiveTab] = useState(TABS[0]);
+  const [activeTab, setActiveTab] = useState(TABS_ORDER[1]); // Default to Monday
   const [currentWeek, setCurrentWeek] = useState(1);
   const [currentMonth, setCurrentMonth] = useState(ptMonths[new Date().getMonth()]);
   const [yearData, setYearData] = useState<YearData>(initialYearData);
@@ -146,7 +146,19 @@ export default function RotinaSDRPage() {
         const docRef = doc(db, 'sdr_performance', effectiveUserId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-            setYearData(docSnap.data() as YearData);
+            // Basic merge to ensure new fields are added if schema changes
+            const cloudData = docSnap.data();
+            const mergedData = JSON.parse(JSON.stringify(initialYearData));
+            Object.keys(cloudData).forEach(month => {
+                if (mergedData[month]) {
+                    Object.keys(cloudData[month]).forEach(week => {
+                       if (mergedData[month][week]) {
+                           mergedData[month][week] = { ...mergedData[month][week], ...cloudData[month][week] };
+                       }
+                    });
+                }
+            });
+            setYearData(mergedData);
         } else {
             setYearData(initialYearData);
         }
@@ -180,34 +192,40 @@ export default function RotinaSDRPage() {
       if (isAdmin) {
           const fetchSdrList = async () => {
               setIsLoading(true);
-              const usersRef = collection(db, 'users');
-              const q = query(usersRef, where('role', '==', 'comercial'));
-              const querySnapshot = await getDocs(q);
-              const sdrs = querySnapshot.docs.map(doc => ({
-                  id: doc.id,
-                  name: doc.data().displayName || doc.data().email,
-                  email: doc.data().email,
-              }));
-              setSdrList(sdrs);
-              setIsLoading(false);
+              try {
+                const usersRef = collection(db, 'users');
+                const q = query(usersRef, where('role', '==', 'comercial'));
+                const querySnapshot = await getDocs(q);
+                const sdrs = querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    name: doc.data().displayName || doc.data().email,
+                    email: doc.data().email,
+                }));
+                setSdrList(sdrs);
+              } catch(e) {
+                  console.error("Failed to fetch SDRs:", e);
+                  toast({ title: "Erro ao buscar SDRs", variant: "destructive" });
+              } finally {
+                  setIsLoading(false);
+              }
           };
           fetchSdrList();
       }
-  }, [isAdmin]);
+  }, [isAdmin, toast]);
 
   useEffect(() => {
     const today = new Date();
-    const dayOfWeek = getDay(today);
+    const dayOfWeek = getDay(today); // Sunday = 0, Monday = 1
     const dayOfMonth = getDate(today);
-    const week = Math.ceil(dayOfMonth / 7);
+    const week = Math.min(4, Math.max(1, Math.ceil(dayOfMonth / 7)));
     const month = getMonth(today);
 
-    setCurrentWeek(Math.min(4, Math.max(1, week)));
+    setCurrentWeek(week);
     setCurrentMonth(ptMonths[month]);
 
     if(isAdmin) {
         setActiveTab("Visão Geral");
-    } else if (dayOfWeek >= 1 && dayOfWeek <= 5) { 
+    } else if (dayOfWeek >= 1 && dayOfWeek <= 6) { 
         setActiveTab(ptDays[dayOfWeek - 1]);
     } else {
         setActiveTab(ptDays[0]); // Default to Monday on weekends for non-admins
@@ -218,7 +236,7 @@ export default function RotinaSDRPage() {
   const activeWeekKey = `semana${currentWeek}` as keyof MonthlyData;
   const activeDay = ptDays.includes(activeTab) ? activeTab : ptDays[0];
   
-  const isHoliday = monthlyData[activeWeekKey]?.holidays[activeDay] || false;
+  const isHoliday = monthlyData?.[activeWeekKey]?.holidays[activeDay] || false;
 
   const previousDay = useMemo(() => {
     const activeDayIndex = ptDays.indexOf(activeDay);
@@ -317,35 +335,26 @@ export default function RotinaSDRPage() {
         });
     };
 
-  const { completedTasksCount, weeklyProgress } = useMemo(() => {
+  const { completedTasksCount } = useMemo(() => {
     const weekData = monthlyData?.[activeWeekKey];
-    if (!weekData) return { completedTasksCount: 0, weeklyProgress: {} };
+    if (!weekData) return { completedTasksCount: 0 };
 
-    const counterTasksList = allTasks.filter(t => t.type === 'counter');
+    const counterTasksList = allTasks.filter(t => t.type === 'counter' && !t.saturdayOnly);
     const checkedTasksForToday = weekData.checkedTasks?.[activeDay] || {};
     const counterTasksForToday = weekData.counterTasks?.[activeDay] || {};
 
     const completedCheckbox = Object.values(checkedTasksForToday).filter(Boolean).length;
     
     const completedCounters = counterTasksList.reduce((acc, task) => {
-        if (task.type === 'counter' && !task.saturdayOnly) {
+        if (task.type === 'counter') {
             const count = counterTasksForToday[task.id] || 0;
             if (count >= task.dailyGoal) acc++;
         }
         return acc;
     }, 0);
 
-    const weeklyTotals: Record<string, number> = {};
-    counterTasksList.forEach(task => {
-        weeklyTotals[task.id] = ptDays.reduce((acc, day) => {
-            const dayCount = weekData.counterTasks[day]?.[task.id] || 0;
-            return acc + dayCount;
-        }, 0);
-    });
-
     return {
       completedTasksCount: completedCheckbox + completedCounters,
-      weeklyProgress: weeklyTotals,
     };
   }, [activeDay, monthlyData, activeWeekKey]);
 
@@ -359,19 +368,20 @@ export default function RotinaSDRPage() {
 
       const remainingTaskLabels = allTasks
         .filter(task => {
-            if (isHoliday) return false;
+            if (isHoliday || task.saturdayOnly) return false;
             if (task.type === 'checkbox') {
                 return !checkedTasksForToday[task.id];
             }
-            if (task.type === 'counter' && !task.saturdayOnly) {
+            if (task.type === 'counter') {
                 return (counterTasksForToday[task.id] || 0) < task.dailyGoal;
             }
-            return false; // Only consider daily checkbox and counter tasks
+            return false;
         })
         .map((task) => task.label);
 
       if (remainingTaskLabels.length === 0) {
         toast({ title: "Tudo pronto por hoje!", description: "Você já completou todas as tarefas do dia." });
+        setIsLoadingAI(false);
         return;
       }
       
@@ -405,7 +415,7 @@ export default function RotinaSDRPage() {
             <CardDescription>Selecione um SDR para ver sua performance.</CardDescription>
         </CardHeader>
         <CardContent>
-             <Select onValueChange={setSelectedSdrId}>
+             <Select onValueChange={setSelectedSdrId} value={selectedSdrId || undefined}>
                 <SelectTrigger className="w-full md:w-1/2">
                     <SelectValue placeholder="Selecione um SDR..." />
                 </SelectTrigger>
@@ -429,7 +439,7 @@ export default function RotinaSDRPage() {
             {!isLoading && selectedSdrId && (
                 <div className="mt-6 border-t pt-6">
                     <h3 className="text-xl font-bold mb-4">Performance de {sdrList.find(s => s.id === selectedSdrId)?.name}</h3>
-                    <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} onMeetingsChange={()=>{}} />
+                    <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />
                 </div>
             )}
         </CardContent>
@@ -437,8 +447,9 @@ export default function RotinaSDRPage() {
   );
 
   const SDRView = () => {
-    const weekData = monthlyData[activeWeekKey];
-    if(!weekData) return null;
+    const weekData = monthlyData?.[activeWeekKey];
+    if(!weekData) return <div className="flex justify-center items-center h-48"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+
     const dailyMeetings = weekData.counterTasks[activeDay]?.['daily_meetings'] || 0;
     const isSaturday = activeTab === 'Sábado';
     const totalWeeklyMeetings = weekData.meetingsBooked;
@@ -465,10 +476,7 @@ export default function RotinaSDRPage() {
                 <CardContent className="p-0">
                   <div className="space-y-4">
                      {allTasks
-                        .filter(task => {
-                            if(isSaturday) return task.saturdayOnly;
-                            return !task.saturdayOnly;
-                        })
+                        .filter(task => isSaturday ? task.saturdayOnly : !task.saturdayOnly)
                         .map((task) => (
                             <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
                                 {task.type === 'checkbox' ? (
@@ -505,7 +513,6 @@ export default function RotinaSDRPage() {
                             </div>
                         ))
                     }
-                    {/* Consultorias */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
                         <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1 flex items-center"><Briefcase className="mr-2 h-5 w-5" />Consultorias Realizadas</Label>
                         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -551,22 +558,6 @@ export default function RotinaSDRPage() {
                   )}
                 </CardContent>
               </Card>
-               <Tabs defaultValue="semanal" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
-                  <TabsTrigger value="podcast">Podcast</TabsTrigger>
-                  <TabsTrigger value="semanal">Semanal</TabsTrigger>
-                  <TabsTrigger value="mensal">Mensal</TabsTrigger>
-                </TabsList>
-                <TabsContent value="podcast" className="mt-4">
-                  <PodcastTab podcastData={monthlyData[activeWeekKey].podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />
-                </TabsContent>
-                <TabsContent value="semanal" className="mt-4">
-                   <WeeklyProgress monthlyData={monthlyData} onMeetingsChange={()=>{}} />
-                </TabsContent>
-                <TabsContent value="mensal" className="mt-4">
-                  <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} onMeetingsChange={()=>{}} />
-                </TabsContent>
-              </Tabs>
             </div>
         </div>
     );
@@ -610,8 +601,15 @@ export default function RotinaSDRPage() {
             
              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto self-start sm:self-center">
                 <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full sm:w-auto h-auto flex-wrap gap-2 bg-transparent p-0">
-                  {isAdmin && (<TabsTrigger value="Visão Geral" className="w-full text-base py-3 data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-lg"><Users className="mr-2 h-4 w-4" />Visão Geral</TabsTrigger>)}
-                  {ptDays.map((tab) => (<TabsTrigger key={tab} value={tab} className="w-full text-base py-3 data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-lg"><CalendarDays className="mr-2 h-4 w-4" />{tab}</TabsTrigger>))}
+                  {TABS_ORDER.filter(tab => isAdmin || tab !== 'Visão Geral').map((tab) => (
+                    <TabsTrigger key={tab} value={tab} className="w-full text-base py-3 data-[state=active]:bg-secondary data-[state=active]:text-foreground data-[state=active]:shadow-lg">
+                      {tab === 'Visão Geral' && <Users className="mr-2 h-4 w-4" />}
+                      {ptDays.includes(tab) && <CalendarDays className="mr-2 h-4 w-4" />}
+                      {tab === 'Podcast' && <Mic className="mr-2 h-4 w-4" />}
+                      {tab.includes('Progresso') && <BarChart className="mr-2 h-4 w-4" />}
+                      {tab}
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
             </Tabs>
         </div>
@@ -622,13 +620,13 @@ export default function RotinaSDRPage() {
             <TabsContent value="Visão Geral" className="mt-0">{isAdmin ? <AdminView /> : <p>Você não tem permissão para ver esta área.</p>}</TabsContent>
             {ptDays.map(day => (<TabsContent key={day} value={day} className="mt-0"><SDRView/></TabsContent>))}
             <TabsContent value="Podcast" className="mt-0">
-                <PodcastTab podcastData={monthlyData[activeWeekKey].podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />
+                <PodcastTab podcastData={monthlyData?.[activeWeekKey]?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />
             </TabsContent>
-             <TabsContent value="Progresso Semanal" className="mt-0">
-                <WeeklyProgress monthlyData={monthlyData} onMeetingsChange={()=>{}} />
+            <TabsContent value="Progresso Semanal" className="mt-0">
+                <WeeklyProgress monthlyData={monthlyData} />
              </TabsContent>
              <TabsContent value="Progresso Mensal" className="mt-0">
-                <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} onMeetingsChange={()=>{}} />
+                <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />
              </TabsContent>
         </Tabs>
       </main>

@@ -4,7 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mic } from "lucide-react";
+import { Mic, Loader2 } from "lucide-react";
 import { Separator } from "./ui/separator";
 
 export type GuestInfo = {
@@ -25,14 +25,25 @@ export type PodcastData = {
 };
 
 interface PodcastTabProps {
-  podcastData: PodcastData;
+  podcastData?: PodcastData;
   onPodcastChange: (podcastId: keyof PodcastData, guestIndex: number, field: 'guestName' | 'instagram', value: string) => void;
   onPodcastCheck: (podcastId: keyof PodcastData, checked: boolean) => void;
 }
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
+  
+  if (!podcastData) {
+    return (
+        <div className="flex justify-center items-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+    )
+  }
+  
   const renderPodcastCard = (podcastId: keyof PodcastData, title: string) => {
     const data = podcastData[podcastId];
+    if (!data) return null;
+
     return (
       <Card key={podcastId} className="bg-card/50">
         <CardHeader>
