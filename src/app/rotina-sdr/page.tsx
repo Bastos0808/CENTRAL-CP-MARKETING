@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -174,48 +173,55 @@ export default function RotinaSDRPage() {
   // Fetch SDR list and all their data
   useEffect(() => {
       const fetchAllData = async () => {
-        setIsLoading(true);
-        if (user?.uid) {
-            const userDocRef = doc(db, 'sdr_performance', user.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            const userYearData = userDocSnap.exists() ? userDocSnap.data() as YearData : createInitialYearData();
-            
-            setAllSdrData(prev => ({ ...prev, [user.uid]: userYearData }));
+        if (!user) {
+            setIsLoading(false);
+            return;
+        }
 
-            if (isAdmin) {
-                try {
-                  const usersRef = collection(db, 'users');
-                  const q = query(usersRef, where('role', '==', 'comercial'));
-                  const querySnapshot = await getDocs(q);
-                  
-                  const sdrs: SdrUser[] = [];
-                  const sdrDataPromises = querySnapshot.docs.map(async (userDoc) => {
-                      sdrs.push({ id: userDoc.id, name: userDoc.data().displayName || userDoc.data().email, email: userDoc.data().email });
-                      if (userDoc.id === user.uid) return { [userDoc.id]: userYearData };
-                      
-                      const performanceDocRef = doc(db, 'sdr_performance', userDoc.id);
-                      const performanceDocSnap = await getDoc(performanceDocRef);
-                      return { [userDoc.id]: performanceDocSnap.exists() ? performanceDocSnap.data() as YearData : createInitialYearData() };
-                  });
-      
-                  const allDataArray = await Promise.all(sdrDataPromises);
-                  const allData = allDataArray.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-      
-                  setSdrList(sdrs);
-                  setAllSdrData(prev => ({...prev, ...allData}));
-                } catch (e) {
-                    console.error("Failed to fetch SDRs:", e);
-                    toast({ title: "Erro ao buscar dados dos SDRs", variant: "destructive" });
-                }
+        setIsLoading(true);
+
+        // Fetch current user's performance data first
+        const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
+        const userYearData = userPerfDoc.exists() ? (userPerfDoc.data() as YearData) : createInitialYearData();
+        setAllSdrData(prev => produce(prev, draft => {
+            draft[user.uid] = userYearData;
+        }));
+
+        if (isAdmin) {
+            try {
+                // First, get all SDR users
+                const usersRef = collection(db, 'users');
+                const q = query(usersRef, where('role', '==', 'comercial'));
+                const usersSnapshot = await getDocs(q);
+                const sdrsFromDb: SdrUser[] = usersSnapshot.docs.map(userDoc => ({
+                    id: userDoc.id,
+                    name: userDoc.data().displayName || userDoc.data().email,
+                    email: userDoc.data().email
+                }));
+                setSdrList(sdrsFromDb);
+
+                // Then, fetch performance data for each SDR
+                const performancePromises = sdrsFromDb.map(async (sdr) => {
+                    if (sdr.id === user.uid) return { [sdr.id]: userYearData };
+                    const perfDoc = await getDoc(doc(db, 'sdr_performance', sdr.id));
+                    return { [sdr.id]: perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData() };
+                });
+
+                const allPerformances = await Promise.all(performancePromises);
+                const allPerformanceData = allPerformances.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+
+                setAllSdrData(prev => ({...prev, ...allPerformanceData}));
+
+            } catch (e) {
+                console.error("Failed to fetch SDRs:", e);
+                toast({ title: "Erro ao buscar dados dos SDRs", variant: "destructive" });
             }
         }
         setIsLoading(false);
       };
       
-      if (user) {
+      if (!authLoading) {
         fetchAllData();
-      } else if (!user && !authLoading) {
-        setIsLoading(false);
       }
   }, [isAdmin, toast, user, authLoading]);
 
@@ -653,7 +659,7 @@ export default function RotinaSDRPage() {
     );
   }
 
-  if (isLoading || authLoading) {
+  if (authLoading) {
     return (
         <div className="flex min-h-screen w-full items-center justify-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -757,4 +763,4 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
-
+ 
