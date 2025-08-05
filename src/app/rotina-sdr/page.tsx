@@ -670,7 +670,26 @@ export default function RotinaSDRPage() {
     );
   }
 
-  const renderTabTrigger = (tab: string, type: 'day' | 'function') => {
+  const renderTabContent = () => {
+    if (isAdmin) {
+      return <AdminView />;
+    }
+    if (ptDays.includes(activeTab)) {
+      return <SDRView />;
+    }
+    if (activeTab === 'Podcast') {
+      return <PodcastTab podcastData={monthlyData?.[activeWeekKey]?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />;
+    }
+    if (activeTab === 'Progresso Semanal') {
+      return <WeeklyProgress weeklyData={monthlyData?.[activeWeekKey]} />;
+    }
+    if (activeTab === 'Progresso Mensal') {
+      return <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />;
+    }
+    return null;
+  };
+  
+  const renderNavButton = (tab: string, type: 'day' | 'function') => {
         const isActive = activeTab === tab;
         const baseClasses = "flex-1 text-sm py-2.5 px-3 transition-all duration-300 rounded-md flex items-center justify-center gap-2";
         const dayClasses = isActive ? "bg-card text-card-foreground shadow-md" : "text-muted-foreground hover:bg-card/50 hover:text-card-foreground";
@@ -737,40 +756,41 @@ export default function RotinaSDRPage() {
            </div>
            
            <div className="flex flex-col gap-4 w-full max-w-lg">
-                {isAdmin ? null : (
+                {isAdmin ? (
+                     <Button
+                        key="Visão Geral"
+                        variant="ghost"
+                        onClick={() => setActiveTab('Visão Geral')}
+                        className={cn(
+                            "flex-1 text-sm py-2.5 px-3 transition-all duration-300 rounded-md flex items-center justify-center gap-2",
+                            activeTab === 'Visão Geral' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-card/50 hover:text-card-foreground'
+                        )}
+                    >
+                        <Users className="h-4 w-4" />
+                        Visão Geral
+                    </Button>
+                ) : (
                     <>
                         <div className="grid grid-cols-3 gap-2 p-1 rounded-lg bg-muted">
-                            {DAY_TABS.slice(0,3).map(day => renderTabTrigger(day, 'day'))}
+                            {DAY_TABS.slice(0,3).map(day => renderNavButton(day, 'day'))}
                         </div>
                         <div className="grid grid-cols-3 gap-2 p-1 rounded-lg bg-muted">
-                            {DAY_TABS.slice(3,6).map(day => renderTabTrigger(day, 'day'))}
+                            {DAY_TABS.slice(3,6).map(day => renderNavButton(day, 'day'))}
                         </div>
                     </>
                 )}
                 <div className="grid grid-cols-3 gap-2">
-                    {FUNCTION_TABS.map(tab => renderTabTrigger(tab, 'function'))}
+                    {FUNCTION_TABS.map(tab => renderNavButton(tab, 'function'))}
                 </div>
            </div>
         </div>
 
         <Separator className="my-6" />
         
-        <Tabs value={activeTab} className="w-full">
-            {isAdmin ? (
-                <TabsContent value="Visão Geral" className="mt-0"><AdminView /></TabsContent>
-            ) : null}
-            {ptDays.map(day => (<TabsContent key={day} value={day} className="mt-0"><SDRView/></TabsContent>))}
-            <TabsContent value="Podcast" className="mt-0">
-                <PodcastTab podcastData={monthlyData?.[activeWeekKey]?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />
-            </TabsContent>
-            <TabsContent value="Progresso Semanal" className="mt-0">
-                 <WeeklyProgress weeklyData={monthlyData?.[activeWeekKey]} />
-             </TabsContent>
-             <TabsContent value="Progresso Mensal" className="mt-0">
-                <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />
-             </TabsContent>
-        </Tabs>
+        {renderTabContent()}
+
       </main>
     </div>
   );
 }
+
