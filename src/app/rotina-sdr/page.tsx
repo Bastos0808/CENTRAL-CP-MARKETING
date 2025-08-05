@@ -77,7 +77,7 @@ const ADMIN_TABS = ['Visão Geral'];
 
 
 type CheckedTasksState = Record<string, boolean>;
-type CounterTasksState = Record<string, number>;
+type CounterTasksState = Record<string, string>;
 type ExtraTasksState = Record<string, string>;
 type HolidaysState = Record<string, boolean>;
 
@@ -157,26 +157,36 @@ export default function RotinaSDRPage() {
     return allSdrData[effectiveUserId] || createInitialYearData();
   }, [allSdrData, effectiveUserId]);
 
-  const triggerSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-    }
-    setSaveStatus('saving');
-    saveTimeoutRef.current = setTimeout(async () => {
-        if (!isAdmin && user?.uid) {
+  // Effect to save data with debounce
+  useEffect(() => {
+    if (isDirty && !isAdmin && user?.uid) {
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+        }
+        setSaveStatus('saving');
+        saveTimeoutRef.current = setTimeout(async () => {
             const dataToSave = allSdrData[user.uid];
             if (dataToSave) {
-                const docRef = doc(db, 'sdr_performance', user.uid);
-                await setDoc(docRef, dataToSave, { merge: true });
-                setSaveStatus('saved');
-                setIsDirty(false);
-                setLastSaved(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+                try {
+                    const docRef = doc(db, 'sdr_performance', user.uid);
+                    await setDoc(docRef, dataToSave, { merge: true });
+                    setSaveStatus('saved');
+                    setIsDirty(false);
+                    setLastSaved(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+                } catch (error) {
+                    console.error("Error saving data:", error);
+                    setSaveStatus('idle'); // Or an error state
+                }
             }
-        } else {
-           setSaveStatus('idle');
+        }, 2000); // 2-second debounce
+    }
+    // Cleanup timeout on unmount or when dependencies change
+    return () => {
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
         }
-    }, 2000);
-  }, [allSdrData, isAdmin, user?.uid]);
+    };
+  }, [allSdrData, isDirty, isAdmin, user?.uid]);
 
 
    useEffect(() => {
@@ -295,7 +305,6 @@ export default function RotinaSDRPage() {
         updater(draft[effectiveUserId]);
     });
     setAllSdrData(newState);
-    triggerSave();
   };
 
   const handleTaskCheck = (taskId: string, isChecked: boolean) => {
@@ -307,13 +316,10 @@ export default function RotinaSDRPage() {
   };
   
   const handleCounterChange = (taskId: string, value: string) => {
-      const numValue = value === '' ? 0 : parseInt(value, 10);
-      if (isNaN(numValue)) return;
-
       handleUpdateYearData(draft => {
           const weekData = draft[currentMonth][activeWeekKey];
           if (!weekData.counterTasks[activeDay]) weekData.counterTasks[activeDay] = {};
-          weekData.counterTasks[activeDay][taskId] = numValue < 0 ? 0 : numValue;
+          weekData.counterTasks[activeDay][taskId] = value;
       });
   };
 
@@ -348,17 +354,16 @@ export default function RotinaSDRPage() {
   };
   
   const handleDailyMeetingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(e.target.value, 10);
-        const meetings = isNaN(value) || value < 0 ? 0 : value;
+        const value = e.target.value;
         
         handleUpdateYearData(draft => {
             const weekData = draft[currentMonth][activeWeekKey];
             if (!weekData.counterTasks[activeDay]) weekData.counterTasks[activeDay] = {};
-            weekData.counterTasks[activeDay]['daily_meetings'] = meetings;
+            weekData.counterTasks[activeDay]['daily_meetings'] = value;
             
             let totalMeetings = 0;
             ptDays.forEach(day => {
-                totalMeetings += weekData.counterTasks?.[day]?.['daily_meetings'] || 0;
+                totalMeetings += Number(weekData.counterTasks?.[day]?.['daily_meetings'] || 0);
             });
             weekData.meetingsBooked = totalMeetings;
         });
@@ -376,7 +381,7 @@ export default function RotinaSDRPage() {
     
     const completedCounters = counterTasksList.reduce((acc, task) => {
         if (task.type === 'counter') {
-            const count = counterTasksForToday[task.id] || 0;
+            const count = Number(counterTasksForToday[task.id] || 0);
             if (count >= task.dailyGoal) acc++;
         }
         return acc;
@@ -388,7 +393,7 @@ export default function RotinaSDRPage() {
     counterTasksList.forEach(task => {
         weeklyTotals[task.id] = 0;
         weekDays.forEach(day => {
-            const dayCount = weekData.counterTasks?.[day]?.[task.id] || 0;
+            const dayCount = Number(weekData.counterTasks?.[day]?.[task.id] || 0);
             weeklyTotals[task.id] += dayCount;
         });
     });
@@ -596,7 +601,7 @@ export default function RotinaSDRPage() {
                </>
               ) : (
                 <div className="space-y-6">
-                     <div className="space-y-4">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                        {counterTasks.map((task) => (
                            <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
                                 <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
@@ -611,7 +616,7 @@ export default function RotinaSDRPage() {
                                         className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50" 
                                         placeholder="0" 
                                     />
-                                    <span className={cn("text-base font-semibold", ((weekData?.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal) ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
+                                    <span className={cn("text-base font-semibold", (Number(weekData?.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal) ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
                                 </div>
                             </div>
                       ))}
