@@ -42,9 +42,6 @@ Page.displayName = 'Page';
 export const GeneratedProposal = (props: ProposalFormValues) => {
     const {
         clientName,
-        clientObjective,
-        clientChallenge,
-        clientAudience,
         packages,
         useCustomServices,
         customServices,
@@ -111,7 +108,7 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
               <div className="z-10 text-center flex flex-col items-center">
                   <p className="text-[#FE5412] font-semibold tracking-widest mb-4 text-2xl">PROPOSTA COMERCIAL</p>
                   <h1 className="text-9xl font-extrabold max-w-5xl leading-tight">{clientName || '[Nome do Cliente]'}</h1>
-                  <p className="text-3xl font-light text-gray-400 mt-6">Gestão Estratégica de Marketing Digital</p>
+                  <p className="text-3xl font-light text-gray-300 mt-6">Gestão Estratégica de Marketing Digital</p>
               </div>
         </Page>
         <Page className="items-start">
@@ -160,10 +157,12 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
              </div>
         </Page>
         <Page>
-            <div className="text-center border-8 border-[#FE5412] p-16 rounded-2xl">
-                <h2 className="text-6xl font-bold uppercase mb-4">Investimento Mensal</h2>
-                <p className="text-9xl font-extrabold text-[#FE5412] mb-6">{investmentValue || 'R$ 0,00'}</p>
-                <p className="text-2xl font-semibold tracking-wider text-gray-300">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
+            <div className="text-center">
+              <div className="border-8 border-[#FE5412] p-16 rounded-2xl max-w-4xl mx-auto">
+                  <h2 className="text-6xl font-bold uppercase mb-4">Investimento Mensal</h2>
+                  <p className="text-9xl font-extrabold text-[#FE5412] mb-6">{investmentValue || 'R$ 0,00'}</p>
+                  <p className="text-2xl font-semibold tracking-wider text-gray-300">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
+              </div>
             </div>
         </Page>
         <Page>
