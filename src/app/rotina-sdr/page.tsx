@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -68,7 +69,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { produce } from 'immer';
-import type { YearData, MonthlyData, ExtraTask } from "@/lib/types";
+import type { YearData, MonthlyData, ExtraTask, WeeklyData } from "@/lib/types";
 
 
 const FUNCTION_TABS = ['Podcast', 'Progresso Semanal', 'Progresso Mensal'];
@@ -103,6 +104,58 @@ const CounterTaskInput = ({
   return <Input value={localValue} onChange={(e) => setLocalValue(e.target.value)} onBlur={handleBlur} {...props} />;
 };
 
+
+// Sub-component for Extra Tasks to isolate state
+const ExtraTasksTextarea = ({
+  value,
+  onSave,
+  ...props
+}: {
+  value: ExtraTask[];
+  onSave: (newTasks: ExtraTask[]) => void;
+} & Omit<React.ComponentProps<typeof Textarea>, 'value' | 'onChange' | 'onBlur'>) => {
+  
+  const [newExtraTaskText, setNewExtraTaskText] = useState("");
+
+  const handleAddExtraTask = () => {
+    if (!newExtraTaskText.trim()) return;
+    const newTasks = [...value, { id: crypto.randomUUID(), text: newExtraTaskText, completed: false }];
+    onSave(newTasks);
+    setNewExtraTaskText("");
+  };
+
+  const handleRemoveExtraTask = (taskId: string) => {
+    const newTasks = value.filter(task => task.id !== taskId);
+    onSave(newTasks);
+  };
+
+  return (
+    <div className="p-4 rounded-lg bg-card/50">
+        <Label>Organizar as tarefas para o dia seguinte</Label>
+        <div className="flex items-center gap-2 mt-2">
+            <Input 
+                value={newExtraTaskText}
+                onChange={(e) => setNewExtraTaskText(e.target.value)}
+                placeholder="Digite uma nova tarefa..."
+                className="bg-input border-2 border-primary/50"
+            />
+            <Button onClick={handleAddExtraTask} size="icon"><Plus/></Button>
+        </div>
+        <div className="space-y-2 mt-3">
+            {value.map(task => (
+                <div key={task.id} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="flex-1">- {task.text}</span>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveExtraTask(task.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive/70"/>
+                    </Button>
+                </div>
+            ))}
+        </div>
+    </div>
+  )
+};
+
+
 const createInitialPodcastData = (): PodcastData => ({
   podcast1: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
   podcast2: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
@@ -110,7 +163,7 @@ const createInitialPodcastData = (): PodcastData => ({
   podcast4: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
 });
 
-const createInitialWeeklyData = () => ({
+const createInitialWeeklyData = (): WeeklyData => ({
   checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0
 })
 
@@ -143,8 +196,6 @@ export default function RotinaSDRPage() {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
-  
-  const [newExtraTaskText, setNewExtraTaskText] = useState("");
 
   const isAdmin = user?.role === 'admin';
   const effectiveUserId = user?.uid;
@@ -348,24 +399,14 @@ export default function RotinaSDRPage() {
       });
   };
 
-  const handleAddExtraTask = () => {
-    if (!newExtraTaskText.trim()) return;
-    handleUpdateYearData(draft => {
-        const weekData = draft[currentMonth][activeWeekKey];
-        if (!weekData.extraTasks[activeDay]) weekData.extraTasks[activeDay] = [];
-        weekData.extraTasks[activeDay].push({ id: crypto.randomUUID(), text: newExtraTaskText, completed: false });
-    });
-    setNewExtraTaskText("");
+  const handleExtraTasksChange = (tasks: ExtraTask[]) => {
+      handleUpdateYearData(draft => {
+          const weekData = draft[currentMonth][activeWeekKey];
+          if (!weekData.extraTasks) weekData.extraTasks = {};
+          weekData.extraTasks[activeDay] = tasks;
+      });
   };
 
-  const handleRemoveExtraTask = (taskId: string) => {
-    handleUpdateYearData(draft => {
-        const weekData = draft[currentMonth][activeWeekKey];
-        if (weekData.extraTasks[activeDay]) {
-            weekData.extraTasks[activeDay] = weekData.extraTasks[activeDay].filter(task => task.id !== taskId);
-        }
-    });
-  };
 
   const handleTogglePreviousDayTask = (taskId: string) => {
      handleUpdateYearData(draft => {
@@ -630,7 +671,8 @@ export default function RotinaSDRPage() {
     
     const counterTasks = allTasks.filter(task => task.type === 'counter' && !task.saturdayOnly);
     const checkboxTasks = allTasks.filter(task => task.type === 'checkbox' && task.id !== 'a-7');
-    const extraTask = allTasks.find(task => task.id === 'a-7');
+    
+    const extraTasksForToday = weekData?.extraTasks?.[activeDay] || [];
     
     return(
       <Card className="bg-transparent border-none shadow-none">
@@ -646,7 +688,7 @@ export default function RotinaSDRPage() {
                   </div>
               </div>
               
-              {previousDayTasks.length > 0 && !isSaturday && !isHoliday && (
+              {previousDayTasks && Array.isArray(previousDayTasks) && previousDayTasks.length > 0 && !isSaturday && !isHoliday && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="font-headline flex items-center text-md">
@@ -769,28 +811,10 @@ export default function RotinaSDRPage() {
                           </div>
                       )
                     })}
-                     <div className="p-4 rounded-lg bg-card/50">
-                        <Label>Organizar as tarefas para o dia seguinte</Label>
-                        <div className="flex items-center gap-2 mt-2">
-                           <Input 
-                             value={newExtraTaskText}
-                             onChange={(e) => setNewExtraTaskText(e.target.value)}
-                             placeholder="Digite uma nova tarefa..."
-                             className="bg-input border-2 border-primary/50"
-                           />
-                           <Button onClick={handleAddExtraTask} size="icon"><Plus/></Button>
-                        </div>
-                         <div className="space-y-2 mt-3">
-                            {(weekData?.extraTasks?.[activeDay] || []).map(task => (
-                                <div key={task.id} className="flex items-center gap-2 text-sm text-muted-foreground">
-                                    <span className="flex-1">- {task.text}</span>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveExtraTask(task.id)}>
-                                        <Trash2 className="h-4 w-4 text-destructive/70"/>
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
-                     </div>
+                     <ExtraTasksTextarea 
+                        value={extraTasksForToday}
+                        onSave={handleExtraTasksChange}
+                     />
                   </div>
                 </div>
               )}
