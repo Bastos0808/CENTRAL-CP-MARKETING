@@ -32,7 +32,7 @@ const Page = React.forwardRef<HTMLDivElement, {children: React.ReactNode, classN
     )}
     >
         {children}
-        <div className="absolute bottom-12 left-12 w-48 h-12">
+        <div className="absolute bottom-12 right-12 w-48 h-12 opacity-30">
              <Image crossOrigin="anonymous" src="https://firebasestorage.googleapis.com/v0/b/briefing-cp-marketing-digital.appspot.com/o/proposta%2FLOGO%20HORIZONTAL.svg?alt=media&token=c1110008-89e4-4161-9f79-373c52e69b59" alt="CP Marketing Logo" layout="fill" objectFit="contain" />
         </div>
     </div>
@@ -92,7 +92,10 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
               </div>
         </Page>
         <Page className="items-start">
-            <div className="w-full max-w-6xl">
+            <div className="absolute top-1/2 -translate-y-1/2 right-24 w-96 h-96 opacity-5">
+                 <Image crossOrigin="anonymous" src="https://firebasestorage.googleapis.com/v0/b/briefing-cp-marketing-digital.appspot.com/o/proposta%2FLOGO%20HORIZONTAL.svg?alt=media&token=c1110008-89e4-4161-9f79-373c52e69b59" alt="CP Marketing Logo" layout="fill" objectFit="contain" />
+            </div>
+            <div className="w-full max-w-6xl relative z-10">
                 <h2 className="text-7xl font-bold uppercase mb-12 text-left">Sobre a Parceria</h2>
                 <div className="flex items-start gap-8">
                     <div className="w-2 bg-[#FE5412] self-stretch"></div>
@@ -138,7 +141,7 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
         </Page>
         <Page>
             <div className="w-full max-w-4xl text-center">
-              <div className="border-8 border-[#FE5412] p-16 rounded-2xl">
+              <div className="border-8 border-[#FE5412] p-16 rounded-2xl max-w-5xl mx-auto">
                   <h2 className="text-6xl font-bold uppercase mb-4">Investimento Mensal</h2>
                   <p className="text-9xl font-extrabold text-[#FE5412] mb-6">{investmentValue || 'R$ 0,00'}</p>
               </div>
