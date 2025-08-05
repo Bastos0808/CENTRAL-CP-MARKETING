@@ -21,10 +21,11 @@ export const packageOptions = {
     "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
 };
 
-const Page = React.forwardRef<HTMLDivElement, {children: React.ReactNode, className?: string}>(({ children, className }, ref) => (
+const Page = React.forwardRef<HTMLDivElement, {children: React.ReactNode, className?: string, style?: React.CSSProperties}>(({ children, className, style }, ref) => (
   <div
     ref={ref}
     data-slide
+    style={style}
     className={cn(
         "w-[1920px] h-[1080px] bg-[#0A0A0A] text-white p-24 flex flex-col justify-center items-center relative font-sans overflow-hidden",
         className
@@ -41,14 +42,17 @@ Page.displayName = 'Page';
 export const GeneratedProposal = (props: ProposalFormValues) => {
     const {
         clientName,
+        clientObjective,
+        clientChallenge,
+        clientAudience,
+        packages,
+        useCustomServices,
+        customServices,
+        investmentValue,
         partnershipDescription,
         objectiveItems,
         differentialItems,
         idealPlanItems,
-        investmentValue,
-        useCustomServices,
-        customServices,
-        packages,
     } = props;
     
     const renderCustomServices = () => (
@@ -102,12 +106,12 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
     
   return (
     <div>
-        <Page className="bg-cover bg-center">
-             <div className="absolute inset-0 bg-black/60 z-0"></div>
+        <Page className="bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1554224155-8d04421cd673?q=80&w=3870&auto=format&fit=crop')", backgroundPosition: 'center center' }}>
+             <div className="absolute inset-0 bg-black/50 z-0"></div>
               <div className="z-10 text-center flex flex-col items-center">
                   <p className="text-[#FE5412] font-semibold tracking-widest mb-4 text-2xl">PROPOSTA COMERCIAL</p>
                   <h1 className="text-9xl font-extrabold max-w-5xl leading-tight">{clientName || '[Nome do Cliente]'}</h1>
-                  <p className="text-3xl font-light text-gray-300 mt-6">Gestão Estratégica de Marketing Digital</p>
+                  <p className="text-3xl font-light text-gray-400 mt-6">Gestão Estratégica de Marketing Digital</p>
               </div>
         </Page>
         <Page className="items-start">
