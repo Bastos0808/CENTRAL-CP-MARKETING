@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import Image from 'next/image';
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,7 @@ import {
     Lightbulb, Target, BookOpen, Diamond, Tv, BarChart, 
     Video, MessageSquare, Users, Milestone, Megaphone, CheckCircle, 
     Eye, Image as ImageIcon, PenTool, Edit, SquarePlay, Paperclip, X, Info,
-    Trash2
+    Trash2, UploadCloud
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema } from "@/ai/schemas/channel-strategy-schemas";
@@ -32,7 +32,7 @@ type ChannelType = "instagram" | "website" | "youtube";
 
 const formSchema = z.object({
   channelType: z.enum(["instagram", "website", "youtube"]),
-  screenshotDataUri: z.string().min(1, 'O print da tela é obrigatório.'),
+  screenshotDataUris: z.array(z.string()).min(1, 'Anexe pelo menos um print da tela.'),
   analysis: z.union([InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema]).optional(),
 });
 
@@ -92,23 +92,28 @@ export default function ChannelStrategyAnalyzer() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       channelType: 'instagram',
-      screenshotDataUri: undefined,
+      screenshotDataUris: [],
       analysis: undefined
     }
   });
-  
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
+
+  const handleFileChange = (files: FileList | null) => {
+    if (!files) return;
+    
+    const currentUris = form.getValues('screenshotDataUris');
+    const newUris: string[] = [...currentUris];
+
+    Array.from(files).forEach(file => {
         if (file.size > 4 * 1024 * 1024) { // 4MB limit
             toast({
                 title: "Arquivo muito grande",
-                description: "Por favor, selecione uma imagem com menos de 4MB.",
+                description: `O arquivo "${file.name}" excede o limite de 4MB.`,
                 variant: "destructive"
             });
             return;
@@ -116,17 +121,41 @@ export default function ChannelStrategyAnalyzer() {
         const reader = new FileReader();
         reader.onloadend = () => {
             const dataUri = reader.result as string;
-            form.setValue('screenshotDataUri', dataUri);
+            newUris.push(dataUri);
+            form.setValue('screenshotDataUris', newUris, { shouldValidate: true });
         };
         reader.readAsDataURL(file);
-    }
+    });
   };
 
-  const handleRemoveScreenshot = () => {
-      form.setValue('screenshotDataUri', undefined, { shouldValidate: true });
-      form.setValue('analysis', undefined);
-      if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+  };
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+  };
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+  };
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      handleFileChange(e.dataTransfer.files);
+  };
+
+
+  const handleRemoveScreenshot = (indexToRemove: number) => {
+      const currentUris = form.getValues('screenshotDataUris');
+      const newUris = currentUris.filter((_, index) => index !== indexToRemove);
+      form.setValue('screenshotDataUris', newUris, { shouldValidate: true });
+      if (newUris.length === 0) {
+        form.setValue('analysis', undefined);
       }
   }
 
@@ -138,7 +167,7 @@ export default function ChannelStrategyAnalyzer() {
     try {
       const result = await analyzeChannelStrategy({ 
           channelType: values.channelType,
-          screenshotDataUri: values.screenshotDataUri,
+          screenshotDataUris: values.screenshotDataUris,
       });
       form.setValue(`analysis`, result.analysis, { shouldValidate: true });
       toast({
@@ -186,7 +215,7 @@ ${analysisText}
   }
   
   const watchedChannelType = form.watch('channelType');
-  const watchedScreenshot = form.watch('screenshotDataUri');
+  const watchedScreenshots = form.watch('screenshotDataUris');
   const analysis = form.watch('analysis');
   const currentConfig = channelConfig[watchedChannelType];
 
@@ -196,7 +225,7 @@ ${analysisText}
             <Card>
                 <CardHeader>
                     <CardTitle>Configuração da Análise</CardTitle>
-                    <CardDescription>Escolha o tipo de canal e anexe um print (screenshot) da tela para a IA analisar.</CardDescription>
+                    <CardDescription>Escolha o tipo de canal e anexe um ou mais prints (screenshots) da tela para a IA analisar.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                      <FormField
@@ -208,7 +237,10 @@ ${analysisText}
                                 <FormControl>
                                     <Tabs
                                         value={field.value}
-                                        onValueChange={(value) => field.onChange(value as ChannelType)}
+                                        onValueChange={(value) => {
+                                            field.onChange(value as ChannelType);
+                                            form.setValue('analysis', undefined);
+                                        }}
                                         className="w-full"
                                     >
                                         <TabsList className="grid w-full grid-cols-3">
@@ -225,38 +257,56 @@ ${analysisText}
                     
                     <FormField
                         control={form.control}
-                        name="screenshotDataUri"
+                        name="screenshotDataUris"
                         render={({ field }) => (
                             <FormItem>
-                               <FormLabel>Print da Tela do Canal</FormLabel>
-                               {watchedScreenshot ? (
-                                  <div className="relative group w-fit">
-                                      <Image src={watchedScreenshot} alt="Preview do print" width={300} height={200} className="rounded-md object-contain max-h-48 w-full border" />
-                                      <Button
-                                          type="button"
-                                          variant="destructive"
-                                          size="icon"
-                                          className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                                          onClick={handleRemoveScreenshot}
-                                      >
-                                          <X className="h-3 w-3" />
-                                      </Button>
-                                  </div>
-                              ) : (
-                                  <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full md:w-auto">
-                                      <Paperclip className="mr-2 h-4 w-4" />
-                                      Anexar Print
-                                  </Button>
-                              )}
-                               <FormControl>
-                                  <input
-                                      type="file"
-                                      ref={fileInputRef}
-                                      className="hidden"
-                                      accept="image/png, image/jpeg, image/webp"
-                                      onChange={handleFileChange}
-                                  />
-                               </FormControl>
+                               <FormLabel>Prints da Tela do Canal</FormLabel>
+                               <div 
+                                    className={cn(
+                                        "relative flex flex-col items-center justify-center w-full min-h-[150px] border-2 border-dashed rounded-lg cursor-pointer transition-colors",
+                                        isDragging ? "border-primary bg-primary/10" : "border-input hover:border-primary/50"
+                                    )}
+                                    onDragEnter={handleDragEnter}
+                                    onDragLeave={handleDragLeave}
+                                    onDragOver={handleDragOver}
+                                    onDrop={handleDrop}
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
+                                        <UploadCloud className="w-8 h-8 mb-4" />
+                                        <p className="mb-2 text-sm"><span className="font-semibold">Clique para enviar</span> ou arraste e solte</p>
+                                        <p className="text-xs">PNG, JPG, WEBP (MAX. 4MB cada)</p>
+                                    </div>
+                                    <FormControl>
+                                      <input
+                                          type="file"
+                                          ref={fileInputRef}
+                                          className="hidden"
+                                          accept="image/png, image/jpeg, image/webp"
+                                          multiple
+                                          onChange={(e) => handleFileChange(e.target.files)}
+                                      />
+                                   </FormControl>
+                                </div>
+                               
+                               {watchedScreenshots && watchedScreenshots.length > 0 && (
+                                   <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                       {watchedScreenshots.map((uri, index) => (
+                                          <div key={index} className="relative group w-full h-24">
+                                              <Image src={uri} alt={`Preview ${index}`} layout="fill" className="rounded-md object-cover border" />
+                                              <Button
+                                                  type="button"
+                                                  variant="destructive"
+                                                  size="icon"
+                                                  className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                                  onClick={() => handleRemoveScreenshot(index)}
+                                              >
+                                                  <X className="h-3 w-3" />
+                                              </Button>
+                                          </div>
+                                       ))}
+                                   </div>
+                               )}
                                <FormMessage />
                            </FormItem>
                         )}
@@ -266,7 +316,7 @@ ${analysisText}
             </Card>
 
             <div className="flex justify-end gap-2">
-                 <Button type="submit" disabled={loading || !watchedScreenshot}>
+                 <Button type="submit" disabled={loading || watchedScreenshots.length === 0}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                     Analisar com IA
                  </Button>
@@ -281,7 +331,7 @@ ${analysisText}
               <Card>
                 <CardHeader>
                   <CardTitle>Formulário de Análise - {currentConfig.name}</CardTitle>
-                  <CardDescription>Respostas geradas pela IA com base na imagem. Você pode editar os campos antes de copiar.</CardDescription>
+                  <CardDescription>Respostas geradas pela IA com base nas imagens. Você pode editar os campos de texto antes de copiar.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <TooltipProvider>
@@ -315,15 +365,15 @@ ${analysisText}
                                 {isRegularField && <Controller
                                     name={`analysis.${key as keyof typeof analysis}`}
                                     control={form.control}
-                                    render={({ field }) => <Textarea id={`analysis-${key}`} {...field} placeholder={prompt} className="min-h-[100px] text-sm" value={field.value || ''} />}
+                                    render={({ field }) => <Textarea id={`analysis-${key}`} {...field} placeholder={prompt} className="min-h-[100px] text-sm" value={field.value as string || ''} />}
                                 />}
 
                                 {isOpportunityField && (
                                   <div className="space-y-2">
-                                     {Array.isArray(analysis.oportunidades) && analysis.oportunidades.length > 0 ? (
-                                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                                     {analysis.oportunidades && Array.isArray(analysis.oportunidades) && analysis.oportunidades.length > 0 ? (
+                                        <ul className="list-disc pl-5 space-y-1 text-sm">
                                            {(analysis.oportunidades as string[]).map((opp, index) => (
-                                                <li key={index}>{opp}</li>
+                                                <li key={index} className="text-foreground">{opp}</li>
                                             ))}
                                         </ul>
                                      ) : (

@@ -31,10 +31,12 @@ const channelStrategyPrompt = ai.definePrompt({
   prompt: `
     Você é um Estrategista de Marketing Sênior e um detetive de negócios. Sua missão é fazer um diagnóstico profundo e detalhado de um canal digital de um prospect, preenchendo um formulário de análise completo.
 
-    A sua ÚNICA fonte de informação é a IMAGEM fornecida. Aja como se você estivesse vendo a tela do canal. Analise cada detalhe visual e textual presente na imagem para extrair o máximo de informações possíveis.
+    A sua ÚNICA fonte de informação são as IMAGENS fornecidas. Aja como se você estivesse vendo a tela do canal. Analise cada detalhe visual e textual presente nas imagens para extrair o máximo de informações possíveis.
 
-    **Imagem para Análise:**
-    {{media url=screenshotDataUri}}
+    **Imagens para Análise:**
+    {{#each screenshotDataUris}}
+    - Imagem: {{media url=this}}
+    {{/each}}
     
     O canal a ser analisado é um **{{channelType}}**.
 
@@ -93,5 +95,3 @@ const channelStrategyFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

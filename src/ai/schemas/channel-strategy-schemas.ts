@@ -6,8 +6,8 @@ import { z } from 'zod';
 
 export const ChannelStrategyInputSchema = z.object({
   channelType: z.enum(['instagram', 'website', 'youtube']).describe('The type of the channel being analyzed.'),
-   screenshotDataUri: z.string().describe(
-      "A print (screenshot) do canal, como um data URI que deve incluir um MIME type e usar Base64. Formato esperado: 'data:<mimetype>;base64,<encoded_data>'."
+  screenshotDataUris: z.array(z.string()).min(1, 'Pelo menos um print de tela é obrigatório.').describe(
+      "Uma lista de prints (screenshots) do canal, como data URIs que devem incluir um MIME type e usar Base64. Formato esperado: 'data:<mimetype>;base64,<encoded_data>'."
     ),
 });
 export type ChannelStrategyInput = z.infer<typeof ChannelStrategyInputSchema>;
@@ -58,5 +58,3 @@ export const ChannelStrategyOutputSchema = z.object({
   analysis: ChannelStrategyAnalysisSchema.describe('The structured analysis containing answers to the framework questions.'),
 });
 export type ChannelStrategyOutput = z.infer<typeof ChannelStrategyOutputSchema>;
-
-    
