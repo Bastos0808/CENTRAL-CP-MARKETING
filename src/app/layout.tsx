@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { AuthProvider } from '@/components/auth-provider';
 
 export const metadata: Metadata = {
-  title: 'Briefing CP Marketing Digital',
+  title: 'Central CP Marketing',
   description: 'Formulário de briefing para projetos de marketing digital.',
 };
 
