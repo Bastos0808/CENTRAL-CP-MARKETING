@@ -35,7 +35,7 @@ import {
   Trash2,
   Calendar as CalendarIcon,
 } from "lucide-react";
-import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth, format, addDays } from 'date-fns';
+import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth, format, addDays, eachDayOfInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { allTasks, WEEKLY_MEETING_GOAL, ptDays, AnyTask, weeklyGoals, ptMonths } from "@/lib/tasks";
@@ -604,7 +604,10 @@ export default function RotinaSDRPage() {
 
   const AdminView = () => {
     const [selectedSdr, setSelectedSdr] = useState('all');
-    const [date, setDate] = useState<Date | undefined>(new Date());
+    const [dateRange, setDateRange] = useState<DateRange | undefined>({
+      from: startOfMonth(new Date()),
+      to: new Date(),
+    });
 
     if (isLoading) {
       return (
@@ -643,6 +646,45 @@ export default function RotinaSDRPage() {
                             </SelectContent>
                         </Select>
                     </div>
+                     <div className="flex-1 space-y-2">
+                        <Label>Filtrar por Período</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    id="date"
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !dateRange && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {dateRange?.from ? (
+                                        dateRange.to ? (
+                                            <>
+                                                {format(dateRange.from, "LLL dd, y")} -{" "}
+                                                {format(dateRange.to, "LLL dd, y")}
+                                            </>
+                                        ) : (
+                                            format(dateRange.from, "LLL dd, y")
+                                        )
+                                    ) : (
+                                        <span>Escolha um período</span>
+                                    )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                    initialFocus
+                                    mode="range"
+                                    defaultMonth={dateRange?.from}
+                                    selected={dateRange}
+                                    onSelect={setDateRange}
+                                    numberOfMonths={2}
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
                 </CardContent>
             </Card>
             
@@ -653,20 +695,20 @@ export default function RotinaSDRPage() {
                     const sdrYearData = allSdrData[sdr.id];
                     if (!sdrYearData) return null;
                     
-                    const month = ptMonths[getMonth(date || new Date())];
+                    const month = ptMonths[getMonth(dateRange?.from || new Date())];
 
                     return (
                         <Card key={sdr.id}>
                             <CardHeader>
                                 <CardTitle>{sdr.name}</CardTitle>
-                                <CardDescription>Performance de {month}</CardDescription>
+                                <CardDescription>Performance no período selecionado</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <WeeklyProgress 
                                     sdrId={sdr.id}
                                     yearData={sdrYearData}
-                                    month={month}
-                                    isMonthlyView
+                                    dateRange={dateRange}
+                                    isMonthlyView={false} // Force calculation based on range
                                 />
                             </CardContent>
                         </Card>
@@ -869,14 +911,7 @@ export default function RotinaSDRPage() {
                     placeholder="0"
                     disabled={isHoliday || isSaturday}
                 />
-                {!isSaturday && (
-                     <span className={cn(
-                        "text-base font-semibold w-10 text-right", 
-                        (Number(dailyMeetings) >= 1) ? 'text-green-500' : 'text-red-500'
-                     )}>
-                        / 1
-                    </span>
-                )}
+                
                 {isSaturday && (
                      <div className="text-right">
                         <p className={cn(
@@ -913,7 +948,7 @@ export default function RotinaSDRPage() {
             return <PodcastTab podcastData={monthlyData?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />;
         }
         if (activeTab === 'Progresso Semanal') {
-            return <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} week={currentWeek} />;
+            return <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} week={currentWeek} month={currentMonth} />;
         }
         if (activeTab === 'Progresso Mensal') {
             return <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} month={currentMonth} isMonthlyView />;
@@ -1015,8 +1050,3 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
-
-    
-
-
-

@@ -1,6 +1,6 @@
 
 
-export const WEEKLY_MEETING_GOAL = 5;
+export const WEEKLY_MEETING_GOAL = 8;
 
 export const ptDays = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
@@ -33,7 +33,6 @@ export const allTasks: AnyTask[] = [
     { id: "m-4", label: "Prospecção (Instagram/WhatsApp)", type: 'counter', dailyGoal: 40, weeklyGoal: 200 },
     { id: "m-5", label: "E-mail Marketing", type: 'counter', dailyGoal: 20, weeklyGoal: 100 },
     { id: "a-3", label: "Ligações", type: 'counter', dailyGoal: 5, weeklyGoal: 25 },
-    { id: 'daily_meetings', label: 'Consultorias Realizadas', type: 'counter', dailyGoal: 1, weeklyGoal: 5 },
 
     // Checkbox Tasks
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
@@ -46,7 +45,7 @@ export const allTasks: AnyTask[] = [
 
 
 export const weeklyGoals: Record<string, { label: string; goal: number }> = {
-  "meetings": { label: "Consultorias", goal: 5 },
+  "meetings": { label: "Consultorias", goal: 8 },
   "podcasts": { label: "Podcasts Concluídos", goal: 4 },
   "m-1-exact": { label: "Leads (Exact Spotter)", goal: 150 },
   "m-3": { label: "Conexões no LinkedIn", goal: 100 },
