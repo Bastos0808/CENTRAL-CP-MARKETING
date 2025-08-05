@@ -3,20 +3,8 @@
 
 import { BackButton } from '@/components/ui/back-button';
 import ProposalGeneratorV2 from '@/components/proposal-generator-v2';
-import { useAuth } from '@/hooks/use-auth';
-import { Loader2, ShieldAlert } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function GeradorPropostasPage() {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex min-h-screen w-full items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   return (
       <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
@@ -30,7 +18,7 @@ export default function GeradorPropostasPage() {
               Crie propostas comerciais modernas e personalizadas para seus clientes.
             </p>
           </header>
-          <div className="mx-auto w-full">
+          <div className="mx-auto w-full max-w-4xl">
             <ProposalGeneratorV2 />
           </div>
         </div>
