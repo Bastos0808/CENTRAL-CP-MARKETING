@@ -19,9 +19,6 @@ export const InstagramStrategyInputSchema = z.object({
 
 export const WebsiteStrategyInputSchema = z.object({
   channelType: z.literal('website'),
-  screenshotDataUris: z.array(z.string()).min(1, 'Pelo menos um print de tela é obrigatório.').describe(
-      "Uma lista de prints (screenshots) do canal, como data URIs que devem incluir um MIME type e usar Base64. Formato esperado: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
   htmlContent: z.string().optional().describe('O conteúdo HTML do código-fonte de um site, para uma análise mais profunda de SEO e estrutura.'),
 });
 

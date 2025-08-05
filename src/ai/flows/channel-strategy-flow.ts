@@ -35,16 +35,11 @@ const channelStrategyPrompt = ai.definePrompt({
 
     **Instruções Críticas:**
     1.  **Preenchimento Obrigatório:** PREENCHA TODOS OS CAMPOS SOLICITADOS no framework de análise. Não deixe nenhum campo em branco.
-    2.  **Inferência Inteligente:** Se uma informação para um campo específico não estiver 100% clara nas imagens, use sua expertise para inferir a resposta mais provável com base no contexto.
+    2.  **Inferência Inteligente:** Se uma informação para um campo específico não estiver 100% clara, use sua expertise para inferir a resposta mais provável com base no contexto.
     3.  **Aviso de Dados Insuficientes:** Se for impossível inferir uma resposta para um campo (por exemplo, a imagem não mostra os destaques do Instagram), preencha o campo com um aviso claro, como: "Não foi possível analisar este ponto devido à falta de informações visuais adequadas."
     4.  **Prioridade Máxima para Gancho e Oportunidades:** Independentemente dos avisos nos campos anteriores, você DEVE SEMPRE preencher os campos finais "oportunidades" e "gancho". Baseie-se na análise que foi possível realizar para gerar os insights mais valiosos.
 
-    **Imagens para Análise Visual:**
-    {{#if (eq channelType "website")}}
-        {{#each screenshotDataUris}}
-            - Imagem Genérica do Site: {{media url=this}}
-        {{/each}}
-    {{/if}}
+    **Insumos para Análise:**
     {{#if (eq channelType "instagram")}}
         {{#if bioScreenshot}} - Print da Bio: {{media url=bioScreenshot}}{{/if}}
         {{#if highlightsScreenshot}} - Print dos Destaques: {{media url=highlightsScreenshot}}{{/if}}

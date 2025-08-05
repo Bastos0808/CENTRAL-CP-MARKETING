@@ -99,7 +99,7 @@ const channelConfig = {
 };
 
 
-const ImageUploader = ({ name, label, icon: Icon, control, form, helpText }: { name: any, label: string, icon: React.ElementType, control: any, form: any, helpText: string }) => {
+const ImageUploader = ({ name, label, icon: Icon, control, form }: { name: any, label: string, icon: React.ElementType, control: any, form: any }) => {
     const { toast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -144,7 +144,7 @@ const ImageUploader = ({ name, label, icon: Icon, control, form, helpText }: { n
                 >
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
                         <UploadCloud className="w-6 h-6 mb-2" />
-                        <p className="text-xs text-center">{helpText}</p>
+                        <p className="text-xs text-center">{label}</p>
                     </div>
                     <FormControl>
                         <input type="file" ref={fileInputRef} className="hidden" accept="image/png, image/jpeg, image/webp" onChange={(e) => handleFileChange(e.target.files)} />
@@ -236,7 +236,7 @@ ${analysisText}
         return values.bannerScreenshot && values.videosScreenshot;
     }
     if (values.channelType === 'website') {
-        return values.screenshotDataUris && values.screenshotDataUris.length > 0;
+        return !!values.htmlContent;
     }
     return false;
   }
@@ -247,7 +247,7 @@ ${analysisText}
             <Card>
                 <CardHeader>
                     <CardTitle>Configuração da Análise</CardTitle>
-                    <CardDescription>Escolha o tipo de canal e forneça os insumos (prints de tela e/ou código-fonte) para a IA analisar.</CardDescription>
+                    <CardDescription>Escolha o tipo de canal e forneça os insumos para a IA analisar.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                      <FormField
@@ -278,49 +278,46 @@ ${analysisText}
                     />
                     
                      <div className="pt-4 space-y-4">
-                        <Label>Imagens Guiadas</Label>
-                        <FormDescription>Anexe os prints correspondentes para uma análise precisa. Os campos marcados com * são obrigatórios.</FormDescription>
-                        { 'imageFields' in currentConfig && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {currentConfig.imageFields.map(field => (
-                                    <ImageUploader 
-                                        key={field.name}
-                                        name={field.name}
-                                        label={field.label}
-                                        icon={field.icon}
-                                        control={form.control}
-                                        form={form}
-                                        helpText={field.label}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                        {watchedChannelType === 'website' && <p>Upload de site será implementado</p>}
-                     </div>
-
-                    {watchedChannelType === 'website' && (
-                        <FormField
-                            control={form.control}
-                            name="htmlContent"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="flex items-center gap-2"><Code /> Código-Fonte (HTML)</FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Cole o código-fonte HTML da página aqui para uma análise mais profunda de SEO e estrutura."
-                                            className="min-h-[150px] font-mono text-xs"
-                                            {...field}
+                        {watchedChannelType === 'website' ? (
+                             <FormField
+                                control={form.control}
+                                name="htmlContent"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="flex items-center gap-2"><Code /> Código-Fonte (HTML)</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Cole o código-fonte HTML da página aqui para uma análise mais profunda de SEO e estrutura."
+                                                className="min-h-[250px] font-mono text-xs"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Para obter, clique com o botão direito na página do site e escolha "Exibir código-fonte da página".
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        ) : (
+                             <>
+                                <Label>Imagens Guiadas *</Label>
+                                <FormDescription>Anexe os prints correspondentes para uma análise precisa. Os campos marcados com * são obrigatórios.</FormDescription>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {'imageFields' in currentConfig && currentConfig.imageFields.map(field => (
+                                        <ImageUploader 
+                                            key={field.name}
+                                            name={field.name}
+                                            label={field.label}
+                                            icon={field.icon}
+                                            control={form.control}
+                                            form={form}
                                         />
-                                    </FormControl>
-                                    <FormDescription>
-                                        Para obter, clique com o botão direito na página do site e escolha "Exibir código-fonte da página".
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    )}
-
+                                    ))}
+                                </div>
+                             </>
+                        )}
+                     </div>
                 </CardContent>
             </Card>
 
