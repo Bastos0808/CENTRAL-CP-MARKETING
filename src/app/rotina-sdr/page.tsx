@@ -25,6 +25,8 @@ import {
   User,
   Users,
   Trophy,
+  CheckCircle,
+  Circle,
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth } from 'date-fns';
 
@@ -575,33 +577,43 @@ export default function RotinaSDRPage() {
 
                   {/* Right Column for Checkbox Tasks */}
                   <div className="space-y-4">
-                    {checkboxTasks.map(task => (
-                        <div key={task.id} className="flex items-center space-x-4 p-4 rounded-lg bg-card/50">
-                            <Checkbox
-                                id={`${activeDay}-${task.id}`}
-                                checked={weekData.checkedTasks?.[activeDay]?.[task.id] || false}
-                                onCheckedChange={(checked) => handleTaskCheck(task.id, !!checked)}
-                                className="h-6 w-6 rounded-md border-2 border-primary"
-                            />
-                            <Label htmlFor={`${activeDay}-${task.id}`} className="flex-1 text-base font-normal cursor-pointer">{task.label}</Label>
-                        </div>
-                    ))}
+                    {checkboxTasks.map(task => {
+                        const isChecked = weekData.checkedTasks?.[activeDay]?.[task.id] || false;
+                        return (
+                          <div
+                              key={task.id}
+                              onClick={() => handleTaskCheck(task.id, !isChecked)}
+                              className="flex items-center space-x-4 p-4 rounded-lg bg-card/50 cursor-pointer transition-colors hover:bg-card/70"
+                          >
+                              {isChecked ? (
+                                  <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
+                              ) : (
+                                  <Circle className="h-6 w-6 text-primary flex-shrink-0" />
+                              )}
+                              <span className={cn("flex-1 text-base font-normal", isChecked && "line-through text-muted-foreground")}>
+                                  {task.label}
+                              </span>
+                          </div>
+                      )
+                    })}
                     {extraTask && (
                        <div className="p-4 rounded-lg bg-card/50">
-                          <div className="flex items-center space-x-4">
-                              <Checkbox
-                                  id={`${activeDay}-${extraTask.id}`}
-                                  checked={weekData.checkedTasks?.[activeDay]?.[extraTask.id] || false}
-                                  onCheckedChange={(checked) => handleTaskCheck(extraTask.id, !!checked)}
-                                  className="h-6 w-6 rounded-md border-2 border-primary"
-                              />
-                              <Label htmlFor={`${activeDay}-${extraTask.id}`} className="flex-1 text-base font-normal cursor-pointer">{extraTask.label}</Label>
+                          <div onClick={() => handleTaskCheck(extraTask.id, !weekData.checkedTasks?.[activeDay]?.[extraTask.id])} className="flex items-center space-x-4 cursor-pointer">
+                              {weekData.checkedTasks?.[activeDay]?.[extraTask.id] ? (
+                                  <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
+                              ) : (
+                                  <Circle className="h-6 w-6 text-primary flex-shrink-0" />
+                              )}
+                              <span className={cn("flex-1 text-base font-normal", weekData.checkedTasks?.[activeDay]?.[extraTask.id] && "line-through text-muted-foreground")}>
+                                  {extraTask.label}
+                              </span>
                           </div>
                           <Textarea
                               placeholder="Digite as tarefas para o dia seguinte aqui..."
                               value={weekData.extraTasks?.[activeDay] || ''}
                               onChange={(e) => handleExtraTasksChange(e.target.value)}
-                              className="w-full mt-2 bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
+                              className="w-full mt-2 bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary ml-10"
+                              style={{width: 'calc(100% - 2.5rem)'}}
                           />
                        </div>
                     )}
