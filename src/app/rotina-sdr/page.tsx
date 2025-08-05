@@ -501,117 +501,115 @@ export default function RotinaSDRPage() {
         return weeklyTotal < task.weeklyGoal;
     });
     
-    const allCheckboxTasks = allTasks.filter(task => task.type === 'checkbox' && !task.saturdayOnly);
+    const counterTasks = allTasks.filter(task => task.type === 'counter' && !task.saturdayOnly);
+    const checkboxTasks = allTasks.filter(task => task.type === 'checkbox' && !task.saturdayOnly && task.id !== 'a-7');
+    const extraTask = allTasks.find(task => task.id === 'a-7');
     
     return(
-        <div className="grid grid-cols-1 gap-4 md:gap-8">
-            <div className="grid auto-rows-max items-start gap-4 md:gap-8">
-              <div className="bg-card p-6 rounded-lg shadow-sm w-full lg:col-span-2 mb-4 flex justify-between items-center">
+      <Card className="bg-transparent border-none shadow-none">
+          <CardContent className="p-0">
+              <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold font-headline text-primary flex items-center">
                       <CalendarDays className="mr-3 h-6 w-6" />
                       {activeTab}
                   </h3>
-                  {activeTab !== 'Sábado' && (
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                       <Label htmlFor="holiday-switch">É feriado?</Label>
                       <Switch id="holiday-switch" checked={isHoliday} onCheckedChange={handleHolidayToggle} />
-                    </div>
-                  )}
-                  {isHoliday && <p className="text-accent-foreground mt-2 font-semibold bg-accent p-2 rounded-md">Este dia foi marcado como feriado. As metas não serão contabilizadas.</p>}
-                  {isSaturday && <p className="text-muted-foreground">Dia de foco para correr atrás das metas semanais pendentes.</p>}
+                  </div>
               </div>
 
-              <Card className="bg-transparent border-none shadow-none">
-                <CardContent className="p-0">
-                  <div className="space-y-4">
-                     {isSaturday ? (
-                        <>
-                            {pendingGoals.length > 0 ? (
-                                pendingGoals.map(task => {
-                                    const weeklyTotal = weeklyProgress[task.id] || 0;
-                                    const isGoalMet = weeklyTotal >= task.weeklyGoal;
-                                    const currentSaturdayValue = weekData.counterTasks?.[activeDay]?.[task.id] || '';
-                                    return (
-                                        <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
-                                            <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
-                                            <div className="flex items-center gap-3 w-full sm:w-auto">
-                                                <Input type="number" id={`${activeDay}-${task.id}`} value={currentSaturdayValue} onChange={(e) => handleCounterChange(task.id, e.target.value)} className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" />
-                                                <div className="text-right">
-                                                    <p className={cn("text-lg font-bold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
-                                                        {weeklyTotal} / {task.weeklyGoal}
-                                                    </p>
-                                                    <p className={cn("text-sm font-semibold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
-                                                        {isGoalMet ? 'Meta atingida!' : `Faltam ${Math.max(0, task.weeklyGoal - weeklyTotal)}`}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )
-                                })
-                            ) : (
-                                <div className="text-center py-12">
-                                    <Trophy className="h-12 w-12 mx-auto text-green-500" />
-                                    <p className="mt-4 text-lg font-semibold">Parabéns! Todas as metas da semana foram atingidas.</p>
-                                    <p className="text-muted-foreground">Bom descanso!</p>
-                                </div>
-                            )}
-                             <div className="mt-4">
-                                {renderConsultorias()}
-                            </div>
-                        </>
-                     ) : (
-                        allTasks
-                        .filter(task => !task.saturdayOnly)
-                        .map((task) => (
-                             <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
-                                {task.type === 'checkbox' ? (
-                                    <>
-                                        <div className="flex items-center space-x-4">
-                                            <Checkbox
-                                                id={`${activeDay}-${task.id}`}
-                                                checked={weekData.checkedTasks?.[activeDay]?.[task.id] || false}
-                                                onCheckedChange={(checked) => handleTaskCheck(task.id, !!checked)}
-                                                className="h-6 w-6 rounded-md border-2 border-primary"
-                                                disabled={isHoliday}
-                                            />
-                                            <Label htmlFor={`${activeDay}-${task.id}`} className="flex-1 text-base font-normal cursor-pointer">{task.label}</Label>
-                                        </div>
-                                        {task.id === 'a-7' && (
-                                             <Textarea
-                                                placeholder="Digite as tarefas para o dia seguinte aqui..."
-                                                value={weekData.extraTasks?.[activeDay] || ''}
-                                                onChange={(e) => handleExtraTasksChange(e.target.value)}
-                                                className="w-full sm:w-1/2 bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
-                                                disabled={isHoliday}
-                                            />
-                                        )}
-                                    </>
-                                ) : (
-                                    <>
-                                        <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
-                                        <div className="flex items-center gap-3 w-full sm:w-auto">
-                                            <Input type="number" id={`${activeDay}-${task.id}`} value={weekData.counterTasks?.[activeDay]?.[task.id] || ''} onChange={(e) => handleCounterChange(task.id, e.target.value)} className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" disabled={isHoliday} />
-                                            <span className={cn("text-lg font-semibold", (weekData.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        ))
-                     )}
+              {isHoliday ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                      <CalendarX2 className="h-12 w-12 mx-auto mb-4" />
+                      <p className="font-semibold">Este dia foi marcado como feriado.</p>
+                      <p>As metas e tarefas estão desativadas.</p>
                   </div>
-                </CardContent>
-              </Card>
+              ) : isSaturday ? (
+                 <>
+                  {pendingGoals.length > 0 ? (
+                      pendingGoals.map(task => {
+                          const weeklyTotal = weeklyProgress[task.id] || 0;
+                          const isGoalMet = weeklyTotal >= task.weeklyGoal;
+                          const currentSaturdayValue = weekData.counterTasks?.[activeDay]?.[task.id] || '';
+                          return (
+                              <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50 mb-4">
+                                  <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
+                                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                                      <Input type="number" id={`${activeDay}-${task.id}`} value={currentSaturdayValue} onChange={(e) => handleCounterChange(task.id, e.target.value)} className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" />
+                                      <div className="text-right">
+                                          <p className={cn("text-lg font-bold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
+                                              {weeklyTotal} / {task.weeklyGoal}
+                                          </p>
+                                          <p className={cn("text-sm font-semibold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
+                                              {isGoalMet ? 'Meta atingida!' : `Faltam ${Math.max(0, task.weeklyGoal - weeklyTotal)}`}
+                                          </p>
+                                      </div>
+                                  </div>
+                              </div>
+                          )
+                      })
+                  ) : (
+                      <div className="text-center py-12">
+                          <Trophy className="h-12 w-12 mx-auto text-green-500" />
+                          <p className="mt-4 text-lg font-semibold">Parabéns! Todas as metas da semana foram atingidas.</p>
+                          <p className="text-muted-foreground">Bom descanso!</p>
+                      </div>
+                  )}
+               </>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+                  {/* Left Column for Counter Tasks */}
+                  <div className="space-y-4">
+                      {counterTasks.map((task) => (
+                           <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
+                                <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
+                                <div className="flex items-center gap-3">
+                                    <Input type="number" id={`${activeDay}-${task.id}`} value={weekData.counterTasks?.[activeDay]?.[task.id] || ''} onChange={(e) => handleCounterChange(task.id, e.target.value)} className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50" placeholder="0" />
+                                    <span className={cn("text-base font-semibold", (weekData.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
+                                </div>
+                            </div>
+                      ))}
+                      {renderConsultorias()}
+                  </div>
 
-               {previousDayTasks && !isSaturday && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="font-headline flex items-center"><ListPlus className="mr-3 h-6 w-6" />Tarefas Planejadas (do dia anterior)</CardTitle>
-                  </CardHeader>
-                  <CardContent><div className="whitespace-pre-wrap p-4 bg-muted rounded-md text-muted-foreground">{previousDayTasks}</div></CardContent>
-                </Card>
+                  {/* Right Column for Checkbox Tasks */}
+                  <div className="space-y-4">
+                    {checkboxTasks.map(task => (
+                        <div key={task.id} className="flex items-center space-x-4 p-4 rounded-lg bg-card/50">
+                            <Checkbox
+                                id={`${activeDay}-${task.id}`}
+                                checked={weekData.checkedTasks?.[activeDay]?.[task.id] || false}
+                                onCheckedChange={(checked) => handleTaskCheck(task.id, !!checked)}
+                                className="h-6 w-6 rounded-md border-2 border-primary"
+                            />
+                            <Label htmlFor={`${activeDay}-${task.id}`} className="flex-1 text-base font-normal cursor-pointer">{task.label}</Label>
+                        </div>
+                    ))}
+                    {extraTask && (
+                       <div className="p-4 rounded-lg bg-card/50">
+                          <div className="flex items-center space-x-4">
+                              <Checkbox
+                                  id={`${activeDay}-${extraTask.id}`}
+                                  checked={weekData.checkedTasks?.[activeDay]?.[extraTask.id] || false}
+                                  onCheckedChange={(checked) => handleTaskCheck(extraTask.id, !!checked)}
+                                  className="h-6 w-6 rounded-md border-2 border-primary"
+                              />
+                              <Label htmlFor={`${activeDay}-${extraTask.id}`} className="flex-1 text-base font-normal cursor-pointer">{extraTask.label}</Label>
+                          </div>
+                          <Textarea
+                              placeholder="Digite as tarefas para o dia seguinte aqui..."
+                              value={weekData.extraTasks?.[activeDay] || ''}
+                              onChange={(e) => handleExtraTasksChange(e.target.value)}
+                              className="w-full mt-2 bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
+                          />
+                       </div>
+                    )}
+                  </div>
+                </div>
               )}
-            </div>
-        </div>
+          </CardContent>
+      </Card>
     );
   }
 
@@ -623,9 +621,8 @@ export default function RotinaSDRPage() {
     const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
     
     return (
-         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
-            <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1 flex items-center">
-                <Briefcase className="mr-2 h-5 w-5" />
+         <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
+            <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1">
                 Consultorias Realizadas
             </Label>
             <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -634,13 +631,16 @@ export default function RotinaSDRPage() {
                     id={`consultorias-${activeDay}`}
                     value={dailyMeetings || ''}
                     onChange={handleDailyMeetingsChange}
-                    className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
+                    className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
                     placeholder="0"
                     disabled={isHoliday || isSaturday}
                 />
                 {!isSaturday && (
-                     <span className="text-lg font-semibold text-muted-foreground">
-                        diárias
+                     <span className={cn(
+                        "text-base font-semibold", 
+                        (dailyMeetings >= 2) ? 'text-green-500' : 'text-red-500'
+                     )}>
+                        / 2
                     </span>
                 )}
                 {isSaturday && (
@@ -754,7 +754,7 @@ export default function RotinaSDRPage() {
              <Button variant="outline" size="icon" onClick={() => handleMonthChange('next')}><ChevronRight className="h-4 w-4" /></Button>
            </div>
            
-           <div className="flex flex-col gap-4 w-full max-w-lg">
+           <div className="flex flex-col gap-2 w-full max-w-lg">
                 {isAdmin ? (
                      <Button
                         key="Visão Geral"
