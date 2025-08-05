@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth } from 'date-fns';
 
-import { dailyRoutine, allTasks, WEEKLY_MEETING_GOAL, ptDays, AnyTask, weeklyGoals, ptMonths } from "@/lib/tasks";
+import { allTasks, WEEKLY_MEETING_GOAL, ptDays, AnyTask, weeklyGoals, ptMonths } from "@/lib/tasks";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -170,49 +170,56 @@ export default function RotinaSDRPage() {
 
 
   // Fetch SDR list and all their data
-  useEffect(() => {
+   useEffect(() => {
     const fetchAllData = async () => {
         if (!user) return;
         setIsLoading(true);
-        const newAllSdrData: Record<string, YearData> = {};
-        
-        if (isAdmin) {
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('role', '==', 'comercial'));
-            const usersSnapshot = await getDocs(q);
-            
-            const fetchedSdrList = usersSnapshot.docs.map(userDoc => {
-                const userData = userDoc.data();
-                let displayName = userData.displayName || '';
-                if (!displayName && userData.email) {
-                    displayName = userData.email.split('@')[0];
-                }
-                return {
-                    id: userDoc.id,
-                    name: displayName,
-                    email: userData.email,
-                };
-            });
-            setSdrList(fetchedSdrList);
 
-            for (const sdr of fetchedSdrList) {
-                const perfDoc = await getDoc(doc(db, 'sdr_performance', sdr.id));
-                newAllSdrData[sdr.id] = perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData();
+        try {
+            if (isAdmin) {
+                const usersRef = collection(db, 'users');
+                const q = query(usersRef, where('role', '==', 'comercial'));
+                const usersSnapshot = await getDocs(q);
+
+                const fetchedSdrList = usersSnapshot.docs.map(userDoc => {
+                    const userData = userDoc.data();
+                    let displayName = userData.displayName || '';
+                    if (!displayName && userData.email) {
+                        displayName = userData.email.split('@')[0];
+                    }
+                    return { id: userDoc.id, name: displayName, email: userData.email };
+                });
+                setSdrList(fetchedSdrList);
+                
+                const performanceDataPromises = fetchedSdrList.map(sdr => 
+                    getDoc(doc(db, 'sdr_performance', sdr.id))
+                );
+                const performanceDocs = await Promise.all(performanceDataPromises);
+
+                const newAllSdrData = fetchedSdrList.reduce((acc, sdr, index) => {
+                    const perfDoc = performanceDocs[index];
+                    acc[sdr.id] = perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData();
+                    return acc;
+                }, {} as Record<string, YearData>);
+                
+                setAllSdrData(newAllSdrData);
+
+            } else if (user?.uid) { // Fetch only current user's data if not admin
+                const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
+                setAllSdrData({ [user.uid]: userPerfDoc.exists() ? (userPerfDoc.data() as YearData) : createInitialYearData() });
             }
-
-        } else if (user?.uid) { // Fetch only current user's data if not admin
-             const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
-             newAllSdrData[user.uid] = userPerfDoc.exists() ? (userPerfDoc.data() as YearData) : createInitialYearData();
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            toast({ title: "Erro ao buscar dados", variant: "destructive" });
+        } finally {
+            setIsLoading(false);
         }
-        
-        setAllSdrData(newAllSdrData);
-        setIsLoading(false);
     };
 
     if (!authLoading) {
         fetchAllData();
     }
-  }, [user, isAdmin, authLoading]);
+  }, [user, isAdmin, authLoading, toast]);
 
   useEffect(() => {
     const today = new Date();
@@ -429,6 +436,10 @@ export default function RotinaSDRPage() {
             </div>
         );
     }
+    
+     if (sdrList.length === 0) {
+        return <p>Nenhum SDR encontrado.</p>;
+    }
 
     const sdrsToDisplay = sdrList.filter(sdr => 
         sdr.name.includes('comercial02') || 
@@ -643,19 +654,19 @@ export default function RotinaSDRPage() {
             </div>
             
              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                 <div className="flex flex-wrap items-center gap-4">
+                <div className="flex flex-wrap items-center gap-2">
                     {isAdmin && (
-                        <TabsList className="flex flex-wrap h-auto">
-                            {renderTabTrigger('Visão Geral')}
-                        </TabsList>
+                       <TabsList>
+                          {renderTabTrigger('Visão Geral')}
+                       </TabsList>
                     )}
-                    <TabsList className="flex flex-wrap h-auto">
-                         {DAY_TABS.map(renderTabTrigger)}
+                    <TabsList>
+                       {DAY_TABS.map(renderTabTrigger)}
                     </TabsList>
-                    <TabsList className="flex flex-wrap h-auto">
-                         {FUNCTION_TABS.map(renderTabTrigger)}
+                    <TabsList>
+                       {FUNCTION_TABS.map(renderTabTrigger)}
                     </TabsList>
-                 </div>
+                </div>
             </Tabs>
         </div>
 

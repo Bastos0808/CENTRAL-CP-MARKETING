@@ -1,4 +1,5 @@
 
+
 export const WEEKLY_MEETING_GOAL = 8;
 
 export const ptDays = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -23,21 +24,17 @@ type CounterTask = {
 
 export type AnyTask = Task | CounterTask;
 
-type TaskGroup = {
-  title: string;
-  tasks: AnyTask[];
-};
 
-const counterTasks: AnyTask[] = [
+export const allTasks: AnyTask[] = [
+    // Counter Tasks
     { id: "m-1-gmaps", label: "Leads (Google Maps)", type: 'counter', dailyGoal: 10, weeklyGoal: 50 },
     { id: "m-1-exact", label: "Leads (Exact Spotter)", type: 'counter', dailyGoal: 30, weeklyGoal: 150 },
     { id: "m-3", label: "Conexões no LinkedIn", type: 'counter', dailyGoal: 20, weeklyGoal: 100 },
     { id: "m-4", label: "Prospecção (Instagram/WhatsApp)", type: 'counter', dailyGoal: 40, weeklyGoal: 200 },
     { id: "m-5", label: "E-mail Marketing", type: 'counter', dailyGoal: 20, weeklyGoal: 100 },
     { id: "a-3", label: "Ligações", type: 'counter', dailyGoal: 5, weeklyGoal: 25 },
-];
 
-const checkboxTasks: AnyTask[] = [
+    // Checkbox Tasks
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
     { id: "a-2", label: "Fazer follow-up com leads em negociação para agendamento.", type: 'checkbox' },
     { id: "a-4", label: "Atualizar o CRM, contatar e qualificar os leads que chegaram.", type: 'checkbox' },
@@ -45,26 +42,9 @@ const checkboxTasks: AnyTask[] = [
     { id: "m-2", label: "Revisar leads no CRM (RD Station) que precisam de follow-up prioritário.", type: 'checkbox' },
     { id: "a-7", label: "Organizar as tarefas para o dia seguinte.", type: 'checkbox' },
     { id: "s-3-podcast-unqualified-leads", label: "Podcast (leads nao qualificados)", type: 'checkbox', saturdayOnly: true },
+    { id: 'daily_meetings', label: 'Consultorias Realizadas', type: 'counter', dailyGoal: 2, weeklyGoal: 8 },
 ];
 
-const orderedTasks: AnyTask[] = [
-    ...counterTasks.filter(t => !(t as CounterTask).saturdayOnly),
-    { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
-    { id: "a-2", label: "Fazer follow-up com leads em negociação para agendamento.", type: 'checkbox' },
-    { id: "a-4", label: "Atualizar o CRM, contatar e qualificar os leads que chegaram.", type: 'checkbox' },
-    { id: "a-5", label: "Priorizar agendamento de convidados para o podcast (de acordo com a área).", type: 'checkbox' },
-    { id: "m-2", label: "Revisar leads no CRM (RD Station) que precisam de follow-up prioritário.", type: 'checkbox' },
-    { id: "a-7", label: "Organizar as tarefas para o dia seguinte.", type: 'checkbox' },
-]
-
-export const allTasks: AnyTask[] = [...counterTasks, ...checkboxTasks];
-
-export const dailyRoutine: TaskGroup[] = [
-  {
-    title: "Tarefas do Dia",
-    tasks: orderedTasks,
-  }
-];
 
 export const weeklyGoals: Record<string, { label: string; goal: number }> = {
   "meetings": { label: "Consultorias", goal: 8 },
