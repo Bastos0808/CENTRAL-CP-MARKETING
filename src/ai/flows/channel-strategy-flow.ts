@@ -46,18 +46,20 @@ const channelStrategyPrompt = ai.definePrompt({
         {{#if feedScreenshot}} - Print do Feed: {{media url=feedScreenshot}}{{/if}}
         {{#if reelsScreenshot}} - Print dos Reels: {{media url=reelsScreenshot}}{{/if}}
     {{/if}}
-     {{#if (eq channelType "youtube")}}
+    {{#if (eq channelType "youtube")}}
         {{#if bannerScreenshot}} - Print do Banner: {{media url=bannerScreenshot}}{{/if}}
         {{#if videosScreenshot}} - Print dos Vídeos (Thumbnails): {{media url=videosScreenshot}}{{/if}}
         {{#if shortsScreenshot}} - Print dos Shorts: {{media url=shortsScreenshot}}{{/if}}
         {{#if descriptionScreenshot}} - Print da Descrição: {{media url=descriptionScreenshot}}{{/if}}
     {{/if}}
     
-    {{#if htmlContent}}
-    **Código-Fonte HTML para Análise Estrutural e de SEO:**
-    \`\`\`html
-    {{{htmlContent}}}
-    \`\`\`
+    {{#if (eq channelType "website")}}
+      {{#if htmlContent}}
+      **Código-Fonte HTML para Análise Estrutural e de SEO:**
+      \`\`\`html
+      {{{htmlContent}}}
+      \`\`\`
+      {{/if}}
     {{/if}}
     
     O canal a ser analisado é um **{{channelType}}**.
