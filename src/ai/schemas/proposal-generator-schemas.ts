@@ -25,3 +25,4 @@ export const GenerateProposalOutputSchema = z.object({
   idealPlanItems: z.array(z.string()).describe('Uma lista de argumentos para "Por que este plano é ideal?".'),
 });
 export type GenerateProposalOutput = z.infer<typeof GenerateProposalOutputSchema>;
+
