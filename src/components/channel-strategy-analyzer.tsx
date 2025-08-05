@@ -20,7 +20,7 @@ import {
     Lightbulb, Target, BookOpen, Diamond, Tv, BarChart, 
     Video, MessageSquare, Users, Milestone, Megaphone, CheckCircle, 
     Eye, Image as ImageIcon, PenTool, Edit, SquarePlay, Paperclip, X, Info,
-    Trash2, UploadCloud
+    Trash2, UploadCloud, Code
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema } from "@/ai/schemas/channel-strategy-schemas";
@@ -33,6 +33,7 @@ type ChannelType = "instagram" | "website" | "youtube";
 const formSchema = z.object({
   channelType: z.enum(["instagram", "website", "youtube"]),
   screenshotDataUris: z.array(z.string()).min(1, 'Anexe pelo menos um print da tela.'),
+  htmlContent: z.string().optional(),
   analysis: z.union([InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema]).optional(),
 });
 
@@ -99,6 +100,7 @@ export default function ChannelStrategyAnalyzer() {
     defaultValues: {
       channelType: 'instagram',
       screenshotDataUris: [],
+      htmlContent: '',
       analysis: undefined
     }
   });
@@ -168,6 +170,7 @@ export default function ChannelStrategyAnalyzer() {
       const result = await analyzeChannelStrategy({ 
           channelType: values.channelType,
           screenshotDataUris: values.screenshotDataUris,
+          htmlContent: values.htmlContent,
       });
       form.setValue(`analysis`, result.analysis, { shouldValidate: true });
       toast({
@@ -225,7 +228,7 @@ ${analysisText}
             <Card>
                 <CardHeader>
                     <CardTitle>Configuração da Análise</CardTitle>
-                    <CardDescription>Escolha o tipo de canal e anexe um ou mais prints (screenshots) da tela para a IA analisar.</CardDescription>
+                    <CardDescription>Escolha o tipo de canal e forneça os insumos (prints de tela e/ou código-fonte) para a IA analisar.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                      <FormField
@@ -240,6 +243,7 @@ ${analysisText}
                                         onValueChange={(value) => {
                                             field.onChange(value as ChannelType);
                                             form.setValue('analysis', undefined);
+                                            form.setValue('htmlContent', '');
                                         }}
                                         className="w-full"
                                     >
@@ -312,6 +316,29 @@ ${analysisText}
                         )}
                     />
 
+                    {watchedChannelType === 'website' && (
+                        <FormField
+                            control={form.control}
+                            name="htmlContent"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="flex items-center gap-2"><Code /> Código-Fonte (HTML)</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Cole o código-fonte HTML da página aqui para uma análise mais profunda de SEO e estrutura."
+                                            className="min-h-[150px] font-mono text-xs"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormDescription>
+                                        Para obter, clique com o botão direito na página do site e escolha "Exibir código-fonte da página".
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    )}
+
                 </CardContent>
             </Card>
 
@@ -331,7 +358,7 @@ ${analysisText}
               <Card>
                 <CardHeader>
                   <CardTitle>Formulário de Análise - {currentConfig.name}</CardTitle>
-                  <CardDescription>Respostas geradas pela IA com base nas imagens. Você pode editar os campos de texto antes de copiar.</CardDescription>
+                  <CardDescription>Respostas geradas pela IA. Você pode editar os campos de texto antes de copiar.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <TooltipProvider>

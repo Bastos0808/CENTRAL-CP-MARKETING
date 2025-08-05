@@ -31,12 +31,19 @@ const channelStrategyPrompt = ai.definePrompt({
   prompt: `
     Você é um Estrategista de Marketing Sênior e um detetive de negócios. Sua missão é fazer um diagnóstico profundo e detalhado de um canal digital de um prospect, preenchendo um formulário de análise completo.
 
-    A sua ÚNICA fonte de informação são as IMAGENS fornecidas. Aja como se você estivesse vendo a tela do canal. Analise cada detalhe visual e textual presente nas imagens para extrair o máximo de informações possíveis.
+    Sua fonte de informação são as IMAGENS e, se fornecido, o CÓDIGO HTML do site. Aja como se você estivesse vendo a tela e inspecionando o código. Analise cada detalhe visual, textual e estrutural para extrair o máximo de informações possíveis e PREENCHA TODOS OS CAMPOS SOLICITADOS.
 
-    **Imagens para Análise:**
+    **Imagens para Análise Visual:**
     {{#each screenshotDataUris}}
     - Imagem: {{media url=this}}
     {{/each}}
+    
+    {{#if htmlContent}}
+    **Código-Fonte HTML para Análise Estrutural e de SEO:**
+    \`\`\`html
+    {{{htmlContent}}}
+    \`\`\`
+    {{/if}}
     
     O canal a ser analisado é um **{{channelType}}**.
 
@@ -64,7 +71,7 @@ const channelStrategyPrompt = ai.definePrompt({
     2.  **propostaDeValor:** A mensagem principal do site responde claramente "O que você faz?", "Para quem?" e "Qual o diferencial?"?
     3.  **chamadasParaAcao:** Os botões (CTAs) são claros, visíveis e persuasivos? (Ex: "Fale com um especialista" vs "Clique aqui"). Existem CTAs em todas as seções importantes?
     4.  **clarezaNavegacao:** O menu é simples e intuitivo? É fácil para o usuário encontrar as informações que procura?
-    5.  **otimizacaoSEO:** O site parece otimizado para o Google? Os títulos das páginas (title tags) são claros? As imagens têm texto alternativo? Existe um blog com conteúdo relevante?
+    5.  **otimizacaoSEO:** Analisando o HTML, o site parece otimizado para o Google? Os títulos das páginas (title tags), meta descriptions e as imagens (alt tags) estão bem configurados? Existe um blog com conteúdo relevante?
     6.  **designResponsividade:** O layout é moderno e profissional ou parece datado? O site funciona bem e se adapta a telas de celular?
     7.  **provaSocial:** O site utiliza depoimentos, estudos de caso, logos de clientes ou outros elementos para gerar confiança e provar que a solução funciona?
 
