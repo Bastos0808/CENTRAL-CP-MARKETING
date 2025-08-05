@@ -556,6 +556,9 @@ export default function RotinaSDRPage() {
                                     <p className="text-muted-foreground">Bom descanso!</p>
                                 </div>
                             )}
+                             <div className="mt-4">
+                                {renderConsultorias()}
+                            </div>
                         </>
                      ) : (
                         allTasks
@@ -608,6 +611,52 @@ export default function RotinaSDRPage() {
                   <CardContent><div className="whitespace-pre-wrap p-4 bg-muted rounded-md text-muted-foreground">{previousDayTasks}</div></CardContent>
                 </Card>
               )}
+            </div>
+        </div>
+    );
+  }
+
+  const renderConsultorias = () => {
+    const weekData = monthlyData?.[activeWeekKey];
+    const dailyMeetings = weekData?.counterTasks[activeDay]?.['daily_meetings'] || 0;
+    const isSaturday = activeTab === 'Sábado';
+    const totalWeeklyMeetings = weekData.meetingsBooked;
+    const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
+    
+    return (
+         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
+            <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1 flex items-center">
+                <Briefcase className="mr-2 h-5 w-5" />
+                Consultorias Realizadas
+            </Label>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+                <Input
+                    type="number"
+                    id={`consultorias-${activeDay}`}
+                    value={dailyMeetings || ''}
+                    onChange={handleDailyMeetingsChange}
+                    className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
+                    placeholder="0"
+                    disabled={isHoliday || isSaturday}
+                />
+                {!isSaturday && (
+                     <span className="text-lg font-semibold text-muted-foreground">
+                        diárias
+                    </span>
+                )}
+                {isSaturday && (
+                     <div className="text-right">
+                        <p className={cn(
+                            "text-lg font-bold", 
+                            isWeeklyGoalMet ? 'text-green-500' : 'text-red-500'
+                        )}>
+                            {totalWeeklyMeetings} / {WEEKLY_MEETING_GOAL}
+                        </p>
+                        <p className={cn("text-sm font-semibold", isWeeklyGoalMet ? 'text-green-500' : 'text-red-500')}>
+                            {isWeeklyGoalMet ? 'Meta atingida!' : `Faltam ${Math.max(0, WEEKLY_MEETING_GOAL - totalWeeklyMeetings)}`}
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -673,47 +722,47 @@ export default function RotinaSDRPage() {
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Button variant="outline" size="icon" onClick={() => handleMonthChange('prev')}><ChevronLeft className="h-4 w-4" /></Button>
-              <div className="flex flex-col items-center">
-                  <Select value={currentMonth} onValueChange={setCurrentMonth}>
-                      <SelectTrigger className="w-[180px] text-lg font-bold"><SelectValue placeholder="Mês" /></SelectTrigger>
-                      <SelectContent>{ptMonths.map(month => (<SelectItem key={month} value={month}>{month}</SelectItem>))}</SelectContent>
-                  </Select>
-                 {!isAdmin && (
-                     <Select value={String(currentWeek)} onValueChange={(val) => setCurrentWeek(Number(val))}>
-                        <SelectTrigger className="w-[140px] text-sm mt-2"><SelectValue placeholder="Semana" /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="1">Semana 1</SelectItem>
-                            <SelectItem value="2">Semana 2</SelectItem>
-                            <SelectItem value="3">Semana 3</SelectItem>
-                            <SelectItem value="4">Semana 4</SelectItem>
-                        </SelectContent>
-                    </Select>
-                 )}
-              </div>
-              <Button variant="outline" size="icon" onClick={() => handleMonthChange('next')}><ChevronRight className="h-4 w-4" /></Button>
-            </div>
-            
-             <div className="flex flex-wrap items-center gap-2">
-                 {isAdmin && (
-                    <TabsList>
-                        {renderTabTrigger('Visão Geral')}
-                    </TabsList>
-                 )}
-                 <TabsList>
-                    {DAY_TABS.map(renderTabTrigger)}
-                 </TabsList>
-                 <TabsList>
-                    {FUNCTION_TABS.map(renderTabTrigger)}
-                 </TabsList>
-             </div>
-        </div>
-
-         <Separator />
-        
         <Tabs value={activeTab} className="w-full" onValueChange={setActiveTab}>
+             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <Button variant="outline" size="icon" onClick={() => handleMonthChange('prev')}><ChevronLeft className="h-4 w-4" /></Button>
+                  <div className="flex flex-col items-center">
+                      <Select value={currentMonth} onValueChange={setCurrentMonth}>
+                          <SelectTrigger className="w-[180px] text-lg font-bold"><SelectValue placeholder="Mês" /></SelectTrigger>
+                          <SelectContent>{ptMonths.map(month => (<SelectItem key={month} value={month}>{month}</SelectItem>))}</SelectContent>
+                      </Select>
+                     {!isAdmin && (
+                         <Select value={String(currentWeek)} onValueChange={(val) => setCurrentWeek(Number(val))}>
+                            <SelectTrigger className="w-[140px] text-sm mt-2"><SelectValue placeholder="Semana" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="1">Semana 1</SelectItem>
+                                <SelectItem value="2">Semana 2</SelectItem>
+                                <SelectItem value="3">Semana 3</SelectItem>
+                                <SelectItem value="4">Semana 4</SelectItem>
+                            </SelectContent>
+                        </Select>
+                     )}
+                  </div>
+                  <Button variant="outline" size="icon" onClick={() => handleMonthChange('next')}><ChevronRight className="h-4 w-4" /></Button>
+                </div>
+                
+                 <div className="flex flex-wrap items-center gap-2">
+                     {isAdmin && (
+                        <TabsList>
+                            {renderTabTrigger('Visão Geral')}
+                        </TabsList>
+                     )}
+                     <TabsList>
+                        {DAY_TABS.map(renderTabTrigger)}
+                     </TabsList>
+                     <TabsList>
+                        {FUNCTION_TABS.map(renderTabTrigger)}
+                     </TabsList>
+                 </div>
+            </div>
+
+             <Separator className="my-6" />
+        
             {isAdmin ? (
                 <TabsContent value="Visão Geral" className="mt-0"><AdminView /></TabsContent>
             ) : null}
