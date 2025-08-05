@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -189,7 +190,6 @@ export default function RotinaSDRPage() {
                     }
                     return { id: userDoc.id, name: displayName, email: userData.email };
                 });
-                setSdrList(fetchedSdrList);
                 
                 const performanceDataPromises = fetchedSdrList.map(sdr => 
                     getDoc(doc(db, 'sdr_performance', sdr.id))
@@ -203,6 +203,7 @@ export default function RotinaSDRPage() {
                 }, {} as Record<string, YearData>);
                 
                 setAllSdrData(newAllSdrData);
+                setSdrList(fetchedSdrList);
 
             } else if (user?.uid) { // Fetch only current user's data if not admin
                 const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
@@ -540,19 +541,18 @@ export default function RotinaSDRPage() {
                             </div>
                         ))
                     }
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
-                        <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1 flex items-center"><Briefcase className="mr-2 h-5 w-5" />Consultorias Realizadas</Label>
-                        <div className="flex items-center gap-3 w-full sm:w-auto">
-                            <Input type="number" id={`consultorias-${activeDay}`} value={dailyMeetings || ''} onChange={handleDailyMeetingsChange} className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" disabled={isHoliday || isSaturday} />
-                            {!isSaturday && <span className="text-lg font-semibold text-muted-foreground">diárias</span>}
-                            {isSaturday && (
+                    {/* Render Consultorias specifically for Saturday */}
+                    {isSaturday && (
+                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
+                            <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1 flex items-center"><Briefcase className="mr-2 h-5 w-5" />Consultorias Realizadas (Semanal)</Label>
+                            <div className="flex items-center gap-3 w-full sm:w-auto">
                                 <div className="text-right">
                                     <p className={cn("text-lg font-bold", isWeeklyGoalMet ? 'text-green-500' : 'text-red-500')}>{totalWeeklyMeetings} / {WEEKLY_MEETING_GOAL}</p>
                                     <p className={cn("text-sm font-semibold", isWeeklyGoalMet ? 'text-green-500' : 'text-red-500')}>{isWeeklyGoalMet ? 'Meta atingida!' : `Faltam ${Math.max(0, WEEKLY_MEETING_GOAL - totalWeeklyMeetings)}`}</p>
                                 </div>
-                            )}
+                            </div>
                         </div>
-                    </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
