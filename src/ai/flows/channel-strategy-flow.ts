@@ -40,26 +40,20 @@ const channelStrategyPrompt = ai.definePrompt({
     4.  **Prioridade Máxima para Gancho e Oportunidades:** Independentemente dos avisos nos campos anteriores, você DEVE SEMPRE preencher os campos finais "oportunidades" e "gancho". Baseie-se na análise que foi possível realizar para gerar os insights mais valiosos.
 
     **Insumos para Análise:**
-    {{#if (eq channelType "instagram")}}
-        {{#if bioScreenshot}} - Print da Bio: {{media url=bioScreenshot}}{{/if}}
-        {{#if highlightsScreenshot}} - Print dos Destaques: {{media url=highlightsScreenshot}}{{/if}}
-        {{#if feedScreenshot}} - Print do Feed: {{media url=feedScreenshot}}{{/if}}
-        {{#if reelsScreenshot}} - Print dos Reels: {{media url=reelsScreenshot}}{{/if}}
-    {{/if}}
-    {{#if (eq channelType "youtube")}}
-        {{#if bannerScreenshot}} - Print do Banner: {{media url=bannerScreenshot}}{{/if}}
-        {{#if videosScreenshot}} - Print dos Vídeos (Thumbnails): {{media url=videosScreenshot}}{{/if}}
-        {{#if shortsScreenshot}} - Print dos Shorts: {{media url=shortsScreenshot}}{{/if}}
-        {{#if descriptionScreenshot}} - Print da Descrição: {{media url=descriptionScreenshot}}{{/if}}
-    {{/if}}
+    {{#if bioScreenshot}} - Print da Bio: {{media url=bioScreenshot}}{{/if}}
+    {{#if highlightsScreenshot}} - Print dos Destaques: {{media url=highlightsScreenshot}}{{/if}}
+    {{#if feedScreenshot}} - Print do Feed: {{media url=feedScreenshot}}{{/if}}
+    {{#if reelsScreenshot}} - Print dos Reels: {{media url=reelsScreenshot}}{{/if}}
+    {{#if bannerScreenshot}} - Print do Banner: {{media url=bannerScreenshot}}{{/if}}
+    {{#if videosScreenshot}} - Print dos Vídeos (Thumbnails): {{media url=videosScreenshot}}{{/if}}
+    {{#if shortsScreenshot}} - Print dos Shorts: {{media url=shortsScreenshot}}{{/if}}
+    {{#if descriptionScreenshot}} - Print da Descrição: {{media url=descriptionScreenshot}}{{/if}}
     
-    {{#if (eq channelType "website")}}
-      {{#if htmlContent}}
-      **Código-Fonte HTML para Análise Estrutural e de SEO:**
-      \`\`\`html
-      {{{htmlContent}}}
-      \`\`\`
-      {{/if}}
+    {{#if htmlContent}}
+    **Código-Fonte HTML para Análise Estrutural e de SEO:**
+    \`\`\`html
+    {{{htmlContent}}}
+    \`\`\`
     {{/if}}
     
     O canal a ser analisado é um **{{channelType}}**.
