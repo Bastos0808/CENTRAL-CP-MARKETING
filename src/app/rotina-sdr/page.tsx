@@ -163,8 +163,9 @@ export default function RotinaSDRPage() {
         if (saveTimeoutRef.current) {
             clearTimeout(saveTimeoutRef.current);
         }
-        setSaveStatus('saving');
+        
         saveTimeoutRef.current = setTimeout(async () => {
+            setSaveStatus('saving');
             const dataToSave = allSdrData[user.uid];
             if (dataToSave) {
                 try {
@@ -176,6 +177,7 @@ export default function RotinaSDRPage() {
                 } catch (error) {
                     console.error("Error saving data:", error);
                     setSaveStatus('idle'); // Or an error state
+                    toast({title: "Erro ao salvar", description: "Não foi possível salvar os dados.", variant: "destructive"})
                 }
             }
         }, 2000); // 2-second debounce
@@ -186,7 +188,7 @@ export default function RotinaSDRPage() {
             clearTimeout(saveTimeoutRef.current);
         }
     };
-  }, [allSdrData, isDirty, isAdmin, user?.uid]);
+  }, [allSdrData, isDirty, isAdmin, user?.uid, toast]);
 
 
    useEffect(() => {
@@ -298,13 +300,12 @@ export default function RotinaSDRPage() {
     if (!effectiveUserId) return;
     setIsDirty(true);
     setSaveStatus('idle');
-    const newState = produce(allSdrData, draft => {
+    setAllSdrData(prev => produce(prev, draft => {
         if (!draft[effectiveUserId]) {
             draft[effectiveUserId] = createInitialYearData();
         }
         updater(draft[effectiveUserId]);
-    });
-    setAllSdrData(newState);
+    }));
   };
 
   const handleTaskCheck = (taskId: string, isChecked: boolean) => {
@@ -469,7 +470,7 @@ export default function RotinaSDRPage() {
             <div className="fixed bottom-4 right-4 z-50">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background border rounded-full px-4 py-2 shadow-lg">
                     {saveStatus === 'saving' && <> <Loader2 className="h-4 w-4 animate-spin"/>Salvando...</>}
-                    {saveStatus === 'saved' && <> <CheckCircle className="h-4 w-4 text-green-500"/>Salvo às {lastSaved}</>}
+                    {saveStatus === 'saved' && lastSaved && <> <CheckCircle className="h-4 w-4 text-green-500"/>Salvo às {lastSaved}</>}
                     {saveStatus === 'idle' && isDirty && <> <Save className="h-4 w-4"/>Alterações não salvas</>}
                 </div>
             </div>
@@ -855,3 +856,4 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
+
