@@ -19,6 +19,7 @@ import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
 import { GeneratedProposal, packageOptions } from './generated-proposal';
 import { Switch } from './ui/switch';
 import { GenerateProposalInputSchema } from '@/ai/schemas/proposal-generator-schemas';
+import { FormDescription } from './ui/form';
 
 // Schema Definition matching the AI flow input
 const proposalSchema = GenerateProposalInputSchema.extend({
@@ -180,7 +181,7 @@ export default function ProposalGeneratorV2() {
         <Card>
             <Form {...form}>
                 <form className="space-y-4">
-                    <Accordion type="multiple" defaultValue={['item-1', 'item-2']} className="w-full">
+                    <Accordion type="multiple" className="w-full">
                         <AccordionItem value="item-1">
                             <AccordionTrigger className="px-6 font-semibold"><Target className="mr-2 h-5 w-5 text-primary" />Informações Estratégicas</AccordionTrigger>
                             <AccordionContent className="space-y-4 px-6 pt-4">
