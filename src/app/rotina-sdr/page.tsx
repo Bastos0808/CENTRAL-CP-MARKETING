@@ -27,6 +27,7 @@ import {
   Trophy,
   CheckCircle,
   Circle,
+  Save,
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth } from 'date-fns';
 
@@ -144,6 +145,10 @@ export default function RotinaSDRPage() {
   
   const [localCounters, setLocalCounters] = useState<Record<string, string>>({});
   const [localExtraTasks, setLocalExtraTasks] = useState<string>("");
+  
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [isDirty, setIsDirty] = useState(false);
 
   const isAdmin = user?.role === 'admin';
   const effectiveUserId = user?.uid;
@@ -155,26 +160,28 @@ export default function RotinaSDRPage() {
     return allSdrData[effectiveUserId] || createInitialYearData();
   }, [allSdrData, effectiveUserId]);
 
-
-  // Debounced save function
   const triggerSave = useCallback(() => {
     if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
     }
+    setSaveStatus('saving');
     saveTimeoutRef.current = setTimeout(async () => {
         if (!isAdmin && user?.uid) {
             const dataToSave = allSdrData[user.uid];
             if (dataToSave) {
                 const docRef = doc(db, 'sdr_performance', user.uid);
                 await setDoc(docRef, dataToSave, { merge: true });
-                // Optional: add a saving indicator toast
+                setSaveStatus('saved');
+                setIsDirty(false);
+                setLastSaved(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
             }
+        } else {
+           setSaveStatus('idle');
         }
-    }, 2000); // 2-second debounce
+    }, 2000);
   }, [allSdrData, isAdmin, user?.uid]);
 
 
-  // Fetch SDR list and all their data
    useEffect(() => {
     const fetchAllData = async () => {
         if (!user) return;
@@ -251,7 +258,6 @@ export default function RotinaSDRPage() {
   const activeWeekKey = `semana${currentWeek}` as keyof MonthlyData;
   const activeDay = ptDays.includes(activeTab) ? activeTab : ptDays[0];
   
-  // Sync local state when global state changes
   useEffect(() => {
     const weekData = monthlyData?.[activeWeekKey];
     const counterTasksForDay = weekData?.counterTasks?.[activeDay] || {};
@@ -297,6 +303,8 @@ export default function RotinaSDRPage() {
 
   const handleUpdateYearData = (updater: (draft: YearData) => void) => {
     if (!effectiveUserId) return;
+    setIsDirty(true);
+    setSaveStatus('idle');
     const newState = produce(allSdrData, draft => {
         if (!draft[effectiveUserId]) {
             draft[effectiveUserId] = createInitialYearData();
@@ -322,7 +330,7 @@ export default function RotinaSDRPage() {
   const handleCounterBlur = (taskId: string) => {
       const value = localCounters[taskId] || '';
       const numValue = value === '' ? 0 : parseInt(value, 10);
-      if (isNaN(numValue)) return; // Prevents NaN from being set
+      if (isNaN(numValue)) return;
 
       handleUpdateYearData(draft => {
           const weekData = draft[currentMonth][activeWeekKey];
@@ -478,6 +486,21 @@ export default function RotinaSDRPage() {
       </Card>
     );
   };
+  
+    const SaveStatusIndicator = () => {
+        if (isAdmin) return null;
+
+        return (
+            <div className="fixed bottom-4 right-4 z-50">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background border rounded-full px-4 py-2 shadow-lg">
+                    {saveStatus === 'saving' && <> <Loader2 className="h-4 w-4 animate-spin"/>Salvando...</>}
+                    {saveStatus === 'saved' && <> <CheckCircle className="h-4 w-4 text-green-500"/>Salvo às {lastSaved}</>}
+                    {saveStatus === 'idle' && isDirty && <> <Save className="h-4 w-4"/>Alterações não salvas</>}
+                </div>
+            </div>
+        )
+    }
+
 
   const AdminView = () => {
     if (isLoading) {
@@ -857,9 +880,8 @@ export default function RotinaSDRPage() {
         
         {renderTabContent()}
 
+        <SaveStatusIndicator />
       </main>
     </div>
   );
 }
-
-    
