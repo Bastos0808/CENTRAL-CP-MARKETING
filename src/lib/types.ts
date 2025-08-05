@@ -17,7 +17,7 @@ export type PodcastData = {
 };
 
 export type CheckedTasksState = Record<string, boolean>;
-export type CounterTasksState = Record<string, number>;
+export type CounterTasksState = Record<string, string>;
 export type ExtraTasksState = Record<string, string>;
 export type HolidaysState = Record<string, boolean>;
 
@@ -27,7 +27,6 @@ export type WeeklyData = {
   extraTasks: Record<string, ExtraTasksState>;
   holidays: HolidaysState;
   meetingsBooked: number;
-  podcasts: PodcastData;
 };
 
 export type MonthlyData = {
@@ -35,6 +34,7 @@ export type MonthlyData = {
   semana2: WeeklyData;
   semana3: WeeklyData;
   semana4: WeeklyData;
+  podcasts: PodcastData;
 };
 
 export type YearData = Record<string, MonthlyData>;

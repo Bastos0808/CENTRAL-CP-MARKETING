@@ -68,62 +68,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { produce } from 'immer';
+import type { YearData, MonthlyData } from "@/lib/types";
 
 
-const TABS_ORDER = ['Visão Geral', ...ptDays, 'Podcast', 'Progresso Semanal', 'Progresso Mensal'];
-const DAY_TABS = ptDays;
 const FUNCTION_TABS = ['Podcast', 'Progresso Semanal', 'Progresso Mensal'];
 const ADMIN_TABS = ['Visão Geral'];
 
-
-type CheckedTasksState = Record<string, boolean>;
-type CounterTasksState = Record<string, string>;
-type ExtraTasksState = Record<string, string>;
-type HolidaysState = Record<string, boolean>;
-
-type WeeklyData = {
-  checkedTasks: Record<string, CheckedTasksState>;
-  counterTasks: Record<string, CounterTasksState>;
-  extraTasks: Record<string, ExtraTasksState>;
-  holidays: HolidaysState;
-  meetingsBooked: number;
-  podcasts: PodcastData;
-};
-type MonthlyData = {
-  semana1: WeeklyData;
-  semana2: WeeklyData;
-  semana3: WeeklyData;
-  semana4: WeeklyData;
-};
-export type YearData = Record<string, MonthlyData>;
-
-
-const createInitialPodcastData = (): PodcastData => ({
-  podcast1: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
-  podcast2: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
-  podcast3: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
-  podcast4: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
-});
-
-
-const initialWeeklyData: WeeklyData = {
-  checkedTasks: {},
-  counterTasks: {},
-  extraTasks: {},
-  holidays: {},
-  meetingsBooked: 0,
-  podcasts: createInitialPodcastData(),
-};
-const initialMonthlyData: MonthlyData = {
-  semana1: JSON.parse(JSON.stringify(initialWeeklyData)),
-  semana2: JSON.parse(JSON.stringify(initialWeeklyData)),
-  semana3: JSON.parse(JSON.stringify(initialWeeklyData)),
-  semana4: JSON.parse(JSON.stringify(initialWeeklyData)),
-};
-const createInitialYearData = (): YearData => ptMonths.reduce((acc, month) => {
-    acc[month] = JSON.parse(JSON.stringify(initialMonthlyData));
-    return acc;
-}, {} as YearData);
 
 interface SdrUser {
     id: string;
@@ -175,6 +125,26 @@ const ExtraTasksTextarea = ({
 
   return <Textarea value={localValue} onChange={(e) => setLocalValue(e.target.value)} onBlur={handleBlur} {...props} />;
 };
+
+const createInitialPodcastData = (): PodcastData => ({
+  podcast1: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
+  podcast2: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
+  podcast3: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
+  podcast4: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
+});
+
+const createInitialMonthlyData = (): MonthlyData => ({
+  semana1: { checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0 },
+  semana2: { checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0 },
+  semana3: { checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0 },
+  semana4: { checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0 },
+  podcasts: createInitialPodcastData(),
+});
+
+const createInitialYearData = (): YearData => ptMonths.reduce((acc, month) => {
+    acc[month] = createInitialMonthlyData();
+    return acc;
+}, {} as YearData);
 
 
 export default function RotinaSDRPage() {
@@ -275,7 +245,23 @@ export default function RotinaSDRPage() {
 
             } else if (user?.uid) { // Fetch only current user's data if not admin
                 const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
-                setAllSdrData({ [user.uid]: userPerfDoc.exists() ? (userPerfDoc.data() as YearData) : createInitialYearData() });
+                const data = userPerfDoc.exists() ? userPerfDoc.data() : createInitialYearData();
+
+                 // Deep merge with initial data to ensure new structure is applied
+                const mergedData = produce(createInitialYearData(), draft => {
+                    Object.keys(data).forEach(monthKey => {
+                        if (draft[monthKey]) {
+                            Object.assign(draft[monthKey], data[monthKey]);
+                            if (!data[monthKey].podcasts) {
+                                draft[monthKey].podcasts = createInitialPodcastData();
+                            }
+                        } else {
+                            draft[monthKey] = data[monthKey];
+                        }
+                    });
+                });
+                
+                setAllSdrData({ [user.uid]: mergedData as YearData });
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -393,15 +379,15 @@ export default function RotinaSDRPage() {
   
   const handlePodcastChange = (podcastId: keyof PodcastData, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
     handleUpdateYearData(draft => {
-        const weekData = draft[currentMonth][activeWeekKey];
-        weekData.podcasts[podcastId].guests[guestIndex][field] = value;
+        if (!draft[currentMonth].podcasts) draft[currentMonth].podcasts = createInitialPodcastData();
+        draft[currentMonth].podcasts[podcastId].guests[guestIndex][field] = value;
     });
   };
 
   const handlePodcastCheck = (podcastId: keyof PodcastData, isChecked: boolean) => {
       handleUpdateYearData(draft => {
-          const weekData = draft[currentMonth][activeWeekKey];
-          weekData.podcasts[podcastId].done = isChecked;
+          if (!draft[currentMonth].podcasts) draft[currentMonth].podcasts = createInitialPodcastData();
+          draft[currentMonth].podcasts[podcastId].done = isChecked;
       });
   };
   
@@ -819,7 +805,7 @@ export default function RotinaSDRPage() {
     
     if (FUNCTION_TABS.includes(activeTab)) {
         if (activeTab === 'Podcast') {
-            return <PodcastTab podcastData={monthlyData?.[activeWeekKey]?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />;
+            return <PodcastTab podcastData={monthlyData?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />;
         }
         if (activeTab === 'Progresso Semanal') {
             return <WeeklyProgress weeklyData={monthlyData?.[activeWeekKey]} />;
