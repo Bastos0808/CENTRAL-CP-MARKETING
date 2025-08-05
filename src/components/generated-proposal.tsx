@@ -83,7 +83,8 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
     
   return (
     <div>
-        <Page className="bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1554224155-8d04421cd673?q=80&w=3870&auto=format&fit=crop')", backgroundPosition: 'center center' }}>
+        <Page className="bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1707380659093-97e45913a9ea?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')", backgroundPosition: 'center center' }}>
+             <div className="absolute inset-0 bg-black/40 z-0"></div>
               <div className="z-10 text-center flex flex-col items-center">
                   <p className="text-[#FE5412] font-semibold tracking-widest mb-4 text-2xl">PROPOSTA COMERCIAL</p>
                   <h1 className="text-9xl font-extrabold max-w-5xl leading-tight">{clientName || '[Nome do Cliente]'}</h1>
