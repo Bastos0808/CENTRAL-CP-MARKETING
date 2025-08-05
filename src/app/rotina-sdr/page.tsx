@@ -183,7 +183,7 @@ export default function RotinaSDRPage() {
   const [allSdrData, setAllSdrData] = useState<Record<string, YearData>>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  const [activeTab, setActiveTab] = useState(TABS_ORDER[1]); // Default to Monday
+  const [activeTab, setActiveTab] = useState(''); 
   const [currentWeek, setCurrentWeek] = useState(1);
   const [currentMonth, setCurrentMonth] = useState(ptMonths[new Date().getMonth()]);
   
@@ -297,13 +297,18 @@ export default function RotinaSDRPage() {
 
     setCurrentWeek(week);
     setCurrentMonth(ptMonths[month]);
+    
+    let currentDayTab = '';
+    if (dayOfWeek >= 1 && dayOfWeek <= 6) { 
+        currentDayTab = ptDays[dayOfWeek - 1];
+    } else {
+        currentDayTab = ptDays[0]; // Default to Monday on Sunday
+    }
 
     if(isAdmin) {
         setActiveTab("Visão Geral");
-    } else if (dayOfWeek >= 1 && dayOfWeek <= 6) { 
-        setActiveTab(ptDays[dayOfWeek - 1]);
     } else {
-        setActiveTab(ptDays[0]);
+        setActiveTab(currentDayTab);
     }
   }, [isAdmin]);
 
@@ -569,7 +574,7 @@ export default function RotinaSDRPage() {
     const weekData = monthlyData?.[activeWeekKey];
     if(!weekData) return <div className="flex justify-center items-center h-48"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
-    const isSaturday = activeTab === 'Sábado';
+    const isSaturday = activeDay === 'Sábado';
     
     // Logic for Saturday Catch-up
     const pendingGoals = allTasks.filter((task): task is AnyTask & {type: 'counter'} => {
@@ -588,7 +593,7 @@ export default function RotinaSDRPage() {
               <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold font-headline text-primary flex items-center">
                       <CalendarDays className="mr-3 h-6 w-6" />
-                      {activeTab}
+                      {activeDay}
                   </h3>
                   <div className="flex items-center gap-2">
                       <Label htmlFor="holiday-switch">É feriado?</Label>
@@ -719,7 +724,7 @@ export default function RotinaSDRPage() {
   const renderConsultorias = () => {
     const weekData = monthlyData?.[activeWeekKey];
     const dailyMeetings = weekData?.counterTasks?.[activeDay]?.['daily_meetings'] || '';
-    const isSaturday = activeTab === 'Sábado';
+    const isSaturday = activeDay === 'Sábado';
     const totalWeeklyMeetings = weekData?.meetingsBooked || 0;
     const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
     
@@ -778,25 +783,25 @@ export default function RotinaSDRPage() {
     if (isAdmin) {
       if (activeTab === 'Visão Geral') return <AdminView />;
     }
-    if (ptDays.includes(activeTab)) {
-      return <SDRView />;
+    
+    // SDR View only shows current day or function tabs
+    if (FUNCTION_TABS.includes(activeTab)) {
+        if (activeTab === 'Podcast') {
+            return <PodcastTab podcastData={monthlyData?.[activeWeekKey]?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />;
+        }
+        if (activeTab === 'Progresso Semanal') {
+            return <WeeklyProgress weeklyData={monthlyData?.[activeWeekKey]} />;
+        }
+        if (activeTab === 'Progresso Mensal') {
+            return <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />;
+        }
     }
-    if (activeTab === 'Podcast') {
-      return <PodcastTab podcastData={monthlyData?.[activeWeekKey]?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />;
-    }
-    if (activeTab === 'Progresso Semanal') {
-      return <WeeklyProgress weeklyData={monthlyData?.[activeWeekKey]} />;
-    }
-    if (activeTab === 'Progresso Mensal') {
-      return <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />;
-    }
-    return null;
+
+    return <SDRView />;
   };
   
-  const renderNavButton = (tab: string, type: 'day' | 'function') => {
+    const renderNavButton = (tab: string, type: 'function') => {
         const isActive = activeTab === tab;
-        const baseClasses = "flex-1 text-sm py-2.5 px-3 transition-all duration-300 rounded-md flex items-center justify-center gap-2";
-        const dayClasses = isActive ? "bg-card text-card-foreground shadow-md" : "text-muted-foreground hover:bg-card/50 hover:text-card-foreground";
         const functionClasses = {
             'Podcast': isActive ? "bg-purple-600 text-white shadow-lg" : "bg-purple-600/10 text-purple-400 hover:bg-purple-600/20",
             'Progresso Semanal': isActive ? "bg-green-600 text-white shadow-lg" : "bg-green-600/10 text-green-400 hover:bg-green-600/20",
@@ -813,9 +818,12 @@ export default function RotinaSDRPage() {
                 key={tab}
                 variant="ghost"
                 onClick={() => setActiveTab(tab)}
-                className={cn(baseClasses, type === 'day' ? dayClasses : functionClasses[tab as keyof typeof functionClasses])}
+                className={cn(
+                  "flex-1 text-sm py-2.5 px-3 transition-all duration-300 rounded-md flex items-center justify-center gap-2", 
+                  functionClasses[tab as keyof typeof functionClasses])
+                }
             >
-                {type === 'day' ? <CalendarDays className="h-4 w-4" /> : functionIcons[tab as keyof typeof functionIcons]}
+                {functionIcons[tab as keyof typeof functionIcons]}
                 {tab}
             </Button>
         );
@@ -874,18 +882,10 @@ export default function RotinaSDRPage() {
                         Visão Geral
                     </Button>
                 ) : (
-                    <>
-                        <div className="grid grid-cols-3 gap-2">
-                            {DAY_TABS.slice(0,3).map(day => renderNavButton(day, 'day'))}
-                        </div>
-                        <div className="grid grid-cols-3 gap-2">
-                            {DAY_TABS.slice(3,6).map(day => renderNavButton(day, 'day'))}
-                        </div>
-                    </>
+                    <div className="grid grid-cols-3 gap-2">
+                        {FUNCTION_TABS.map(tab => renderNavButton(tab, 'function'))}
+                    </div>
                 )}
-                <div className="grid grid-cols-3 gap-2">
-                    {FUNCTION_TABS.map(tab => renderNavButton(tab, 'function'))}
-                </div>
            </div>
         </div>
 
