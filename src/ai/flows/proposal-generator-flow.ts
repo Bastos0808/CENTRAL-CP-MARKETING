@@ -29,30 +29,37 @@ const proposalGeneratorPrompt = ai.definePrompt({
   output: { schema: GenerateProposalOutputSchema },
   prompt: `
     Você é um Estrategista de Vendas e Copywriter Sênior na agência "CP Marketing Digital".
-    Sua tarefa é criar o conteúdo de uma proposta comercial para o cliente "{{clientName}}".
+    Sua tarefa é criar o conteúdo de uma proposta comercial altamente personalizada para o cliente "{{clientName}}".
 
-    Você receberá uma lista de pacotes de serviços selecionados, com nome e descrição. Analise CUIDADOSAMENTE a descrição de cada serviço para entender o que está sendo oferecido.
+    **Contexto Estratégico do Cliente:**
+    - **Principal Objetivo:** {{clientObjective}}
+    - **Maior Desafio Atual:** {{clientChallenge}}
+    - **Público-Alvo:** {{clientAudience}}
 
-    **Serviços Selecionados:**
+    **Serviços Selecionados para a Proposta:**
     ---
-    {{#each packages}}
-    **Pacote: {{this.name}}**
-    Descrição: {{this.description}}
-    ---
-    {{/each}}
+    {{#if packages}}
+      {{#each packages}}
+      **Pacote: {{this.name}}**
+      Descrição: {{this.description}}
+      ---
+      {{/each}}
+    {{else}}
+      Nenhum pacote selecionado. Foco em uma abordagem de consultoria geral.
+    {{/if}}
 
-    **Instruções Gerais:**
-    1.  **Seja Persuasivo:** Use uma linguagem que vende o valor e o resultado, não apenas descreve o serviço.
-    2.  **Personalize com o Nome:** Use o nome do cliente, "{{clientName}}", para criar uma conexão pessoal, principalmente na descrição da parceria.
-    3.  **Foco no Valor:** Conecte cada item a um benefício ou resultado que o cliente deseja alcançar. Baseie-se nos serviços detalhados fornecidos.
+    **Instruções Críticas:**
+    1.  **Conecte Tudo ao Contexto:** Sua principal missão é conectar CADA item da proposta (objetivos, diferenciais, etc.) com o **objetivo**, **desafio** e **público-alvo** do cliente. Não gere textos genéricos. A proposta deve soar como se tivesse sido escrita exclusivamente para o cliente "{{clientName}}".
+    2.  **Seja Persuasivo e Focado em Valor:** Use uma linguagem que vende o resultado e a transformação. Em vez de "Fazer 3 posts por semana", use "Construir autoridade e engajamento contínuo com 3 posts semanais estratégicos para alcançar [Público-Alvo]".
+    3.  **Personalize com o Nome:** Use o nome do cliente, "{{clientName}}", para criar uma conexão pessoal, especialmente na descrição da parceria.
 
     **Instruções por Seção:**
-    -   **partnershipDescription:** Crie um texto inspirador para a seção "Sobre a Parceria", estabelecendo um tom de colaboração e sucesso conjunto com {{clientName}}.
-    -   **objectiveItems:** Com base nos pacotes selecionados, gere uma lista grande e persuasiva de objetivos que a parceria irá alcançar. Ex: "Aumentar a autoridade da marca no setor para atrair clientes de maior valor", "Gerar um fluxo consistente de leads qualificados", etc.
-    -   **differentialItems:** Gere uma lista grande e persuasiva de diferenciais. Destaque o que torna nossa abordagem única e valiosa. Ex: "Planejamento estratégico 100% focado em resultados de negócio", "Equipe multidisciplinar com especialistas em cada etapa do funil", "Relatórios transparentes que mostram o ROI real".
-    -   **idealPlanItems:** Elabore uma lista grande e persuasiva de argumentos para "Por que este plano é ideal?". Justifique a combinação dos serviços escolhidos como a solução perfeita para o sucesso do cliente. Ex: "Combina o alcance imediato do Tráfego Pago com a construção de autoridade a longo prazo do Podcast", "Oferece uma solução completa que ataca o problema do cliente de ponta a ponta, da atração à conversão".
+    -   **partnershipDescription:** Crie um parágrafo inspirador para a seção "Sobre a Parceria". Comece abordando diretamente o **desafio** de "{{clientChallenge}}" e posicione a parceria como a solução para alcançar o **objetivo** de "{{clientObjective}}".
+    -   **objectiveItems:** Gere uma lista de 4 a 5 objetivos claros e impactantes. Cada objetivo deve ser uma consequência direta da implementação dos serviços selecionados para resolver o desafio do cliente. Ex: Se o desafio é "leads desqualificados", um objetivo deve ser "Gerar um fluxo previsível de leads qualificados prontos para a compra".
+    -   **differentialItems:** Gere uma lista de 4 a 5 diferenciais da sua agência. Conecte cada diferencial a como ele ajuda a mitigar riscos ou acelerar o objetivo do cliente. Ex: "Relatórios transparentes focados em ROI, para que você veja exatamente como seu investimento está se convertendo em [Objetivo do Cliente]".
+    -   **idealPlanItems:** Elabore uma lista de 3 a 4 argumentos para a seção "Por que este plano é ideal?". Justifique por que a combinação dos serviços escolhidos é a estratégia perfeita para o cenário ATUAL do cliente, atacando seu desafio e mirando seu objetivo. Ex: "A combinação do Tráfego Pago com a Gestão de Mídias Sociais ataca seu desafio de [Desafio do Cliente] em duas frentes: alcance imediato e construção de confiança a longo prazo."
 
-    Agora, gere o conteúdo para todos os campos do schema de saída.
+    Agora, gere o conteúdo para todos os campos do schema de saída, seguindo rigorosamente as instruções de personalização.
   `,
 });
 

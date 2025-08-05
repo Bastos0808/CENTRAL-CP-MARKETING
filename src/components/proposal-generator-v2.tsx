@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -11,37 +11,24 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { PlusCircle, Trash2, Download, Loader2, Wand2, Target, DollarSign, ListChecks, FileText, Check } from 'lucide-react';
+import { Download, Loader2, Wand2, Target, DollarSign, ListChecks, FileText, Check, Bot, Briefcase, Users } from 'lucide-react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useToast } from '@/hooks/use-toast';
 import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
 import { GeneratedProposal, packageOptions } from './generated-proposal';
 import { Switch } from './ui/switch';
+import { GenerateProposalInputSchema } from '@/ai/schemas/proposal-generator-schemas';
 
-// Schema Definition
-const serviceItemSchema = z.object({ value: z.string().min(1, "O item não pode ser vazio.") });
-
-const proposalSchema = z.object({
-  clientName: z.string().min(1, 'O nome do cliente é obrigatório.'),
-  useCustomServices: z.boolean().default(false),
-  packages: z.array(z.string()).optional(),
-  
-  customServices: z.object({
-      socialMedia: z.array(serviceItemSchema).optional(),
-      paidTraffic: z.array(serviceItemSchema).optional(),
-      podcast: z.array(serviceItemSchema).optional(),
-      branding: z.array(serviceItemSchema).optional(),
-      website: z.array(serviceItemSchema).optional(),
-      landingPage: z.array(serviceItemSchema).optional(),
-  }).optional(),
-  
-  partnershipDescription: z.string().optional(),
-  objectiveItems: z.array(serviceItemSchema).optional(),
-  differentialItems: z.array(serviceItemSchema).optional(),
-  idealPlanItems: z.array(serviceItemSchema).optional(),
-  
-  investmentValue: z.string().optional(),
+// Schema Definition matching the AI flow input
+const proposalSchema = GenerateProposalInputSchema.extend({
+    useCustomServices: z.boolean().default(false), // UI state, not for AI
+    investmentValue: z.string().optional(), // UI state, not for AI
+    // These fields will be populated by the AI
+    partnershipDescription: z.string().optional(),
+    objectiveItems: z.array(z.object({ value: z.string() })).optional(),
+    differentialItems: z.array(z.object({ value: z.string() })).optional(),
+    idealPlanItems: z.array(z.object({ value: z.string() })).optional(),
 });
 
 
@@ -58,31 +45,20 @@ export default function ProposalGeneratorV2() {
     resolver: zodResolver(proposalSchema),
     defaultValues: {
       clientName: '',
+      clientObjective: '',
+      clientChallenge: '',
+      clientAudience: '',
       useCustomServices: false,
       packages: [],
-      customServices: {
-          socialMedia: [],
-          paidTraffic: [],
-          podcast: [],
-          branding: [],
-          website: [],
-          landingPage: [],
-      },
+      investmentValue: 'R$ 0,00',
+       // AI-generated fields start empty
       partnershipDescription: '',
       objectiveItems: [],
       differentialItems: [],
       idealPlanItems: [],
-      investmentValue: 'R$ 0,00',
     },
     mode: 'onChange'
   });
-
-  const { fields: smFields, append: appendSm, remove: removeSm } = useFieldArray({ control: form.control, name: "customServices.socialMedia" });
-  const { fields: trafficFields, append: appendTraffic, remove: removeTraffic } = useFieldArray({ control: form.control, name: "customServices.paidTraffic" });
-  const { fields: podcastFields, append: appendPodcast, remove: removePodcast } = useFieldArray({ control: form.control, name: "customServices.podcast" });
-  const { fields: brandingFields, append: appendBranding, remove: removeBranding } = useFieldArray({ control: form.control, name: "customServices.branding" });
-  const { fields: websiteFields, append: appendWebsite, remove: removeWebsite } = useFieldArray({ control: form.control, name: "customServices.website" });
-  const { fields: lpFields, append: appendLp, remove: removeLp } = useFieldArray({ control: form.control, name: "customServices.landingPage" });
 
   const watchedValues = form.watch();
   const useCustomServices = watchedValues.useCustomServices;
@@ -152,15 +128,20 @@ export default function ProposalGeneratorV2() {
   };
 
   const handleGenerateContent = async () => {
-      const { clientName, packages, useCustomServices } = form.getValues();
-      if (!clientName) {
-          toast({ title: "Nome do Cliente Faltando", variant: "destructive" });
-          return;
-      }
-      if (!useCustomServices && (!packages || packages.length === 0)) {
-          toast({ title: "Nenhum Pacote Selecionado", variant: "destructive" });
-          return;
-      }
+      const { clientName, packages, clientObjective, clientChallenge, clientAudience } = form.getValues();
+      
+      const validation = GenerateProposalInputSchema.safeParse({ clientName, packages, clientObjective, clientChallenge, clientAudience });
+
+       if (!validation.success) {
+            validation.error.errors.forEach((err) => {
+                toast({
+                    title: `Campo Obrigatório: ${err.path.join('.')}`,
+                    description: err.message,
+                    variant: "destructive",
+                });
+            });
+            return;
+        }
       
       setIsGeneratingAi(true);
 
@@ -171,7 +152,13 @@ export default function ProposalGeneratorV2() {
       }, []);
 
       try {
-          const result = await generateProposalContent({ clientName, packages: packagesWithDetails });
+          const result = await generateProposalContent({ 
+              clientName, 
+              clientObjective,
+              clientChallenge,
+              clientAudience,
+              packages: packagesWithDetails 
+            });
           
           form.setValue('partnershipDescription', result.partnershipDescription);
           form.setValue('objectiveItems', result.objectiveItems.map(item => ({value: item})));
@@ -187,43 +174,20 @@ export default function ProposalGeneratorV2() {
       }
   }
 
-  const renderFieldArray = (title: string, name: any, fields: any[], append: Function, remove: Function) => (
-      <div>
-        <FormLabel>{title}</FormLabel>
-        <div className="space-y-2 mt-2">
-            {fields.map((field, index) => (
-                <div key={field.id} className="flex items-center gap-2">
-                    <FormField
-                        control={form.control}
-                        name={`${name}.${index}.value`}
-                        render={({ field }) => (
-                            <FormItem className="flex-1">
-                                <FormControl><Textarea {...field} rows={1} placeholder={`Item de ${title}`} /></FormControl>
-                            </FormItem>
-                        )}
-                    />
-                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-                        <Trash2 className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                </div>
-            ))}
-            <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => append({ value: '' })}>
-                <PlusCircle className="mr-2 h-4 w-4" /> Adicionar Item
-            </Button>
-        </div>
-      </div>
-  )
 
   return (
     <>
         <Card>
             <Form {...form}>
                 <form className="space-y-4">
-                    <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
+                    <Accordion type="multiple" defaultValue={['item-1', 'item-2']} className="w-full">
                         <AccordionItem value="item-1">
-                            <AccordionTrigger className="px-6 font-semibold"><Target className="mr-2 h-5 w-5 text-primary" />Informações do Cliente</AccordionTrigger>
-                            <AccordionContent className="space-y-4 px-6 pt-2">
+                            <AccordionTrigger className="px-6 font-semibold"><Target className="mr-2 h-5 w-5 text-primary" />Informações Estratégicas</AccordionTrigger>
+                            <AccordionContent className="space-y-4 px-6 pt-4">
                                 <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input placeholder="Nome da empresa do cliente" {...field} /></FormControl><FormMessage /></FormItem>} />
+                                <FormField control={form.control} name="clientObjective" render={({ field }) => <FormItem><FormLabel>Principal Objetivo do Cliente</FormLabel><FormControl><Input placeholder="Ex: Aumentar vendas online, gerar autoridade" {...field} /></FormControl><FormMessage /></FormItem>} />
+                                <FormField control={form.control} name="clientChallenge" render={({ field }) => <FormItem><FormLabel>Maior Desafio de Marketing Atual</FormLabel><FormControl><Input placeholder="Ex: Leads desqualificados, baixo engajamento" {...field} /></FormControl><FormMessage /></FormItem>} />
+                                <FormField control={form.control} name="clientAudience" render={({ field }) => <FormItem><FormLabel>Público-Alvo Principal</FormLabel><FormControl><Input placeholder="Ex: Jovens arquitetos de São Paulo" {...field} /></FormControl><FormMessage /></FormItem>} />
                             </AccordionContent>
                         </AccordionItem>
                         
@@ -236,14 +200,14 @@ export default function ProposalGeneratorV2() {
                                     render={({ field }) => (
                                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                                             <div className="space-y-0.5">
-                                                <FormLabel>Personalizar Serviços</FormLabel>
-                                                <p className="text-sm text-muted-foreground">Ative para criar um escopo do zero.</p>
+                                                <FormLabel>Personalizar Escopo</FormLabel>
+                                                <p className="text-sm text-muted-foreground">Desativa os pacotes e permite a criação de um escopo do zero.</p>
                                             </div>
                                             <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                                         </FormItem>
                                     )}
                                 />
-                                {!useCustomServices && (
+                                {!useCustomServices ? (
                                     <FormField
                                         control={form.control}
                                         name="packages"
@@ -275,31 +239,25 @@ export default function ProposalGeneratorV2() {
                                             </FormItem>
                                         )}
                                     />
+                                ) : (
+                                    <p className="text-sm text-center text-muted-foreground p-4 bg-muted/50 rounded-md">A personalização de escopo ainda será implementada.</p>
                                 )}
                             </AccordionContent>
                         </AccordionItem>
                         
-                        <AccordionItem value="item-3">
-                            <AccordionTrigger className="px-6 font-semibold"><FileText className="mr-2 h-5 w-5 text-primary" />Conteúdo da Proposta</AccordionTrigger>
-                            <AccordionContent className="space-y-4 px-6 pt-4">
-                                <Button type="button" onClick={handleGenerateContent} disabled={isGeneratingAi} className="w-full">
-                                    {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                                    Gerar Textos com IA
-                                </Button>
-                                <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Sobre a Parceria</FormLabel><FormControl><Textarea {...field} /></FormControl></FormItem>} />
-                                {renderFieldArray("Objetivos", "objectiveItems", watchedValues.objectiveItems || [], (v:any) => form.setValue("objectiveItems", [...(watchedValues.objectiveItems || []), v]), (i:number) => form.setValue("objectiveItems", watchedValues.objectiveItems?.filter((_, idx) => idx !== i)))}
-                                {renderFieldArray("Diferenciais", "differentialItems", watchedValues.differentialItems || [], (v:any) => form.setValue("differentialItems", [...(watchedValues.differentialItems || []), v]), (i:number) => form.setValue("differentialItems", watchedValues.differentialItems?.filter((_, idx) => idx !== i)))}
-                                {renderFieldArray("Por que este plano é ideal?", "idealPlanItems", watchedValues.idealPlanItems || [], (v:any) => form.setValue("idealPlanItems", [...(watchedValues.idealPlanItems || []), v]), (i:number) => form.setValue("idealPlanItems", watchedValues.idealPlanItems?.filter((_, idx) => idx !== i)))}
-                            </AccordionContent>
-                        </AccordionItem>
-                        
-                        <AccordionItem value="item-4">
+                         <AccordionItem value="item-3">
                             <AccordionTrigger className="px-6 font-semibold"><DollarSign className="mr-2 h-5 w-5 text-primary" />Investimento</AccordionTrigger>
                             <AccordionContent className="space-y-4 px-6 pt-4">
-                                <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} disabled={!useCustomServices} /></FormControl><FormMessage /></FormItem>} />
+                                <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
+                     <div className="p-6">
+                        <Button type="button" onClick={handleGenerateContent} disabled={isGeneratingAi} className="w-full">
+                           {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                           {isGeneratingAi ? 'Gerando Conteúdo...' : 'Gerar Conteúdo da Proposta com IA'}
+                        </Button>
+                    </div>
                 </form>
             </Form>
         </Card>
