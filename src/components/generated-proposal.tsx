@@ -44,7 +44,6 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
         clientName,
         packages,
         useCustomServices,
-        customServices,
         investmentValue,
         partnershipDescription,
         objectiveItems,
@@ -54,26 +53,7 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
     
     const renderCustomServices = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
-          {Object.entries(customServices || {}).map(([key, serviceItems]) => {
-              if (!serviceItems || serviceItems.length === 0) return null;
-              const { name, icon: Icon } = {
-                  socialMedia: { name: "Mídia Social", icon: Palette },
-                  paidTraffic: { name: "Tráfego Pago", icon: Megaphone },
-                  podcast: { name: "Podcast", icon: Mic },
-                  branding: { name: "Branding", icon: Sparkles },
-                  website: { name: "Website", icon: Sparkles },
-                  landingPage: { name: "Landing Page", icon: Sparkles },
-              }[key] || { name: key, icon: Sparkles};
-              return (
-                  <div key={key} className="bg-gray-900/70 p-8 rounded-lg border border-gray-700 flex flex-col">
-                      <Icon className="h-10 w-10 text-[#FE5412] mb-4" />
-                      <h3 className="font-bold text-2xl">{name}</h3>
-                      <ul className="text-base text-gray-300 mt-4 list-disc pl-5 space-y-2 flex-grow">
-                          {serviceItems.map((item, index) => <li key={index}>{item.value}</li>)}
-                      </ul>
-                  </div>
-              );
-          })}
+         
       </div>
     );
 
@@ -160,9 +140,6 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
               <div className="border-8 border-[#FE5412] p-16 rounded-2xl">
                   <h2 className="text-6xl font-bold uppercase mb-4">Investimento Mensal</h2>
                   <p className="text-9xl font-extrabold text-[#FE5412] mb-6">{investmentValue || 'R$ 0,00'}</p>
-                  <div className="max-w-2xl mx-auto">
-                    <p className="text-2xl font-semibold tracking-wider text-gray-300">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
-                  </div>
               </div>
             </div>
         </Page>
