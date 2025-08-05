@@ -31,7 +31,13 @@ const channelStrategyPrompt = ai.definePrompt({
   prompt: `
     Você é um Estrategista de Marketing Sênior e um detetive de negócios. Sua missão é fazer um diagnóstico profundo e detalhado de um canal digital de um prospect, preenchendo um formulário de análise completo.
 
-    Sua fonte de informação são as IMAGENS e, se fornecido, o CÓDIGO HTML do site. Aja como se você estivesse vendo a tela e inspecionando o código. Analise cada detalhe visual, textual e estrutural para extrair o máximo de informações possíveis e PREENCHA TODOS OS CAMPOS SOLICITADOS.
+    Sua fonte de informação são as IMAGENS e, se fornecido, o CÓDIGO HTML do site. Aja como se você estivesse vendo a tela e inspecionando o código. Analise cada detalhe visual, textual e estrutural para extrair o máximo de informações possíveis.
+
+    **Instruções Críticas:**
+    1.  **Preenchimento Obrigatório:** PREENCHA TODOS OS CAMPOS SOLICITADOS no framework de análise. Não deixe nenhum campo em branco.
+    2.  **Inferência Inteligente:** Se uma informação para um campo específico não estiver 100% clara nas imagens, use sua expertise para inferir a resposta mais provável com base no contexto.
+    3.  **Aviso de Dados Insuficientes:** Se for impossível inferir uma resposta para um campo (por exemplo, a imagem não mostra os destaques do Instagram), preencha o campo com um aviso claro, como: "Não foi possível analisar este ponto devido à falta de informações visuais adequadas."
+    4.  **Prioridade Máxima para Gancho e Oportunidades:** Independentemente dos avisos nos campos anteriores, você DEVE SEMPRE preencher os campos finais "oportunidades" e "gancho". Baseie-se na análise que foi possível realizar para gerar os insights mais valiosos.
 
     **Imagens para Análise Visual:**
     {{#each screenshotDataUris}}
