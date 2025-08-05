@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
@@ -676,31 +675,31 @@ export default function RotinaSDRPage() {
                   {renderConsultorias()}
                </>
               ) : (
-                <div className="space-y-6">
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                       {counterTasks.map((task) => (
-                           <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
-                                <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
-                                <div className="flex items-center gap-3">
-                                    <CounterTaskInput
-                                        type="text"
-                                        pattern="[0-9]*"
-                                        inputMode="numeric"
-                                        id={`${activeDay}-${task.id}`}
-                                        value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
-                                        onSave={(value) => handleCounterChange(task.id, value)}
-                                        className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
-                                        placeholder="0"
-                                    />
-                                    <span className={cn("text-base font-semibold", (Number(weekData?.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal) ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
-                                </div>
+                <div className="space-y-4">
+                    {counterTasks.map((task) => (
+                         <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
+                            <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
+                            <div className="flex items-center gap-3">
+                                <CounterTaskInput
+                                    type="text"
+                                    pattern="[0-9]*"
+                                    inputMode="numeric"
+                                    id={`${activeDay}-${task.id}`}
+                                    value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
+                                    onSave={(value) => handleCounterChange(task.id, value)}
+                                    className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
+                                    placeholder="0"
+                                />
+                                <span className={cn("text-base font-semibold w-10 text-right", (Number(weekData?.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal) ? "text-green-500" : "text-red-500")}>
+                                    / {task.dailyGoal}
+                                </span>
                             </div>
-                      ))}
-                      {renderConsultorias()}
-                    </div>
-                  
+                        </div>
+                    ))}
+                    {renderConsultorias()}
+                    
                   {/* Checkbox Tasks */}
-                  <div className="space-y-4">
+                  <div className="space-y-4 pt-4">
                     {checkboxTasks.map(task => {
                         const isChecked = weekData.checkedTasks?.[activeDay]?.[task.id] || false;
                         return (
@@ -709,11 +708,12 @@ export default function RotinaSDRPage() {
                               onClick={() => handleTaskCheck(task.id, !isChecked)}
                               className="flex items-center space-x-4 p-4 rounded-lg bg-card/50 cursor-pointer transition-colors hover:bg-card/70"
                           >
-                              {isChecked ? (
-                                  <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
-                              ) : (
-                                  <Circle className="h-6 w-6 text-primary flex-shrink-0" />
-                              )}
+                              <div className={cn(
+                                  "h-6 w-6 rounded-full flex-shrink-0 flex items-center justify-center border-2",
+                                  isChecked ? "bg-green-500 border-green-500" : "border-primary"
+                              )}>
+                                  {isChecked && <Check className="h-4 w-4 text-white" />}
+                              </div>
                               <span className={cn("flex-1 text-base font-normal", isChecked && "line-through text-muted-foreground")}>
                                   {task.label}
                               </span>
@@ -723,11 +723,12 @@ export default function RotinaSDRPage() {
                     {extraTask && (
                        <div className="p-4 rounded-lg bg-card/50">
                           <div onClick={() => handleTaskCheck(extraTask.id, !weekData.checkedTasks?.[activeDay]?.[extraTask.id])} className="flex items-center space-x-4 cursor-pointer">
-                              {weekData.checkedTasks?.[activeDay]?.[extraTask.id] ? (
-                                  <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
-                              ) : (
-                                  <Circle className="h-6 w-6 text-primary flex-shrink-0" />
-                              )}
+                              <div className={cn(
+                                "h-6 w-6 rounded-full flex-shrink-0 flex items-center justify-center border-2",
+                                weekData.checkedTasks?.[activeDay]?.[extraTask.id] ? "bg-green-500 border-green-500" : "border-primary"
+                              )}>
+                                {weekData.checkedTasks?.[activeDay]?.[extraTask.id] && <Check className="h-4 w-4 text-white" />}
+                              </div>
                               <span className={cn("flex-1 text-base font-normal", weekData.checkedTasks?.[activeDay]?.[extraTask.id] && "line-through text-muted-foreground")}>
                                   {extraTask.label}
                               </span>
@@ -761,7 +762,7 @@ export default function RotinaSDRPage() {
             <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1">
                 Consultorias Realizadas
             </Label>
-            <div className="flex items-center gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-3">
                 <CounterTaskInput
                     type="text"
                     pattern="[0-9]*"
@@ -775,7 +776,7 @@ export default function RotinaSDRPage() {
                 />
                 {!isSaturday && (
                      <span className={cn(
-                        "text-base font-semibold", 
+                        "text-base font-semibold w-10 text-right", 
                         (Number(dailyMeetings) >= 2) ? 'text-green-500' : 'text-red-500'
                      )}>
                         / 2
@@ -877,7 +878,7 @@ export default function RotinaSDRPage() {
                 <h2 className="text-xl font-bold text-primary">{currentMonth}</h2>
                 <div className="flex items-center gap-2">
                     <p className="text-sm text-muted-foreground">Semana {currentWeek}</p>
-                    {FUNCTION_TABS.includes(activeTab) && (
+                    {FUNCTION_TABS.includes(activeTab) && !isAdmin && (
                         <Button variant="outline" size="sm" className="h-6 px-2 text-xs" onClick={() => setActiveTab(currentDay)}>
                            <ArrowLeft className="mr-1 h-3 w-3"/>
                            Voltar para a Semana
@@ -919,3 +920,5 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
+
+    
