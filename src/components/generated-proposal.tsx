@@ -157,8 +157,8 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
              </div>
         </Page>
         <Page>
-            <div className="text-center">
-              <div className="border-8 border-[#FE5412] p-16 rounded-2xl max-w-4xl mx-auto">
+            <div className="w-full max-w-4xl text-center">
+              <div className="border-8 border-[#FE5412] p-16 rounded-2xl">
                   <h2 className="text-6xl font-bold uppercase mb-4">Investimento Mensal</h2>
                   <p className="text-9xl font-extrabold text-[#FE5412] mb-6">{investmentValue || 'R$ 0,00'}</p>
                   <p className="text-2xl font-semibold tracking-wider text-gray-300">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
