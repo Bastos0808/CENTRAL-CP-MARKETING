@@ -104,7 +104,7 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
   return (
     <div>
         <Page className="bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1554224155-8d04421cd673?q=80&w=3870&auto=format&fit=crop')", backgroundPosition: 'center center' }}>
-             <div className="absolute inset-0 bg-black/50 z-0"></div>
+             <div className="absolute inset-0 bg-black/40 z-0"></div>
               <div className="z-10 text-center flex flex-col items-center">
                   <p className="text-[#FE5412] font-semibold tracking-widest mb-4 text-2xl">PROPOSTA COMERCIAL</p>
                   <h1 className="text-9xl font-extrabold max-w-5xl leading-tight">{clientName || '[Nome do Cliente]'}</h1>
@@ -161,7 +161,9 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
               <div className="border-8 border-[#FE5412] p-16 rounded-2xl">
                   <h2 className="text-6xl font-bold uppercase mb-4">Investimento Mensal</h2>
                   <p className="text-9xl font-extrabold text-[#FE5412] mb-6">{investmentValue || 'R$ 0,00'}</p>
-                  <p className="text-2xl font-semibold tracking-wider text-gray-300">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
+                  <div className="max-w-xl mx-auto">
+                    <p className="text-2xl font-semibold tracking-wider text-gray-300">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
+                  </div>
               </div>
             </div>
         </Page>
