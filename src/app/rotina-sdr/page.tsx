@@ -142,6 +142,9 @@ export default function RotinaSDRPage() {
   const [currentWeek, setCurrentWeek] = useState(1);
   const [currentMonth, setCurrentMonth] = useState(ptMonths[new Date().getMonth()]);
   
+  const [localCounters, setLocalCounters] = useState<Record<string, string>>({});
+  const [localExtraTasks, setLocalExtraTasks] = useState<string>("");
+
   const isAdmin = user?.role === 'admin';
   const effectiveUserId = user?.uid;
 
@@ -248,6 +251,21 @@ export default function RotinaSDRPage() {
   const activeWeekKey = `semana${currentWeek}` as keyof MonthlyData;
   const activeDay = ptDays.includes(activeTab) ? activeTab : ptDays[0];
   
+  // Sync local state when global state changes
+  useEffect(() => {
+    const weekData = monthlyData?.[activeWeekKey];
+    const counterTasksForDay = weekData?.counterTasks?.[activeDay] || {};
+    const newLocalCounters: Record<string, string> = {};
+    for (const taskId in counterTasksForDay) {
+        newLocalCounters[taskId] = String(counterTasksForDay[taskId]);
+    }
+    setLocalCounters(newLocalCounters);
+    
+    const extraTasksForDay = weekData?.extraTasks?.[activeDay] || "";
+    setLocalExtraTasks(extraTasksForDay);
+
+  }, [activeDay, activeWeekKey, monthlyData]);
+
   const isHoliday = monthlyData?.[activeWeekKey]?.holidays[activeDay] || false;
 
   const previousDay = useMemo(() => {
@@ -298,22 +316,30 @@ export default function RotinaSDRPage() {
   };
   
   const handleCounterChange = (taskId: string, value: string) => {
-    // Allow empty string for clearing the input, otherwise parse to number
-    const numValue = value === '' ? 0 : parseInt(value, 10);
-    if (isNaN(numValue)) return; // Prevents NaN from being set
+    setLocalCounters(prev => ({...prev, [taskId]: value}));
+  };
+  
+  const handleCounterBlur = (taskId: string) => {
+      const value = localCounters[taskId] || '';
+      const numValue = value === '' ? 0 : parseInt(value, 10);
+      if (isNaN(numValue)) return; // Prevents NaN from being set
 
-    handleUpdateYearData(draft => {
-        const weekData = draft[currentMonth][activeWeekKey];
-        if (!weekData.counterTasks[activeDay]) weekData.counterTasks[activeDay] = {};
-        weekData.counterTasks[activeDay][taskId] = numValue < 0 ? 0 : numValue;
-    });
+      handleUpdateYearData(draft => {
+          const weekData = draft[currentMonth][activeWeekKey];
+          if (!weekData.counterTasks[activeDay]) weekData.counterTasks[activeDay] = {};
+          weekData.counterTasks[activeDay][taskId] = numValue < 0 ? 0 : numValue;
+      });
   };
 
   const handleExtraTasksChange = (value: string) => {
+    setLocalExtraTasks(value);
+  };
+  
+  const handleExtraTasksBlur = () => {
     handleUpdateYearData(draft => {
         const weekData = draft[currentMonth][activeWeekKey];
         if (!weekData.extraTasks) weekData.extraTasks = {};
-        weekData.extraTasks[activeDay] = value;
+        weekData.extraTasks[activeDay] = localExtraTasks;
     });
   };
 
@@ -340,8 +366,13 @@ export default function RotinaSDRPage() {
   };
 
   const handleDailyMeetingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(e.target.value, 10);
+    setLocalCounters(prev => ({...prev, ['daily_meetings']: e.target.value}));
+  };
+  
+  const handleDailyMeetingsBlur = () => {
+        const value = parseInt(localCounters['daily_meetings'], 10);
         const meetings = isNaN(value) || value < 0 ? 0 : value;
+        
         handleUpdateYearData(draft => {
             const weekData = draft[currentMonth][activeWeekKey];
             if (!weekData.counterTasks[activeDay]) weekData.counterTasks[activeDay] = {};
@@ -353,7 +384,7 @@ export default function RotinaSDRPage() {
             });
             weekData.meetingsBooked = totalMeetings;
         });
-    };
+  };
 
   const { completedTasksCount, weeklyProgress } = useMemo(() => {
     const weekData = monthlyData?.[activeWeekKey];
@@ -536,7 +567,7 @@ export default function RotinaSDRPage() {
                       pendingGoals.map(task => {
                           const weeklyTotal = weeklyProgress[task.id] || 0;
                           const isGoalMet = weeklyTotal >= task.weeklyGoal;
-                          const currentSaturdayValue = weekData.counterTasks?.[activeDay]?.[task.id] || '';
+                          const currentSaturdayValue = localCounters[task.id] || '';
                           return (
                               <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50 mb-4">
                                   <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
@@ -548,6 +579,7 @@ export default function RotinaSDRPage() {
                                           id={`${activeDay}-${task.id}`} 
                                           value={currentSaturdayValue} 
                                           onChange={(e) => handleCounterChange(task.id, e.target.value)} 
+                                          onBlur={() => handleCounterBlur(task.id)}
                                           className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" 
                                       />
                                       <div className="text-right">
@@ -573,7 +605,7 @@ export default function RotinaSDRPage() {
                </>
               ) : (
                 <div className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="space-y-4">
                        {counterTasks.map((task) => (
                            <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
                                 <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
@@ -583,12 +615,13 @@ export default function RotinaSDRPage() {
                                         pattern="[0-9]*"
                                         inputMode="numeric"
                                         id={`${activeDay}-${task.id}`} 
-                                        value={weekData.counterTasks?.[activeDay]?.[task.id] || ''} 
+                                        value={localCounters[task.id] || ''} 
                                         onChange={(e) => handleCounterChange(task.id, e.target.value)} 
+                                        onBlur={() => handleCounterBlur(task.id)}
                                         className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50" 
                                         placeholder="0" 
                                     />
-                                    <span className={cn("text-base font-semibold", (weekData.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
+                                    <span className={cn("text-base font-semibold", (parseInt(localCounters[task.id] || '0', 10) >= task.dailyGoal) ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
                                 </div>
                             </div>
                       ))}
@@ -630,8 +663,9 @@ export default function RotinaSDRPage() {
                           </div>
                           <Textarea
                               placeholder="Digite as tarefas para o dia seguinte aqui..."
-                              value={weekData.extraTasks?.[activeDay] || ''}
+                              value={localExtraTasks}
                               onChange={(e) => handleExtraTasksChange(e.target.value)}
+                              onBlur={handleExtraTasksBlur}
                               className="w-full mt-2 bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary ml-10"
                               style={{width: 'calc(100% - 2.5rem)'}}
                           />
@@ -647,9 +681,9 @@ export default function RotinaSDRPage() {
 
   const renderConsultorias = () => {
     const weekData = monthlyData?.[activeWeekKey];
-    const dailyMeetings = weekData?.counterTasks[activeDay]?.['daily_meetings'] || 0;
+    const dailyMeetings = localCounters['daily_meetings'] || '';
     const isSaturday = activeTab === 'Sábado';
-    const totalWeeklyMeetings = weekData.meetingsBooked;
+    const totalWeeklyMeetings = weekData?.meetingsBooked || 0;
     const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
     
     return (
@@ -663,8 +697,9 @@ export default function RotinaSDRPage() {
                     pattern="[0-9]*"
                     inputMode="numeric"
                     id={`consultorias-${activeDay}`}
-                    value={dailyMeetings || ''}
+                    value={dailyMeetings}
                     onChange={handleDailyMeetingsChange}
+                    onBlur={handleDailyMeetingsBlur}
                     className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
                     placeholder="0"
                     disabled={isHoliday || isSaturday}
@@ -672,7 +707,7 @@ export default function RotinaSDRPage() {
                 {!isSaturday && (
                      <span className={cn(
                         "text-base font-semibold", 
-                        (dailyMeetings >= 2) ? 'text-green-500' : 'text-red-500'
+                        (parseInt(dailyMeetings || '0', 10) >= 2) ? 'text-green-500' : 'text-red-500'
                      )}>
                         / 2
                     </span>
@@ -826,3 +861,5 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
+
+    
