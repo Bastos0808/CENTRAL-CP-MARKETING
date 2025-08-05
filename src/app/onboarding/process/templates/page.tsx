@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Mail, MessageSquare, PhoneCall, ShieldQuestion, Users, Handshake, Bot } from "lucide-react";
 import { useOnboarding } from "../../layout";
 import { useEffect } from "react";
-import { BackButton } from "@/components/ui/back-button";
+import { BackButton } from "@/components/ui/BackButton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
