@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from 'react';
@@ -8,13 +7,14 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 import { PlusCircle, Trash2, Download, Loader2, Check, ArrowRight, Target, AlignLeft, BarChart2, ListChecks, Goal, Sparkles, Megaphone, DollarSign, PackageCheck, X, Wand2, Image as ImageIcon, Palette, Percent, Tag, FileText, Bot, Briefcase, Mic } from 'lucide-react';
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { useToast } from '@/hooks/use-toast';
 import { Label } from '@/components/ui/label';
 import Image from 'next/image';
@@ -164,13 +164,53 @@ export default function ProposalGeneratorV2() {
   ];
   
   const handleDownloadPdf = async () => {
-    //TODO: Implement HTML to PDF generation
-    toast({
-        title: "Funcionalidade em desenvolvimento",
-        description: "A nova geração de PDF está sendo preparada.",
-        variant: "default"
+    const { clientName } = form.getValues();
+    if (!clientName) {
+        toast({ title: "Cliente não definido", description: "Por favor, insira o nome do cliente antes de gerar o PDF.", variant: "destructive" });
+        return;
+    }
+
+    setIsGeneratingPdf(true);
+    toast({ title: "Gerando PDF...", description: "Isso pode levar alguns instantes. Não feche a página." });
+
+    const slides = document.querySelectorAll<HTMLDivElement>('[data-slide-index]');
+    const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: 'a4', // A4 aspect ratio in landscape
     });
-  };
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+
+    try {
+        for (let i = 0; i < slides.length; i++) {
+            const slide = slides[i];
+            const canvas = await html2canvas(slide, {
+                scale: 2, // Higher scale for better quality
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#000000'
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.95); // Use JPEG for smaller size
+            
+            if (i > 0) {
+                pdf.addPage();
+            }
+            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        }
+
+        pdf.save(`Proposta_${clientName.replace(/\s+/g, '_')}.pdf`);
+        toast({ title: "PDF Gerado com Sucesso!", variant: "default" });
+
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+        toast({ title: "Erro ao Gerar PDF", description: "Ocorreu um problema ao gerar o arquivo. Verifique o console para mais detalhes.", variant: "destructive" });
+    } finally {
+        setIsGeneratingPdf(false);
+    }
+};
 
   const handleGenerateContent = async () => {
       const { clientName, packages } = form.getValues();
@@ -219,7 +259,7 @@ export default function ProposalGeneratorV2() {
   
    const proposalContent = (
       <>
-          <Page className="bg-cover bg-center">
+          <Page className="bg-cover bg-center" data-slide-index="0">
               <div className="absolute inset-0 bg-black z-0"></div>
               {watchedValues.coverImageUrl && (
                   <Image 
@@ -239,7 +279,7 @@ export default function ProposalGeneratorV2() {
                   <p className="text-xl font-light text-gray-300 mt-4">Gestão Estratégica de Marketing Digital</p>
               </div>
           </Page>
-          <Page className="justify-center items-start flex-col">
+          <Page className="justify-center items-start flex-col" data-slide-index="1">
               <h2 className="text-6xl font-bold uppercase mb-10 text-left w-full max-w-5xl mx-auto">Sobre a Parceria</h2>
               <div className="flex items-start gap-6 max-w-5xl mx-auto">
                   <div className="w-1 bg-[#FE5412] self-stretch"></div>
@@ -250,7 +290,7 @@ export default function ProposalGeneratorV2() {
                   />
               </div>
           </Page>
-          <Page className="">
+          <Page className="" data-slide-index="2">
               <div className="w-full max-w-5xl">
                   <h2 className="text-5xl font-bold uppercase mb-8">Nosso Objetivo</h2>
                   <ul className="space-y-4 text-xl font-light">
@@ -260,7 +300,7 @@ export default function ProposalGeneratorV2() {
                   </ul>
               </div>
           </Page>
-          <Page className="">
+          <Page className="" data-slide-index="3">
                <div className="w-full max-w-5xl">
                   <h2 className="text-5xl font-bold uppercase mb-8">Nossos Diferenciais</h2>
                   <ul className="space-y-4 text-xl font-light columns-2 gap-x-12">
@@ -270,7 +310,7 @@ export default function ProposalGeneratorV2() {
                   </ul>
                </div>
           </Page>
-          <Page className="p-12 items-start justify-start">
+          <Page className="p-12 items-start justify-start" data-slide-index="4">
               <div className="w-full max-w-full">
                   <h2 className="text-5xl font-bold uppercase mb-8 text-center">Escopo dos Serviços</h2>
                   {useCustomServices ? (
@@ -312,7 +352,7 @@ export default function ProposalGeneratorV2() {
                   )}
               </div>
           </Page>
-          <Page className="">
+          <Page className="" data-slide-index="5">
                <div className="w-full max-w-5xl text-center">
                   <h2 className="text-5xl font-bold uppercase mb-8">Por que este plano é <span className="text-[#FE5412]">ideal</span> para o seu negócio?</h2>
                    <ul className="space-y-4 text-xl font-light text-left max-w-3xl mx-auto">
@@ -322,14 +362,14 @@ export default function ProposalGeneratorV2() {
                   </ul>
                </div>
           </Page>
-          <Page className="">
+          <Page className="" data-slide-index="6">
               <div className="text-center border-4 border-[#FE5412] p-12 rounded-xl">
                   <h2 className="text-4xl font-bold uppercase mb-2">Investimento Mensal</h2>
                   <p className="text-8xl font-extrabold text-[#FE5412] mb-4">{watchedValues.investmentValue}</p>
                   <p className="font-semibold tracking-wider text-gray-400">INCLUI TODOS OS SERVIÇOS ESTRATÉGICOS ACIMA.</p>
               </div>
           </Page>
-          <Page className="">
+          <Page className="" data-slide-index="7">
               <div className="w-full max-w-5xl text-center">
                   <h2 className="text-5xl font-bold uppercase mb-8">Próximos Passos</h2>
                   <div className="flex justify-center items-stretch gap-8 text-left">
@@ -357,7 +397,7 @@ export default function ProposalGeneratorV2() {
                   </div>
               </div>
           </Page>
-          <Page className="">
+          <Page className="" data-slide-index="8">
               <div className="text-center">
                   <h2 className="text-7xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
                   <p className="text-2xl mt-4 text-gray-300 max-w-2xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
@@ -367,157 +407,155 @@ export default function ProposalGeneratorV2() {
   );
 
   return (
-    <div className="space-y-8">
-      <div className="w-full space-y-4">
-          <Card>
-            <CardContent className="p-4">
-               <Form {...form}>
-                <form className="space-y-4">
-                  <Accordion type="multiple" defaultValue={['item-0', 'item-1']} className="w-full">
-                    {formSections.map((section, index) => (
-                      <AccordionItem value={`item-${index}`} key={section.name}>
-                        <AccordionTrigger className="font-semibold"><section.icon className="mr-2 h-5 w-5 text-primary" />{section.name}</AccordionTrigger>
-                        <AccordionContent className="space-y-4 pt-2">
-                          {section.fields.includes('clientName') && <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input placeholder="Nome da empresa do cliente" {...field} /></FormControl><FormMessage /></FormItem>} />}
-                          {section.fields.includes('clientLogoUrl') && <FormField control={form.control} name="clientLogoUrl" render={({ field }) => <FormItem><FormLabel>URL do Logo do Cliente (Opcional)</FormLabel><FormControl><Input placeholder="https://..." {...field} /></FormControl><FormMessage /></FormItem>} />}
-                          
-                          {section.fields.includes('coverImageUrl') && <FormField control={form.control} name="coverImageUrl" render={({ field }) => <FormItem><FormLabel>URL da Imagem de Capa (Opcional)</FormLabel><FormControl><Input placeholder="https://images.unsplash.com/..." {...field} /></FormControl><FormMessage /></FormItem>} />}
-                          
-                          {section.fields.includes('useCustomServices') && (
-                            <FormField
-                                control={form.control}
-                                name="useCustomServices"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                                        <div className="space-y-0.5">
-                                            <FormLabel>Usar Serviços Personalizados?</FormLabel>
-                                            <FormDescription>Ative para criar pacotes do zero.</FormDescription>
+    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+      <Card className="sticky top-8">
+        <CardHeader>
+            <CardTitle>Configurações da Proposta</CardTitle>
+            <CardDescription>Preencha os campos abaixo para gerar a pré-visualização da proposta ao lado.</CardDescription>
+        </CardHeader>
+        <CardContent>
+           <Form {...form}>
+            <form className="space-y-4">
+              <Accordion type="multiple" defaultValue={['item-0']} className="w-full">
+                <AccordionItem value="item-0">
+                  <AccordionTrigger className="font-semibold"><Target className="mr-2 h-5 w-5 text-primary" />Informações do Cliente</AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                    <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input placeholder="Nome da empresa do cliente" {...field} /></FormControl><FormMessage /></FormItem>} />
+                  </AccordionContent>
+                </AccordionItem>
+                 <AccordionItem value="item-1">
+                  <AccordionTrigger className="font-semibold"><ListChecks className="mr-2 h-5 w-5 text-primary" />Serviços e Pacotes</AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-2">
+                      <FormField
+                            control={form.control}
+                            name="useCustomServices"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                    <div className="space-y-0.5">
+                                        <FormLabel>Personalizar Serviços</FormLabel>
+                                        <FormDescription>Ative para criar um escopo do zero.</FormDescription>
+                                    </div>
+                                    <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
+                                </FormItem>
+                            )}
+                        />
+                         {useCustomServices ? (
+                            <div className="space-y-4 pt-2">
+                                {customServicesList.map(({ name, fieldName, fields, append, remove, icon: Icon }) => (
+                                    <div key={name} className="p-4 border rounded-md">
+                                        <Label className="flex items-center gap-2 mb-2 font-semibold"><Icon className="h-5 w-5 text-primary" />{name}</Label>
+                                        <div className="space-y-2">
+                                            {fields.map((field, index) => (
+                                                <div key={field.id} className="flex items-center gap-2">
+                                                    <FormField
+                                                        control={form.control}
+                                                        name={`${fieldName}.${index}.value` as any}
+                                                        render={({ field }) => <FormItem className="flex-1"><FormControl><Input {...field} placeholder={`Item de ${name}`} /></FormControl></FormItem>}
+                                                    />
+                                                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-muted-foreground" /></Button>
+                                                </div>
+                                            ))}
+                                            <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => append({ value: '' })}><PlusCircle className="mr-2" />Adicionar Item</Button>
                                         </div>
-                                        <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                          )}
-
-                          {section.fields.includes('packages') && (
-                             useCustomServices ? (
-                                <div className="space-y-4 pt-2">
-                                    {customServicesList.map(({ name, fieldName, fields, append, remove, icon: Icon }) => (
-                                        <div key={name} className="p-4 border rounded-md">
-                                            <Label className="flex items-center gap-2 mb-2 font-semibold"><Icon className="h-5 w-5 text-primary" />{name}</Label>
-                                            <div className="space-y-2">
-                                                {fields.map((field, index) => (
-                                                    <div key={field.id} className="flex items-center gap-2">
-                                                        <FormField
-                                                            control={form.control}
-                                                            name={`${fieldName}.${index}.value` as any}
-                                                            render={({ field }) => <FormItem className="flex-1"><FormControl><Input {...field} placeholder={`Item de ${name}`} /></FormControl></FormItem>}
-                                                        />
-                                                        <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-muted-foreground" /></Button>
-                                                    </div>
-                                                ))}
-                                                <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => append({ value: '' })}><PlusCircle className="mr-2" />Adicionar Item</Button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                             ) : (
-                                <Controller
-                                    control={form.control}
-                                    name="packages"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Pacotes de Serviços</FormLabel>
-                                            <Select onValueChange={(value) => field.onChange([...(field.value || []), value])} >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Adicionar pacote..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {Object.entries(packageOptions).map(([key, value]) => (
-                                                        <SelectItem key={key} value={key} disabled={(field.value || []).includes(key)}>
-                                                            {value.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <div className="flex flex-wrap gap-2 pt-2">
-                                                {(field.value || []).map((pkg) => (
-                                                    <div key={pkg} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm">
-                                                        {packageOptions[pkg as keyof typeof packageOptions].name}
-                                                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => field.onChange(field.value?.filter(v => v !== pkg))}>
-                                                            <X className="h-3 w-3"/>
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            )
-                          )}
-                          
-                           {section.fields.includes('generateButton') && (
-                            <div className="p-4 border rounded-md bg-muted/30 space-y-3">
-                                <FormLabel className="flex items-center gap-2"><Bot />Geração de Textos com IA</FormLabel>
-                                <FormDescription>Com base no cliente e nos pacotes selecionados, a IA irá gerar textos persuasivos e preencherá os campos da proposta automaticamente.</FormDescription>
-                               <Button type="button" onClick={handleGenerateContent} disabled={isGeneratingAi}>
-                                  {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                                  {isGeneratingAi ? 'Gerando Conteúdo...' : 'Gerar Textos com IA'}
-                               </Button>
-                               {isGeneratingAi && <p className="text-xs text-muted-foreground">Isso pode levar alguns segundos...</p>}
+                                    </div>
+                                ))}
                             </div>
-                          )}
-
-                          
-                          {section.fields.includes('investmentValue') && <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} disabled={!useCustomServices} /></FormControl><FormMessage /></FormItem>} />}
-                          {section.fields.includes('discount') && (
-                             <FormField
+                         ) : (
+                            <Controller
                                 control={form.control}
-                                name="discount"
+                                name="packages"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Desconto (R$)</FormLabel>
-                                        <FormControl>
-                                            <div className="relative">
-                                                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                                <Input type="number" placeholder="0.00" {...field} className="pl-10" />
-                                            </div>
-                                        </FormControl>
+                                        <FormLabel>Pacotes de Serviços</FormLabel>
+                                        <Select onValueChange={(value) => field.onChange([...(field.value || []), value])} >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Adicionar pacote..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {Object.entries(packageOptions).map(([key, value]) => (
+                                                    <SelectItem key={key} value={key} disabled={(field.value || []).includes(key)}>
+                                                        {value.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <div className="flex flex-wrap gap-2 pt-2">
+                                            {(field.value || []).map((pkg) => (
+                                                <div key={pkg} className="flex items-center gap-1 bg-muted px-2 py-1 rounded-md text-sm">
+                                                    {packageOptions[pkg as keyof typeof packageOptions].name}
+                                                    <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => field.onChange(field.value?.filter(v => v !== pkg))}>
+                                                        <X className="h-3 w-3"/>
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                          )}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-      </div>
+                        )}
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-2">
+                  <AccordionTrigger className="font-semibold"><Wand2 className="mr-2 h-5 w-5 text-primary" />Geração de Conteúdo com IA</AccordionTrigger>
+                   <AccordionContent className="space-y-4 pt-2">
+                        <div className="p-4 border rounded-md bg-muted/30 space-y-3">
+                            <FormLabel className="flex items-center gap-2"><Bot />Textos da Proposta</FormLabel>
+                            <FormDescription>Com base no cliente e nos pacotes, a IA irá gerar textos persuasivos para os campos da proposta (Sobre, Objetivos, Diferenciais, etc).</FormDescription>
+                           <Button type="button" onClick={handleGenerateContent} disabled={isGeneratingAi}>
+                              {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                              {isGeneratingAi ? 'Gerando Conteúdo...' : 'Gerar Textos com IA'}
+                           </Button>
+                           {isGeneratingAi && <p className="text-xs text-muted-foreground">Isso pode levar alguns segundos...</p>}
+                        </div>
+                   </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-3">
+                    <AccordionTrigger className="font-semibold"><DollarSign className="mr-2 h-5 w-5 text-primary" />Investimento</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-2">
+                         <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} disabled={!useCustomServices} /></FormControl><FormMessage /></FormItem>} />
+                          <FormField
+                            control={form.control}
+                            name="discount"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Desconto (R$)</FormLabel>
+                                    <FormControl>
+                                        <div className="relative">
+                                            <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                            <Input type="number" placeholder="0.00" {...field} className="pl-10" />
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
       
-      <div className="w-full">
-         
-         <Carousel className="w-full max-w-4xl mx-auto" setApi={setCarouselApi}>
-            <CarouselContent>
-                {React.Children.map(proposalContent.props.children, (child, index) => (
-                    <CarouselItem key={index}>
-                        <div className="p-1">{child}</div>
-                    </CarouselItem>
-                ))}
-            </CarouselContent>
-            <CarouselPrevious className="-left-12 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
-            <CarouselNext className="-right-12 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
-        </Carousel>
-        <div className="w-full flex justify-center mt-8">
-            <Button onClick={handleDownloadPdf} disabled={isGeneratingPdf} size="lg">
+      <div>
+         <div className="w-full flex justify-end mb-4">
+            <Button onClick={handleDownloadPdf} disabled={isGeneratingPdf}>
                 {isGeneratingPdf ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
                 {isGeneratingPdf ? "Gerando PDF..." : "Baixar Proposta em PDF"}
             </Button>
         </div>
+         <Carousel className="w-full mx-auto" setApi={setCarouselApi}>
+            <CarouselContent>
+                {React.Children.map(proposalContent.props.children, (child, index) => (
+                    <CarouselItem key={index}>
+                        <div className="p-1" data-slide-index={index}>{child}</div>
+                    </CarouselItem>
+                ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-2 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
+            <CarouselNext className="right-2 bg-gray-800 hover:bg-[#FE5412] border-gray-700 text-white" />
+        </Carousel>
       </div>
       
     </div>
