@@ -368,7 +368,8 @@ export default function RotinaSDRPage() {
         }
     }
     
-    return allSdrData[effectiveUserId]?.[prevMonth]?.[prevWeekKey]?.extraTasks[previousDay] || [];
+    const tasks = allSdrData[effectiveUserId]?.[prevMonth]?.[prevWeekKey]?.extraTasks?.[previousDay];
+    return Array.isArray(tasks) ? tasks : [];
   }, [activeDay, currentWeek, allSdrData, currentMonth, previousDay, activeWeekKey, effectiveUserId]);
 
   const handleUpdateYearData = (updater: (draft: YearData) => void) => {
@@ -624,18 +625,12 @@ export default function RotinaSDRPage() {
         return <p>Nenhum SDR encontrado.</p>;
     }
 
-    const sdrsToDisplay = sdrList.filter(sdr => 
-        sdr.name.includes('comercial02') || 
-        sdr.name.includes('comercial03') || 
-        sdr.name.includes('comercial04')
-      );
-
     return (
         <div className="space-y-6">
             <TeamRanking sdrList={sdrList} allSdrData={allSdrData} currentMonth={currentMonth} />
 
              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                 {sdrsToDisplay.map(sdr => {
+                 {sdrList.map(sdr => {
                     const sdrMonthlyData = allSdrData[sdr.id]?.[currentMonth];
                     if (!sdrMonthlyData) return null;
                     return (
@@ -993,3 +988,5 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
+
+    
