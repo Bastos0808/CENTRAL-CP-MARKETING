@@ -23,11 +23,11 @@ import {
   Home,
   User,
   Users,
+  Trophy,
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth } from 'date-fns';
 
 import { dailyRoutine, allTasks, WEEKLY_MEETING_GOAL, ptDays, AnyTask, weeklyGoals, ptMonths } from "@/lib/tasks";
-import { PrioritizeTasksOutput, prioritizeTasks } from "@/ai/flows/prioritize-tasks";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -139,9 +139,6 @@ export default function RotinaSDRPage() {
   const [activeTab, setActiveTab] = useState(TABS_ORDER[1]); // Default to Monday
   const [currentWeek, setCurrentWeek] = useState(1);
   const [currentMonth, setCurrentMonth] = useState(ptMonths[new Date().getMonth()]);
-  
-  const [aiResponse, setAiResponse] = useState<PrioritizeTasksOutput | null>(null);
-  const [isLoadingAI, setIsLoadingAI] = useState(false);
   
   const isAdmin = user?.role === 'admin';
   const effectiveUserId = user?.uid;
@@ -367,48 +364,6 @@ export default function RotinaSDRPage() {
     };
   }, [activeDay, monthlyData, activeWeekKey]);
 
-  const handlePrioritize = async () => {
-    setIsLoadingAI(true);
-    setAiResponse(null);
-    try {
-      const weekData = monthlyData[activeWeekKey];
-      const checkedTasksForToday = weekData.checkedTasks[activeDay] || {};
-      const counterTasksForToday = weekData.counterTasks[activeDay] || {};
-
-      const remainingTaskLabels = allTasks
-        .filter(task => {
-            if (isHoliday || (task.saturdayOnly && activeTab !== 'Sábado') || (!task.saturdayOnly && activeTab === 'Sábado')) return false;
-            if (task.type === 'checkbox') {
-                return !checkedTasksForToday[task.id];
-            }
-            if (task.type === 'counter') {
-                return (counterTasksForToday[task.id] || 0) < task.dailyGoal;
-            }
-            return false;
-        })
-        .map((task) => task.label);
-
-      if (remainingTaskLabels.length === 0) {
-        toast({ title: "Tudo pronto por hoje!", description: "Você já completou todas as tarefas do dia." });
-        setIsLoadingAI(false);
-        return;
-      }
-      
-      const result = await prioritizeTasks({
-        weeklyGoal: WEEKLY_MEETING_GOAL,
-        meetingsBooked: weekData.meetingsBooked,
-        tasksCompleted: completedTasksCount,
-        tasksRemaining: remainingTaskLabels,
-      });
-      setAiResponse(result);
-    } catch (error) {
-      console.error("Error prioritizing tasks:", error);
-      toast({ title: "Erro ao priorizar tarefas", variant: "destructive" });
-    } finally {
-      setIsLoadingAI(false);
-    }
-  };
-
   const handleMonthChange = (direction: 'next' | 'prev') => {
       const currentMonthIndex = ptMonths.indexOf(currentMonth);
       let nextMonthIndex = direction === 'next' ? currentMonthIndex + 1 : currentMonthIndex - 1;
@@ -417,43 +372,93 @@ export default function RotinaSDRPage() {
       setCurrentMonth(ptMonths[nextMonthIndex]);
   }
 
+  const TeamRanking = ({ sdrList, allSdrData, currentMonth }: { sdrList: SdrUser[], allSdrData: Record<string, YearData>, currentMonth: string }) => {
+    const ranking = useMemo(() => {
+      return sdrList
+        .map(sdr => {
+          const monthData = allSdrData[sdr.id]?.[currentMonth];
+          let totalMeetings = 0;
+          if (monthData) {
+            (['semana1', 'semana2', 'semana3', 'semana4'] as const).forEach(weekKey => {
+              totalMeetings += monthData[weekKey]?.meetingsBooked || 0;
+            });
+          }
+          return { name: sdr.name, meetings: totalMeetings, id: sdr.id };
+        })
+        .sort((a, b) => b.meetings - a.meetings);
+    }, [sdrList, allSdrData, currentMonth]);
+  
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Trophy />
+            Ranking de Agendamentos do Mês
+          </CardTitle>
+          <CardDescription>Quem mais agendou reuniões em {currentMonth}.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Posição</TableHead>
+                <TableHead>SDR</TableHead>
+                <TableHead className="text-right">Reuniões Agendadas</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {ranking.map((sdr, index) => (
+                <TableRow key={sdr.id}>
+                  <TableCell className="font-bold">{index + 1}º</TableCell>
+                  <TableCell>{sdr.name}</TableCell>
+                  <TableCell className="text-right font-bold text-lg">{sdr.meetings}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    );
+  };
+
   const AdminView = () => {
-      const sdrsToDisplay = sdrList.filter(sdr => 
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-48">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    const sdrsToDisplay = sdrList.filter(sdr => 
         sdr.name.includes('comercial02') || 
         sdr.name.includes('comercial03') || 
         sdr.name.includes('comercial04')
       );
 
-      if (isLoading) {
-          return (
-              <div className="flex justify-center items-center h-48">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-          );
-      }
+    return (
+        <div className="space-y-6">
+            <TeamRanking sdrList={sdrList} allSdrData={allSdrData} currentMonth={currentMonth} />
 
-      return (
-          <div className="space-y-6">
-              {sdrsToDisplay.map(sdr => {
-                  const sdrMonthlyData = allSdrData[sdr.id]?.[currentMonth];
-                  return (
-                      <Card key={sdr.id}>
-                          <CardHeader>
-                              <CardTitle>{sdr.name}</CardTitle>
-                              <CardDescription>Performance de {currentMonth}</CardDescription>
-                          </CardHeader>
-                          <CardContent>
-                              {sdrMonthlyData ? (
-                                  <WeeklyProgress monthlyData={sdrMonthlyData} isMonthlyView={true} />
-                              ) : (
-                                  <p>Dados não disponíveis para este SDR.</p>
-                              )}
-                          </CardContent>
-                      </Card>
-                  )
-              })}
-          </div>
-      );
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                 {sdrsToDisplay.map(sdr => {
+                    const sdrMonthlyData = allSdrData[sdr.id]?.[currentMonth];
+                    if (!sdrMonthlyData) return null;
+                    return (
+                        <Card key={sdr.id}>
+                            <CardHeader>
+                                <CardTitle>{sdr.name}</CardTitle>
+                                <CardDescription>Performance de {currentMonth}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                               <WeeklyProgress monthlyData={sdrMonthlyData} isMonthlyView={true} />
+                            </CardContent>
+                        </Card>
+                    )
+                 })}
+            </div>
+        </div>
+    );
   };
 
 
@@ -467,8 +472,8 @@ export default function RotinaSDRPage() {
     const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
     
     return(
-        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-3">
-            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
+        <div className="grid grid-cols-1 gap-4 md:gap-8">
+            <div className="grid auto-rows-max items-start gap-4 md:gap-8">
               <div className="bg-card p-6 rounded-lg shadow-sm w-full lg:col-span-2 mb-4 flex justify-between items-center">
                   <h3 className="text-2xl font-bold font-headline text-primary flex items-center">
                       <CalendarDays className="mr-3 h-6 w-6" />
@@ -550,26 +555,6 @@ export default function RotinaSDRPage() {
                 </Card>
               )}
             </div>
-
-            <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-1">
-              <Card className="sticky top-20">
-                <CardHeader><CardTitle className="font-headline flex items-center"><Wand2 className="mr-2 text-accent" />Priorizador com IA</CardTitle><CardDescription>Deixe a IA analisar seu progresso e sugerir as próximas tarefas.</CardDescription></CardHeader>
-                <CardContent>
-                  <Button onClick={handlePrioritize} disabled={isLoadingAI || isSaturday || isHoliday} className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-bold">{isLoadingAI ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lightbulb className="mr-2 h-4 w-4" />}Priorizar Tarefas</Button>
-                  {isLoadingAI && (<div className="mt-4 space-y-4"><Skeleton className="h-4 w-1/3" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-3/4" /></div>)}
-                  {aiResponse && (
-                    <Alert className="mt-4 bg-secondary">
-                      <ListChecks className="h-4 w-4 text-primary"/><AlertTitle className="font-headline text-primary">Tarefas Priorizadas</AlertTitle>
-                      <AlertDescription className="space-y-2 text-foreground/80">
-                        <p className="font-semibold mt-2">Próximos passos:</p>
-                        <ul className="list-disc pl-5 space-y-1">{aiResponse.prioritizedTasks.map((task, i) => <li key={i}>{task}</li>)}</ul>
-                        <p className="font-semibold pt-2">Justificativa:</p><p>{aiResponse.reasoning}</p>
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
         </div>
     );
   }
@@ -595,12 +580,12 @@ export default function RotinaSDRPage() {
                 key={tab}
                 value={tab}
                 className={cn(
-                    "text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg",
+                    "text-sm py-2 px-3 transition-all duration-300 data-[state=active]:shadow-lg data-[state=active]:text-foreground",
                     {
-                        "data-[state=active]:bg-primary data-[state=active]:text-foreground": isDayTab,
-                        "data-[state=active]:bg-purple-600 data-[state=active]:text-foreground": isPodcast,
-                        "data-[state=active]:bg-green-600 data-[state=active]:text-foreground": isWeekly,
-                        "data-[state=active]:bg-blue-600 data-[state=active]:text-foreground": isMonthly,
+                        "data-[state=active]:bg-primary": isDayTab,
+                        "data-[state=active]:bg-purple-600": isPodcast,
+                        "data-[state=active]:bg-green-600": isWeekly,
+                        "data-[state=active]:bg-blue-600": isMonthly,
                         "hover:bg-primary/10": isDayTab,
                         "hover:bg-purple-600/10": isPodcast,
                         "hover:bg-green-600/10": isWeekly,
@@ -660,14 +645,14 @@ export default function RotinaSDRPage() {
              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
                  <div className="flex flex-wrap items-center gap-4">
                     {isAdmin && (
-                        <TabsList>
+                        <TabsList className="flex flex-wrap h-auto">
                             {renderTabTrigger('Visão Geral')}
                         </TabsList>
                     )}
-                    <TabsList>
+                    <TabsList className="flex flex-wrap h-auto">
                          {DAY_TABS.map(renderTabTrigger)}
                     </TabsList>
-                    <TabsList>
+                    <TabsList className="flex flex-wrap h-auto">
                          {FUNCTION_TABS.map(renderTabTrigger)}
                     </TabsList>
                  </div>
@@ -695,5 +680,3 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
-
-    
