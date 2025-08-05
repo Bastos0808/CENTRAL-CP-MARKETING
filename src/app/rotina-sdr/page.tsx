@@ -41,10 +41,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -130,6 +128,52 @@ interface SdrUser {
     name: string;
     email: string;
 }
+
+// Sub-component for Counter Tasks to isolate state
+const CounterTaskInput = ({
+  value,
+  onSave,
+  ...props
+}: {
+  value: string;
+  onSave: (newValue: string) => void;
+} & Omit<React.ComponentProps<typeof Input>, 'value' | 'onChange' | 'onBlur'>) => {
+  const [localValue, setLocalValue] = useState(value);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  const handleBlur = () => {
+    onSave(localValue);
+  };
+
+  return <Input value={localValue} onChange={(e) => setLocalValue(e.target.value)} onBlur={handleBlur} {...props} />;
+};
+
+
+// Sub-component for Extra Tasks to isolate state
+const ExtraTasksTextarea = ({
+  value,
+  onSave,
+  ...props
+}: {
+  value: string;
+  onSave: (newValue: string) => void;
+} & Omit<React.ComponentProps<typeof Textarea>, 'value' | 'onChange' | 'onBlur'>) => {
+  const [localValue, setLocalValue] = useState(value);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  const handleBlur = () => {
+    onSave(localValue);
+  };
+
+  return <Textarea value={localValue} onChange={(e) => setLocalValue(e.target.value)} onBlur={handleBlur} {...props} />;
+};
+
 
 export default function RotinaSDRPage() {
   const { toast } = useToast();
@@ -354,9 +398,7 @@ export default function RotinaSDRPage() {
       });
   };
   
-  const handleDailyMeetingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        
+  const handleDailyMeetingsChange = (value: string) => {
         handleUpdateYearData(draft => {
             const weekData = draft[currentMonth][activeWeekKey];
             if (!weekData.counterTasks[activeDay]) weekData.counterTasks[activeDay] = {};
@@ -570,14 +612,14 @@ export default function RotinaSDRPage() {
                               <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50 mb-4">
                                   <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
                                   <div className="flex items-center gap-3 w-full sm:w-auto">
-                                      <Input 
+                                      <CounterTaskInput
                                           type="text"
                                           pattern="[0-9]*"
                                           inputMode="numeric"
-                                          id={`${activeDay}-${task.id}`} 
-                                          value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''} 
-                                          onChange={(e) => handleCounterChange(task.id, e.target.value)}
-                                          className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" 
+                                          id={`${activeDay}-${task.id}`}
+                                          value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
+                                          onSave={(value) => handleCounterChange(task.id, value)}
+                                          className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0"
                                       />
                                       <div className="text-right">
                                           <p className={cn("text-lg font-bold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
@@ -607,15 +649,15 @@ export default function RotinaSDRPage() {
                            <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
                                 <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
                                 <div className="flex items-center gap-3">
-                                    <Input 
-                                        type="text" 
+                                    <CounterTaskInput
+                                        type="text"
                                         pattern="[0-9]*"
                                         inputMode="numeric"
-                                        id={`${activeDay}-${task.id}`} 
+                                        id={`${activeDay}-${task.id}`}
                                         value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
-                                        onChange={(e) => handleCounterChange(task.id, e.target.value)} 
-                                        className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50" 
-                                        placeholder="0" 
+                                        onSave={(value) => handleCounterChange(task.id, value)}
+                                        className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
+                                        placeholder="0"
                                     />
                                     <span className={cn("text-base font-semibold", (Number(weekData?.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal) ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
                                 </div>
@@ -657,10 +699,10 @@ export default function RotinaSDRPage() {
                                   {extraTask.label}
                               </span>
                           </div>
-                          <Textarea
+                          <ExtraTasksTextarea
                               placeholder="Digite as tarefas para o dia seguinte aqui..."
                               value={weekData?.extraTasks?.[activeDay] || ''}
-                              onChange={(e) => handleExtraTasksChange(e.target.value)}
+                              onSave={(value) => handleExtraTasksChange(value)}
                               className="w-full mt-2 bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary ml-10"
                               style={{width: 'calc(100% - 2.5rem)'}}
                           />
@@ -687,13 +729,13 @@ export default function RotinaSDRPage() {
                 Consultorias Realizadas
             </Label>
             <div className="flex items-center gap-3 w-full sm:w-auto">
-                <Input
+                <CounterTaskInput
                     type="text"
                     pattern="[0-9]*"
                     inputMode="numeric"
                     id={`consultorias-${activeDay}`}
-                    value={dailyMeetings}
-                    onChange={handleDailyMeetingsChange}
+                    value={String(dailyMeetings)}
+                    onSave={(value) => handleDailyMeetingsChange(value)}
                     className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
                     placeholder="0"
                     disabled={isHoliday || isSaturday}
