@@ -30,6 +30,8 @@ import {
   Phone,
   MessageSquare,
   ArrowLeft,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth } from 'date-fns';
 
@@ -52,9 +54,7 @@ import { Separator } from "@/components/ui/separator";
 import { WeeklyProgress } from "@/components/WeeklyProgress";
 import { PodcastTab, PodcastData } from "@/components/PodcastTab";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
 import { db } from "@/lib/firebase";
@@ -68,7 +68,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { produce } from 'immer';
-import type { YearData, MonthlyData } from "@/lib/types";
+import type { YearData, MonthlyData, ExtraTask } from "@/lib/types";
 
 
 const FUNCTION_TABS = ['Podcast', 'Progresso Semanal', 'Progresso Mensal'];
@@ -101,29 +101,6 @@ const CounterTaskInput = ({
   };
 
   return <Input value={localValue} onChange={(e) => setLocalValue(e.target.value)} onBlur={handleBlur} {...props} />;
-};
-
-
-// Sub-component for Extra Tasks to isolate state
-const ExtraTasksTextarea = ({
-  value,
-  onSave,
-  ...props
-}: {
-  value: string;
-  onSave: (newValue: string) => void;
-} & Omit<React.ComponentProps<typeof Textarea>, 'value' | 'onChange' | 'onBlur'>) => {
-  const [localValue, setLocalValue] = useState(value);
-
-  useEffect(() => {
-    setLocalValue(value);
-  }, [value]);
-
-  const handleBlur = () => {
-    onSave(localValue);
-  };
-
-  return <Textarea value={localValue} onChange={(e) => setLocalValue(e.target.value)} onBlur={handleBlur} {...props} />;
 };
 
 const createInitialPodcastData = (): PodcastData => ({
@@ -166,6 +143,8 @@ export default function RotinaSDRPage() {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
+  
+  const [newExtraTaskText, setNewExtraTaskText] = useState("");
 
   const isAdmin = user?.role === 'admin';
   const effectiveUserId = user?.uid;
@@ -320,7 +299,7 @@ export default function RotinaSDRPage() {
   }, [activeDay]);
   
   const previousDayTasks = useMemo(() => {
-    if (!effectiveUserId) return "";
+    if (!effectiveUserId) return [];
     let prevWeekKey = activeWeekKey;
     let prevMonth = currentMonth;
     
@@ -333,12 +312,12 @@ export default function RotinaSDRPage() {
                 prevMonth = ptMonths[currentMonthIndex - 1];
                 prevWeekKey = 'semana4';
             } else {
-                return "";
+                return [];
             }
         }
     }
     
-    return allSdrData[effectiveUserId]?.[prevMonth]?.[prevWeekKey]?.extraTasks[previousDay] || "";
+    return allSdrData[effectiveUserId]?.[prevMonth]?.[prevWeekKey]?.extraTasks[previousDay] || [];
   }, [activeDay, currentWeek, allSdrData, currentMonth, previousDay, activeWeekKey, effectiveUserId]);
 
   const handleUpdateYearData = (updater: (draft: YearData) => void) => {
@@ -369,13 +348,52 @@ export default function RotinaSDRPage() {
       });
   };
 
-  const handleExtraTasksChange = (value: string) => {
+  const handleAddExtraTask = () => {
+    if (!newExtraTaskText.trim()) return;
     handleUpdateYearData(draft => {
         const weekData = draft[currentMonth][activeWeekKey];
-        if (!weekData.extraTasks) weekData.extraTasks = {};
-        weekData.extraTasks[activeDay] = value;
+        if (!weekData.extraTasks[activeDay]) weekData.extraTasks[activeDay] = [];
+        weekData.extraTasks[activeDay].push({ id: crypto.randomUUID(), text: newExtraTaskText, completed: false });
+    });
+    setNewExtraTaskText("");
+  };
+
+  const handleRemoveExtraTask = (taskId: string) => {
+    handleUpdateYearData(draft => {
+        const weekData = draft[currentMonth][activeWeekKey];
+        if (weekData.extraTasks[activeDay]) {
+            weekData.extraTasks[activeDay] = weekData.extraTasks[activeDay].filter(task => task.id !== taskId);
+        }
     });
   };
+
+  const handleTogglePreviousDayTask = (taskId: string) => {
+     handleUpdateYearData(draft => {
+        let prevWeekKey = activeWeekKey;
+        let prevMonth = currentMonth;
+        
+        if (activeDay === 'Segunda-feira') {
+            if(currentWeek > 1) {
+                prevWeekKey = `semana${currentWeek - 1}` as keyof MonthlyData;
+            } else {
+                const currentMonthIndex = ptMonths.indexOf(currentMonth);
+                if (currentMonthIndex > 0) {
+                    prevMonth = ptMonths[currentMonthIndex - 1];
+                    prevWeekKey = 'semana4';
+                }
+            }
+        }
+
+        const tasks = draft[prevMonth]?.[prevWeekKey]?.extraTasks?.[previousDay];
+        if (tasks) {
+            const taskIndex = tasks.findIndex(t => t.id === taskId);
+            if (taskIndex !== -1) {
+                tasks[taskIndex].completed = !tasks[taskIndex].completed;
+            }
+        }
+    });
+  };
+
 
   const handleHolidayToggle = (isHoliday: boolean) => {
     handleUpdateYearData(draft => {
@@ -611,7 +629,7 @@ export default function RotinaSDRPage() {
     });
     
     const counterTasks = allTasks.filter(task => task.type === 'counter' && !task.saturdayOnly);
-    const checkboxTasks = allTasks.filter(task => task.type === 'checkbox' && !task.saturdayOnly && task.id !== 'a-7');
+    const checkboxTasks = allTasks.filter(task => task.type === 'checkbox' && task.id !== 'a-7');
     const extraTask = allTasks.find(task => task.id === 'a-7');
     
     return(
@@ -628,7 +646,7 @@ export default function RotinaSDRPage() {
                   </div>
               </div>
               
-              {previousDayTasks && !isSaturday && !isHoliday && (
+              {previousDayTasks.length > 0 && !isSaturday && !isHoliday && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="font-headline flex items-center text-md">
@@ -636,10 +654,24 @@ export default function RotinaSDRPage() {
                       Tarefas Planejadas (do dia anterior)
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="whitespace-pre-wrap p-4 bg-muted rounded-md text-muted-foreground">
-                      {previousDayTasks}
-                    </div>
+                  <CardContent className="space-y-2">
+                    {previousDayTasks.map(task => (
+                      <div
+                        key={task.id}
+                        onClick={() => handleTogglePreviousDayTask(task.id)}
+                        className="flex items-center space-x-4 p-3 rounded-lg bg-muted/50 cursor-pointer transition-colors hover:bg-muted/70"
+                      >
+                        <div className={cn(
+                          "h-6 w-6 rounded-full flex-shrink-0 flex items-center justify-center border-2",
+                          task.completed ? "bg-green-500 border-green-500" : "border-primary"
+                        )}>
+                          {task.completed && <Check className="h-4 w-4 text-white" />}
+                        </div>
+                        <span className={cn("flex-1 text-base font-normal", task.completed && "line-through text-muted-foreground")}>
+                          {task.text}
+                        </span>
+                      </div>
+                    ))}
                   </CardContent>
                 </Card>
               )}
@@ -737,28 +769,28 @@ export default function RotinaSDRPage() {
                           </div>
                       )
                     })}
-                    {extraTask && (
-                       <div className="p-4 rounded-lg bg-card/50">
-                          <div onClick={() => handleTaskCheck(extraTask.id, !weekData.checkedTasks?.[activeDay]?.[extraTask.id])} className="flex items-center space-x-4 cursor-pointer">
-                              <div className={cn(
-                                "h-6 w-6 rounded-full flex-shrink-0 flex items-center justify-center border-2",
-                                weekData.checkedTasks?.[activeDay]?.[extraTask.id] ? "bg-green-500 border-green-500" : "border-primary"
-                              )}>
-                                {weekData.checkedTasks?.[activeDay]?.[extraTask.id] && <Check className="h-4 w-4 text-white" />}
-                              </div>
-                              <span className={cn("flex-1 text-base font-normal", weekData.checkedTasks?.[activeDay]?.[extraTask.id] && "line-through text-muted-foreground")}>
-                                  {extraTask.label}
-                              </span>
-                          </div>
-                          <ExtraTasksTextarea
-                              placeholder="Digite as tarefas para o dia seguinte aqui..."
-                              value={weekData?.extraTasks?.[activeDay] || ''}
-                              onSave={(value) => handleExtraTasksChange(value)}
-                              className="w-full mt-2 bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary ml-10"
-                              style={{width: 'calc(100% - 2.5rem)'}}
-                          />
-                       </div>
-                    )}
+                     <div className="p-4 rounded-lg bg-card/50">
+                        <Label>Organizar as tarefas para o dia seguinte</Label>
+                        <div className="flex items-center gap-2 mt-2">
+                           <Input 
+                             value={newExtraTaskText}
+                             onChange={(e) => setNewExtraTaskText(e.target.value)}
+                             placeholder="Digite uma nova tarefa..."
+                             className="bg-input border-2 border-primary/50"
+                           />
+                           <Button onClick={handleAddExtraTask} size="icon"><Plus/></Button>
+                        </div>
+                         <div className="space-y-2 mt-3">
+                            {(weekData?.extraTasks?.[activeDay] || []).map(task => (
+                                <div key={task.id} className="flex items-center gap-2 text-sm text-muted-foreground">
+                                    <span className="flex-1">- {task.text}</span>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleRemoveExtraTask(task.id)}>
+                                        <Trash2 className="h-4 w-4 text-destructive/70"/>
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                     </div>
                   </div>
                 </div>
               )}
@@ -937,5 +969,3 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
-
-    

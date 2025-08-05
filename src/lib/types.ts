@@ -16,15 +16,21 @@ export type PodcastData = {
   podcast4: PodcastEpisode;
 };
 
+export type ExtraTask = {
+  id: string;
+  text: string;
+  completed: boolean;
+};
+
 export type CheckedTasksState = Record<string, boolean>;
 export type CounterTasksState = Record<string, string>;
-export type ExtraTasksState = Record<string, string>;
+export type ExtraTasksState = Record<string, ExtraTask[]>;
 export type HolidaysState = Record<string, boolean>;
 
 export type WeeklyData = {
   checkedTasks: Record<string, CheckedTasksState>;
   counterTasks: Record<string, CounterTasksState>;
-  extraTasks: Record<string, ExtraTasksState>;
+  extraTasks: ExtraTasksState;
   holidays: HolidaysState;
   meetingsBooked: number;
 };
