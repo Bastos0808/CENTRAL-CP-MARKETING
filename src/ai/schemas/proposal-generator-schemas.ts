@@ -7,13 +7,11 @@ import { z } from 'zod';
 // Define the input schema for the flow
 export const GenerateProposalInputSchema = z.object({
   clientName: z.string().min(1, 'O nome do cliente é obrigatório.'),
+  clientSector: z.string().min(1, 'O segmento do cliente é obrigatório.'),
   clientObjective: z.string().min(1, 'O objetivo do cliente é obrigatório.'),
   clientChallenge: z.string().min(1, 'O desafio do cliente é obrigatório.'),
   clientAudience: z.string().min(1, 'O público-alvo é obrigatório.'),
-  packages: z.array(z.object({ 
-    name: z.string(), 
-    description: z.string() 
-  })).optional().describe('Uma lista dos pacotes de serviços selecionados com nome e descrição.'),
+  packages: z.array(z.string()).optional().describe('Uma lista dos nomes dos pacotes de serviços selecionados.'),
 });
 export type GenerateProposalInput = z.infer<typeof GenerateProposalInputSchema>;
 
@@ -25,4 +23,3 @@ export const GenerateProposalOutputSchema = z.object({
   idealPlanItems: z.array(z.string()).describe('Uma lista de argumentos para "Por que este plano é ideal?".'),
 });
 export type GenerateProposalOutput = z.infer<typeof GenerateProposalOutputSchema>;
-

@@ -25,6 +25,7 @@ import { FormDescription as UiFormDescription } from './ui/form';
 // Schema for the form state
 const proposalFormSchema = z.object({
     clientName: z.string().min(1, 'O nome do cliente é obrigatório.'),
+    clientSector: z.string().min(1, 'O segmento do cliente é obrigatório.'),
     clientObjective: z.string().min(1, 'O objetivo do cliente é obrigatório.'),
     clientChallenge: z.string().min(1, 'O desafio do cliente é obrigatório.'),
     clientAudience: z.string().min(1, 'O público-alvo é obrigatório.'),
@@ -51,6 +52,7 @@ export default function ProposalGeneratorV2() {
     resolver: zodResolver(proposalFormSchema),
     defaultValues: {
       clientName: '',
+      clientSector: '',
       clientObjective: '',
       clientChallenge: '',
       clientAudience: '',
@@ -133,15 +135,15 @@ export default function ProposalGeneratorV2() {
   };
 
   const handleGenerateContent = async () => {
-      const { clientName, packages, clientObjective, clientChallenge, clientAudience } = form.getValues();
+      const { clientName, clientSector, packages, clientObjective, clientChallenge, clientAudience } = form.getValues();
       
-      const packagesWithDetails = packages?.reduce((acc: {name: string, description: string}[], key: string) => {
+       const packagesWithDetails = packages?.map(key => {
         const pkg = packageOptions[key as keyof typeof packageOptions];
-        if (pkg) acc.push({ name: pkg.name, description: pkg.description });
-        return acc;
-      }, []);
+        return { name: pkg.name, description: pkg.description };
+      }) || [];
       
-      const inputForAI = { clientName, clientObjective, clientChallenge, clientAudience, packages: packagesWithDetails };
+      const inputForAI = { clientName, clientSector, clientObjective, clientChallenge, clientAudience, packages: packagesWithDetails.map(p => p.name) };
+
 
       const validation = GenerateProposalInputSchema.safeParse(inputForAI);
 
@@ -186,6 +188,7 @@ export default function ProposalGeneratorV2() {
                             <AccordionTrigger className="px-6 font-semibold"><Target className="mr-2 h-5 w-5 text-primary" />Informações Estratégicas</AccordionTrigger>
                             <AccordionContent className="space-y-4 px-6 pt-4">
                                 <FormField control={form.control} name="clientName" render={({ field }) => <FormItem><FormLabel>Nome do Cliente</FormLabel><FormControl><Input placeholder="Nome da empresa do cliente" {...field} /></FormControl><FormMessage /></FormItem>} />
+                                <FormField control={form.control} name="clientSector" render={({ field }) => <FormItem><FormLabel>Segmento da Empresa</FormLabel><FormControl><Input placeholder="Ex: Clínica de Estética, Consultoria B2B" {...field} /></FormControl><FormMessage /></FormItem>} />
                                 <FormField control={form.control} name="clientObjective" render={({ field }) => <FormItem><FormLabel>Principal Objetivo do Cliente</FormLabel><FormControl><Input placeholder="Ex: Aumentar vendas online, gerar autoridade" {...field} /></FormControl><FormMessage /></FormItem>} />
                                 <FormField control={form.control} name="clientChallenge" render={({ field }) => <FormItem><FormLabel>Maior Desafio de Marketing Atual</FormLabel><FormControl><Input placeholder="Ex: Leads desqualificados, baixo engajamento" {...field} /></FormControl><FormMessage /></FormItem>} />
                                 <FormField control={form.control} name="clientAudience" render={({ field }) => <FormItem><FormLabel>Público-Alvo Principal</FormLabel><FormControl><Input placeholder="Ex: Jovens arquitetos de São Paulo" {...field} /></FormControl><FormMessage /></FormItem>} />
