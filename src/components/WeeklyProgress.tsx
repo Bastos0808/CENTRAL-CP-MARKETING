@@ -1,57 +1,89 @@
 
+
 "use client";
 
 import { useMemo } from 'react';
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { BarChart } from "lucide-react";
-import { allTasks, AnyTask, ptDays, weeklyGoals as weeklyGoalsDef, WEEKLY_MEETING_GOAL } from '@/lib/tasks';
+import { allTasks, AnyTask, ptDays, weeklyGoals as weeklyGoalsDef, WEEKLY_MEETING_GOAL, ptMonths } from '@/lib/tasks';
 import { cn } from '@/lib/utils';
 import { ScoreIndicator } from './ScoreIndicator';
-import type { MonthlyData, WeeklyData, CounterTasksState, CheckedTasksState } from '@/lib/types';
+import type { YearData, CounterTasksState, CheckedTasksState } from '@/lib/types';
+import { eachDayOfInterval, getDay, getMonth, getWeek, startOfWeek, endOfWeek } from 'date-fns';
+import { DateRange } from 'react-day-picker';
 
 
 interface WeeklyProgressProps {
-  monthlyData?: MonthlyData;
-  weeklyData?: WeeklyData;
-  dailyData?: { tasks: CounterTasksState, checked: CheckedTasksState };
+  sdrId: string;
+  yearData: YearData;
+  week?: number;
+  month?: string;
+  dateRange?: DateRange;
   isMonthlyView?: boolean;
-  teamMultiplier?: number;
 }
 
-export function WeeklyProgress({ monthlyData, weeklyData, dailyData, isMonthlyView = false, teamMultiplier = 1 }: WeeklyProgressProps) {
+export function WeeklyProgress({ sdrId, yearData, week, month, dateRange, isMonthlyView = false }: WeeklyProgressProps) {
   
   const { progressItems, overallScore } = useMemo(() => {
     const counterTasksList = allTasks.filter((t): t is AnyTask & { type: 'counter' } => t.type === 'counter' && !t.saturdayOnly);
     
-    if (dailyData) {
-        let completedCheckbox = Object.values(dailyData.checked).filter(Boolean).length;
-        let totalCheckboxTasks = allTasks.filter(t => t.type === 'checkbox').length;
+    // Date Range View
+    if (dateRange && dateRange.from) {
+      const start = dateRange.from;
+      const end = dateRange.to || dateRange.from;
+      const intervalDays = eachDayOfInterval({ start, end });
+      let workDaysCount = 0;
 
-        let completedCounters = 0;
-        let totalCounterTasks = 0;
+      const rangeTotals: Record<string, number> = {};
+      
+      intervalDays.forEach(day => {
+          const monthKey = ptMonths[getMonth(day)];
+          const weekOfMonth = Math.min(4, Math.max(1, Math.ceil(day.getDate() / 7)));
+          const weekKey = `semana${weekOfMonth}` as const;
+          const dayIndex = getDay(day);
+          // Sunday is 0, Monday is 1, etc. We map to ptDays index.
+          const dayKey = dayIndex > 0 ? ptDays[dayIndex - 1] : ptDays[5];
 
-        const items = counterTasksList.map(task => {
-            const current = Number(dailyData.tasks[task.id] || 0);
-            const goal = task.dailyGoal;
-            totalCounterTasks++;
-            if (current >= goal) {
-              completedCounters++;
-            }
-            const progress = goal > 0 ? (current / goal) * 100 : 0;
-            return { id: task.id, label: task.label, current, goal, progress: Math.min(100, progress), achieved: current >= goal };
-        });
+          const weeklyData = yearData[monthKey]?.[weekKey];
+          if (!weeklyData) return;
 
-        const totalTasks = totalCheckboxTasks + totalCounterTasks;
-        const completedTotal = completedCheckbox + completedCounters;
-        const score = totalTasks > 0 ? (completedTotal / totalTasks) * 100 : 0;
-        
-        return { progressItems: items, overallScore: score };
+          const isHoliday = weeklyData.holidays?.[dayKey] || false;
+          // Count as a workday if it's Monday-Friday and not a holiday
+          if (dayIndex >= 1 && dayIndex <= 5 && !isHoliday) {
+              workDaysCount++;
+          }
+          
+          counterTasksList.forEach(task => {
+              const value = Number(weeklyData.counterTasks?.[dayKey]?.[task.id] || '0');
+              if (!rangeTotals[task.id]) rangeTotals[task.id] = 0;
+              rangeTotals[task.id] += value;
+          });
+           const meetings = Number(weeklyData.counterTasks?.[dayKey]?.['daily_meetings'] || '0');
+           if (!rangeTotals['meetings']) rangeTotals['meetings'] = 0;
+           rangeTotals['meetings'] += meetings;
+      });
+      
+      const rangeGoals: Record<string, {label: string, goal: number}> = {};
+      counterTasksList.forEach(task => {
+          rangeGoals[task.id] = { label: task.label, goal: task.dailyGoal * workDaysCount };
+      });
+      rangeGoals['meetings'] = { label: 'Consultorias', goal: 2 * workDaysCount };
+
+      const items = Object.entries(rangeGoals).map(([key, { label, goal }]) => {
+          const current = rangeTotals[key] || 0;
+          const progress = goal > 0 ? (current / goal) * 100 : 0;
+          return { id: key, label, current, goal, progress: Math.min(100, progress), achieved: current >= goal };
+      });
+
+      const totalProgress = items.reduce((acc, item) => acc + item.progress, 0);
+      const score = items.length > 0 ? totalProgress / items.length : 0;
+      return { progressItems: items, overallScore: score };
     }
     
-    if (isMonthlyView) {
-      if (!monthlyData) return { progressItems: [], overallScore: 0 };
-      
+    // Monthly View
+    if (isMonthlyView && month && yearData[month]) {
+      const monthlyData = yearData[month];
       const monthlyTotals: Record<string, number> = {};
       let totalMeetingsBooked = 0;
       let totalHolidays = 0;
@@ -82,17 +114,17 @@ export function WeeklyProgress({ monthlyData, weeklyData, dailyData, isMonthlyVi
       const adjustedMonthlyGoals = JSON.parse(JSON.stringify(weeklyGoalsDef));
        Object.keys(adjustedMonthlyGoals).forEach(key => {
           if(adjustedMonthlyGoals[key]) {
-            adjustedMonthlyGoals[key].goal *= (4 * teamMultiplier);
+            adjustedMonthlyGoals[key].goal *= 4;
             const taskDef = counterTasksList.find(t => t.id === key);
             if (taskDef) {
-               adjustedMonthlyGoals[key].goal -= taskDef.dailyGoal * totalHolidays * teamMultiplier;
+               adjustedMonthlyGoals[key].goal -= taskDef.dailyGoal * totalHolidays;
             }
           }
       });
       
       const dailyMeetingGoal = WEEKLY_MEETING_GOAL / 5;
       if(adjustedMonthlyGoals['meetings']) {
-        adjustedMonthlyGoals['meetings'].goal -= dailyMeetingGoal * totalHolidays * teamMultiplier;
+        adjustedMonthlyGoals['meetings'].goal = (WEEKLY_MEETING_GOAL * 4) - (dailyMeetingGoal * totalHolidays);
       }
 
       monthlyTotals['meetings'] = totalMeetingsBooked;
@@ -108,17 +140,22 @@ export function WeeklyProgress({ monthlyData, weeklyData, dailyData, isMonthlyVi
       const score = items.length > 0 ? totalProgress / items.length : 0;
       return { progressItems: items, overallScore: score };
 
-    } else {
+    } 
+    
+    // Weekly View
+    else if (week && month && yearData[month]) {
+        const weekKey = `semana${week}` as const;
+        const weeklyData = yearData[month]?.[weekKey];
         if (!weeklyData) return { progressItems: [], overallScore: 0 };
 
         const weeklyTotals: Record<string, number> = {};
         weeklyTotals['meetings'] = weeklyData.meetingsBooked || 0;
         
         let podcastsDone = 0;
-        if(monthlyData?.podcasts) {
-           podcastsDone = Object.values(monthlyData.podcasts).filter(p => p.done).length;
+        if(yearData[month]?.podcasts) {
+           podcastsDone = Object.values(yearData[month]!.podcasts).filter(p => p.done).length;
         }
-        weeklyTotals['podcasts'] = podcastsDone;
+        weeklyTotals['podcasts'] = podcastsDone; // Note: This shows monthly podcast progress in weekly view
 
 
         const holidaysInWeek = Object.keys(weeklyData.holidays || {}).filter(day => weeklyData.holidays[day] && ptDays.slice(0, 5).includes(day)).length;
@@ -156,7 +193,10 @@ export function WeeklyProgress({ monthlyData, weeklyData, dailyData, isMonthlyVi
         const score = items.length > 0 ? totalProgress / items.length : 0;
         return { progressItems: items, overallScore: score };
     }
-  }, [monthlyData, weeklyData, dailyData, isMonthlyView, teamMultiplier]);
+    
+    return { progressItems: [], overallScore: 0 };
+
+  }, [yearData, week, month, dateRange, isMonthlyView]);
   
   const getProgressColor = (progress: number) => {
     if (progress < 40) return 'bg-red-500';

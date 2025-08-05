@@ -324,7 +324,6 @@ export default function RotinaSDRPage() {
   
 
   useEffect(() => {
-    setCurrentDate(new Date());
     if (isAdmin) {
       setActiveTab("Visão Geral");
     } else {
@@ -604,7 +603,7 @@ export default function RotinaSDRPage() {
 
   const AdminView = () => {
     const [selectedSdr, setSelectedSdr] = useState('all');
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
     if (isLoading) {
       return (
@@ -622,7 +621,7 @@ export default function RotinaSDRPage() {
       ? sdrList
       : sdrList.filter(sdr => sdr.id === selectedSdr);
       
-    const isDailyView = selectedDate !== undefined;
+    const isRangeView = dateRange?.from !== undefined;
 
     return (
         <div className="space-y-6">
@@ -646,26 +645,41 @@ export default function RotinaSDRPage() {
                         </Select>
                     </div>
                     <div className="flex-1 space-y-2">
-                         <Label>Filtrar por Dia</Label>
+                         <Label>Filtrar por Período</Label>
                         <Popover>
                             <PopoverTrigger asChild>
                             <Button
+                                id="date"
                                 variant={"outline"}
                                 className={cn(
                                 "w-full justify-start text-left font-normal",
-                                !selectedDate && "text-muted-foreground"
+                                !dateRange && "text-muted-foreground"
                                 )}
                             >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Escolha uma data</span>}
+                                {dateRange?.from ? (
+                                dateRange.to ? (
+                                    <>
+                                    {format(dateRange.from, "LLL dd, y", { locale: ptBR })} -{" "}
+                                    {format(dateRange.to, "LLL dd, y", { locale: ptBR })}
+                                    </>
+                                ) : (
+                                    format(dateRange.from, "LLL dd, y", { locale: ptBR })
+                                )
+                                ) : (
+                                <span>Escolha um período</span>
+                                )}
                             </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
+                            <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={setSelectedDate}
                                 initialFocus
+                                mode="range"
+                                defaultMonth={dateRange?.from}
+                                selected={dateRange}
+                                onSelect={setDateRange}
+                                numberOfMonths={2}
+                                locale={ptBR}
                             />
                             </PopoverContent>
                         </Popover>
@@ -674,39 +688,33 @@ export default function RotinaSDRPage() {
             </Card>
             
             <div className="space-y-8">
-                <TeamRanking />
+                {!isRangeView && <TeamRanking />}
 
                 <div className="space-y-6">
                      {filteredSdrList.map(sdr => {
                         const sdrYearData = allSdrData[sdr.id];
                         if (!sdrYearData) return null;
                         
-                        const month = ptMonths[getMonth(selectedDate || new Date())];
-                        const week = Math.min(4, Math.max(1, Math.ceil(getDate(selectedDate || new Date()) / 7)));
-                        const dayIndex = getDay(selectedDate || new Date());
-                        const day = dayIndex > 0 ? ptDays[dayIndex - 1] : ptDays[5]; // Adjust for Sunday
-                        const weekKey = `semana${week}` as keyof MonthlyData;
-
-                        const weeklyData = sdrYearData[month]?.[weekKey];
-                        const dailyData = {
-                            tasks: weeklyData?.counterTasks?.[day] || {},
-                            checked: weeklyData?.checkedTasks?.[day] || {},
-                        };
+                        const month = ptMonths[getMonth(dateRange?.from || new Date())];
 
                         return (
                             <Card key={sdr.id}>
                                 <CardHeader>
                                     <CardTitle>{sdr.name}</CardTitle>
                                     <CardDescription>
-                                        Performance de {isDailyView && selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : `Mês de ${month}`}
+                                        Performance de {isRangeView && dateRange?.from ? 
+                                        <>
+                                            {format(dateRange.from, "PPP", { locale: ptBR })} 
+                                            {dateRange.to && ` a ${format(dateRange.to, "PPP", { locale: ptBR })}`}
+                                        </>
+                                        : `Mês de ${month}`}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
                                    <WeeklyProgress 
-                                        monthlyData={sdrYearData[month]} 
-                                        weeklyData={weeklyData}
-                                        dailyData={isDailyView ? dailyData : undefined}
-                                        isMonthlyView={!isDailyView}
+                                        sdrId={sdr.id}
+                                        yearData={sdrYearData}
+                                        dateRange={dateRange}
                                    />
                                 </CardContent>
                             </Card>
@@ -954,10 +962,10 @@ export default function RotinaSDRPage() {
             return <PodcastTab podcastData={monthlyData?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />;
         }
         if (activeTab === 'Progresso Semanal') {
-            return <WeeklyProgress weeklyData={monthlyData?.[activeWeekKey]} />;
+            return <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} week={currentWeek} />;
         }
         if (activeTab === 'Progresso Mensal') {
-            return <WeeklyProgress monthlyData={yearData[currentMonth]} isMonthlyView={true} />;
+            return <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} month={currentMonth} isMonthlyView />;
         }
     }
 
@@ -1058,3 +1066,4 @@ export default function RotinaSDRPage() {
 }
 
     
+
