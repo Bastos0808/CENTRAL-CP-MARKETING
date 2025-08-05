@@ -555,6 +555,52 @@ export default function RotinaSDRPage() {
       </div>
     );
   };
+  
+    const TeamRanking = () => {
+        const month = ptMonths[getMonth(new Date())];
+        
+        const rankedSdrs = sdrList
+            .map(sdr => {
+                const sdrMonthData = allSdrData[sdr.id]?.[month];
+                let totalMeetings = 0;
+                if (sdrMonthData) {
+                    totalMeetings = (['semana1', 'semana2', 'semana3', 'semana4'] as const)
+                        .reduce((acc, weekKey) => acc + (sdrMonthData[weekKey]?.meetingsBooked || 0), 0);
+                }
+                return { ...sdr, totalMeetings };
+            })
+            .sort((a, b) => b.totalMeetings - a.totalMeetings);
+
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Trophy /> Ranking de Agendamentos (Mês)</CardTitle>
+                    <CardDescription>Performance dos consultores no mês de {month}.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Posição</TableHead>
+                                <TableHead>Consultor</TableHead>
+                                <TableHead className="text-right">Agendamentos</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {rankedSdrs.map((sdr, index) => (
+                                <TableRow key={sdr.id}>
+                                    <TableCell className="font-bold text-lg">{index + 1}º</TableCell>
+                                    <TableCell>{sdr.name}</TableCell>
+                                    <TableCell className="text-right font-bold text-lg">{sdr.totalMeetings}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        );
+    }
+
 
   const AdminView = () => {
     const [selectedSdr, setSelectedSdr] = useState('all');
@@ -575,6 +621,8 @@ export default function RotinaSDRPage() {
     const filteredSdrList = selectedSdr === 'all'
       ? sdrList
       : sdrList.filter(sdr => sdr.id === selectedSdr);
+      
+    const isDailyView = selectedDate !== undefined;
 
     return (
         <div className="space-y-6">
@@ -624,35 +672,47 @@ export default function RotinaSDRPage() {
                     </div>
                 </CardContent>
             </Card>
+            
+            <div className="space-y-8">
+                <TeamRanking />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                 {filteredSdrList.map(sdr => {
-                    const sdrYearData = allSdrData[sdr.id];
-                    if (!sdrYearData) return null;
-                    
-                    const month = ptMonths[getMonth(selectedDate || new Date())];
-                    const week = Math.min(4, Math.max(1, Math.ceil(getDate(selectedDate || new Date()) / 7)));
-                    const day = ptDays[getDay(selectedDate || new Date()) -1] || ptDays[0];
-                    const weekKey = `semana${week}` as keyof MonthlyData;
+                <div className="space-y-6">
+                     {filteredSdrList.map(sdr => {
+                        const sdrYearData = allSdrData[sdr.id];
+                        if (!sdrYearData) return null;
+                        
+                        const month = ptMonths[getMonth(selectedDate || new Date())];
+                        const week = Math.min(4, Math.max(1, Math.ceil(getDate(selectedDate || new Date()) / 7)));
+                        const dayIndex = getDay(selectedDate || new Date());
+                        const day = dayIndex > 0 ? ptDays[dayIndex - 1] : ptDays[5]; // Adjust for Sunday
+                        const weekKey = `semana${week}` as keyof MonthlyData;
 
-                    const weeklyData = sdrYearData[month]?.[weekKey];
-                    const dailyData = {
-                        tasks: weeklyData?.counterTasks?.[day] || {},
-                        checked: weeklyData?.checkedTasks?.[day] || {},
-                    };
+                        const weeklyData = sdrYearData[month]?.[weekKey];
+                        const dailyData = {
+                            tasks: weeklyData?.counterTasks?.[day] || {},
+                            checked: weeklyData?.checkedTasks?.[day] || {},
+                        };
 
-                    return (
-                        <Card key={sdr.id}>
-                            <CardHeader>
-                                <CardTitle>{sdr.name}</CardTitle>
-                                <CardDescription>Performance de {format(selectedDate || new Date(), "PPP", { locale: ptBR })}</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                               <WeeklyProgress dailyData={dailyData} />
-                            </CardContent>
-                        </Card>
-                    )
-                 })}
+                        return (
+                            <Card key={sdr.id}>
+                                <CardHeader>
+                                    <CardTitle>{sdr.name}</CardTitle>
+                                    <CardDescription>
+                                        Performance de {isDailyView && selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : `Mês de ${month}`}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                   <WeeklyProgress 
+                                        monthlyData={sdrYearData[month]} 
+                                        weeklyData={weeklyData}
+                                        dailyData={isDailyView ? dailyData : undefined}
+                                        isMonthlyView={!isDailyView}
+                                   />
+                                </CardContent>
+                            </Card>
+                        )
+                     })}
+                </div>
             </div>
         </div>
     );
