@@ -690,7 +690,7 @@ export default function RotinaSDRPage() {
             
             <TeamRanking />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-6">
                  {filteredSdrList.map(sdr => {
                     const sdrYearData = allSdrData[sdr.id];
                     if (!sdrYearData) return null;
@@ -893,6 +893,7 @@ export default function RotinaSDRPage() {
     const isSaturday = activeDay === 'Sábado';
     const totalWeeklyMeetings = weekData?.meetingsBooked || 0;
     const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
+    const dailyGoal = 2; // Approximate daily goal to guide the user
     
     return (
          <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
@@ -912,16 +913,23 @@ export default function RotinaSDRPage() {
                     disabled={isHoliday || isSaturday}
                 />
                 
-                {isSaturday && (
-                     <div className="text-right">
+                {!isSaturday ? (
+                     <span className={cn(
+                        "text-base font-semibold w-10 text-right", 
+                        (Number(dailyMeetings) >= dailyGoal) ? "text-green-500" : "text-red-500"
+                    )}>
+                        / {dailyGoal}
+                    </span>
+                ) : (
+                     <div className="text-right w-24">
                         <p className={cn(
                             "text-lg font-bold", 
                             isWeeklyGoalMet ? 'text-green-500' : 'text-red-500'
                         )}>
                             {totalWeeklyMeetings} / {WEEKLY_MEETING_GOAL}
                         </p>
-                        <p className={cn("text-sm font-semibold", isWeeklyGoalMet ? 'text-green-500' : 'text-red-500')}>
-                            {isWeeklyGoalMet ? 'Meta atingida!' : `Faltam ${Math.max(0, WEEKLY_MEETING_GOAL - totalWeeklyMeetings)}`}
+                        <p className={cn("text-xs font-semibold", isWeeklyGoalMet ? 'text-green-500' : 'text-red-500')}>
+                            {isWeeklyGoalMet ? 'Meta semanal!' : `Faltam ${Math.max(0, WEEKLY_MEETING_GOAL - totalWeeklyMeetings)}`}
                         </p>
                     </div>
                 )}
