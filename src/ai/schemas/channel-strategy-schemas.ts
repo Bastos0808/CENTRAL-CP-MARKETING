@@ -4,13 +4,43 @@
  */
 import { z } from 'zod';
 
-export const ChannelStrategyInputSchema = z.object({
-  channelType: z.enum(['instagram', 'website', 'youtube']).describe('The type of the channel being analyzed.'),
+const dataUriSchema = z.string().describe(
+    "Uma imagem como data URI. Formato esperado: 'data:<mimetype>;base64,<encoded_data>'."
+);
+
+export const InstagramStrategyInputSchema = z.object({
+  channelType: z.literal('instagram'),
+  htmlContent: z.string().optional(),
+  bioScreenshot: dataUriSchema.optional().describe('Print da tela mostrando a bio, a foto de perfil e o link.'),
+  highlightsScreenshot: dataUriSchema.optional().describe('Print da tela mostrando os destaques do perfil.'),
+  feedScreenshot: dataUriSchema.optional().describe('Print da tela mostrando a visão geral do feed.'),
+  reelsScreenshot: dataUriSchema.optional().describe('Print da tela mostrando a aba de Reels.'),
+});
+
+export const WebsiteStrategyInputSchema = z.object({
+  channelType: z.literal('website'),
   screenshotDataUris: z.array(z.string()).min(1, 'Pelo menos um print de tela é obrigatório.').describe(
       "Uma lista de prints (screenshots) do canal, como data URIs que devem incluir um MIME type e usar Base64. Formato esperado: 'data:<mimetype>;base64,<encoded_data>'."
     ),
   htmlContent: z.string().optional().describe('O conteúdo HTML do código-fonte de um site, para uma análise mais profunda de SEO e estrutura.'),
 });
+
+export const YouTubeStrategyInputSchema = z.object({
+  channelType: z.literal('youtube'),
+  htmlContent: z.string().optional(),
+  bannerScreenshot: dataUriSchema.optional().describe('Print da tela mostrando o banner do canal e a foto de perfil.'),
+  videosScreenshot: dataUriSchema.optional().describe('Print da tela mostrando a aba de vídeos com as thumbnails.'),
+  shortsScreenshot: dataUriSchema.optional().describe('Print da tela mostrando a aba de Shorts.'),
+  descriptionScreenshot: dataUriSchema.optional().describe('Print da tela de um vídeo aberto, mostrando sua descrição.'),
+});
+
+
+export const ChannelStrategyInputSchema = z.discriminatedUnion("channelType", [
+  InstagramStrategyInputSchema,
+  WebsiteStrategyInputSchema,
+  YouTubeStrategyInputSchema
+]);
+
 export type ChannelStrategyInput = z.infer<typeof ChannelStrategyInputSchema>;
 
 export const InstagramAnalysisSchema = z.object({

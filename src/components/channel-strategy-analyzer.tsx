@@ -1,17 +1,16 @@
 
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import Image from 'next/image';
-import { useForm, Controller, useFieldArray } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { analyzeChannelStrategy } from "@/ai/flows/channel-strategy-flow";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -20,22 +19,21 @@ import {
     Lightbulb, Target, BookOpen, Diamond, Tv, BarChart, 
     Video, MessageSquare, Users, Milestone, Megaphone, CheckCircle, 
     Eye, Image as ImageIcon, PenTool, Edit, SquarePlay, Paperclip, X, Info,
-    Trash2, UploadCloud, Code
+    Trash2, UploadCloud, Code, UserCircle2, Columns, Grid3x3, AlignJustify
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema } from "@/ai/schemas/channel-strategy-schemas";
+import { InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema, InstagramStrategyInputSchema, WebsiteStrategyInputSchema, YouTubeStrategyInputSchema } from "@/ai/schemas/channel-strategy-schemas";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 
 
 type ChannelType = "instagram" | "website" | "youtube";
 
-const formSchema = z.object({
-  channelType: z.enum(["instagram", "website", "youtube"]),
-  screenshotDataUris: z.array(z.string()).min(1, 'Anexe pelo menos um print da tela.'),
-  htmlContent: z.string().optional(),
-  analysis: z.union([InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema]).optional(),
-});
+const formSchema = z.discriminatedUnion("channelType", [
+    InstagramStrategyInputSchema.extend({ analysis: InstagramAnalysisSchema.optional() }),
+    WebsiteStrategyInputSchema.extend({ analysis: WebsiteAnalysisSchema.optional() }),
+    YouTubeStrategyInputSchema.extend({ analysis: YouTubeAnalysisSchema.optional() }),
+]);
 
 
 type FormValues = z.infer<typeof formSchema>;
@@ -54,6 +52,12 @@ const channelConfig = {
       { key: "engajamentoComunidade", label: "Engajamento", icon: Users, prompt: "A empresa responde aos comentários? Cria comunidade?", hint: "Veja se os posts têm curtidas e comentários. Mais importante: a empresa responde a esses comentários? Uma marca que dialoga cria uma comunidade fiel." },
       { key: "oportunidades", label: "Oportunidades de Melhoria", icon: Lightbulb, prompt: "Liste os principais pontos que a agência pode melhorar.", hint: "Com base em toda a análise, liste de 2 a 4 pontos de ação claros e específicos que nossa agência pode resolver para o cliente (ex: 'Profissionalizar a identidade visual do feed', 'Implementar uma estratégia de Reels focada em tutoriais', 'Otimizar a bio com um CTA mais direto')." },
       { key: "gancho", label: "Gancho de Prospecção", icon: Target, prompt: "Com base na principal oportunidade, crie uma frase de abordagem.", hint: "Transforme a oportunidade mais crítica em uma pergunta consultiva. Ex: 'Notei que seus Reels têm um ótimo conteúdo, mas a falta de legendas pode estar diminuindo o alcance. Já pensaram em otimizar isso?'" },
+    ],
+    imageFields: [
+        { name: "bioScreenshot", label: "Print da Bio e Foto de Perfil", icon: UserCircle2 },
+        { name: "highlightsScreenshot", label: "Print dos Destaques", icon: Diamond },
+        { name: "feedScreenshot", label: "Print do Feed (Visão Geral)", icon: Grid3x3 },
+        { name: "reelsScreenshot", label: "Print da Aba de Reels", icon: Video },
     ]
   },
   website: {
@@ -84,82 +88,91 @@ const channelConfig = {
         { key: "engajamentoComentarios", label: "Engajamento nos Comentários", icon: MessageSquare, prompt: "O criador interage com a comunidade nos comentários?", hint: "O dono do canal responde aos comentários, dá 'coração' e cria uma conversa? Isso mostra que ele se importa com a comunidade e incentiva mais interações." },
         { key: "oportunidades", label: "Oportunidades de Melhoria", icon: Lightbulb, prompt: "Liste os principais pontos que a agência pode melhorar.", hint: "Com base em toda a análise, liste de 2 a 4 pontos de ação claros e específicos que nossa agência pode resolver para o cliente (ex: 'Profissionalizar as thumbnails para aumentar a taxa de cliques', 'Otimizar o SEO dos vídeos para ser encontrado pelo público certo', 'Melhorar a qualidade de áudio das gravações')." },
         { key: "gancho", label: "Gancho de Prospecção", icon: Target, prompt: "Crie uma abordagem consultiva focada em vídeo.", hint: "Transforme o ponto fraco mais crítico em uma pergunta consultiva. Ex: 'Adorei seu conteúdo sobre X, mas sinto que as thumbnails não fazem jus à qualidade do vídeo. Já pensaram em como profissionalizar isso para aumentar os cliques?'" },
+    ],
+    imageFields: [
+        { name: "bannerScreenshot", label: "Print do Banner e Foto de Perfil", icon: Columns },
+        { name: "videosScreenshot", label: "Print da Aba de Vídeos (Thumbnails)", icon: Grid3x3 },
+        { name: "shortsScreenshot", label: "Print da Aba de Shorts", icon: SquarePlay },
+        { name: "descriptionScreenshot", label: "Print de uma Descrição de Vídeo", icon: AlignJustify },
     ]
   },
+};
+
+
+const ImageUploader = ({ name, label, icon: Icon, control, form, helpText }: { name: any, label: string, icon: React.ElementType, control: any, form: any, helpText: string }) => {
+    const { toast } = useToast();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const preview = form.watch(name);
+
+    const handleFileChange = (files: FileList | null) => {
+        if (!files || files.length === 0) return;
+        const file = files[0];
+
+        if (file.size > 4 * 1024 * 1024) { // 4MB limit
+            toast({ title: "Arquivo muito grande", description: `O arquivo "${file.name}" excede o limite de 4MB.`, variant: "destructive" });
+            return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => form.setValue(name, reader.result as string, { shouldValidate: true });
+        reader.readAsDataURL(file);
+    };
+
+    const handleRemove = () => form.setValue(name, undefined, { shouldValidate: true });
+
+    return (
+        <FormItem>
+            <FormLabel className="flex items-center gap-2">
+                <Icon className="h-4 w-4" />
+                {label}
+            </FormLabel>
+            {preview ? (
+                <div className="relative group w-full h-32 mt-2">
+                    <Image src={preview} alt={`Preview para ${label}`} layout="fill" className="rounded-md object-contain border bg-muted/30" />
+                    <Button type="button" variant="destructive" size="icon" className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100" onClick={handleRemove}>
+                        <X className="h-3 w-3" />
+                    </Button>
+                </div>
+            ) : (
+                <div
+                    className={cn("mt-2 flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer", isDragging ? "border-primary bg-primary/10" : "border-input hover:border-primary/50")}
+                    onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(true); }}
+                    onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); }}
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    onDrop={(e) => { e.preventDefault(); e.stopPropagation(); setIsDragging(false); handleFileChange(e.dataTransfer.files); }}
+                    onClick={() => fileInputRef.current?.click()}
+                >
+                    <div className="flex flex-col items-center justify-center text-muted-foreground">
+                        <UploadCloud className="w-6 h-6 mb-2" />
+                        <p className="text-xs text-center">{helpText}</p>
+                    </div>
+                    <FormControl>
+                        <input type="file" ref={fileInputRef} className="hidden" accept="image/png, image/jpeg, image/webp" onChange={(e) => handleFileChange(e.target.files)} />
+                    </FormControl>
+                </div>
+            )}
+            <FormMessage />
+        </FormItem>
+    );
 };
 
 
 export default function ChannelStrategyAnalyzer() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       channelType: 'instagram',
-      screenshotDataUris: [],
-      htmlContent: '',
       analysis: undefined
-    }
+    },
+    mode: 'onChange',
   });
-
-  const handleFileChange = (files: FileList | null) => {
-    if (!files) return;
-    
-    const currentUris = form.getValues('screenshotDataUris');
-    const newUris: string[] = [...currentUris];
-
-    Array.from(files).forEach(file => {
-        if (file.size > 4 * 1024 * 1024) { // 4MB limit
-            toast({
-                title: "Arquivo muito grande",
-                description: `O arquivo "${file.name}" excede o limite de 4MB.`,
-                variant: "destructive"
-            });
-            return;
-        }
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const dataUri = reader.result as string;
-            newUris.push(dataUri);
-            form.setValue('screenshotDataUris', newUris, { shouldValidate: true });
-        };
-        reader.readAsDataURL(file);
-    });
-  };
-
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(true);
-  };
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-  };
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-  };
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-      handleFileChange(e.dataTransfer.files);
-  };
-
-
-  const handleRemoveScreenshot = (indexToRemove: number) => {
-      const currentUris = form.getValues('screenshotDataUris');
-      const newUris = currentUris.filter((_, index) => index !== indexToRemove);
-      form.setValue('screenshotDataUris', newUris, { shouldValidate: true });
-      if (newUris.length === 0) {
-        form.setValue('analysis', undefined);
-      }
-  }
+  
+  const watchedChannelType = form.watch('channelType');
+  const analysis = form.watch('analysis');
+  const currentConfig = channelConfig[watchedChannelType];
 
 
   const handleAnalyze = async (values: FormValues) => {
@@ -167,11 +180,8 @@ export default function ChannelStrategyAnalyzer() {
     form.setValue('analysis', undefined);
 
     try {
-      const result = await analyzeChannelStrategy({ 
-          channelType: values.channelType,
-          screenshotDataUris: values.screenshotDataUris,
-          htmlContent: values.htmlContent,
-      });
+      // @ts-ignore - Zod discriminated union makes this safe
+      const result = await analyzeChannelStrategy(values);
       form.setValue(`analysis`, result.analysis, { shouldValidate: true });
       toast({
         title: "Análise Concluída!",
@@ -190,14 +200,14 @@ export default function ChannelStrategyAnalyzer() {
   };
 
   const copyToClipboard = () => {
-    const analysis = form.getValues(`analysis`);
-    const channelType = form.getValues('channelType');
-    const config = channelConfig[channelType];
+    const analysisData = form.getValues(`analysis`);
+    const config = channelConfig[watchedChannelType];
 
-    if (!analysis) return;
+    if (!analysisData) return;
     
+    // @ts-ignore
     const analysisText = config.formSections.map(section => {
-        const value = analysis[section.key as keyof typeof analysis];
+        const value = analysisData[section.key as keyof typeof analysisData];
         if (Array.isArray(value)) {
              return `**${section.label.toUpperCase()}**\n${value.map(v => `- ${v}`).join('\n') || 'Não preenchido'}`;
         }
@@ -216,12 +226,21 @@ ${analysisText}
       description: `O diagnóstico de ${config.name} foi copiado.`,
     });
   }
-  
-  const watchedChannelType = form.watch('channelType');
-  const watchedScreenshots = form.watch('screenshotDataUris');
-  const analysis = form.watch('analysis');
-  const currentConfig = channelConfig[watchedChannelType];
 
+  const isFormReadyForAnalysis = () => {
+    const values = form.getValues();
+    if (values.channelType === 'instagram') {
+        return values.bioScreenshot && values.feedScreenshot;
+    }
+    if (values.channelType === 'youtube') {
+        return values.bannerScreenshot && values.videosScreenshot;
+    }
+    if (values.channelType === 'website') {
+        return values.screenshotDataUris && values.screenshotDataUris.length > 0;
+    }
+    return false;
+  }
+  
   return (
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleAnalyze)} className="space-y-6">
@@ -242,8 +261,7 @@ ${analysisText}
                                         value={field.value}
                                         onValueChange={(value) => {
                                             field.onChange(value as ChannelType);
-                                            form.setValue('analysis', undefined);
-                                            form.setValue('htmlContent', '');
+                                            form.reset({ channelType: value as ChannelType, analysis: undefined });
                                         }}
                                         className="w-full"
                                     >
@@ -259,62 +277,26 @@ ${analysisText}
                         )}
                     />
                     
-                    <FormField
-                        control={form.control}
-                        name="screenshotDataUris"
-                        render={({ field }) => (
-                            <FormItem>
-                               <FormLabel>Prints da Tela do Canal</FormLabel>
-                               <div 
-                                    className={cn(
-                                        "relative flex flex-col items-center justify-center w-full min-h-[150px] border-2 border-dashed rounded-lg cursor-pointer transition-colors",
-                                        isDragging ? "border-primary bg-primary/10" : "border-input hover:border-primary/50"
-                                    )}
-                                    onDragEnter={handleDragEnter}
-                                    onDragLeave={handleDragLeave}
-                                    onDragOver={handleDragOver}
-                                    onDrop={handleDrop}
-                                    onClick={() => fileInputRef.current?.click()}
-                                >
-                                    <div className="flex flex-col items-center justify-center pt-5 pb-6 text-muted-foreground">
-                                        <UploadCloud className="w-8 h-8 mb-4" />
-                                        <p className="mb-2 text-sm"><span className="font-semibold">Clique para enviar</span> ou arraste e solte</p>
-                                        <p className="text-xs">PNG, JPG, WEBP (MAX. 4MB cada)</p>
-                                    </div>
-                                    <FormControl>
-                                      <input
-                                          type="file"
-                                          ref={fileInputRef}
-                                          className="hidden"
-                                          accept="image/png, image/jpeg, image/webp"
-                                          multiple
-                                          onChange={(e) => handleFileChange(e.target.files)}
-                                      />
-                                   </FormControl>
-                                </div>
-                               
-                               {watchedScreenshots && watchedScreenshots.length > 0 && (
-                                   <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                                       {watchedScreenshots.map((uri, index) => (
-                                          <div key={index} className="relative group w-full h-24">
-                                              <Image src={uri} alt={`Preview ${index}`} layout="fill" className="rounded-md object-cover border" />
-                                              <Button
-                                                  type="button"
-                                                  variant="destructive"
-                                                  size="icon"
-                                                  className="absolute -top-2 -right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                                                  onClick={() => handleRemoveScreenshot(index)}
-                                              >
-                                                  <X className="h-3 w-3" />
-                                              </Button>
-                                          </div>
-                                       ))}
-                                   </div>
-                               )}
-                               <FormMessage />
-                           </FormItem>
+                     <div className="pt-4 space-y-4">
+                        <Label>Imagens Guiadas</Label>
+                        <FormDescription>Anexe os prints correspondentes para uma análise precisa. Os campos marcados com * são obrigatórios.</FormDescription>
+                        { 'imageFields' in currentConfig && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {currentConfig.imageFields.map(field => (
+                                    <ImageUploader 
+                                        key={field.name}
+                                        name={field.name}
+                                        label={field.label}
+                                        icon={field.icon}
+                                        control={form.control}
+                                        form={form}
+                                        helpText={field.label}
+                                    />
+                                ))}
+                            </div>
                         )}
-                    />
+                        {watchedChannelType === 'website' && <p>Upload de site será implementado</p>}
+                     </div>
 
                     {watchedChannelType === 'website' && (
                         <FormField
@@ -343,7 +325,7 @@ ${analysisText}
             </Card>
 
             <div className="flex justify-end gap-2">
-                 <Button type="submit" disabled={loading || watchedScreenshots.length === 0}>
+                 <Button type="submit" disabled={loading || !isFormReadyForAnalysis()}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                     Analisar com IA
                  </Button>
@@ -426,5 +408,3 @@ ${analysisText}
       </Form>
   );
 }
-
-    
