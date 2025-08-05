@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -19,13 +19,18 @@ import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
 import { GeneratedProposal, packageOptions } from './generated-proposal';
 import { Switch } from './ui/switch';
 import { GenerateProposalInputSchema } from '@/ai/schemas/proposal-generator-schemas';
-import { FormDescription } from './ui/form';
+import { FormDescription as UiFormDescription } from './ui/form';
 
-// Schema Definition matching the AI flow input
-const proposalSchema = GenerateProposalInputSchema.extend({
-    useCustomServices: z.boolean().default(false), // UI state, not for AI
-    investmentValue: z.string().optional(), // UI state, not for AI
-    // These fields will be populated by the AI
+
+// Schema for the form state
+const proposalFormSchema = z.object({
+    clientName: z.string().min(1, 'O nome do cliente é obrigatório.'),
+    clientObjective: z.string().min(1, 'O objetivo do cliente é obrigatório.'),
+    clientChallenge: z.string().min(1, 'O desafio do cliente é obrigatório.'),
+    clientAudience: z.string().min(1, 'O público-alvo é obrigatório.'),
+    useCustomServices: z.boolean().default(false),
+    packages: z.array(z.string()).optional(), // Form stores an array of package keys (strings)
+    investmentValue: z.string().optional(),
     partnershipDescription: z.string().optional(),
     objectiveItems: z.array(z.object({ value: z.string() })).optional(),
     differentialItems: z.array(z.object({ value: z.string() })).optional(),
@@ -33,7 +38,7 @@ const proposalSchema = GenerateProposalInputSchema.extend({
 });
 
 
-export type ProposalFormValues = z.infer<typeof proposalSchema>;
+export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
 
 export default function ProposalGeneratorV2() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
@@ -43,7 +48,7 @@ export default function ProposalGeneratorV2() {
   const proposalRef = React.useRef<HTMLDivElement>(null);
 
   const form = useForm<ProposalFormValues>({
-    resolver: zodResolver(proposalSchema),
+    resolver: zodResolver(proposalFormSchema),
     defaultValues: {
       clientName: '',
       clientObjective: '',
@@ -52,7 +57,6 @@ export default function ProposalGeneratorV2() {
       useCustomServices: false,
       packages: [],
       investmentValue: 'R$ 0,00',
-       // AI-generated fields start empty
       partnershipDescription: '',
       objectiveItems: [],
       differentialItems: [],
@@ -131,7 +135,15 @@ export default function ProposalGeneratorV2() {
   const handleGenerateContent = async () => {
       const { clientName, packages, clientObjective, clientChallenge, clientAudience } = form.getValues();
       
-      const validation = GenerateProposalInputSchema.safeParse({ clientName, packages, clientObjective, clientChallenge, clientAudience });
+      const packagesWithDetails = packages?.reduce((acc: {name: string, description: string}[], key: string) => {
+        const pkg = packageOptions[key as keyof typeof packageOptions];
+        if (pkg) acc.push({ name: pkg.name, description: pkg.description });
+        return acc;
+      }, []);
+      
+      const inputForAI = { clientName, clientObjective, clientChallenge, clientAudience, packages: packagesWithDetails };
+
+      const validation = GenerateProposalInputSchema.safeParse(inputForAI);
 
        if (!validation.success) {
             validation.error.errors.forEach((err) => {
@@ -146,20 +158,8 @@ export default function ProposalGeneratorV2() {
       
       setIsGeneratingAi(true);
 
-      const packagesWithDetails = packages?.reduce((acc: {name: string, description: string}[], key: string) => {
-        const pkg = packageOptions[key as keyof typeof packageOptions];
-        if (pkg) acc.push({ name: pkg.name, description: pkg.description });
-        return acc;
-      }, []);
-
       try {
-          const result = await generateProposalContent({ 
-              clientName, 
-              clientObjective,
-              clientChallenge,
-              clientAudience,
-              packages: packagesWithDetails 
-            });
+          const result = await generateProposalContent(inputForAI);
           
           form.setValue('partnershipDescription', result.partnershipDescription);
           form.setValue('objectiveItems', result.objectiveItems.map(item => ({value: item})));
@@ -181,7 +181,7 @@ export default function ProposalGeneratorV2() {
         <Card>
             <Form {...form}>
                 <form className="space-y-4">
-                    <Accordion type="multiple" className="w-full">
+                    <Accordion type="multiple" defaultValue={[]} className="w-full">
                         <AccordionItem value="item-1">
                             <AccordionTrigger className="px-6 font-semibold"><Target className="mr-2 h-5 w-5 text-primary" />Informações Estratégicas</AccordionTrigger>
                             <AccordionContent className="space-y-4 px-6 pt-4">
@@ -252,13 +252,28 @@ export default function ProposalGeneratorV2() {
                                 <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
                             </AccordionContent>
                         </AccordionItem>
+
+                        <AccordionItem value="item-4">
+                           <AccordionTrigger className="px-6 font-semibold"><FileText className="mr-2 h-5 w-5 text-primary" />Conteúdo da Proposta</AccordionTrigger>
+                           <AccordionContent className="space-y-6 px-6 pt-4">
+                               <div className="p-4 border rounded-md bg-muted/30 space-y-3">
+                                   <FormLabel className="flex items-center gap-2"><Bot />Textos da Proposta</FormLabel>
+                                   <UiFormDescription>Com base no cliente e nos pacotes, a IA irá gerar textos persuasivos para os campos da proposta (Sobre, Objetivos, Diferenciais, etc).</UiFormDescription>
+                                  <Button type="button" onClick={handleGenerateContent} disabled={isGeneratingAi}>
+                                     {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                                     {isGeneratingAi ? 'Gerando Conteúdo...' : 'Gerar Textos com IA'}
+                                  </Button>
+                               </div>
+
+                               <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Sobre a Parceria</FormLabel><FormControl><Textarea {...field} className="min-h-32" /></FormControl><FormMessage /></FormItem>} />
+                               
+                               <FormItem><FormLabel>Objetivos</FormLabel><Controller name="objectiveItems" control={form.control} render={({ field }) => <Textarea value={field.value?.map(v => v.value).join('\n')} onChange={e => field.onChange(e.target.value.split('\n').map(v => ({value: v})))} className="min-h-32" /> }/><FormMessage /></FormItem>
+                               <FormItem><FormLabel>Diferenciais</FormLabel><Controller name="differentialItems" control={form.control} render={({ field }) => <Textarea value={field.value?.map(v => v.value).join('\n')} onChange={e => field.onChange(e.target.value.split('\n').map(v => ({value: v})))} className="min-h-32" /> }/><FormMessage /></FormItem>
+                               <FormItem><FormLabel>Por que este plano é ideal?</FormLabel><Controller name="idealPlanItems" control={form.control} render={({ field }) => <Textarea value={field.value?.map(v => v.value).join('\n')} onChange={e => field.onChange(e.target.value.split('\n').map(v => ({value: v})))} className="min-h-32" /> }/><FormMessage /></FormItem>
+
+                           </AccordionContent>
+                       </AccordionItem>
                     </Accordion>
-                     <div className="p-6">
-                        <Button type="button" onClick={handleGenerateContent} disabled={isGeneratingAi} className="w-full">
-                           {isGeneratingAi ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                           {isGeneratingAi ? 'Gerando Conteúdo...' : 'Gerar Conteúdo da Proposta com IA'}
-                        </Button>
-                    </div>
                 </form>
             </Form>
         </Card>
