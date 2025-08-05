@@ -143,9 +143,6 @@ export default function RotinaSDRPage() {
   const [currentWeek, setCurrentWeek] = useState(1);
   const [currentMonth, setCurrentMonth] = useState(ptMonths[new Date().getMonth()]);
   
-  const [localCounters, setLocalCounters] = useState<Record<string, string>>({});
-  const [localExtraTasks, setLocalExtraTasks] = useState<string>("");
-  
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
@@ -258,20 +255,6 @@ export default function RotinaSDRPage() {
   const activeWeekKey = `semana${currentWeek}` as keyof MonthlyData;
   const activeDay = ptDays.includes(activeTab) ? activeTab : ptDays[0];
   
-  useEffect(() => {
-    const weekData = monthlyData?.[activeWeekKey];
-    const counterTasksForDay = weekData?.counterTasks?.[activeDay] || {};
-    const newLocalCounters: Record<string, string> = {};
-    for (const taskId in counterTasksForDay) {
-        newLocalCounters[taskId] = String(counterTasksForDay[taskId]);
-    }
-    setLocalCounters(newLocalCounters);
-    
-    const extraTasksForDay = weekData?.extraTasks?.[activeDay] || "";
-    setLocalExtraTasks(extraTasksForDay);
-
-  }, [activeDay, activeWeekKey, monthlyData]);
-
   const isHoliday = monthlyData?.[activeWeekKey]?.holidays[activeDay] || false;
 
   const previousDay = useMemo(() => {
@@ -324,11 +307,6 @@ export default function RotinaSDRPage() {
   };
   
   const handleCounterChange = (taskId: string, value: string) => {
-    setLocalCounters(prev => ({...prev, [taskId]: value}));
-  };
-  
-  const handleCounterBlur = (taskId: string) => {
-      const value = localCounters[taskId] || '';
       const numValue = value === '' ? 0 : parseInt(value, 10);
       if (isNaN(numValue)) return;
 
@@ -340,14 +318,10 @@ export default function RotinaSDRPage() {
   };
 
   const handleExtraTasksChange = (value: string) => {
-    setLocalExtraTasks(value);
-  };
-  
-  const handleExtraTasksBlur = () => {
     handleUpdateYearData(draft => {
         const weekData = draft[currentMonth][activeWeekKey];
         if (!weekData.extraTasks) weekData.extraTasks = {};
-        weekData.extraTasks[activeDay] = localExtraTasks;
+        weekData.extraTasks[activeDay] = value;
     });
   };
 
@@ -372,13 +346,9 @@ export default function RotinaSDRPage() {
           weekData.podcasts[podcastId].done = isChecked;
       });
   };
-
-  const handleDailyMeetingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalCounters(prev => ({...prev, ['daily_meetings']: e.target.value}));
-  };
   
-  const handleDailyMeetingsBlur = () => {
-        const value = parseInt(localCounters['daily_meetings'], 10);
+  const handleDailyMeetingsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(e.target.value, 10);
         const meetings = isNaN(value) || value < 0 ? 0 : value;
         
         handleUpdateYearData(draft => {
@@ -590,7 +560,6 @@ export default function RotinaSDRPage() {
                       pendingGoals.map(task => {
                           const weeklyTotal = weeklyProgress[task.id] || 0;
                           const isGoalMet = weeklyTotal >= task.weeklyGoal;
-                          const currentSaturdayValue = localCounters[task.id] || '';
                           return (
                               <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50 mb-4">
                                   <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
@@ -600,9 +569,8 @@ export default function RotinaSDRPage() {
                                           pattern="[0-9]*"
                                           inputMode="numeric"
                                           id={`${activeDay}-${task.id}`} 
-                                          value={currentSaturdayValue} 
-                                          onChange={(e) => handleCounterChange(task.id, e.target.value)} 
-                                          onBlur={() => handleCounterBlur(task.id)}
+                                          value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''} 
+                                          onChange={(e) => handleCounterChange(task.id, e.target.value)}
                                           className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" 
                                       />
                                       <div className="text-right">
@@ -638,13 +606,12 @@ export default function RotinaSDRPage() {
                                         pattern="[0-9]*"
                                         inputMode="numeric"
                                         id={`${activeDay}-${task.id}`} 
-                                        value={localCounters[task.id] || ''} 
+                                        value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
                                         onChange={(e) => handleCounterChange(task.id, e.target.value)} 
-                                        onBlur={() => handleCounterBlur(task.id)}
                                         className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50" 
                                         placeholder="0" 
                                     />
-                                    <span className={cn("text-base font-semibold", (parseInt(localCounters[task.id] || '0', 10) >= task.dailyGoal) ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
+                                    <span className={cn("text-base font-semibold", ((weekData?.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal) ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
                                 </div>
                             </div>
                       ))}
@@ -686,9 +653,8 @@ export default function RotinaSDRPage() {
                           </div>
                           <Textarea
                               placeholder="Digite as tarefas para o dia seguinte aqui..."
-                              value={localExtraTasks}
+                              value={weekData?.extraTasks?.[activeDay] || ''}
                               onChange={(e) => handleExtraTasksChange(e.target.value)}
-                              onBlur={handleExtraTasksBlur}
                               className="w-full mt-2 bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary ml-10"
                               style={{width: 'calc(100% - 2.5rem)'}}
                           />
@@ -704,7 +670,7 @@ export default function RotinaSDRPage() {
 
   const renderConsultorias = () => {
     const weekData = monthlyData?.[activeWeekKey];
-    const dailyMeetings = localCounters['daily_meetings'] || '';
+    const dailyMeetings = weekData?.counterTasks?.[activeDay]?.['daily_meetings'] || '';
     const isSaturday = activeTab === 'Sábado';
     const totalWeeklyMeetings = weekData?.meetingsBooked || 0;
     const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
@@ -722,7 +688,6 @@ export default function RotinaSDRPage() {
                     id={`consultorias-${activeDay}`}
                     value={dailyMeetings}
                     onChange={handleDailyMeetingsChange}
-                    onBlur={handleDailyMeetingsBlur}
                     className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
                     placeholder="0"
                     disabled={isHoliday || isSaturday}
@@ -730,7 +695,7 @@ export default function RotinaSDRPage() {
                 {!isSaturday && (
                      <span className={cn(
                         "text-base font-semibold", 
-                        (parseInt(dailyMeetings || '0', 10) >= 2) ? 'text-green-500' : 'text-red-500'
+                        (Number(dailyMeetings) >= 2) ? 'text-green-500' : 'text-red-500'
                      )}>
                         / 2
                     </span>
