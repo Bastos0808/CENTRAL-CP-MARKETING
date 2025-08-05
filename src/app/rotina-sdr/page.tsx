@@ -33,8 +33,10 @@ import {
   ArrowLeft,
   Plus,
   Trash2,
+  Calendar as CalendarIcon,
 } from "lucide-react";
-import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth } from 'date-fns';
+import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth, format, addDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 import { allTasks, WEEKLY_MEETING_GOAL, ptDays, AnyTask, weeklyGoals, ptMonths } from "@/lib/tasks";
 import { Button } from "@/components/ui/button";
@@ -70,6 +72,10 @@ import {
 } from "@/components/ui/table";
 import { produce } from 'immer';
 import type { YearData, MonthlyData, ExtraTask, WeeklyData } from "@/lib/types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DateRange } from "react-day-picker";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 
 const FUNCTION_TABS = ['Podcast', 'Progresso Semanal', 'Progresso Mensal'];
@@ -190,8 +196,7 @@ export default function RotinaSDRPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState(''); 
-  const [currentWeek, setCurrentWeek] = useState(1);
-  const [currentMonth, setCurrentMonth] = useState(ptMonths[new Date().getMonth()]);
+  const [currentDate, setCurrentDate] = useState(new Date());
   
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -309,38 +314,27 @@ export default function RotinaSDRPage() {
         fetchAllData();
     }
   }, [user, isAdmin, authLoading, toast]);
-
-  const [currentDay, setCurrentDay] = useState(ptDays[0]);
+  
+  const currentWeek = useMemo(() => Math.min(4, Math.max(1, Math.ceil(getDate(currentDate) / 7))), [currentDate]);
+  const currentMonth = useMemo(() => ptMonths[getMonth(currentDate)], [currentDate]);
+  const currentDay = useMemo(() => {
+    const dayOfWeek = getDay(currentDate);
+    return dayOfWeek >= 1 && dayOfWeek <= 6 ? ptDays[dayOfWeek - 1] : ptDays[0];
+  }, [currentDate]);
+  
 
   useEffect(() => {
-    const today = new Date();
-    const dayOfWeek = getDay(today); // Sunday = 0, Monday = 1
-    const dayOfMonth = getDate(today);
-    const week = Math.min(4, Math.max(1, Math.ceil(dayOfMonth / 7)));
-    const month = getMonth(today);
-
-    setCurrentWeek(week);
-    setCurrentMonth(ptMonths[month]);
-    
-    let todayName = '';
-    if (dayOfWeek >= 1 && dayOfWeek <= 6) { 
-        todayName = ptDays[dayOfWeek - 1];
+    setCurrentDate(new Date());
+    if (isAdmin) {
+      setActiveTab("Visão Geral");
     } else {
-        todayName = ptDays[0]; // Default to Monday on Sunday
+      setActiveTab(currentDay);
     }
-
-    setCurrentDay(todayName);
-    
-    if(isAdmin) {
-        setActiveTab("Visão Geral");
-    } else {
-        setActiveTab(todayName);
-    }
-  }, [isAdmin]);
+  }, [isAdmin, currentDay]);
 
   const monthlyData = yearData[currentMonth];
   const activeWeekKey = `semana${currentWeek}` as keyof MonthlyData;
-  const activeDay = ptDays.includes(activeTab) ? activeTab : ptDays[0];
+  const activeDay = ptDays.includes(activeTab) ? activeTab : currentDay;
   
   const isHoliday = monthlyData?.[activeWeekKey]?.holidays[activeDay] || false;
 
@@ -508,55 +502,6 @@ export default function RotinaSDRPage() {
       weeklyProgress: weeklyTotals,
     };
   }, [activeDay, monthlyData, activeWeekKey]);
-
-  const TeamRanking = ({ sdrList, allSdrData, currentMonth }: { sdrList: SdrUser[], allSdrData: Record<string, YearData>, currentMonth: string }) => {
-    const ranking = useMemo(() => {
-      return sdrList
-        .map(sdr => {
-          const monthData = allSdrData[sdr.id]?.[currentMonth];
-          let totalMeetings = 0;
-          if (monthData) {
-            (['semana1', 'semana2', 'semana3', 'semana4'] as const).forEach(weekKey => {
-              totalMeetings += monthData[weekKey]?.meetingsBooked || 0;
-            });
-          }
-          return { name: sdr.name, meetings: totalMeetings, id: sdr.id };
-        })
-        .sort((a, b) => b.meetings - a.meetings);
-    }, [sdrList, allSdrData, currentMonth]);
-  
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trophy />
-            Ranking de Agendamentos do Mês
-          </CardTitle>
-          <CardDescription>Quem mais agendou reuniões em {currentMonth}.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Posição</TableHead>
-                <TableHead>SDR</TableHead>
-                <TableHead className="text-right">Reuniões Agendadas</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {ranking.map((sdr, index) => (
-                <TableRow key={sdr.id}>
-                  <TableCell className="font-bold">{index + 1}º</TableCell>
-                  <TableCell>{sdr.name}</TableCell>
-                  <TableCell className="text-right font-bold text-lg">{sdr.meetings}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    );
-  };
   
     const SaveStatusIndicator = () => {
         if (isAdmin) return null;
@@ -611,36 +556,99 @@ export default function RotinaSDRPage() {
     );
   };
 
-
   const AdminView = () => {
+    const [selectedSdr, setSelectedSdr] = useState('all');
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+
     if (isLoading) {
-        return (
-            <div className="flex justify-center items-center h-48">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        );
+      return (
+        <div className="flex justify-center items-center h-48">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      );
     }
     
-     if (sdrList.length === 0) {
-        return <p>Nenhum SDR encontrado.</p>;
+    if (sdrList.length === 0) {
+      return <p>Nenhum SDR encontrado.</p>;
     }
+
+    const filteredSdrList = selectedSdr === 'all'
+      ? sdrList
+      : sdrList.filter(sdr => sdr.id === selectedSdr);
 
     return (
         <div className="space-y-6">
-            <TeamRanking sdrList={sdrList} allSdrData={allSdrData} currentMonth={currentMonth} />
+            <Card>
+                <CardHeader>
+                    <CardTitle>Filtros de Performance</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1 space-y-2">
+                        <Label>Filtrar por Consultor</Label>
+                        <Select value={selectedSdr} onValueChange={setSelectedSdr}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Selecione um SDR" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todos os SDRs</SelectItem>
+                                {sdrList.map(sdr => (
+                                    <SelectItem key={sdr.id} value={sdr.id}>{sdr.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex-1 space-y-2">
+                         <Label>Filtrar por Dia</Label>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                            <Button
+                                variant={"outline"}
+                                className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !selectedDate && "text-muted-foreground"
+                                )}
+                            >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {selectedDate ? format(selectedDate, "PPP", { locale: ptBR }) : <span>Escolha uma data</span>}
+                            </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                            <Calendar
+                                mode="single"
+                                selected={selectedDate}
+                                onSelect={setSelectedDate}
+                                initialFocus
+                            />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </CardContent>
+            </Card>
 
-             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                 {sdrList.map(sdr => {
-                    const sdrMonthlyData = allSdrData[sdr.id]?.[currentMonth];
-                    if (!sdrMonthlyData) return null;
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                 {filteredSdrList.map(sdr => {
+                    const sdrYearData = allSdrData[sdr.id];
+                    if (!sdrYearData) return null;
+                    
+                    const month = ptMonths[getMonth(selectedDate || new Date())];
+                    const week = Math.min(4, Math.max(1, Math.ceil(getDate(selectedDate || new Date()) / 7)));
+                    const day = ptDays[getDay(selectedDate || new Date()) -1] || ptDays[0];
+                    const weekKey = `semana${week}` as keyof MonthlyData;
+
+                    const weeklyData = sdrYearData[month]?.[weekKey];
+                    const dailyData = {
+                        tasks: weeklyData?.counterTasks?.[day] || {},
+                        checked: weeklyData?.checkedTasks?.[day] || {},
+                    };
+
                     return (
                         <Card key={sdr.id}>
                             <CardHeader>
                                 <CardTitle>{sdr.name}</CardTitle>
-                                <CardDescription>Performance de {currentMonth}</CardDescription>
+                                <CardDescription>Performance de {format(selectedDate || new Date(), "PPP", { locale: ptBR })}</CardDescription>
                             </CardHeader>
                             <CardContent>
-                               <WeeklyProgress monthlyData={sdrMonthlyData} isMonthlyView={true} />
+                               <WeeklyProgress dailyData={dailyData} />
                             </CardContent>
                         </Card>
                     )
