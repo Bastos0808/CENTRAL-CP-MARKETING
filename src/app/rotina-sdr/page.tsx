@@ -30,6 +30,7 @@ import {
   Save,
   Phone,
   MessageSquare,
+  ArrowLeft,
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth } from 'date-fns';
 
@@ -133,11 +134,15 @@ const createInitialPodcastData = (): PodcastData => ({
   podcast4: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
 });
 
+const createInitialWeeklyData = () => ({
+  checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0
+})
+
 const createInitialMonthlyData = (): MonthlyData => ({
-  semana1: { checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0 },
-  semana2: { checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0 },
-  semana3: { checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0 },
-  semana4: { checkedTasks: {}, counterTasks: {}, extraTasks: {}, holidays: {}, meetingsBooked: 0 },
+  semana1: createInitialWeeklyData(),
+  semana2: createInitialWeeklyData(),
+  semana3: createInitialWeeklyData(),
+  semana4: createInitialWeeklyData(),
   podcasts: createInitialPodcastData(),
 });
 
@@ -276,6 +281,8 @@ export default function RotinaSDRPage() {
     }
   }, [user, isAdmin, authLoading, toast]);
 
+  const [currentDay, setCurrentDay] = useState(ptDays[0]);
+
   useEffect(() => {
     const today = new Date();
     const dayOfWeek = getDay(today); // Sunday = 0, Monday = 1
@@ -286,17 +293,19 @@ export default function RotinaSDRPage() {
     setCurrentWeek(week);
     setCurrentMonth(ptMonths[month]);
     
-    let currentDayTab = '';
+    let todayName = '';
     if (dayOfWeek >= 1 && dayOfWeek <= 6) { 
-        currentDayTab = ptDays[dayOfWeek - 1];
+        todayName = ptDays[dayOfWeek - 1];
     } else {
-        currentDayTab = ptDays[0]; // Default to Monday on Sunday
+        todayName = ptDays[0]; // Default to Monday on Sunday
     }
 
+    setCurrentDay(todayName);
+    
     if(isAdmin) {
         setActiveTab("Visão Geral");
     } else {
-        setActiveTab(currentDayTab);
+        setActiveTab(todayName);
     }
   }, [isAdmin]);
 
@@ -866,7 +875,15 @@ export default function RotinaSDRPage() {
            <div className="flex items-center gap-4">
              <div className="flex flex-col items-start p-2 rounded-lg border bg-card">
                 <h2 className="text-xl font-bold text-primary">{currentMonth}</h2>
-                <p className="text-sm text-muted-foreground">Semana {currentWeek}</p>
+                <div className="flex items-center gap-2">
+                    <p className="text-sm text-muted-foreground">Semana {currentWeek}</p>
+                    {FUNCTION_TABS.includes(activeTab) && (
+                        <Button variant="outline" size="sm" className="h-6 px-2 text-xs" onClick={() => setActiveTab(currentDay)}>
+                           <ArrowLeft className="mr-1 h-3 w-3"/>
+                           Voltar para a Semana
+                        </Button>
+                    )}
+                </div>
              </div>
               {!isAdmin && <HeaderKpis />}
            </div>
