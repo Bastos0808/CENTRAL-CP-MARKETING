@@ -33,6 +33,7 @@ export const allTasks: AnyTask[] = [
     { id: "m-4", label: "Prospecção (Instagram/WhatsApp)", type: 'counter', dailyGoal: 40, weeklyGoal: 200 },
     { id: "m-5", label: "E-mail Marketing", type: 'counter', dailyGoal: 20, weeklyGoal: 100 },
     { id: "a-3", label: "Ligações", type: 'counter', dailyGoal: 5, weeklyGoal: 25 },
+    { id: 'daily_meetings', label: 'Consultorias Realizadas', type: 'counter', dailyGoal: 2, weeklyGoal: 8 },
 
     // Checkbox Tasks
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
@@ -41,8 +42,6 @@ export const allTasks: AnyTask[] = [
     { id: "a-5", label: "Priorizar agendamento de convidados para o podcast (de acordo com a área).", type: 'checkbox' },
     { id: "m-2", label: "Revisar leads no CRM (RD Station) que precisam de follow-up prioritário.", type: 'checkbox' },
     { id: "a-7", label: "Organizar as tarefas para o dia seguinte.", type: 'checkbox' },
-    { id: "s-3-podcast-unqualified-leads", label: "Podcast (leads nao qualificados)", type: 'checkbox', saturdayOnly: true },
-    { id: 'daily_meetings', label: 'Consultorias Realizadas', type: 'counter', dailyGoal: 2, weeklyGoal: 8 },
 ];
 
 

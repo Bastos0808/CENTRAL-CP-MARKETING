@@ -181,15 +181,18 @@ export default function RotinaSDRPage() {
                 const usersRef = collection(db, 'users');
                 const q = query(usersRef, where('role', '==', 'comercial'));
                 const usersSnapshot = await getDocs(q);
-
-                const fetchedSdrList = usersSnapshot.docs.map(userDoc => {
+                
+                const fetchedSdrList: SdrUser[] = [];
+                 usersSnapshot.forEach(userDoc => {
                     const userData = userDoc.data();
                     let displayName = userData.displayName || '';
                     if (!displayName && userData.email) {
                         displayName = userData.email.split('@')[0];
                     }
-                    return { id: userDoc.id, name: displayName, email: userData.email };
+                    fetchedSdrList.push({ id: userDoc.id, name: displayName, email: userData.email });
                 });
+
+                setSdrList(fetchedSdrList);
                 
                 const performanceDataPromises = fetchedSdrList.map(sdr => 
                     getDoc(doc(db, 'sdr_performance', sdr.id))
@@ -203,7 +206,6 @@ export default function RotinaSDRPage() {
                 }, {} as Record<string, YearData>);
                 
                 setAllSdrData(newAllSdrData);
-                setSdrList(fetchedSdrList);
 
             } else if (user?.uid) { // Fetch only current user's data if not admin
                 const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
@@ -349,9 +351,9 @@ export default function RotinaSDRPage() {
         });
     };
 
-  const { completedTasksCount } = useMemo(() => {
+  const { completedTasksCount, weeklyProgress } = useMemo(() => {
     const weekData = monthlyData?.[activeWeekKey];
-    if (!weekData) return { completedTasksCount: 0 };
+    if (!weekData) return { completedTasksCount: 0, weeklyProgress: {} };
 
     const counterTasksList = allTasks.filter(t => t.type === 'counter' && !t.saturdayOnly);
     const checkedTasksForToday = weekData.checkedTasks?.[activeDay] || {};
@@ -366,9 +368,22 @@ export default function RotinaSDRPage() {
         }
         return acc;
     }, 0);
+    
+    const weeklyTotals: Record<string, number> = {};
+    const weekDays = ptDays.slice(0, 6); // Mon-Sat
+    
+    counterTasksList.forEach(task => {
+        weeklyTotals[task.id] = 0;
+        weekDays.forEach(day => {
+            const dayCount = weekData.counterTasks?.[day]?.[task.id] || 0;
+            weeklyTotals[task.id] += dayCount;
+        });
+    });
+
 
     return {
       completedTasksCount: completedCheckbox + completedCounters,
+      weeklyProgress: weeklyTotals,
     };
   }, [activeDay, monthlyData, activeWeekKey]);
 
@@ -478,10 +493,16 @@ export default function RotinaSDRPage() {
     const weekData = monthlyData?.[activeWeekKey];
     if(!weekData) return <div className="flex justify-center items-center h-48"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
-    const dailyMeetings = weekData.counterTasks?.[activeDay]?.['daily_meetings'] || 0;
     const isSaturday = activeTab === 'Sábado';
-    const totalWeeklyMeetings = weekData.meetingsBooked || 0;
-    const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
+    
+    // Logic for Saturday Catch-up
+    const pendingGoals = allTasks.filter((task): task is AnyTask & {type: 'counter'} => {
+        if (task.type !== 'counter' || task.saturdayOnly) return false;
+        const weeklyTotal = weeklyProgress[task.id] || 0;
+        return weeklyTotal < task.weeklyGoal;
+    });
+    
+    const allCheckboxTasks = allTasks.filter(task => task.type === 'checkbox' && !task.saturdayOnly);
     
     return(
         <div className="grid grid-cols-1 gap-4 md:gap-8">
@@ -498,15 +519,49 @@ export default function RotinaSDRPage() {
                     </div>
                   )}
                   {isHoliday && <p className="text-accent-foreground mt-2 font-semibold bg-accent p-2 rounded-md">Este dia foi marcado como feriado. As metas não serão contabilizadas.</p>}
+                  {isSaturday && <p className="text-muted-foreground">Dia de foco para correr atrás das metas semanais pendentes.</p>}
               </div>
 
               <Card className="bg-transparent border-none shadow-none">
                 <CardContent className="p-0">
                   <div className="space-y-4">
-                     {allTasks
-                        .filter(task => isSaturday ? task.saturdayOnly === true : task.saturdayOnly !== true)
+                     {isSaturday ? (
+                        <>
+                            {pendingGoals.length > 0 ? (
+                                pendingGoals.map(task => {
+                                    const weeklyTotal = weeklyProgress[task.id] || 0;
+                                    const isGoalMet = weeklyTotal >= task.weeklyGoal;
+                                    const currentSaturdayValue = weekData.counterTasks?.[activeDay]?.[task.id] || '';
+                                    return (
+                                        <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
+                                            <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
+                                            <div className="flex items-center gap-3 w-full sm:w-auto">
+                                                <Input type="number" id={`${activeDay}-${task.id}`} value={currentSaturdayValue} onChange={(e) => handleCounterChange(task.id, e.target.value)} className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" />
+                                                <div className="text-right">
+                                                    <p className={cn("text-lg font-bold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
+                                                        {weeklyTotal} / {task.weeklyGoal}
+                                                    </p>
+                                                    <p className={cn("text-sm font-semibold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
+                                                        {isGoalMet ? 'Meta atingida!' : `Faltam ${Math.max(0, task.weeklyGoal - weeklyTotal)}`}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            ) : (
+                                <div className="text-center py-12">
+                                    <Trophy className="h-12 w-12 mx-auto text-green-500" />
+                                    <p className="mt-4 text-lg font-semibold">Parabéns! Todas as metas da semana foram atingidas.</p>
+                                    <p className="text-muted-foreground">Bom descanso!</p>
+                                </div>
+                            )}
+                        </>
+                     ) : (
+                        allTasks
+                        .filter(task => !task.saturdayOnly)
                         .map((task) => (
-                            <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
+                             <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
                                 {task.type === 'checkbox' ? (
                                     <>
                                         <div className="flex items-center space-x-4">
@@ -540,19 +595,7 @@ export default function RotinaSDRPage() {
                                 )}
                             </div>
                         ))
-                    }
-                    {/* Render Consultorias specifically for Saturday */}
-                    {isSaturday && (
-                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50">
-                            <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1 flex items-center"><Briefcase className="mr-2 h-5 w-5" />Consultorias Realizadas (Semanal)</Label>
-                            <div className="flex items-center gap-3 w-full sm:w-auto">
-                                <div className="text-right">
-                                    <p className={cn("text-lg font-bold", isWeeklyGoalMet ? 'text-green-500' : 'text-red-500')}>{totalWeeklyMeetings} / {WEEKLY_MEETING_GOAL}</p>
-                                    <p className={cn("text-sm font-semibold", isWeeklyGoalMet ? 'text-green-500' : 'text-red-500')}>{isWeeklyGoalMet ? 'Meta atingida!' : `Faltam ${Math.max(0, WEEKLY_MEETING_GOAL - totalWeeklyMeetings)}`}</p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                     )}
                   </div>
                 </CardContent>
               </Card>
@@ -653,21 +696,19 @@ export default function RotinaSDRPage() {
               <Button variant="outline" size="icon" onClick={() => handleMonthChange('next')}><ChevronRight className="h-4 w-4" /></Button>
             </div>
             
-             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-                <div className="flex flex-wrap items-center gap-2">
-                    {isAdmin && (
-                       <TabsList>
-                          {renderTabTrigger('Visão Geral')}
-                       </TabsList>
-                    )}
+             <div className="flex flex-wrap items-center gap-2">
+                 {isAdmin && (
                     <TabsList>
-                       {DAY_TABS.map(renderTabTrigger)}
+                        {renderTabTrigger('Visão Geral')}
                     </TabsList>
-                    <TabsList>
-                       {FUNCTION_TABS.map(renderTabTrigger)}
-                    </TabsList>
-                </div>
-            </Tabs>
+                 )}
+                 <TabsList>
+                    {DAY_TABS.map(renderTabTrigger)}
+                 </TabsList>
+                 <TabsList>
+                    {FUNCTION_TABS.map(renderTabTrigger)}
+                 </TabsList>
+             </div>
         </div>
 
          <Separator />
