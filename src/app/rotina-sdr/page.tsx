@@ -42,7 +42,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -672,7 +671,7 @@ export default function RotinaSDRPage() {
 
   const renderTabContent = () => {
     if (isAdmin) {
-      return <AdminView />;
+      if (activeTab === 'Visão Geral') return <AdminView />;
     }
     if (ptDays.includes(activeTab)) {
       return <SDRView />;
@@ -793,4 +792,3 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
-
