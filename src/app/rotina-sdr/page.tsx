@@ -538,7 +538,15 @@ export default function RotinaSDRPage() {
                               <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50 mb-4">
                                   <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
                                   <div className="flex items-center gap-3 w-full sm:w-auto">
-                                      <Input type="number" id={`${activeDay}-${task.id}`} value={currentSaturdayValue} onChange={(e) => handleCounterChange(task.id, e.target.value)} className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" />
+                                      <Input 
+                                          type="text"
+                                          pattern="[0-9]*"
+                                          inputMode="numeric"
+                                          id={`${activeDay}-${task.id}`} 
+                                          value={currentSaturdayValue} 
+                                          onChange={(e) => handleCounterChange(task.id, e.target.value)} 
+                                          className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0" 
+                                      />
                                       <div className="text-right">
                                           <p className={cn("text-lg font-bold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
                                               {weeklyTotal} / {task.weeklyGoal}
@@ -558,24 +566,33 @@ export default function RotinaSDRPage() {
                           <p className="text-muted-foreground">Bom descanso!</p>
                       </div>
                   )}
+                  {renderConsultorias()}
                </>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-                  {/* Left Column for Counter Tasks */}
-                  <div className="space-y-4">
-                      {counterTasks.map((task) => (
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                       {counterTasks.map((task) => (
                            <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
                                 <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
                                 <div className="flex items-center gap-3">
-                                    <Input type="number" id={`${activeDay}-${task.id}`} value={weekData.counterTasks?.[activeDay]?.[task.id] || ''} onChange={(e) => handleCounterChange(task.id, e.target.value)} className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50" placeholder="0" />
+                                    <Input 
+                                        type="text" 
+                                        pattern="[0-9]*"
+                                        inputMode="numeric"
+                                        id={`${activeDay}-${task.id}`} 
+                                        value={weekData.counterTasks?.[activeDay]?.[task.id] || ''} 
+                                        onChange={(e) => handleCounterChange(task.id, e.target.value)} 
+                                        className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50" 
+                                        placeholder="0" 
+                                    />
                                     <span className={cn("text-base font-semibold", (weekData.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal ? "text-green-500" : "text-red-500")}>/ {task.dailyGoal}</span>
                                 </div>
                             </div>
                       ))}
                       {renderConsultorias()}
-                  </div>
-
-                  {/* Right Column for Checkbox Tasks */}
+                    </div>
+                  
+                  {/* Checkbox Tasks */}
                   <div className="space-y-4">
                     {checkboxTasks.map(task => {
                         const isChecked = weekData.checkedTasks?.[activeDay]?.[task.id] || false;
@@ -639,7 +656,9 @@ export default function RotinaSDRPage() {
             </Label>
             <div className="flex items-center gap-3 w-full sm:w-auto">
                 <Input
-                    type="number"
+                    type="text"
+                    pattern="[0-9]*"
+                    inputMode="numeric"
                     id={`consultorias-${activeDay}`}
                     value={dailyMeetings || ''}
                     onChange={handleDailyMeetingsChange}
