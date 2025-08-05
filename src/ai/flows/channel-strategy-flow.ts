@@ -1,9 +1,9 @@
 
 'use server';
 /**
- * @fileOverview A Genkit flow to analyze a prospect's channel (website, social media) based on a structured framework.
+ * @fileOverview A Genkit flow to analyze a prospect's channel (website, social media) based on a structured framework from an image.
  *
- * - analyzeChannelStrategy: Provides a strategic analysis of a given URL and channel type, answering specific questions.
+ * - analyzeChannelStrategy: Provides a strategic analysis of a given screenshot and channel type, answering specific questions.
  */
 
 import { ai } from '@/ai/genkit';
@@ -31,17 +31,12 @@ const channelStrategyPrompt = ai.definePrompt({
   prompt: `
     Você é um Estrategista de Marketing Sênior e um detetive de negócios. Sua missão é fazer um diagnóstico profundo e detalhado de um canal digital de um prospect, preenchendo um formulário de análise completo.
 
-    A fonte primária de análise deve ser a imagem fornecida. Use-a para extrair o máximo de informações visuais possíveis.
+    A sua ÚNICA fonte de informação é a IMAGEM fornecida. Aja como se você estivesse vendo a tela do canal. Analise cada detalhe visual e textual presente na imagem para extrair o máximo de informações possíveis.
 
     **Imagem para Análise:**
-    {{#if screenshotDataUri}}
-      {{media url=screenshotDataUri}}
-    {{else}}
-      Nenhuma imagem fornecida. Baseie sua análise nas melhores práticas para um canal do tipo **{{channelType}}**.
-    {{/if}}
-
+    {{media url=screenshotDataUri}}
+    
     O canal a ser analisado é um **{{channelType}}**.
-    A URL (contexto adicional) é: **{{{channelUrl}}}**
 
     Preencha CADA CAMPO do objeto de saída 'analysis' com uma análise clara, objetiva e profissional. Baseie-se no framework abaixo correspondente ao tipo de canal.
 
@@ -50,7 +45,7 @@ const channelStrategyPrompt = ai.definePrompt({
     -   **gancho:** Com base na oportunidade mais crítica, crie UMA frase de abordagem consultiva para o primeiro contato.
 
     ---
-    **Framework de Análise para {{channelType}} como 'Instagram'**
+    **Framework de Análise para {{channelType}} como 'instagram'**
 
     1.  **analiseBio:** A bio está clara e otimizada? Ela comunica a proposta de valor em segundos? Possui uma chamada para ação (CTA) e um link relevante?
     2.  **analiseDestaques:** Os destaques são usados de forma estratégica? Eles funcionam como um menu, apresentando produtos, depoimentos, e informações importantes de forma organizada?
@@ -61,7 +56,7 @@ const channelStrategyPrompt = ai.definePrompt({
     7.  **engajamentoComunidade:** Como está o engajamento? Os posts têm curtidas e comentários? A empresa responde aos comentários, criando uma comunidade?
 
     ---
-    **Framework de Análise para {{channelType}} como 'Website'**
+    **Framework de Análise para {{channelType}} como 'website'**
 
     1.  **primeiraDobra:** A primeira impressão (o que se vê sem rolar a página) é impactante? A proposta de valor é imediatamente clara? O CTA principal é visível?
     2.  **propostaDeValor:** A mensagem principal do site responde claramente "O que você faz?", "Para quem?" e "Qual o diferencial?"?
@@ -82,7 +77,7 @@ const channelStrategyPrompt = ai.definePrompt({
     6.  **seoVideo:** As descrições dos vídeos são bem-feitas, com links relevantes e palavras-chave? As tags são usadas de forma estratégica?
     7.  **engajamentoComentarios:** O criador responde aos comentários? Existe uma comunidade se formando em torno do conteúdo?
 
-    Agora, preencha o formulário de análise para o **{{channelType}}** em **{{{channelUrl}}}**.
+    Agora, preencha o formulário de análise para o canal do tipo **{{channelType}}**.
   `
 });
 
@@ -98,3 +93,5 @@ const channelStrategyFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

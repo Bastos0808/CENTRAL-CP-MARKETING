@@ -30,22 +30,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 type ChannelType = "instagram" | "website" | "youtube";
 
 const formSchema = z.object({
-  instagram: z.object({
-    url: z.string().optional(),
-    screenshotDataUri: z.string().optional(),
-    analysis: InstagramAnalysisSchema.optional(),
-  }).optional(),
-  website: z.object({
-    url: z.string().optional(),
-    screenshotDataUri: z.string().optional(),
-    analysis: WebsiteAnalysisSchema.optional(),
-  }).optional(),
-  youtube: z.object({
-    url: z.string().optional(),
-    screenshotDataUri: z.string().optional(),
-    analysis: YouTubeAnalysisSchema.optional(),
-  }).optional(),
+  channelType: z.enum(["instagram", "website", "youtube"]),
+  screenshotDataUri: z.string().min(1, 'O print da tela é obrigatório.'),
+  analysis: z.union([InstagramAnalysisSchema, WebsiteAnalysisSchema, YouTubeAnalysisSchema]).optional(),
 });
+
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -99,24 +88,20 @@ const channelConfig = {
 
 
 export default function ChannelStrategyAnalyzer() {
-  const [loadingChannel, setLoadingChannel] = useState<ChannelType | null>(null);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const fileInputRefs = {
-    instagram: useRef<HTMLInputElement>(null),
-    website: useRef<HTMLInputElement>(null),
-    youtube: useRef<HTMLInputElement>(null),
-  };
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      instagram: { url: '', analysis: {}, screenshotDataUri: undefined },
-      website: { url: '', analysis: {}, screenshotDataUri: undefined },
-      youtube: { url: '', analysis: {}, screenshotDataUri: undefined },
+      channelType: 'instagram',
+      screenshotDataUri: undefined,
+      analysis: undefined
     }
   });
   
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, channel: ChannelType) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
         if (file.size > 4 * 1024 * 1024) { // 4MB limit
@@ -130,72 +115,50 @@ export default function ChannelStrategyAnalyzer() {
         const reader = new FileReader();
         reader.onloadend = () => {
             const dataUri = reader.result as string;
-            form.setValue(`${channel}.screenshotDataUri`, dataUri);
+            form.setValue('screenshotDataUri', dataUri);
         };
         reader.readAsDataURL(file);
     }
   };
 
-  const handleRemoveScreenshot = (channel: ChannelType) => {
-      form.setValue(`${channel}.screenshotDataUri`, undefined);
-      const ref = fileInputRefs[channel];
-      if (ref.current) {
-          ref.current.value = '';
+  const handleRemoveScreenshot = () => {
+      form.setValue('screenshotDataUri', undefined);
+      if (fileInputRef.current) {
+          fileInputRef.current.value = '';
       }
   }
 
 
-  const handleAnalyze = async (channel: ChannelType) => {
-    const url = form.getValues(`${channel}.url`);
-    const screenshot = form.getValues(`${channel}.screenshotDataUri`);
-    
-    if (!url || !url.startsWith('http')) {
-      toast({
-        title: "URL Inválida",
-        description: `Por favor, insira uma URL válida para ${channelConfig[channel].name}.`,
-        variant: "destructive",
-      });
-      return;
-    }
-    
-     if (!screenshot) {
-      toast({
-        title: "Print da Tela Faltando",
-        description: `Por favor, anexe um print da tela do canal para a IA analisar.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoadingChannel(channel);
+  const handleAnalyze = async (values: FormValues) => {
+    setLoading(true);
+    form.setValue('analysis', undefined);
 
     try {
       const result = await analyzeChannelStrategy({ 
-          channelUrl: url, 
-          channelType: channel,
-          screenshotDataUri: screenshot,
+          channelType: values.channelType,
+          screenshotDataUri: values.screenshotDataUri,
       });
-      form.setValue(`${channel}.analysis`, result.analysis, { shouldValidate: true });
+      form.setValue(`analysis`, result.analysis, { shouldValidate: true });
       toast({
         title: "Análise Concluída!",
         description: `A IA analisou o canal e preencheu o formulário.`,
       });
     } catch (error) {
-      console.error(`Error analyzing ${channel}:`, error);
+      console.error(`Error analyzing channel:`, error);
       toast({
         title: "Erro na Análise",
         description: `Não foi possível analisar o canal. Verifique os dados e tente novamente.`,
         variant: "destructive",
       });
     } finally {
-      setLoadingChannel(null);
+      setLoading(null);
     }
   };
 
-  const copyToClipboard = (channel: ChannelType) => {
-    const analysis = form.getValues(`${channel}.analysis`);
-    const url = form.getValues(`${channel}.url`);
-    const config = channelConfig[channel];
+  const copyToClipboard = () => {
+    const analysis = form.getValues(`analysis`);
+    const channelType = form.getValues('channelType');
+    const config = channelConfig[channelType];
 
     if (!analysis) return;
     
@@ -209,8 +172,6 @@ export default function ChannelStrategyAnalyzer() {
 
     const text = `
 **Diagnóstico Estratégico de Canal: ${config.name}**
-**URL:** ${url}
-
 ---
 ${analysisText}
     `.trim();
@@ -221,166 +182,177 @@ ${analysisText}
       description: `O diagnóstico de ${config.name} foi copiado.`,
     });
   }
-
-
-  const renderChannelTab = (channel: ChannelType) => {
-    const config = channelConfig[channel];
-    const isLoading = loadingChannel === channel;
-    const analysisExists = !!form.watch(`${channel}.analysis`);
-    const screenshotPreview = form.watch(`${channel}.screenshotDataUri`);
-    
-    const { fields: opportunityFields, append: appendOpportunity, remove: removeOpportunity } = useFieldArray({
-        control: form.control,
-        name: `${channel}.analysis.oportunidades` as any,
-    });
-
-    return (
-      <TooltipProvider>
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <config.icon className="h-6 w-6 text-primary" />
-              <CardTitle>{config.name}</CardTitle>
-            </div>
-            <CardDescription>Insira a URL, anexe um print da tela e gere uma análise com IA ou preencha o formulário manualmente.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex flex-col md:flex-row items-start gap-4">
-              <div className="flex-1 w-full">
-                <Label htmlFor={`${channel}-url`} className="mb-2 block">URL do Canal</Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Controller
-                    name={`${channel}.url`}
-                    control={form.control}
-                    render={({ field }) => (
-                        <Input id={`${channel}-url`} placeholder={`https://www.${channel}.com/prospect`} {...field} className="pl-10" />
-                    )}
-                  />
-                </div>
-              </div>
-               <div className="flex-1 w-full">
-                  <Label className="mb-2 block">Print da Tela</Label>
-                  {screenshotPreview ? (
-                      <div className="relative group">
-                          <Image src={screenshotPreview} alt="Preview do print" width={200} height={150} className="rounded-md object-contain max-h-24 w-full border" />
-                          <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={() => handleRemoveScreenshot(channel)}
-                          >
-                              <X className="h-3 w-3" />
-                          </Button>
-                      </div>
-                  ) : (
-                      <Button type="button" variant="outline" onClick={() => fileInputRefs[channel].current?.click()} className="w-full">
-                          <Paperclip className="mr-2 h-4 w-4" />
-                          Anexar Print
-                      </Button>
-                  )}
-                  <input
-                      type="file"
-                      ref={fileInputRefs[channel]}
-                      className="hidden"
-                      accept="image/png, image/jpeg, image/webp"
-                      onChange={(e) => handleFileChange(e, channel)}
-                  />
-              </div>
-              <div className="flex w-full md:w-auto items-end h-full gap-2 pt-2 md:pt-0">
-                  <Button onClick={() => handleAnalyze(channel)} disabled={isLoading} className="w-full md:w-auto self-end">
-                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    {isLoading ? "Analisando..." : "Analisar com IA"}
-                  </Button>
-                  {analysisExists && (
-                      <Button variant="outline" size="icon" onClick={() => copyToClipboard(channel)} className="self-end">
-                          <Copy className="h-4 w-4"/>
-                      </Button>
-                  )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 pt-4 border-t">
-              {config.formSections.map(({ key, label, icon: Icon, prompt, hint }) => {
-                const isOpportunityField = key === 'oportunidades';
-                const isHookField = key === 'gancho';
-                const isRegularField = !isOpportunityField && !isHookField;
-                
-                const fieldClassName = cn({
-                  "md:col-span-2": isOpportunityField || isHookField
-                });
-                
-                return (
-                  <div key={key} className={fieldClassName}>
-                      <Label htmlFor={`${channel}-${key}`} className="flex items-center gap-2 mb-2 font-semibold text-primary/90">
-                          <Icon className="h-5 w-5" />
-                          {label}
-                          <Tooltip>
-                              <TooltipTrigger asChild>
-                                  <span className="cursor-help text-muted-foreground hover:text-primary">
-                                      <Info className="h-4 w-4" />
-                                  </span>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-xs" side="top">
-                                  <p>{hint}</p>
-                              </TooltipContent>
-                          </Tooltip>
-                      </Label>
-
-                      {isRegularField && <Controller
-                          name={`${channel}.analysis.${key as keyof typeof analysisExists}`}
-                          control={form.control}
-                          render={({ field }) => <Textarea id={`${channel}-${key}`} {...field} placeholder={prompt} className="min-h-[100px] text-sm" value={field.value || ''} />}
-                      />}
-
-                      {isOpportunityField && (
-                        <div className="space-y-2">
-                           {opportunityFields.map((field, index) => (
-                               <div key={field.id} className="flex items-center gap-2">
-                                  <Controller
-                                      name={`${channel}.analysis.oportunidades.${index}`}
-                                      control={form.control}
-                                      render={({ field: controllerField }) => <Input {...controllerField} placeholder={`Oportunidade #${index + 1}`} className="text-sm" />}
-                                  />
-                                   <Button type="button" variant="ghost" size="icon" onClick={() => removeOpportunity(index)}><Trash2 className="h-4 w-4" /></Button>
-                               </div>
-                           ))}
-                           <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => appendOpportunity({value: ''})}>Adicionar Oportunidade</Button>
-                        </div>
-                      )}
-
-                      {isHookField && <Controller
-                          name={`${channel}.analysis.gancho` as any}
-                          control={form.control}
-                          render={({ field }) => <Textarea id={`${channel}-${key}`} {...field} placeholder={prompt} className="min-h-[100px] text-sm" value={field.value || ''} />}
-                      />}
-                  </div>
-              )})}
-            </div>
-
-          </CardContent>
-        </Card>
-      </TooltipProvider>
-    );
-  };
+  
+  const watchedChannelType = form.watch('channelType');
+  const watchedScreenshot = form.watch('screenshotDataUri');
+  const analysis = form.watch('analysis');
+  const currentConfig = channelConfig[watchedChannelType];
+  
+  const { fields: opportunityFields, append: appendOpportunity, remove: removeOpportunity } = useFieldArray({
+      control: form.control,
+      name: `analysis.oportunidades` as any,
+  });
 
   return (
-    <Tabs defaultValue="instagram" className="w-full">
-      <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="instagram"><Instagram className="mr-2"/> Instagram</TabsTrigger>
-        <TabsTrigger value="website"><Globe className="mr-2"/> Website</TabsTrigger>
-        <TabsTrigger value="youtube"><Youtube className="mr-2"/> YouTube</TabsTrigger>
-      </TabsList>
-      <TabsContent value="instagram" className="mt-4">
-        {renderChannelTab("instagram")}
-      </TabsContent>
-      <TabsContent value="website" className="mt-4">
-        {renderChannelTab("website")}
-      </TabsContent>
-      <TabsContent value="youtube" className="mt-4">
-        {renderChannelTab("youtube")}
-      </TabsContent>
-    </Tabs>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleAnalyze)} className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Configuração da Análise</CardTitle>
+                    <CardDescription>Escolha o tipo de canal e anexe um print (screenshot) da tela para a IA analisar.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <FormField
+                        control={form.control}
+                        name="channelType"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Tipo de Canal</FormLabel>
+                                <FormControl>
+                                    <Tabs
+                                        value={field.value}
+                                        onValueChange={(value) => field.onChange(value as ChannelType)}
+                                        className="w-full"
+                                    >
+                                        <TabsList className="grid w-full grid-cols-3">
+                                            <TabsTrigger value="instagram"><Instagram className="mr-2"/> Instagram</TabsTrigger>
+                                            <TabsTrigger value="website"><Globe className="mr-2"/> Website</TabsTrigger>
+                                            <TabsTrigger value="youtube"><Youtube className="mr-2"/> YouTube</TabsTrigger>
+                                        </TabsList>
+                                    </Tabs>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    
+                    <FormField
+                        control={form.control}
+                        name="screenshotDataUri"
+                        render={({ field }) => (
+                            <FormItem>
+                               <FormLabel>Print da Tela do Canal</FormLabel>
+                               {watchedScreenshot ? (
+                                  <div className="relative group w-fit">
+                                      <Image src={watchedScreenshot} alt="Preview do print" width={300} height={200} className="rounded-md object-contain max-h-48 w-full border" />
+                                      <Button
+                                          type="button"
+                                          variant="destructive"
+                                          size="icon"
+                                          className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                          onClick={handleRemoveScreenshot}
+                                      >
+                                          <X className="h-3 w-3" />
+                                      </Button>
+                                  </div>
+                              ) : (
+                                  <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} className="w-full md:w-auto">
+                                      <Paperclip className="mr-2 h-4 w-4" />
+                                      Anexar Print
+                                  </Button>
+                              )}
+                               <FormControl>
+                                  <input
+                                      type="file"
+                                      ref={fileInputRef}
+                                      className="hidden"
+                                      accept="image/png, image/jpeg, image/webp"
+                                      onChange={handleFileChange}
+                                  />
+                               </FormControl>
+                               <FormMessage />
+                           </FormItem>
+                        )}
+                    />
+
+                </CardContent>
+            </Card>
+
+            <div className="flex justify-end gap-2">
+                 <Button type="submit" disabled={loading}>
+                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                    Analisar com IA
+                 </Button>
+                 {analysis && (
+                    <Button type="button" variant="outline" size="icon" onClick={copyToClipboard}>
+                        <Copy className="h-4 w-4"/>
+                    </Button>
+                 )}
+            </div>
+
+            {analysis && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Formulário de Análise - {currentConfig.name}</CardTitle>
+                  <CardDescription>Respostas geradas pela IA com base na imagem. Você pode editar os campos antes de copiar.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <TooltipProvider>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 pt-4">
+                        {currentConfig.formSections.map(({ key, label, icon: Icon, prompt, hint }) => {
+                          const isOpportunityField = key === 'oportunidades';
+                          const isHookField = key === 'gancho';
+                          const isRegularField = !isOpportunityField && !isHookField;
+                          
+                          const fieldClassName = cn({
+                            "md:col-span-2": isOpportunityField || isHookField
+                          });
+                          
+                          return (
+                            <div key={key} className={fieldClassName}>
+                                <Label htmlFor={`analysis-${key}`} className="flex items-center gap-2 mb-2 font-semibold text-primary/90">
+                                    <Icon className="h-5 w-5" />
+                                    {label}
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <span className="cursor-help text-muted-foreground hover:text-primary">
+                                                <Info className="h-4 w-4" />
+                                            </span>
+                                        </TooltipTrigger>
+                                        <TooltipContent className="max-w-xs" side="top">
+                                            <p>{hint}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </Label>
+
+                                {isRegularField && <Controller
+                                    name={`analysis.${key as keyof typeof analysis}`}
+                                    control={form.control}
+                                    render={({ field }) => <Textarea id={`analysis-${key}`} {...field} placeholder={prompt} className="min-h-[100px] text-sm" value={field.value || ''} />}
+                                />}
+
+                                {isOpportunityField && (
+                                  <div className="space-y-2">
+                                     {opportunityFields.map((field, index) => (
+                                         <div key={field.id} className="flex items-center gap-2">
+                                            <Controller
+                                                name={`analysis.oportunidades.${index}`}
+                                                control={form.control}
+                                                render={({ field: controllerField }) => <Input {...controllerField} placeholder={`Oportunidade #${index + 1}`} className="text-sm" />}
+                                            />
+                                             <Button type="button" variant="ghost" size="icon" onClick={() => removeOpportunity(index)}><Trash2 className="h-4 w-4" /></Button>
+                                         </div>
+                                     ))}
+                                     <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => appendOpportunity({value: ''})}>Adicionar Oportunidade</Button>
+                                  </div>
+                                )}
+
+                                {isHookField && <Controller
+                                    name={`analysis.gancho` as any}
+                                    control={form.control}
+                                    render={({ field }) => <Textarea id={`analysis-${key}`} {...field} placeholder={prompt} className="min-h-[100px] text-sm" value={field.value || ''} />}
+                                />}
+                            </div>
+                        )})}
+                      </div>
+                    </TooltipProvider>
+                </CardContent>
+              </Card>
+            )}
+
+        </form>
+      </Form>
   );
 }
+
+    
