@@ -616,8 +616,8 @@ export default function RotinaSDRPage() {
     
     return(
       <Card className="bg-transparent border-none shadow-none">
-          <CardContent className="p-0">
-              <div className="flex justify-between items-center mb-6">
+          <CardContent className="p-0 space-y-4">
+              <div className="flex justify-between items-center">
                   <h3 className="text-2xl font-bold font-headline text-primary flex items-center">
                       <CalendarDays className="mr-3 h-6 w-6" />
                       {activeDay}
@@ -627,6 +627,23 @@ export default function RotinaSDRPage() {
                       <Switch id="holiday-switch" checked={isHoliday} onCheckedChange={handleHolidayToggle} />
                   </div>
               </div>
+              
+              {previousDayTasks && !isSaturday && !isHoliday && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="font-headline flex items-center text-md">
+                      <ListPlus className="mr-3 h-5 w-5" />
+                      Tarefas Planejadas (do dia anterior)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="whitespace-pre-wrap p-4 bg-muted rounded-md text-muted-foreground">
+                      {previousDayTasks}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
 
               {isHoliday ? (
                   <div className="text-center py-12 text-muted-foreground">
