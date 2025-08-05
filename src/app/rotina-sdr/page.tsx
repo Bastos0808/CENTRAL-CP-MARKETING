@@ -86,6 +86,7 @@ interface SdrUser {
     id: string;
     name: string;
     email: string;
+    username?: string;
 }
 
 // Sub-component for Counter Tasks to isolate state
@@ -260,11 +261,11 @@ export default function RotinaSDRPage() {
                 const fetchedSdrList: SdrUser[] = [];
                  usersSnapshot.forEach(userDoc => {
                     const userData = userDoc.data();
-                    let displayName = userData.displayName || '';
+                    let displayName = userData.username || userData.displayName || '';
                     if (!displayName && userData.email) {
                         displayName = userData.email.split('@')[0];
                     }
-                    fetchedSdrList.push({ id: userDoc.id, name: displayName, email: userData.email });
+                    fetchedSdrList.push({ id: userDoc.id, name: displayName, email: userData.email, username: userData.username });
                 });
 
                 setSdrList(fetchedSdrList);
@@ -603,7 +604,7 @@ export default function RotinaSDRPage() {
 
   const AdminView = () => {
     const [selectedSdr, setSelectedSdr] = useState('all');
-    const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+    const [date, setDate] = useState<Date | undefined>(new Date());
 
     if (isLoading) {
       return (
@@ -620,8 +621,6 @@ export default function RotinaSDRPage() {
     const filteredSdrList = selectedSdr === 'all'
       ? sdrList
       : sdrList.filter(sdr => sdr.id === selectedSdr);
-      
-    const isRangeView = dateRange?.from !== undefined;
 
     return (
         <div className="space-y-6">
@@ -644,83 +643,35 @@ export default function RotinaSDRPage() {
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="flex-1 space-y-2">
-                         <Label>Filtrar por Período</Label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                            <Button
-                                id="date"
-                                variant={"outline"}
-                                className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !dateRange && "text-muted-foreground"
-                                )}
-                            >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {dateRange?.from ? (
-                                dateRange.to ? (
-                                    <>
-                                    {format(dateRange.from, "LLL dd, y", { locale: ptBR })} -{" "}
-                                    {format(dateRange.to, "LLL dd, y", { locale: ptBR })}
-                                    </>
-                                ) : (
-                                    format(dateRange.from, "LLL dd, y", { locale: ptBR })
-                                )
-                                ) : (
-                                <span>Escolha um período</span>
-                                )}
-                            </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                                initialFocus
-                                mode="range"
-                                defaultMonth={dateRange?.from}
-                                selected={dateRange}
-                                onSelect={setDateRange}
-                                numberOfMonths={2}
-                                locale={ptBR}
-                            />
-                            </PopoverContent>
-                        </Popover>
-                    </div>
                 </CardContent>
             </Card>
             
-            <div className="space-y-8">
-                {!isRangeView && <TeamRanking />}
+            <TeamRanking />
 
-                <div className="space-y-6">
-                     {filteredSdrList.map(sdr => {
-                        const sdrYearData = allSdrData[sdr.id];
-                        if (!sdrYearData) return null;
-                        
-                        const month = ptMonths[getMonth(dateRange?.from || new Date())];
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                 {filteredSdrList.map(sdr => {
+                    const sdrYearData = allSdrData[sdr.id];
+                    if (!sdrYearData) return null;
+                    
+                    const month = ptMonths[getMonth(date || new Date())];
 
-                        return (
-                            <Card key={sdr.id}>
-                                <CardHeader>
-                                    <CardTitle>{sdr.name}</CardTitle>
-                                    <CardDescription>
-                                        Performance de {isRangeView && dateRange?.from ? 
-                                        <>
-                                            {format(dateRange.from, "PPP", { locale: ptBR })} 
-                                            {dateRange.to && ` a ${format(dateRange.to, "PPP", { locale: ptBR })}`}
-                                        </>
-                                        : `Mês de ${month}`}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                   <WeeklyProgress 
-                                        sdrId={sdr.id}
-                                        yearData={sdrYearData}
-                                        dateRange={dateRange}
-                                   />
-                                </CardContent>
-                            </Card>
-                        )
-                     })}
-                </div>
+                    return (
+                        <Card key={sdr.id}>
+                            <CardHeader>
+                                <CardTitle>{sdr.name}</CardTitle>
+                                <CardDescription>Performance de {month}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <WeeklyProgress 
+                                    sdrId={sdr.id}
+                                    yearData={sdrYearData}
+                                    month={month}
+                                    isMonthlyView
+                                />
+                            </CardContent>
+                        </Card>
+                    )
+                 })}
             </div>
         </div>
     );
@@ -904,7 +855,7 @@ export default function RotinaSDRPage() {
     return (
          <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
             <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1">
-                Consultorias Realizadas
+                Consultorias Agendadas
             </Label>
             <div className="flex items-center gap-3">
                 <CounterTaskInput
@@ -921,9 +872,9 @@ export default function RotinaSDRPage() {
                 {!isSaturday && (
                      <span className={cn(
                         "text-base font-semibold w-10 text-right", 
-                        (Number(dailyMeetings) >= 2) ? 'text-green-500' : 'text-red-500'
+                        (Number(dailyMeetings) >= 1) ? 'text-green-500' : 'text-red-500'
                      )}>
-                        / 2
+                        / 1
                     </span>
                 )}
                 {isSaturday && (
@@ -1066,5 +1017,6 @@ export default function RotinaSDRPage() {
 }
 
     
+
 
 
