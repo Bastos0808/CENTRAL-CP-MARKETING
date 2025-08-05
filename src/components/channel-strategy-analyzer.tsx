@@ -122,7 +122,8 @@ export default function ChannelStrategyAnalyzer() {
   };
 
   const handleRemoveScreenshot = () => {
-      form.setValue('screenshotDataUri', undefined);
+      form.setValue('screenshotDataUri', undefined, { shouldValidate: true });
+      form.setValue('analysis', undefined);
       if (fileInputRef.current) {
           fileInputRef.current.value = '';
       }
@@ -151,7 +152,7 @@ export default function ChannelStrategyAnalyzer() {
         variant: "destructive",
       });
     } finally {
-      setLoading(null);
+      setLoading(false);
     }
   };
 
@@ -187,11 +188,6 @@ ${analysisText}
   const watchedScreenshot = form.watch('screenshotDataUri');
   const analysis = form.watch('analysis');
   const currentConfig = channelConfig[watchedChannelType];
-  
-  const { fields: opportunityFields, append: appendOpportunity, remove: removeOpportunity } = useFieldArray({
-      control: form.control,
-      name: `analysis.oportunidades` as any,
-  });
 
   return (
       <Form {...form}>
@@ -269,7 +265,7 @@ ${analysisText}
             </Card>
 
             <div className="flex justify-end gap-2">
-                 <Button type="submit" disabled={loading}>
+                 <Button type="submit" disabled={loading || !watchedScreenshot}>
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                     Analisar com IA
                  </Button>
@@ -300,7 +296,7 @@ ${analysisText}
                           
                           return (
                             <div key={key} className={fieldClassName}>
-                                <Label htmlFor={`analysis-${key}`} className="flex items-center gap-2 mb-2 font-semibold text-primary/90">
+                                <Label className="flex items-center gap-2 mb-2 font-semibold text-primary/90">
                                     <Icon className="h-5 w-5" />
                                     {label}
                                     <Tooltip>
@@ -323,25 +319,23 @@ ${analysisText}
 
                                 {isOpportunityField && (
                                   <div className="space-y-2">
-                                     {opportunityFields.map((field, index) => (
-                                         <div key={field.id} className="flex items-center gap-2">
-                                            <Controller
-                                                name={`analysis.oportunidades.${index}`}
-                                                control={form.control}
-                                                render={({ field: controllerField }) => <Input {...controllerField} placeholder={`Oportunidade #${index + 1}`} className="text-sm" />}
-                                            />
-                                             <Button type="button" variant="ghost" size="icon" onClick={() => removeOpportunity(index)}><Trash2 className="h-4 w-4" /></Button>
-                                         </div>
-                                     ))}
-                                     <Button type="button" variant="outline" size="sm" className="w-full" onClick={() => appendOpportunity({value: ''})}>Adicionar Oportunidade</Button>
+                                     {Array.isArray(analysis.oportunidades) && analysis.oportunidades.length > 0 ? (
+                                        <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+                                           {(analysis.oportunidades as string[]).map((opp, index) => (
+                                                <li key={index}>{opp}</li>
+                                            ))}
+                                        </ul>
+                                     ) : (
+                                        <p className="text-sm text-muted-foreground">Nenhuma oportunidade identificada pela IA.</p>
+                                     )}
                                   </div>
                                 )}
 
-                                {isHookField && <Controller
-                                    name={`analysis.gancho` as any}
-                                    control={form.control}
-                                    render={({ field }) => <Textarea id={`analysis-${key}`} {...field} placeholder={prompt} className="min-h-[100px] text-sm" value={field.value || ''} />}
-                                />}
+                                {isHookField && (
+                                    <div className="p-3 rounded-md bg-muted/50 border">
+                                        <p className="text-sm text-foreground">{analysis.gancho || 'Nenhum gancho gerado.'}</p>
+                                    </div>
+                                )}
                             </div>
                         )})}
                       </div>
@@ -355,4 +349,3 @@ ${analysisText}
   );
 }
 
-    
