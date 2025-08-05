@@ -298,11 +298,14 @@ export default function RotinaSDRPage() {
   };
   
   const handleCounterChange = (taskId: string, value: string) => {
-    const numValue = parseInt(value, 10);
+    // Allow empty string for clearing the input, otherwise parse to number
+    const numValue = value === '' ? 0 : parseInt(value, 10);
+    if (isNaN(numValue)) return; // Prevents NaN from being set
+
     handleUpdateYearData(draft => {
         const weekData = draft[currentMonth][activeWeekKey];
         if (!weekData.counterTasks[activeDay]) weekData.counterTasks[activeDay] = {};
-        weekData.counterTasks[activeDay][taskId] = isNaN(numValue) || numValue < 0 ? 0 : numValue;
+        weekData.counterTasks[activeDay][taskId] = numValue < 0 ? 0 : numValue;
     });
   };
 
