@@ -770,10 +770,10 @@ export default function RotinaSDRPage() {
                     </Button>
                 ) : (
                     <>
-                        <div className="grid grid-cols-3 gap-2 p-1 rounded-lg bg-muted">
+                        <div className="grid grid-cols-3 gap-2">
                             {DAY_TABS.slice(0,3).map(day => renderNavButton(day, 'day'))}
                         </div>
-                        <div className="grid grid-cols-3 gap-2 p-1 rounded-lg bg-muted">
+                        <div className="grid grid-cols-3 gap-2">
                             {DAY_TABS.slice(3,6).map(day => renderNavButton(day, 'day'))}
                         </div>
                     </>
