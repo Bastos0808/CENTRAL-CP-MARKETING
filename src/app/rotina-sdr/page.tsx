@@ -453,14 +453,6 @@ export default function RotinaSDRPage() {
     };
   }, [activeDay, monthlyData, activeWeekKey]);
 
-  const handleMonthChange = (direction: 'next' | 'prev') => {
-      const currentMonthIndex = ptMonths.indexOf(currentMonth);
-      let nextMonthIndex = direction === 'next' ? currentMonthIndex + 1 : currentMonthIndex - 1;
-      if (nextMonthIndex >= ptMonths.length) nextMonthIndex = 0;
-      if (nextMonthIndex < 0) nextMonthIndex = ptMonths.length - 1;
-      setCurrentMonth(ptMonths[nextMonthIndex]);
-  }
-
   const TeamRanking = ({ sdrList, allSdrData, currentMonth }: { sdrList: SdrUser[], allSdrData: Record<string, YearData>, currentMonth: string }) => {
     const ranking = useMemo(() => {
       return sdrList
@@ -784,7 +776,6 @@ export default function RotinaSDRPage() {
       if (activeTab === 'Visão Geral') return <AdminView />;
     }
     
-    // SDR View only shows current day or function tabs
     if (FUNCTION_TABS.includes(activeTab)) {
         if (activeTab === 'Podcast') {
             return <PodcastTab podcastData={monthlyData?.[activeWeekKey]?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />;
@@ -846,25 +837,10 @@ export default function RotinaSDRPage() {
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
            <div className="flex items-center gap-4">
-             <Button variant="outline" size="icon" onClick={() => handleMonthChange('prev')}><ChevronLeft className="h-4 w-4" /></Button>
-             <div className="flex flex-col items-center">
-                 <Select value={currentMonth} onValueChange={setCurrentMonth}>
-                     <SelectTrigger className="w-[180px] text-lg font-bold"><SelectValue placeholder="Mês" /></SelectTrigger>
-                     <SelectContent>{ptMonths.map(month => (<SelectItem key={month} value={month}>{month}</SelectItem>))}</SelectContent>
-                 </Select>
-                {!isAdmin && (
-                    <Select value={String(currentWeek)} onValueChange={(val) => setCurrentWeek(Number(val))}>
-                       <SelectTrigger className="w-[140px] text-sm mt-2"><SelectValue placeholder="Semana" /></SelectTrigger>
-                       <SelectContent>
-                           <SelectItem value="1">Semana 1</SelectItem>
-                           <SelectItem value="2">Semana 2</SelectItem>
-                           <SelectItem value="3">Semana 3</SelectItem>
-                           <SelectItem value="4">Semana 4</SelectItem>
-                       </SelectContent>
-                   </Select>
-                )}
+             <div className="flex flex-col items-start p-2 rounded-lg border bg-card">
+                <h2 className="text-xl font-bold text-primary">{currentMonth}</h2>
+                <p className="text-sm text-muted-foreground">Semana {currentWeek}</p>
              </div>
-             <Button variant="outline" size="icon" onClick={() => handleMonthChange('next')}><ChevronRight className="h-4 w-4" /></Button>
            </div>
            
            <div className="flex flex-col gap-2 w-full max-w-lg">
@@ -898,4 +874,3 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
-
