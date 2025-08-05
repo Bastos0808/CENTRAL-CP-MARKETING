@@ -28,6 +28,8 @@ import {
   CheckCircle,
   Circle,
   Save,
+  Phone,
+  MessageSquare,
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth } from 'date-fns';
 
@@ -516,6 +518,45 @@ export default function RotinaSDRPage() {
         )
     }
 
+  const HeaderKpis = () => {
+    const weekData = monthlyData?.[activeWeekKey];
+    if (!weekData) return null;
+
+    const kpis = [
+      { id: 'a-3', label: 'Ligações', icon: Phone },
+      { id: 'm-4', label: 'Prospecção', icon: MessageSquare },
+      { id: 'daily_meetings', label: 'Agendamentos', icon: CalendarDays },
+    ];
+    
+    return (
+      <div className="hidden sm:flex items-center gap-2">
+        {kpis.map(kpi => {
+           const goal = weeklyGoals[kpi.id]?.goal || (kpi.id === 'daily_meetings' ? WEEKLY_MEETING_GOAL : 0);
+           let current = 0;
+
+            if (kpi.id === 'daily_meetings') {
+                current = weekData.meetingsBooked || 0;
+            } else {
+                 current = ptDays.reduce((acc, day) => {
+                    const count = Number(weekData.counterTasks?.[day]?.[kpi.id] || 0);
+                    return acc + count;
+                }, 0);
+            }
+
+          return (
+            <div key={kpi.id} className="flex items-center gap-2 p-2 rounded-lg border bg-card text-xs">
+              <kpi.icon className="h-4 w-4 text-muted-foreground" />
+              <div className="font-semibold">
+                <span className={cn("font-bold", current >= goal ? 'text-green-500' : 'text-primary')}>{current}</span>
+                <span className="text-muted-foreground">/{goal}</span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    );
+  };
+
 
   const AdminView = () => {
     if (isLoading) {
@@ -841,9 +882,10 @@ export default function RotinaSDRPage() {
                 <h2 className="text-xl font-bold text-primary">{currentMonth}</h2>
                 <p className="text-sm text-muted-foreground">Semana {currentWeek}</p>
              </div>
+              {!isAdmin && <HeaderKpis />}
            </div>
            
-           <div className="flex flex-col gap-2 w-full max-w-lg">
+           <div className="flex flex-col gap-2 w-full sm:w-auto">
                 {isAdmin ? (
                      <Button
                         key="Visão Geral"
