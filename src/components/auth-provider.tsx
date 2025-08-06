@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { doc, getDoc } from 'firebase/firestore';
 
 interface AppUser extends FirebaseAuthUser {
-    role?: 'admin' | 'estrategia' | 'podcast' | 'comercial';
+    role?: 'admin' | 'estrategia' | 'podcast' | 'comercial' | 'trafego';
 }
 
 interface AuthContextType {
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const userDocSnap = await getDoc(userDocRef);
                 
                 let displayName = fbUser.displayName || '';
-                let role: AppUser['role'] = 'comercial';
+                let role: AppUser['role'] = 'comercial'; // Default role
 
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();

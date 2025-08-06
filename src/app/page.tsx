@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search, BarChart } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search, BarChart, Megaphone } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -87,6 +88,10 @@ export default function Home() {
         icon: FileSignature
       }
   ];
+  
+  const trafficTools: any[] = [
+    // Ferramentas de tráfego serão adicionadas aqui
+  ];
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -104,11 +109,13 @@ export default function Home() {
     const canAccessStrategy = userRole === 'admin' || userRole === 'estrategia';
     const canAccessPodcast = userRole === 'admin' || userRole === 'podcast';
     const canAccessCommercial = userRole === 'admin' || userRole === 'comercial';
+    const canAccessTraffic = userRole === 'admin' || userRole === 'trafego';
 
     const allTabs = [
         { value: 'strategy', label: 'Estratégia', icon: Briefcase, content: strategicTools, enabled: canAccessStrategy },
         { value: 'podcast', label: 'Podcast', icon: Podcast, content: podcastTools, enabled: canAccessPodcast },
-        { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, enabled: canAccessCommercial }
+        { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, enabled: canAccessCommercial },
+        { value: 'traffic', label: 'Tráfego Pago', icon: Megaphone, content: trafficTools, enabled: canAccessTraffic },
     ];
 
     const enabledTabs = allTabs.filter(tab => tab.enabled);
@@ -157,26 +164,32 @@ export default function Home() {
                     
                     {enabledTabs.map(tab => (
                         <TabsContent key={tab.value} value={tab.value} className="mt-8">
-                            <div className={`grid gap-6 md:grid-cols-2 ${tab.content.length === 1 ? 'lg:grid-cols-3' : 'lg:grid-cols-3'}`}>
-                                {tab.content.map(tool => (
-                                    <Card key={tool.title} className={`${tab.content.length === 1 ? 'lg:col-start-2' : ''} flex flex-col`}>
-                                        <CardHeader className="flex-grow">
-                                            <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
-                                            <tool.icon className="h-7 w-7" />
-                                            </div>
-                                            <CardTitle>{tool.title}</CardTitle>
-                                            <CardDescription>{tool.description}</CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <Link href={tool.href} passHref>
-                                            <Button className="w-full">
-                                                Acessar <ArrowRight className="ml-2 h-4 w-4" />
-                                            </Button>
-                                            </Link>
-                                        </CardContent>
-                                    </Card>
-                                ))}
-                            </div>
+                            {tab.content.length > 0 ? (
+                                <div className={`grid gap-6 md:grid-cols-2 ${tab.content.length === 1 ? 'lg:grid-cols-3' : 'lg:grid-cols-3'}`}>
+                                    {tab.content.map(tool => (
+                                        <Card key={tool.title} className={`${tab.content.length === 1 ? 'lg:col-start-2' : ''} flex flex-col`}>
+                                            <CardHeader className="flex-grow">
+                                                <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                                                <tool.icon className="h-7 w-7" />
+                                                </div>
+                                                <CardTitle>{tool.title}</CardTitle>
+                                                <CardDescription>{tool.description}</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <Link href={tool.href} passHref>
+                                                <Button className="w-full">
+                                                    Acessar <ArrowRight className="ml-2 h-4 w-4" />
+                                                </Button>
+                                                </Link>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center text-muted-foreground p-8">
+                                    <p>Nenhuma ferramenta disponível para esta área ainda.</p>
+                                </div>
+                            )}
                         </TabsContent>
                     ))}
                 </Tabs>
