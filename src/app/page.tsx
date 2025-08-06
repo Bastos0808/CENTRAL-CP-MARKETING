@@ -5,9 +5,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search, BarChart, Megaphone, Workflow } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search, BarChart, Megaphone, Workflow, CaseSensitive, Video } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 
 export default function Home() {
   const { user, logout, loading } = useAuth();
@@ -112,14 +113,8 @@ export default function Home() {
     const canAccessTraffic = userRole === 'admin' || userRole === 'trafego';
     const canAccessProduction = canAccessStrategy || canAccessPodcast || canAccessTraffic;
 
-    const productionTools = [
-        ...(canAccessStrategy ? strategicTools : []),
-        ...(canAccessPodcast ? podcastTools : []),
-        ...(canAccessTraffic ? trafficTools : [])
-    ];
-
     const allTabs = [
-        { value: 'production', label: 'Produção', icon: Workflow, content: productionTools, enabled: canAccessProduction },
+        { value: 'production', label: 'Produção', icon: Workflow, enabled: canAccessProduction },
         { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, enabled: canAccessCommercial },
     ];
 
@@ -129,6 +124,29 @@ export default function Home() {
     if (enabledTabs.length > 0 && !enabledTabs.find(t => t.value === activeTab)) {
         setActiveTab(enabledTabs[0].value);
     }
+
+    const renderTools = (tools: any[]) => (
+        <div className={`grid gap-6 md:grid-cols-2 ${tools.length > 3 ? 'lg:grid-cols-3' : `lg:grid-cols-${tools.length}`}`}>
+            {tools.map(tool => (
+                <Card key={tool.title} className="flex flex-col">
+                    <CardHeader className="flex-grow">
+                        <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                        <tool.icon className="h-7 w-7" />
+                        </div>
+                        <CardTitle>{tool.title}</CardTitle>
+                        <CardDescription>{tool.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Link href={tool.href} passHref>
+                        <Button className="w-full">
+                            Acessar <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                        </Link>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    );
     
     return (
         <main className="flex min-h-screen flex-col items-center justify-start p-4 sm:p-8 md:p-12 relative">
@@ -167,36 +185,39 @@ export default function Home() {
                         ))}
                     </TabsList>
                     
-                    {enabledTabs.map(tab => (
-                        <TabsContent key={tab.value} value={tab.value} className="mt-8">
-                            {tab.content.length > 0 ? (
-                                <div className={`grid gap-6 md:grid-cols-2 ${tab.content.length === 1 ? 'lg:grid-cols-3' : 'lg:grid-cols-3'}`}>
-                                    {tab.content.map(tool => (
-                                        <Card key={tool.title} className={`${tab.content.length === 1 ? 'lg:col-start-2' : ''} flex flex-col`}>
-                                            <CardHeader className="flex-grow">
-                                                <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
-                                                <tool.icon className="h-7 w-7" />
-                                                </div>
-                                                <CardTitle>{tool.title}</CardTitle>
-                                                <CardDescription>{tool.description}</CardDescription>
-                                            </CardHeader>
-                                            <CardContent>
-                                                <Link href={tool.href} passHref>
-                                                <Button className="w-full">
-                                                    Acessar <ArrowRight className="ml-2 h-4 w-4" />
-                                                </Button>
-                                                </Link>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center text-muted-foreground p-8">
-                                    <p>Nenhuma ferramenta disponível para esta área ainda.</p>
-                                </div>
-                            )}
-                        </TabsContent>
-                    ))}
+                     <TabsContent value="production" className="mt-8 space-y-8">
+                        {canAccessStrategy && (
+                            <section>
+                                <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2"><CaseSensitive className="h-6 w-6 text-primary/80"/> Estratégia</h2>
+                                {renderTools(strategicTools)}
+                            </section>
+                        )}
+                        {canAccessPodcast && (
+                            <section>
+                                 <Separator className="my-8" />
+                                <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2"><Video className="h-6 w-6 text-primary/80"/> Podcast</h2>
+                                {renderTools(podcastTools)}
+                            </section>
+                        )}
+                        {canAccessTraffic && (
+                             <section>
+                                <Separator className="my-8" />
+                                <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2"><Megaphone className="h-6 w-6 text-primary/80"/> Tráfego Pago</h2>
+                                {trafficTools.length > 0 ? renderTools(trafficTools) : (
+                                    <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
+                                        <p>Nenhuma ferramenta de Tráfego Pago disponível ainda.</p>
+                                    </div>
+                                )}
+                            </section>
+                        )}
+                     </TabsContent>
+                     <TabsContent value="commercial" className="mt-8">
+                        {commercialTools.length > 0 ? renderTools(commercialTools) : (
+                             <div className="text-center text-muted-foreground p-8">
+                                <p>Nenhuma ferramenta disponível para esta área ainda.</p>
+                            </div>
+                        )}
+                     </TabsContent>
                 </Tabs>
             )}
         </main>
