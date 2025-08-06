@@ -108,19 +108,19 @@ export default function Home() {
     const userRole = user?.role;
     const canAccessStrategy = userRole === 'admin' || userRole === 'estrategia';
     const canAccessPodcast = userRole === 'admin' || userRole === 'podcast';
-    const canAccessProduction = canAccessStrategy || canAccessPodcast;
     const canAccessCommercial = userRole === 'admin' || userRole === 'comercial';
     const canAccessTraffic = userRole === 'admin' || userRole === 'trafego';
+    const canAccessProduction = canAccessStrategy || canAccessPodcast || canAccessTraffic;
 
     const productionTools = [
         ...(canAccessStrategy ? strategicTools : []),
-        ...(canAccessPodcast ? podcastTools : [])
+        ...(canAccessPodcast ? podcastTools : []),
+        ...(canAccessTraffic ? trafficTools : [])
     ];
 
     const allTabs = [
         { value: 'production', label: 'Produção', icon: Workflow, content: productionTools, enabled: canAccessProduction },
         { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, enabled: canAccessCommercial },
-        { value: 'traffic', label: 'Tráfego Pago', icon: Megaphone, content: trafficTools, enabled: canAccessTraffic },
     ];
 
     const enabledTabs = allTabs.filter(tab => tab.enabled);
