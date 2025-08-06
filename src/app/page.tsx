@@ -140,7 +140,7 @@ export default function Home() {
             </div>
             <div className="w-full max-w-6xl text-center mb-12 mt-12 sm:mt-8">
                 <h1 className="text-5xl font-bold tracking-tight text-primary sm:text-6xl">
-                  Central da Agência
+                  Central CP Marketing
                 </h1>
                 <p className="mt-6 text-lg text-muted-foreground max-w-3xl mx-auto">
                   Recursos e ferramentas para as equipes da CP Marketing Digital.
