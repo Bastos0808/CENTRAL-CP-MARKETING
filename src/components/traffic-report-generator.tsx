@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, ChangeEvent } from 'react';
@@ -162,15 +163,15 @@ export default function TrafficReportGenerator({ client }: TrafficReportGenerato
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="w-full">
             <Card className="shadow-lg border-primary/10">
                 <CardHeader>
                     <div className="flex items-center gap-3 mb-2">
                         <FileText className="h-6 w-6 text-primary flex-shrink-0"/>
-                        <CardTitle className="text-2xl">Gerador de Relatório de Tráfego</CardTitle>
+                        <CardTitle className="text-2xl">Upload de Dados da Campanha</CardTitle>
                     </div>
                      <CardDescription className="break-words">
-                        {client?.name ? `Gerando relatório para o cliente: ` : `Envie um arquivo CSV com os dados de campanha para gerar um relatório de KPIs.`}
+                        {client?.name ? `Gerando relatório para o cliente: ` : `Selecione um cliente e envie o arquivo CSV com os dados.`}
                          {client?.name && <span className="font-bold text-primary">{client.name}</span>}
                     </CardDescription>
                 </CardHeader>
