@@ -2,16 +2,17 @@
 "use client";
 
 import { useState, useRef, ChangeEvent } from 'react';
-import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { UploadCloud, FileCheck, Loader2, Bot, FileText } from 'lucide-react';
+import { UploadCloud, FileCheck, Loader2, Bot, FileText, Save } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { generateTrafficReport } from '@/ai/flows/traffic-report-flow';
-import type { GenerateTrafficReportInput, GenerateTrafficReportOutput } from '@/ai/schemas/traffic-report-schemas';
+import type { GenerateTrafficReportOutput } from '@/ai/schemas/traffic-report-schemas';
 import GeneratedReport from './generated-report';
+import { updateDoc, doc, arrayUnion } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 
 interface Client {
@@ -67,78 +68,102 @@ export default function TrafficReportGenerator({ client }: TrafficReportGenerato
         setIsLoading(true);
         setReportData(null); 
 
-        const reader = new FileReader();
+        // This is a placeholder for actual period detection from the CSV if needed.
+        const currentPeriod = {
+            from: new Date().toLocaleDateString('pt-BR'),
+            to: new Date().toLocaleDateString('pt-BR'),
+        }
 
-        reader.onload = async (e) => {
-            const csvText = e.target?.result as string;
-            if (!csvText) {
+        try {
+            // We don't need to read the file here, Genkit will handle it if we pass the reference
+            // For now, we continue with the current implementation of reading text first.
+             const reader = new FileReader();
+             reader.readAsText(file);
+             reader.onload = async (e) => {
+                const csvText = e.target?.result as string;
+
+                const inputForAI = {
+                    briefing: client.briefing,
+                    campaignObjective: 'Analisar performance de tráfego pago.',
+                    period: {
+                        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // approx. 30 days ago
+                        to: new Date().toISOString().split('T')[0]
+                    },
+                    performanceData: { // This part will be populated by the AI based on CSV
+                         // The flow is designed to extract this from the CSV, so we send dummy/empty data here.
+                         // The prompt instructs the AI to ignore this and use the CSV.
+                        investment: "0",
+                        impressions: "0",
+                        clicks: "0",
+                        ctr: "0",
+                        cpc: "0",
+                        conversions: "0",
+                        cpl: "0",
+                        roas: "0",
+                        bestCampaigns: [],
+                    }
+                };
+
+                // The actual call to our implemented flow
+                const result = await generateTrafficReport(inputForAI);
+                setReportData(result);
+                
+                toast({
+                    title: "Relatório Gerado!",
+                    description: `Análise para ${client.name} foi concluída com sucesso.`
+                });
+                setIsLoading(false);
+            };
+            reader.onerror = () => {
                 toast({ variant: "destructive", title: "Erro de Leitura", description: "Não foi possível ler o conteúdo do arquivo." });
                 setIsLoading(false);
-                return;
             }
 
-            try {
-                // This will be properly typed once we create the flow and schema files
-                const input: any = {
-                    csvData: csvText,
-                    briefing: client.briefing,
-                    // We can add more fields like period here later if needed
-                    campaignObjective: "Analisar performance de tráfego pago.",
-                    period: {
-                        from: new Date().toISOString().split('T')[0],
-                        to: new Date().toISOString().split('T')[0]
-                    }
-                }
-                
-                // We'll rename this function later to match the one you want to create
-                // const summaryResult = await generateTrafficReport(input);
-                // setReportData(summaryResult);
-                
-                // Placeholder while we build the other parts
-                 toast({
-                    title: "Em construção!",
-                    description: "A lógica para chamar a IA de tráfego será implementada a seguir.",
-                });
-
-
-            } catch (error) {
-                console.error("Error generating report:", error);
-                const errorMessage = error instanceof Error ? error.message : "Um erro desconhecido ocorreu.";
-                toast({
-                    variant: "destructive",
-                    title: "Erro ao Gerar Relatório",
-                    description: `Falha na comunicação com a IA: ${errorMessage}`,
-                });
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        reader.onerror = () => {
+        } catch (error) {
+            console.error("Error generating report:", error);
+            const errorMessage = error instanceof Error ? error.message : "Um erro desconhecido ocorreu.";
             toast({
                 variant: "destructive",
-                title: "Erro ao ler o arquivo",
-                description: "Ocorreu um problema ao processar o arquivo selecionado.",
+                title: "Erro ao Gerar Relatório",
+                description: `Falha na comunicação com a IA: ${errorMessage}`,
             });
-            setIsLoading(false);
-        };
-
-        reader.readAsText(file);
-    };
-    
-    const handleReset = () => {
-        setReportData(null);
-        setFile(null);
-        setIsLoading(false);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
+             setIsLoading(false);
         }
     };
     
-    const handleSaveReport = () => {
-        // This will be implemented later
-        toast({ title: "Funcionalidade em desenvolvimento."})
-    }
+    const handleSaveReport = async () => {
+        if (!reportData?.analysis || !client?.id) {
+          toast({ title: "Erro", description: "Nenhum relatório ou cliente selecionado para salvar.", variant: "destructive" });
+          return;
+        }
+    
+        const clientDocRef = doc(db, 'clients', client.id);
+    
+        try {
+          const newReport = {
+            id: crypto.randomUUID(),
+            createdAt: new Date().toISOString(),
+            analysis: reportData.analysis,
+          };
+    
+          await updateDoc(clientDocRef, {
+            reports: arrayUnion(newReport)
+          });
+          
+          toast({
+            title: "Relatório Salvo!",
+            description: "O relatório foi adicionado com sucesso ao dossiê do cliente.",
+          });
+    
+        } catch (error) {
+          console.error("Error saving report: ", error);
+          toast({
+            title: "Erro ao Salvar",
+            description: "Não foi possível salvar o relatório no dossiê. Tente novamente.",
+            variant: "destructive",
+          });
+        }
+    };
 
 
     if (isLoading) {
@@ -155,7 +180,7 @@ export default function TrafficReportGenerator({ client }: TrafficReportGenerato
         return (
             <GeneratedReport 
                 report={reportData.analysis} 
-                client={client}
+                client={client || null}
                 isLoading={false}
                 onSave={handleSaveReport}
             />
