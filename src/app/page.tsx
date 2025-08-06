@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search, BarChart, Megaphone, Workflow, Lightbulb, Video } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Mic, Target, Loader2, Waypoints, FileSignature, DollarSign, Megaphone, Workflow, Lightbulb, Video, Search } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -68,7 +68,7 @@ export default function Home() {
         title: "Rotina SDR",
         description: "Acompanhe a rotina e as metas de performance do SDR.",
         href: "/rotina-sdr",
-        icon: BarChart
+        icon: Target
       },
       {
         title: "Gerador de Mensagens",
@@ -90,8 +90,13 @@ export default function Home() {
       }
   ];
   
-  const trafficTools: any[] = [
-    // Ferramentas de tráfego serão adicionadas aqui
+  const trafficTools = [
+    {
+      title: "Gerador de Relatórios de Tráfego",
+      description: "Crie relatórios de performance de campanhas com IA.",
+      href: "/relatorios-trafego",
+      icon: Wand2
+    }
   ];
 
   const handleTabChange = (value: string) => {
@@ -171,7 +176,6 @@ export default function Home() {
             </div>
             {enabledTabs.length === 0 && !loading ? (
                  <div className="text-center text-muted-foreground mt-10">
-                  <ShieldAlert className="h-12 w-12 mx-auto mb-4" />
                   <p className="text-lg">Você não tem permissão para acessar nenhuma área.</p>
                   <p>Entre em contato com um administrador.</p>
                 </div>
