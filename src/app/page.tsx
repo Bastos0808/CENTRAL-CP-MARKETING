@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search, BarChart, Megaphone } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search, BarChart, Megaphone, Workflow } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -108,12 +108,17 @@ export default function Home() {
     const userRole = user?.role;
     const canAccessStrategy = userRole === 'admin' || userRole === 'estrategia';
     const canAccessPodcast = userRole === 'admin' || userRole === 'podcast';
+    const canAccessProduction = canAccessStrategy || canAccessPodcast;
     const canAccessCommercial = userRole === 'admin' || userRole === 'comercial';
     const canAccessTraffic = userRole === 'admin' || userRole === 'trafego';
 
+    const productionTools = [
+        ...(canAccessStrategy ? strategicTools : []),
+        ...(canAccessPodcast ? podcastTools : [])
+    ];
+
     const allTabs = [
-        { value: 'strategy', label: 'Estratégia', icon: Briefcase, content: strategicTools, enabled: canAccessStrategy },
-        { value: 'podcast', label: 'Podcast', icon: Podcast, content: podcastTools, enabled: canAccessPodcast },
+        { value: 'production', label: 'Produção', icon: Workflow, content: productionTools, enabled: canAccessProduction },
         { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, enabled: canAccessCommercial },
         { value: 'traffic', label: 'Tráfego Pago', icon: Megaphone, content: trafficTools, enabled: canAccessTraffic },
     ];
