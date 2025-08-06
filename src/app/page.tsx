@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search, BarChart, Megaphone, Workflow, CaseSensitive, Video } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Podcast, Target, Mic, Loader2, Lock, Waypoints, FileSignature, DollarSign, Mail, ShieldAlert, Search, BarChart, Megaphone, Workflow, Lightbulb, Video } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -13,7 +13,7 @@ import { Separator } from '@/components/ui/separator';
 export default function Home() {
   const { user, logout, loading } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<string>('commercial');
+  const [activeTab, setActiveTab] = useState<string>('production');
   
   const strategicTools = [
       {
@@ -188,7 +188,7 @@ export default function Home() {
                      <TabsContent value="production" className="mt-8 space-y-8">
                         {canAccessStrategy && (
                             <section>
-                                <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2"><CaseSensitive className="h-6 w-6 text-primary/80"/> Estratégia</h2>
+                                <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2"><Lightbulb className="h-6 w-6 text-primary/80"/> Estratégia</h2>
                                 {renderTools(strategicTools)}
                             </section>
                         )}
