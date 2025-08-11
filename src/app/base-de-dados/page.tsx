@@ -92,12 +92,19 @@ const statusMap: {
     inactive: { text: "Inativo", className: "bg-red-500/20 text-red-700 border-red-500/50 hover:bg-red-500/30", order: 3 },
 };
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string | undefined) => {
+  if (!dateString) {
+    return "Não definida";
+  }
   try {
+    // Adiciona T00:00:00 para garantir que a data seja interpretada como local
     const date = new Date(`${dateString}T00:00:00`);
+    if (isNaN(date.getTime())) {
+      throw new Error("Invalid date object");
+    }
     return format(date, 'dd/MM/yyyy');
   } catch (error) {
-    console.error("Invalid date format:", dateString);
+    console.error("Invalid date format:", dateString, error);
     return "Data inválida";
   }
 };
