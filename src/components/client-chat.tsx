@@ -1,27 +1,44 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { Send, User, Bot, Loader2 } from 'lucide-react';
+import { Send, User, Bot, Loader2, PlusCircle, MessageSquare } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { chatWithClientData } from '@/ai/flows/client-chat-flow';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from '@/lib/firebase';
+
+interface ChatMessage {
+  role: 'user' | 'model';
+  content: string;
+}
+
+interface Conversation {
+  id: string;
+  startedAt: string; // ISO date string
+  messages: ChatMessage[];
+}
 
 interface Client {
     id: string;
     name: string;
     briefing?: any;
     reports?: any[];
+    chatConversations?: Conversation[];
 }
 
-interface Message {
-  id?: string;
-  role: 'user' | 'model';
-  content: string;
+interface ClientChatProps {
+    client: Client;
+    onConversationsUpdate: (conversations: Conversation[]) => void;
 }
+
 
 const markdownToHtml = (markdown: string) => {
     if (!markdown) return '';
@@ -40,21 +57,34 @@ const markdownToHtml = (markdown: string) => {
     return html.replace(/\\n/g, '<br />');
 };
 
-const initialMessage: Message = {
+const initialMessage: ChatMessage = {
     role: 'model',
     content: "Olá! Sou seu assistente de IA. Como posso ajudar com os dados deste cliente hoje? Você pode pedir para eu gerar ideias de conteúdo, resumir o desafio principal ou fazer perguntas sobre o briefing."
 }
 
-export default function ClientChat({ client }: { client: Client }) {
-  const [messages, setMessages] = useState<Message[]>([initialMessage]);
+export default function ClientChat({ client, onConversationsUpdate }: ClientChatProps) {
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  
+
   useEffect(() => {
-    setMessages([initialMessage]); // Reset chat when client changes
-  }, [client.id]);
+    const existingConversations = client.chatConversations || [];
+    setConversations(existingConversations);
+    if (existingConversations.length > 0) {
+      // Select the most recent conversation
+      setActiveConversationId(existingConversations.sort((a,b) => parseISO(b.startedAt).getTime() - parseISO(a.startedAt).getTime())[0].id);
+    } else {
+      // If no conversations, start a new one
+      handleNewConversation();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client.id, client.chatConversations]);
+
+
+  const activeConversation = conversations.find(c => c.id === activeConversationId);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -67,26 +97,61 @@ export default function ClientChat({ client }: { client: Client }) {
             }
         }, 100);
     }
-  }, [messages]);
+  }, [activeConversation?.messages]);
+
+  const handleNewConversation = () => {
+    const newId = crypto.randomUUID();
+    const newConversation: Conversation = {
+        id: newId,
+        startedAt: new Date().toISOString(),
+        messages: [initialMessage]
+    };
+    const updatedConversations = [...conversations, newConversation];
+    setConversations(updatedConversations);
+    setActiveConversationId(newId);
+    onConversationsUpdate(updatedConversations); // Notify parent
+  }
+  
+  const saveConversations = useCallback(async (updatedConversations: Conversation[]) => {
+    try {
+        const clientDocRef = doc(db, 'clients', client.id);
+        await updateDoc(clientDocRef, { chatConversations: updatedConversations });
+        onConversationsUpdate(updatedConversations);
+    } catch (error) {
+        console.error("Failed to save conversations:", error);
+        toast({ title: "Erro ao Salvar", description: "Não foi possível salvar a conversa no banco de dados.", variant: "destructive" });
+    }
+  }, [client.id, onConversationsUpdate, toast]);
+
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input.trim() || isLoading || !activeConversation) return;
 
-    const userMessage: Message = { role: 'user', content: input };
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
+    const userMessage: ChatMessage = { role: 'user', content: input };
+    const updatedMessages = [...activeConversation.messages, userMessage];
+    
+    const updatedConversations = conversations.map(c => 
+        c.id === activeConversationId ? { ...c, messages: updatedMessages } : c
+    );
+    setConversations(updatedConversations);
     setInput('');
     setIsLoading(true);
 
     try {
       const response = await chatWithClientData({
         client: client,
-        history: newMessages, // Send the up-to-date history
+        history: updatedMessages,
       });
       
-      const modelMessage: Message = { role: 'model', content: response.response };
-      setMessages(prevMessages => [...prevMessages, modelMessage]);
+      const modelMessage: ChatMessage = { role: 'model', content: response.response };
+      
+      const finalConversations = conversations.map(c => 
+        c.id === activeConversationId ? { ...c, messages: [...updatedMessages, modelMessage] } : c
+      );
+
+      setConversations(finalConversations);
+      await saveConversations(finalConversations);
 
     } catch (error) {
       console.error('Error sending message:', error);
@@ -95,17 +160,49 @@ export default function ClientChat({ client }: { client: Client }) {
         description: 'Não foi possível obter uma resposta da IA. Tente novamente.',
         variant: 'destructive',
       });
-       setMessages(messages); // Revert to previous state on error
+       const revertedConversations = conversations.map(c => 
+            c.id === activeConversationId ? { ...c, messages: activeConversation.messages } : c
+       );
+       setConversations(revertedConversations);
     } finally {
         setIsLoading(false);
     }
   };
 
+  const formatConversationLabel = (dateString: string) => {
+    const date = parseISO(dateString);
+    return format(date, "'Conversa de' dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
+  };
+  
+  const sortedConversations = [...conversations].sort((a,b) => parseISO(b.startedAt).getTime() - parseISO(a.startedAt).getTime());
+
   return (
     <div className="flex flex-col h-[calc(100svh-5rem)]">
+        <div className="p-4 border-b flex items-center gap-2">
+           <div className="flex-1">
+             <Select value={activeConversationId || ''} onValueChange={setActiveConversationId}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma conversa..." />
+                </SelectTrigger>
+                <SelectContent>
+                    {sortedConversations.map(conv => (
+                        <SelectItem key={conv.id} value={conv.id}>
+                            <div className="flex items-center gap-2">
+                                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                {formatConversationLabel(conv.startedAt)}
+                            </div>
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+           </div>
+           <Button variant="outline" size="icon" onClick={handleNewConversation}>
+               <PlusCircle className="h-5 w-5"/>
+           </Button>
+        </div>
       <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
         <div className="space-y-6">
-          {messages.map((message, index) => (
+          {activeConversation?.messages.map((message, index) => (
             <div
               key={index}
               className={cn(

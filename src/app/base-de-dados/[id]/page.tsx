@@ -153,6 +153,17 @@ interface PodcastPlan {
     recordingTime?: string;
 }
 
+interface ChatMessage {
+    role: 'user' | 'model';
+    content: string;
+}
+
+interface Conversation {
+    id: string;
+    startedAt: string; // ISO date string
+    messages: ChatMessage[];
+}
+
 interface Client {
   id: string;
   name: string;
@@ -164,6 +175,7 @@ interface Client {
   reports?: Report[];
   visualIdentity?: VisualIdentity;
   podcastPlan?: PodcastPlan;
+  chatConversations?: Conversation[];
 }
 
 const statusMap: { 
@@ -511,6 +523,12 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
     navigator.clipboard.writeText(text);
     toast({ title: "Copiado!", description: "A senha foi copiada para a área de transferência." });
   };
+  
+  const handleConversationsUpdate = (conversations: Conversation[]) => {
+    if (client) {
+      setClient({ ...client, chatConversations: conversations });
+    }
+  };
 
 
   if (loading) {
@@ -557,14 +575,14 @@ export default function ClientDossierPage({ params }: { params: { id: string } }
                         Conversar com IA
                     </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-xl p-0">
+                <SheetContent className="w-full sm:max-w-2xl p-0">
                     <SheetHeader className="p-4 border-b">
                         <SheetTitle>Assistente de IA</SheetTitle>
                         <SheetDescription>
                             Faça perguntas sobre o dossiê de {client.name}.
                         </SheetDescription>
                     </SheetHeader>
-                    <ClientChat client={client}/>
+                    <ClientChat client={client} onConversationsUpdate={handleConversationsUpdate} />
                 </SheetContent>
             </Sheet>
         </div>
