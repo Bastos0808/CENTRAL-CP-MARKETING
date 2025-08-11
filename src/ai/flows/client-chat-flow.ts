@@ -27,12 +27,18 @@ const clientChatFlow = ai.defineFlow(
     outputSchema: ClientChatOutputSchema,
   },
   async (input) => {
-    const { history, client } = input;
+    // The history now includes the latest user message.
+    // The prompt to the AI should be the latest message content.
+    const lastUserMessage = input.history[input.history.length - 1]?.content || '';
+    // The history for the AI should exclude the last user message which is now the prompt.
+    const conversationHistory = input.history.slice(0, -1);
+
+    const { client } = input;
     
     const llmResponse = await ai.generate({
         model: googleAI.model('gemini-1.5-pro-latest'),
-        prompt: input.history[input.history.length - 1].content,
-        history: input.history.slice(0, -1),
+        prompt: lastUserMessage,
+        history: conversationHistory,
         system: `Você é um Estrategista de Marketing e assistente de IA da agência "CP Marketing Digital". Sua função é conversar com o usuário sobre os dados de um cliente específico, fornecendo insights, gerando ideias e respondendo a perguntas com base estritamente nas informações fornecidas.
 
 Você receberá os dados completos do cliente (briefing e relatórios) e o histórico da conversa atual. Use este contexto para manter uma conversa útil e focada.
