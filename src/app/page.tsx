@@ -88,7 +88,9 @@ export default function Home() {
         title: "Gerador de Propostas",
         description: "Crie propostas comerciais modernas e personalizadas.",
         href: "/gerador-propostas",
-        icon: FileSignature
+        icon: FileSignature,
+        disabled: true,
+        disabledMessage: "Ferramenta em desenvolvimento. Em breve!"
       }
   ];
   
