@@ -5,10 +5,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Mic, Target, Loader2, Waypoints, FileSignature, DollarSign, Megaphone, Workflow, Lightbulb, Video, Search } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Mic, Target, Loader2, Waypoints, FileSignature, DollarSign, Megaphone, Workflow, Lightbulb, Video, Search, ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 export default function Home() {
   const { user, logout, loading } = useAuth();
@@ -95,7 +97,9 @@ export default function Home() {
       title: "Gerador de Relatórios de Tráfego",
       description: "Crie relatórios de performance de campanhas com IA.",
       href: "/relatorios-trafego",
-      icon: Wand2
+      icon: Wand2,
+      disabled: true,
+      disabledMessage: "Ferramenta em desenvolvimento. Em breve!"
     }
   ];
 
@@ -112,10 +116,11 @@ export default function Home() {
     }
     
     const userRole = user?.role;
-    const canAccessStrategy = userRole === 'admin' || userRole === 'estrategia';
-    const canAccessPodcast = userRole === 'admin' || userRole === 'podcast';
-    const canAccessCommercial = userRole === 'admin' || userRole === 'comercial';
-    const canAccessTraffic = userRole === 'admin' || userRole === 'trafego';
+    const isAdmin = userRole === 'admin';
+    const canAccessStrategy = isAdmin || userRole === 'estrategia';
+    const canAccessPodcast = isAdmin || userRole === 'podcast';
+    const canAccessCommercial = isAdmin || userRole === 'comercial';
+    const canAccessTraffic = isAdmin || userRole === 'trafego';
     const canAccessProduction = canAccessStrategy || canAccessPodcast || canAccessTraffic;
 
     const allTabs = [
@@ -131,8 +136,35 @@ export default function Home() {
     }
 
     const renderTools = (tools: any[]) => (
-        <div className={`grid gap-6 md:grid-cols-2 ${tools.length > 3 ? 'lg:grid-cols-3' : `lg:grid-cols-${tools.length}`}`}>
+        <div className={cn("grid gap-6 md:grid-cols-2", tools.length > 2 ? 'lg:grid-cols-3' : `lg:grid-cols-${tools.length}`)}>
             {tools.map(tool => (
+              tool.disabled ? (
+                <TooltipProvider key={tool.title}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="w-full">
+                        <Card className="flex flex-col h-full opacity-50 cursor-not-allowed">
+                          <CardHeader className="flex-grow">
+                              <div className="bg-muted text-muted-foreground p-3 rounded-full w-fit mb-4">
+                                  <tool.icon className="h-7 w-7" />
+                              </div>
+                              <CardTitle className="text-muted-foreground">{tool.title}</CardTitle>
+                              <CardDescription>{tool.description}</CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                              <Button className="w-full" disabled>
+                                  <ShieldAlert className="mr-2 h-4 w-4" /> Em Breve
+                              </Button>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{tool.disabledMessage}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
                 <Card key={tool.title} className="flex flex-col">
                     <CardHeader className="flex-grow">
                         <div className="bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
@@ -149,6 +181,7 @@ export default function Home() {
                         </Link>
                     </CardContent>
                 </Card>
+              )
             ))}
         </div>
     );
