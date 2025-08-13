@@ -137,8 +137,10 @@ export default function Home() {
 
     const renderTools = (tools: any[]) => (
         <div className={cn("grid gap-6 md:grid-cols-2", tools.length > 2 ? 'lg:grid-cols-3' : `lg:grid-cols-${tools.length}`)}>
-            {tools.map(tool => (
-              tool.disabled ? (
+            {tools.map(tool => {
+              const isDisabled = tool.disabled && !isAdmin;
+
+              return isDisabled ? (
                 <TooltipProvider key={tool.title}>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -182,7 +184,7 @@ export default function Home() {
                     </CardContent>
                 </Card>
               )
-            ))}
+            })}
         </div>
     );
     
