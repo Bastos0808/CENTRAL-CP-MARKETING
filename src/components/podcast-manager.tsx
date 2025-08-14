@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { PlusCircle, Loader2, Mic, Package, Calendar, DollarSign, RefreshCw, BookMarked } from "lucide-react";
+import { PlusCircle, Loader2, Mic, Package, Calendar, DollarSign, RefreshCw, BookMarked, Trash2 } from "lucide-react";
 import { Skeleton } from './ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from './ui/input';
@@ -33,6 +33,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useAuth } from '@/hooks/use-auth';
 
 interface Recording {
     id: string;
@@ -51,6 +52,7 @@ interface Client {
 }
 
 export default function PodcastManager() {
+    const { user } = useAuth();
     const [clients, setClients] = useState<Client[]>([]);
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [loadingClients, setLoadingClients] = useState(true);
@@ -241,6 +243,37 @@ export default function PodcastManager() {
         }
     };
 
+    const handleDeleteRecording = async (recordingId: string) => {
+        if (!selectedClient?.podcastPlan) return;
+        setIsSubmitting(true);
+        
+        try {
+            const updatedHistory = selectedClient.podcastPlan.recordingHistory?.filter(rec => rec.id !== recordingId) || [];
+            const newAccumulated = (selectedClient.podcastPlan.accumulatedRecordings || 0) + 1; // Give back credit
+
+            const updatedPlan = {
+                ...selectedClient.podcastPlan,
+                accumulatedRecordings: newAccumulated,
+                recordingHistory: updatedHistory,
+            };
+
+            const clientDocRef = doc(db, 'clients', selectedClient.id);
+            await updateDoc(clientDocRef, { podcastPlan: updatedPlan });
+
+            const updatedClient = { ...selectedClient, podcastPlan: updatedPlan };
+            setSelectedClient(updatedClient);
+            setClients(prev => prev.map(c => c.id === updatedClient.id ? updatedClient : c));
+            
+            toast({ title: "Registro Excluído!", description: "A gravação foi removida e 1 crédito foi devolvido."});
+
+        } catch (error) {
+            console.error("Error deleting recording:", error);
+            toast({ title: "Erro ao Excluir", description: "Não foi possível remover o registro.", variant: "destructive" });
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
+
 
     return (
         <div className="space-y-8">
@@ -334,7 +367,8 @@ export default function PodcastManager() {
                             <TableHeader>
                                 <TableRow>
                                 <TableHead>Data da Gravação</TableHead>
-                                <TableHead className="text-right">ID da Gravação</TableHead>
+                                <TableHead>ID da Gravação</TableHead>
+                                {user?.role === 'admin' && <TableHead className="text-right">Ações</TableHead>}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -344,12 +378,37 @@ export default function PodcastManager() {
                                     .map((rec) => (
                                         <TableRow key={rec.id}>
                                             <TableCell className="font-medium">{format(new Date(`${rec.date}T00:00:00`), 'dd/MM/yyyy')}</TableCell>
-                                            <TableCell className="text-right font-mono text-xs">{rec.id}</TableCell>
+                                            <TableCell className="font-mono text-xs">{rec.id}</TableCell>
+                                             {user?.role === 'admin' && (
+                                                <TableCell className="text-right">
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="ghost" size="icon" disabled={isSubmitting}>
+                                                                <Trash2 className="h-4 w-4 text-destructive" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Excluir Registro?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Esta ação removerá o registro de gravação e devolverá 1 crédito ao saldo do cliente.
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDeleteRecording(rec.id)} className="bg-destructive hover:bg-destructive/90">
+                                                                    Confirmar Exclusão
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </TableCell>
+                                            )}
                                         </TableRow>
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={2} className="h-24 text-center">
+                                        <TableCell colSpan={user?.role === 'admin' ? 3 : 2} className="h-24 text-center">
                                         Nenhuma gravação registrada ainda.
                                         </TableCell>
                                     </TableRow>
