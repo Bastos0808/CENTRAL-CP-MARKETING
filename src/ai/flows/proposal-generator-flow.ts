@@ -14,6 +14,7 @@ import {
   GenerateProposalOutputSchema,
 } from '@/ai/schemas/proposal-generator-schemas';
 import { googleAI } from '@genkit-ai/googleai';
+import { z } from 'zod';
 
 // Exported function that the frontend will call
 export async function generateProposalContent(
