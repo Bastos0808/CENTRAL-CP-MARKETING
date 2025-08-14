@@ -34,6 +34,7 @@ import {
   Plus,
   Trash2,
   Calendar as CalendarIcon,
+  ShieldAlert,
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth, format, addDays, eachDayOfInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -61,7 +62,7 @@ import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 import Link from "next/link";
 import { db } from "@/lib/firebase";
-import { doc, setDoc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { doc, setDoc, getDoc, collection, getDocs, query, where, writeBatch } from "firebase/firestore";
 import {
   Table,
   TableBody,
@@ -77,6 +78,17 @@ import { DateRange } from "react-day-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { ScoreIndicator } from "@/components/ScoreIndicator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 
 const FUNCTION_TABS = ['Podcast', 'Progresso Semanal', 'Progresso Mensal'];
@@ -219,6 +231,7 @@ export default function RotinaSDRPage() {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   const isAdmin = user?.role === 'admin';
   const effectiveUserId = user?.uid;
@@ -229,6 +242,68 @@ export default function RotinaSDRPage() {
     if (!effectiveUserId) return createInitialYearData();
     return allSdrData[effectiveUserId] || createInitialYearData();
   }, [allSdrData, effectiveUserId]);
+
+  const fetchAllData = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
+
+    try {
+        if (isAdmin) {
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('role', '==', 'comercial'));
+            const usersSnapshot = await getDocs(q);
+            
+            const fetchedSdrList: SdrUser[] = [];
+             usersSnapshot.forEach(userDoc => {
+                const userData = userDoc.data();
+                let displayName = userData.username || userData.displayName || '';
+                if (!displayName && userData.email) {
+                    displayName = userData.email.split('@')[0];
+                }
+                fetchedSdrList.push({ id: userDoc.id, name: displayName, email: userData.email, username: userData.username });
+            });
+
+            setSdrList(fetchedSdrList);
+            
+            const performanceDataPromises = fetchedSdrList.map(sdr => 
+                getDoc(doc(db, 'sdr_performance', sdr.id))
+            );
+            const performanceDocs = await Promise.all(performanceDataPromises);
+
+            const newAllSdrData = fetchedSdrList.reduce((acc, sdr, index) => {
+                const perfDoc = performanceDocs[index];
+                acc[sdr.id] = perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData();
+                return acc;
+            }, {} as Record<string, YearData>);
+            
+            setAllSdrData(newAllSdrData);
+
+        } else if (user?.uid) { // Fetch only current user's data if not admin
+            const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
+            const data = userPerfDoc.exists() ? userPerfDoc.data() : createInitialYearData();
+
+             const mergedData = produce(createInitialYearData(), draft => {
+                Object.keys(data).forEach(monthKey => {
+                    if (draft[monthKey]) {
+                        Object.assign(draft[monthKey], data[monthKey]);
+                        if (!data[monthKey].podcasts) {
+                            draft[monthKey].podcasts = createInitialPodcastData();
+                        }
+                    } else {
+                        draft[monthKey] = data[monthKey];
+                    }
+                });
+            });
+            
+            setAllSdrData({ [user.uid]: mergedData as YearData });
+        }
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        toast({ title: "Erro ao buscar dados", variant: "destructive" });
+    } finally {
+        setIsLoading(false);
+    }
+  }, [user, isAdmin, toast]);
 
   // Effect to save data with debounce
   useEffect(() => {
@@ -255,7 +330,6 @@ export default function RotinaSDRPage() {
             }
         }, 2000); // 2-second debounce
     }
-    // Cleanup timeout on unmount or when dependencies change
     return () => {
         if (saveTimeoutRef.current) {
             clearTimeout(saveTimeoutRef.current);
@@ -265,76 +339,10 @@ export default function RotinaSDRPage() {
 
 
    useEffect(() => {
-    const fetchAllData = async () => {
-        if (!user) return;
-        setIsLoading(true);
-
-        try {
-            if (isAdmin) {
-                const usersRef = collection(db, 'users');
-                const q = query(usersRef, where('role', '==', 'comercial'));
-                const usersSnapshot = await getDocs(q);
-                
-                const fetchedSdrList: SdrUser[] = [];
-                 usersSnapshot.forEach(userDoc => {
-                    const userData = userDoc.data();
-                    let displayName = userData.username || userData.displayName || '';
-                    if (!displayName && userData.email) {
-                        displayName = userData.email.split('@')[0];
-                    }
-                    // This is the definitive filter
-                    if (userData.email !== 'comercial04@cpmarketing.com.br') {
-                        fetchedSdrList.push({ id: userDoc.id, name: displayName, email: userData.email, username: userData.username });
-                    }
-                });
-
-                setSdrList(fetchedSdrList);
-                
-                const performanceDataPromises = fetchedSdrList.map(sdr => 
-                    getDoc(doc(db, 'sdr_performance', sdr.id))
-                );
-                const performanceDocs = await Promise.all(performanceDataPromises);
-
-                const newAllSdrData = fetchedSdrList.reduce((acc, sdr, index) => {
-                    const perfDoc = performanceDocs[index];
-                    acc[sdr.id] = perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData();
-                    return acc;
-                }, {} as Record<string, YearData>);
-                
-                setAllSdrData(newAllSdrData);
-
-            } else if (user?.uid) { // Fetch only current user's data if not admin
-                const userPerfDoc = await getDoc(doc(db, 'sdr_performance', user.uid));
-                const data = userPerfDoc.exists() ? userPerfDoc.data() : createInitialYearData();
-
-                 // Deep merge with initial data to ensure new structure is applied
-                const mergedData = produce(createInitialYearData(), draft => {
-                    Object.keys(data).forEach(monthKey => {
-                        if (draft[monthKey]) {
-                            Object.assign(draft[monthKey], data[monthKey]);
-                            if (!data[monthKey].podcasts) {
-                                draft[monthKey].podcasts = createInitialPodcastData();
-                            }
-                        } else {
-                            draft[monthKey] = data[monthKey];
-                        }
-                    });
-                });
-                
-                setAllSdrData({ [user.uid]: mergedData as YearData });
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            toast({ title: "Erro ao buscar dados", variant: "destructive" });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
     if (!authLoading) {
         fetchAllData();
     }
-  }, [user, isAdmin, authLoading, toast]);
+  }, [user, isAdmin, authLoading, toast, fetchAllData]);
   
   const currentWeek = useMemo(() => Math.min(4, Math.max(1, Math.ceil(getDate(currentDate) / 7))), [currentDate]);
   const currentMonth = useMemo(() => ptMonths[getMonth(currentDate)], [currentDate]);
@@ -480,6 +488,36 @@ export default function RotinaSDRPage() {
           draft[currentMonth].podcasts[podcastId].done = isChecked;
       });
   };
+
+  const handleResetData = async () => {
+    setIsResetting(true);
+    try {
+        const batch = writeBatch(db);
+        sdrList.forEach(sdr => {
+            const docRef = doc(db, 'sdr_performance', sdr.id);
+            batch.set(docRef, createInitialYearData());
+        });
+        await batch.commit();
+        
+        // Refetch all data to update the UI
+        await fetchAllData();
+        
+        toast({
+            title: "Dados Zerados!",
+            description: "Os dados de performance de todos os SDRs foram reiniciados.",
+        });
+    } catch (error) {
+        console.error("Error resetting data:", error);
+        toast({
+            title: "Erro ao Zerar Dados",
+            description: "Não foi possível reiniciar os dados. Tente novamente.",
+            variant: "destructive",
+        });
+    } finally {
+        setIsResetting(false);
+    }
+};
+
   
     const SaveStatusIndicator = () => {
         if (isAdmin) return null;
@@ -705,6 +743,36 @@ export default function RotinaSDRPage() {
             </Card>
             
             <TeamRanking />
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-destructive flex items-center gap-2"><ShieldAlert /> Ações de Administrador</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive" disabled={isResetting}>
+                                {isResetting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                                Zerar Dados de Todos os SDRs
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Esta ação é irreversível. Todos os dados de performance da Rotina SDR de <strong>todos os consultores</strong> serão apagados permanentemente e substituídos por dados vazios.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleResetData} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+                                    Sim, zerar tudo
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </CardContent>
+            </Card>
 
             <div className="space-y-6">
                  {filteredSdrList.map(sdr => {
@@ -881,9 +949,9 @@ export default function RotinaSDRPage() {
               </CardContent>
           </Card>
           
-          {!isSaturday && !isHoliday && (
-            <div className="space-y-6">
-                <Card className="flex-1 mt-6">
+          <div className="space-y-6 mt-6">
+             {!isSaturday && !isHoliday && (
+                <Card className="flex-1">
                     <CardHeader className="p-3">
                         <CardTitle className="text-sm font-medium text-center">Nota de Performance (Dia)</CardTitle>
                     </CardHeader>
@@ -891,9 +959,9 @@ export default function RotinaSDRPage() {
                         <ScoreIndicator score={dailyScore} />
                     </CardContent>
                 </Card>
-                <TeamRanking />
-            </div>
-          )}
+              )}
+              <TeamRanking />
+          </div>
 
       </div>
     );
