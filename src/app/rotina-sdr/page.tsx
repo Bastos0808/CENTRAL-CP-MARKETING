@@ -411,6 +411,14 @@ export default function RotinaSDRPage() {
           const weekData = draft[currentMonth][activeWeekKey];
           if (!weekData.counterTasks[activeDay]) weekData.counterTasks[activeDay] = {};
           weekData.counterTasks[activeDay][taskId] = value;
+
+          if (taskId === 'daily_meetings') {
+            let totalMeetings = 0;
+            ptDays.forEach(day => {
+                totalMeetings += Number(weekData.counterTasks?.[day]?.['daily_meetings'] || 0);
+            });
+            weekData.meetingsBooked = totalMeetings;
+          }
       });
   };
 
@@ -471,20 +479,6 @@ export default function RotinaSDRPage() {
           if (!draft[currentMonth].podcasts) draft[currentMonth].podcasts = createInitialPodcastData();
           draft[currentMonth].podcasts[podcastId].done = isChecked;
       });
-  };
-  
-  const handleDailyMeetingsChange = (value: string) => {
-        handleUpdateYearData(draft => {
-            const weekData = draft[currentMonth][activeWeekKey];
-            if (!weekData.counterTasks[activeDay]) weekData.counterTasks[activeDay] = {};
-            weekData.counterTasks[activeDay]['daily_meetings'] = value;
-            
-            let totalMeetings = 0;
-            ptDays.forEach(day => {
-                totalMeetings += Number(weekData.counterTasks?.[day]?.['daily_meetings'] || 0);
-            });
-            weekData.meetingsBooked = totalMeetings;
-        });
   };
   
     const SaveStatusIndicator = () => {
@@ -601,13 +595,15 @@ export default function RotinaSDRPage() {
       );
     }
     
-    if (sdrList.length === 0) {
+    const sdrListWithoutExcluded = sdrList.filter(sdr => sdr.email !== 'comercial04@cpmarketing.com.br');
+
+    if (sdrListWithoutExcluded.length === 0) {
       return <p>Nenhum SDR encontrado.</p>;
     }
 
     const filteredSdrList = selectedSdr === 'all'
-      ? sdrList
-      : sdrList.filter(sdr => sdr.id === selectedSdr);
+      ? sdrListWithoutExcluded
+      : sdrListWithoutExcluded.filter(sdr => sdr.id === selectedSdr);
 
     return (
         <div className="space-y-6">
@@ -624,7 +620,7 @@ export default function RotinaSDRPage() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Todos os SDRs</SelectItem>
-                                {sdrList.map(sdr => (
+                                {sdrListWithoutExcluded.map(sdr => (
                                     <SelectItem key={sdr.id} value={sdr.id}>{sdr.name}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -710,8 +706,7 @@ export default function RotinaSDRPage() {
 
     const isSaturday = activeDay === 'Sábado';
     
-    // Logic for Saturday Catch-up
-    const counterTasks = allTasks.filter(task => task.type === 'counter' && !task.saturdayOnly);
+    const counterTasks = allTasks.filter(task => task.type === 'counter');
     const checkboxTasks = allTasks.filter(task => task.type === 'checkbox' && task.id !== 'a-7');
     
     const extraTasksForToday = weekData?.extraTasks?.[activeDay] || [];
@@ -806,12 +801,11 @@ export default function RotinaSDRPage() {
                                         onSave={(value) => handleCounterChange(task.id, value)}
                                         className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
                                         placeholder="0"
-                                        goal={allTasks.find(t => t.id === task.id)?.goal}
+                                        goal={task.goal}
                                     />
                                 </div>
                             </div>
                         ))}
-                        {renderConsultorias()}
                         
                       {/* Checkbox Tasks */}
                       <div className="space-y-4 pt-4">
@@ -855,34 +849,6 @@ export default function RotinaSDRPage() {
               )}
           </CardContent>
       </Card>
-    );
-  }
-
-  const renderConsultorias = () => {
-    const weekData = monthlyData?.[activeWeekKey];
-    const dailyMeetings = weekData?.counterTasks?.[activeDay]?.['daily_meetings'] || '';
-    const isSaturday = activeDay === 'Sábado';
-    
-    return (
-         <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-primary/10 border border-primary/20">
-            <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-bold flex-1 text-primary">
-                Consultorias Agendadas (Qualificadas)
-            </Label>
-            <div className="flex items-center gap-3">
-                <CounterTaskInput
-                    type="text"
-                    pattern="[0-9]*"
-                    inputMode="numeric"
-                    id={`consultorias-${activeDay}`}
-                    value={String(dailyMeetings)}
-                    onSave={(value) => handleDailyMeetingsChange(value)}
-                    className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
-                    placeholder="0"
-                    disabled={isHoliday || isSaturday}
-                    goal={2}
-                />
-            </div>
-        </div>
     );
   }
 

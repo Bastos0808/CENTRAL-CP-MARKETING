@@ -25,13 +25,15 @@ export type AnyTask = Task | CounterTask;
 
 
 export const allTasks: AnyTask[] = [
-    // Ordem solicitada pelo usuário
+    // Ordem redefinida conforme solicitado
     { id: "m-4", label: "Leads Instagram", type: 'counter', goal: 50 },
     { id: "m-1-empresas", label: "Leads (Empresas)", type: 'counter', goal: 30 },
     { id: "m-1-trafego", label: "Leads Tráfego (pago e orgânico)", type: 'counter', goal: 10 },
     { id: "a-3", label: "Ligações", type: 'counter', goal: 12 },
     { id: "m-5", label: "Leads (Automação)", type: 'counter', goal: 100 },
-    
+    { id: "daily_meetings", label: "Consultorias Agendadas", type: 'counter', goal: 2 },
+    { id: "closed_clients", label: "Clientes Fechados", type: 'counter', goal: undefined }, // Goal is weekly/monthly
+
     // Checkbox Tasks
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
     { id: "a-2", label: "Fazer follow-up com leads em negociação para agendamento.", type: 'checkbox' },
@@ -45,6 +47,7 @@ export const allTasks: AnyTask[] = [
 export const weeklyGoals: Record<string, { label: string; goal: number }> = {
   "meetings": { label: "Consultorias", goal: 10 }, // 2 * 5
   "podcasts": { label: "Confirmado para o Podcast", goal: 4 },
+  "closed_clients": { label: "Clientes Fechados", goal: 1}, // 4 per month = 1 per week
   "m-4": { label: "Leads Instagram", goal: 250 }, // 50 * 5
   "m-1-empresas": { label: "Leads (Empresas)", goal: 150 }, // 30 * 5
   "m-1-trafego": { label: "Leads Tráfego (pago e orgânico)", goal: 50 }, // 10 * 5
@@ -60,6 +63,7 @@ export const scoreWeights: Record<string, number> = {
     "a-3": 1,
     "m-5": 0.1,
     "daily_meetings": 20, 
+    "closed_clients": 25, // High value for closed clients
 };
 
 export const maxScorePerDay = 100;

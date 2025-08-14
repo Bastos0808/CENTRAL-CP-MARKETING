@@ -4,7 +4,7 @@
 
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BarChart, Trophy } from "lucide-react";
+import { BarChart, Trophy, UserCheck } from "lucide-react";
 import { allTasks, AnyTask, ptDays, weeklyGoals as weeklyGoalsDef, WEEKLY_MEETING_GOAL, ptMonths, scoreWeights, maxScorePerDay } from '@/lib/tasks';
 import { cn } from '@/lib/utils';
 import { ScoreIndicator } from './ScoreIndicator';
@@ -26,7 +26,7 @@ interface WeeklyProgressProps {
 export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, isMonthlyView = false }: WeeklyProgressProps) {
   
   const { progressItems, overallScore, achievedGoals, totalGoals } = useMemo(() => {
-    const counterTasksList = allTasks.filter((t): t is AnyTask & { type: 'counter' } => t.type === 'counter' && !t.saturdayOnly);
+    const counterTasksList = allTasks.filter((t): t is AnyTask & { type: 'counter' } => t.type === 'counter');
     
     // Daily View
     if (day && week && month && yearData[month]) {
@@ -69,6 +69,7 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
           if (!weeklyData) return;
 
           const isHoliday = weeklyData.holidays?.[dayKey] || false;
+          // Consider only weekdays for goal calculations
           if (dayIndex >= 1 && dayIndex <= 5 && !isHoliday) {
               workDaysCount++;
           }
@@ -78,19 +79,16 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
               if (!rangeTotals[task.id]) rangeTotals[task.id] = 0;
               rangeTotals[task.id] += value;
           });
-           const meetings = Number(weeklyData.counterTasks?.[dayKey]?.['daily_meetings'] || '0');
-           if (!rangeTotals['meetings']) rangeTotals['meetings'] = 0;
-           rangeTotals['meetings'] += meetings;
       });
       
       const rangeGoals: Record<string, {label: string, goal: number}> = {};
        const weeklyGoalsForRange = { ...weeklyGoalsDef };
 
         Object.entries(weeklyGoalsForRange).forEach(([key, value]) => {
-            const dailyEquivalent = value.goal / 5;
+            const dailyEquivalent = value.goal / 5; // Goals are per 5-day week
             rangeGoals[key] = { label: value.label, goal: dailyEquivalent * workDaysCount };
         });
-
+        
       const items = Object.entries(rangeGoals).map(([key, { label, goal }]) => {
           const current = rangeTotals[key] || 0;
           return { id: key, label, current, goal: Math.round(goal), achieved: current >= Math.round(goal) };
@@ -103,7 +101,6 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
     if (isMonthlyView && month && yearData[month]) {
       const monthlyData = yearData[month];
       const monthlyTotals: Record<string, number> = {};
-      let totalMeetingsBooked = 0;
       let totalHolidays = 0;
       
       let totalPodcastsDone = 0;
@@ -115,12 +112,11 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
           const week = monthlyData[weekKey];
           if (!week) return;
 
-          totalMeetingsBooked += week.meetingsBooked || 0;
           const holidaysInWeek = Object.keys(week.holidays || {}).filter(day => week.holidays[day] && ptDays.slice(0, 5).includes(day)).length;
           totalHolidays += holidaysInWeek;
 
           counterTasksList.forEach(task => {
-              ptDays.forEach(day => {
+              ptDays.slice(0, 5).forEach(day => { // Only count Mon-Fri
                   const dailyCounters = week.counterTasks?.[day] || {};
                   const value = Number(dailyCounters[task.id] || '0');
                   if (!monthlyTotals[task.id]) monthlyTotals[task.id] = 0;
@@ -133,16 +129,15 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
        Object.keys(adjustedMonthlyGoals).forEach(key => {
           if(adjustedMonthlyGoals[key]) {
             const weeklyGoal = adjustedMonthlyGoals[key].goal;
-            adjustedMonthlyGoals[key].goal = (weeklyGoal * 4) - ((weeklyGoal / 5) * totalHolidays);
+            adjustedMonthlyGoals[key].goal = (weeklyGoal * 4); // 4 weeks in a month
           }
       });
       
-      monthlyTotals['meetings'] = totalMeetingsBooked;
       monthlyTotals['podcasts'] = totalPodcastsDone;
       
       const items = Object.entries(adjustedMonthlyGoals).map(([key, { label, goal }]) => {
           const current = monthlyTotals[key] || 0;
-          return { id: key, label, current, goal: Math.round(goal), achieved: current >= Math.round(goal) };
+          return { id: key, label, current, goal, achieved: current >= goal };
       });
       
       return { progressItems: items, overallScore: 0, achievedGoals: items.filter(i => i.achieved).length, totalGoals: items.length };
@@ -156,26 +151,20 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
         if (!weeklyData) return { progressItems: [], overallScore: 0, achievedGoals: 0, totalGoals: 0 };
 
         const weeklyTotals: Record<string, number> = {};
-        weeklyTotals['meetings'] = weeklyData.meetingsBooked || 0;
         
         let podcastsDone = 0;
         if(yearData[month]?.podcasts) {
            podcastsDone = Object.values(yearData[month]!.podcasts).filter(p => p.done).length;
+           // This seems to be monthly, let's assume it should be weekly.
+           // This logic might need refinement based on how podcast goals are tracked.
         }
         weeklyTotals['podcasts'] = podcastsDone;
-
 
         const holidaysInWeek = Object.keys(weeklyData.holidays || {}).filter(day => weeklyData.holidays[day] && ptDays.slice(0, 5).includes(day)).length;
         
         const adjustedWeeklyGoals = JSON.parse(JSON.stringify(weeklyGoalsDef));
-        Object.keys(adjustedWeeklyGoals).forEach(key => {
-          if(adjustedWeeklyGoals[key]) {
-            const weeklyGoal = adjustedWeeklyGoals[key].goal;
-            adjustedWeeklyGoals[key].goal = weeklyGoal - ((weeklyGoal / 5) * holidaysInWeek);
-          }
-        });
 
-        ptDays.forEach(day => {
+        ptDays.slice(0, 5).forEach(day => { // Only count Mon-Fri for weekly total
             const dailyCounters = weeklyData.counterTasks?.[day] || {};
             counterTasksList.forEach(task => {
                 const value = Number(dailyCounters[task.id] || '0');
@@ -186,7 +175,7 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
 
         const items = Object.entries(adjustedWeeklyGoals).map(([key, { label, goal }]) => {
             const current = weeklyTotals[key] || 0;
-            return { id: key, label, current, goal: Math.round(goal), achieved: current >= Math.round(goal) };
+            return { id: key, label, current, goal, achieved: current >= goal };
         });
 
         return { progressItems: items, overallScore: 0, achievedGoals: items.filter(i => i.achieved).length, totalGoals: items.length };
@@ -221,7 +210,7 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
           Progresso e Metas
         </CardTitle>
         <CardDescription>
-            {`Metas alcançadas: ${achievedGoals} de ${totalGoals}.`} Os feriados são descontados das metas.
+            {`Metas alcançadas: ${achievedGoals} de ${totalGoals}.`} As metas são baseadas em 5 dias úteis.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -232,7 +221,7 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
                     <div className="flex-1 rounded-full h-3 bg-muted overflow-hidden">
                         <div 
                            className={cn("h-full rounded-full", item.achieved ? "bg-green-500" : "bg-primary")}
-                           style={{ width: `${Math.min(100, (item.current / item.goal) * 100)}%`}}
+                           style={{ width: item.goal > 0 ? `${Math.min(100, (item.current / item.goal) * 100)}%` : '0%'}}
                         />
                     </div>
                     <span className={cn("text-xs font-bold w-20 text-right", item.achieved ? "text-green-500" : "text-foreground/80")}>
@@ -259,5 +248,3 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
     </Card>
   );
 }
-
-    
