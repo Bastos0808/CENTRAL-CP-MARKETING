@@ -89,6 +89,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartConfig,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart"
+import { Pie, PieChart, Cell } from "recharts"
 
 
 const FUNCTION_TABS = ['Podcast', 'Progresso Semanal', 'Progresso Mensal'];
@@ -306,12 +315,9 @@ export default function RotinaSDRPage() {
   }, [user, isAdmin, toast]);
 
 
-  // ONE-TIME RESET LOGIC - This will run only once when an admin loads the page.
-  const hasRunReset = useRef(false);
-  useEffect(() => {
-    const handleResetData = async () => {
+  const handleResetData = async () => {
+        setIsLoading(true);
         try {
-            console.log("Admin detected, attempting to reset SDR data...");
             const usersRef = collection(db, 'users');
             const q = query(usersRef, where('role', '==', 'comercial'));
             const usersSnapshot = await getDocs(q);
@@ -326,7 +332,6 @@ export default function RotinaSDRPage() {
                 return;
             }
 
-            console.log(`Found ${sdrIdsToReset.length} SDRs to reset.`);
             const batch = writeBatch(db);
             sdrIdsToReset.forEach(sdrId => {
                 const docRef = doc(db, 'sdr_performance', sdrId);
@@ -349,14 +354,10 @@ export default function RotinaSDRPage() {
                 description: "Não foi possível reiniciar os dados. Verifique o console para mais detalhes.",
                 variant: "destructive",
             });
+        } finally {
+            setIsLoading(false);
         }
     };
-    
-    if (isAdmin && !hasRunReset.current) {
-        hasRunReset.current = true;
-        // handleResetData(); // Uncomment this line to run the reset. Comment it out again after successful reset.
-    }
-  }, [isAdmin, fetchAllData, toast]);
 
   // Effect to save data with debounce
   useEffect(() => {
@@ -599,6 +600,7 @@ export default function RotinaSDRPage() {
         const month = ptMonths[getMonth(new Date())];
         
         const rankedSdrs = sdrList
+            .filter(sdr => sdr.email !== 'comercial04@cpmarketing.com.br')
             .map(sdr => {
                 const sdrMonthData = allSdrData[sdr.id]?.[month];
                 let totalMeetings = 0;
@@ -694,16 +696,43 @@ export default function RotinaSDRPage() {
       );
     }
 
-    if (sdrList.length === 0) {
+    const sdrListWithoutIsabella = sdrList.filter(sdr => sdr.email !== 'comercial04@cpmarketing.com.br');
+
+    if (sdrListWithoutIsabella.length === 0) {
       return <p>Nenhum SDR encontrado.</p>;
     }
 
     const filteredSdrList = selectedSdr === 'all'
-      ? sdrList
-      : sdrList.filter(sdr => sdr.id === selectedSdr);
+      ? sdrListWithoutIsabella
+      : sdrListWithoutIsabella.filter(sdr => sdr.id === selectedSdr);
 
     return (
         <div className="space-y-6">
+            <div className="flex justify-end">
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Zerar Dados da Rotina
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Esta ação é irreversível e irá apagar **TODA** a performance registrada de **TODOS** os SDRs.
+                                Use com cuidado, idealmente apenas no início de um novo ciclo.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleResetData} className="bg-destructive hover:bg-destructive/90">
+                                Sim, Zerar Tudo
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </div>
             <Card>
                 <CardHeader>
                     <CardTitle>Filtros de Performance</CardTitle>
@@ -717,7 +746,7 @@ export default function RotinaSDRPage() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Todos os SDRs</SelectItem>
-                                {sdrList.map(sdr => (
+                                {sdrListWithoutIsabella.map(sdr => (
                                     <SelectItem key={sdr.id} value={sdr.id}>{sdr.name}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -831,6 +860,31 @@ export default function RotinaSDRPage() {
 
         return Math.min(score, maxScorePerDay);
     }, [yearData, currentMonth, activeWeekKey, activeDay]);
+    
+    const dailyChartData = useMemo(() => {
+        const weeklyData = yearData[currentMonth]?.[activeWeekKey];
+        if (!weeklyData) return [];
+
+        const dailyCounters = weeklyData.counterTasks?.[activeDay] || {};
+        
+        const chartTasks = ['m-4', 'a-3', 'daily_meetings']; // Leads Insta, Ligações, Consultorias
+        
+        return chartTasks.map(taskId => {
+            const taskDef = allTasks.find(t => t.id === taskId);
+            return {
+                name: taskDef?.label || taskId,
+                value: Number(dailyCounters[taskId] || '0'),
+                fill: `hsl(var(--chart-${chartTasks.indexOf(taskId) + 1}))`
+            }
+        }).filter(item => item.value > 0);
+
+    }, [yearData, currentMonth, activeWeekKey, activeDay]);
+
+    const chartConfig: ChartConfig = {
+      leads: { label: "Leads Insta", color: "hsl(var(--chart-1))" },
+      ligacoes: { label: "Ligações", color: "hsl(var(--chart-2))" },
+      consultorias: { label: "Consultorias", color: "hsl(var(--chart-3))" },
+    }
 
 
     return(
@@ -944,12 +998,23 @@ export default function RotinaSDRPage() {
           
           <div className="space-y-6 mt-6">
              {!isSaturday && !isHoliday && (
-                <Card className="flex-1">
-                    <CardHeader className="p-3">
-                        <CardTitle className="text-sm font-medium text-center">Nota de Performance (Dia)</CardTitle>
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-lg font-medium text-center">Performance do Dia</CardTitle>
                     </CardHeader>
-                    <CardContent className="p-3 pt-0 flex justify-center">
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                         <ScoreIndicator score={dailyScore} />
+                        <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[250px]">
+                           <PieChart>
+                            <ChartTooltip content={<ChartTooltipContent nameKey="name" hideLabel />} />
+                                <Pie data={dailyChartData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={90}>
+                                    {dailyChartData.map((entry) => (
+                                        <Cell key={`cell-${entry.name}`} fill={entry.fill} />
+                                    ))}
+                                </Pie>
+                                <ChartLegend content={<ChartLegendContent nameKey="name" />} />
+                           </PieChart>
+                        </ChartContainer>
                     </CardContent>
                 </Card>
               )}
@@ -1086,5 +1151,6 @@ export default function RotinaSDRPage() {
     
 
     
+
 
 
