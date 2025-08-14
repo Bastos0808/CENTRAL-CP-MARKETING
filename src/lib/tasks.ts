@@ -42,7 +42,7 @@ export const allTasks: AnyTask[] = [
 
 export const weeklyGoals: Record<string, { label: string; goal: number }> = {
   "meetings": { label: "Consultorias", goal: 8 },
-  "podcasts": { label: "Podcasts Concluídos", goal: 4 },
+  "podcasts": { label: "Pessoas Confirmadas para o Podcast", goal: 4 },
   "m-1-empresas": { label: "Leads (Empresas)", goal: 200 },
   "m-1-trafego": { label: "Leads (Tráfego)", goal: 50 },
   "m-4": { label: "Prospecção (Instagram/WhatsApp)", goal: 200 },
@@ -59,3 +59,9 @@ export const scoreWeights: Record<string, number> = {
 };
 
 export const maxScorePerDay = 100;
+
+export const sdrUsers = [
+    { id: "HELOYSA_ID", name: "Heloysa" },
+    { id: "DEBORA_ID", name: "Débora" },
+    { id: "VANDIEGO_ID", name: "Van Diego" }
+]
