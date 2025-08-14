@@ -1,5 +1,4 @@
 
-
 export const WEEKLY_MEETING_GOAL = 8;
 
 export const ptDays = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -26,8 +25,8 @@ export type AnyTask = Task | CounterTask;
 export const allTasks: AnyTask[] = [
     // Counter Tasks
     { id: "m-1-empresas", label: "Leads (Empresas)", type: 'counter' },
-    { id: "m-1-trafego", label: "Leads (Tráfego Pago e Orgânico)", type: 'counter' },
-    { id: "m-4", label: "Prospecção (Instagram/WhatsApp)", type: 'counter' },
+    { id: "m-1-trafego", label: "Leads Tráfego (pago e orgânico)", type: 'counter' },
+    { id: "m-4", label: "Leads Instagram", type: 'counter' },
     { id: "a-3", label: "Ligações", type: 'counter' },
 
     // Checkbox Tasks
@@ -42,10 +41,10 @@ export const allTasks: AnyTask[] = [
 
 export const weeklyGoals: Record<string, { label: string; goal: number }> = {
   "meetings": { label: "Consultorias", goal: 8 },
-  "podcasts": { label: "Pessoas Confirmadas para o Podcast", goal: 4 },
+  "podcasts": { label: "Confirmado para o Podcast", goal: 4 },
   "m-1-empresas": { label: "Leads (Empresas)", goal: 200 },
-  "m-1-trafego": { label: "Leads (Tráfego)", goal: 50 },
-  "m-4": { label: "Prospecção (Instagram/WhatsApp)", goal: 200 },
+  "m-1-trafego": { label: "Leads Tráfego", goal: 50 },
+  "m-4": { label: "Leads Instagram", goal: 200 },
   "a-3": { label: "Ligações", goal: 25 },
 };
 

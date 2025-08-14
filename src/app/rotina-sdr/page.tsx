@@ -38,7 +38,7 @@ import {
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth, format, addDays, eachDayOfInterval } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-import { allTasks, WEEKLY_MEETING_GOAL, ptDays, AnyTask, weeklyGoals, ptMonths } from "@/lib/tasks";
+import { allTasks, WEEKLY_MEETING_GOAL, ptDays, AnyTask, weeklyGoals, ptMonths, scoreWeights, maxScorePerDay } from "@/lib/tasks";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -76,6 +76,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DateRange } from "react-day-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { ScoreIndicator } from "@/components/ScoreIndicator";
 
 
 const FUNCTION_TABS = ['Podcast', 'Progresso Semanal', 'Progresso Mensal'];
@@ -696,6 +697,25 @@ export default function RotinaSDRPage() {
     
     const extraTasksForToday = weekData?.extraTasks?.[activeDay] || [];
     
+    const dailyScore = useMemo(() => {
+        const weeklyData = yearData[currentMonth]?.[activeWeekKey];
+        if (!weeklyData) return 0;
+        
+        const dailyCounters = weeklyData.counterTasks?.[activeDay] || {};
+        let score = 0;
+        
+        Object.keys(dailyCounters).forEach(taskId => {
+            const weight = scoreWeights[taskId];
+            const value = Number(dailyCounters[taskId] || '0');
+            if (weight) {
+            score += value * weight;
+            }
+        });
+
+        return Math.min(score, maxScorePerDay);
+    }, [yearData, currentMonth, activeWeekKey, activeDay]);
+
+
     return(
       <Card className="bg-transparent border-none shadow-none">
           <CardContent className="p-0 space-y-4">
@@ -752,53 +772,65 @@ export default function RotinaSDRPage() {
                   <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} week={currentWeek} month={currentMonth} />
                </>
               ) : (
-                <div className="space-y-4">
-                    {counterTasks.map((task) => (
-                         <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
-                            <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
-                            <div className="flex items-center gap-3">
-                                <CounterTaskInput
-                                    type="text"
-                                    pattern="[0-9]*"
-                                    inputMode="numeric"
-                                    id={`${activeDay}-${task.id}`}
-                                    value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
-                                    onSave={(value) => handleCounterChange(task.id, value)}
-                                    className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
-                                    placeholder="0"
-                                />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                    <div className="md:col-span-2 space-y-4">
+                        {counterTasks.map((task) => (
+                             <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
+                                <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
+                                <div className="flex items-center gap-3">
+                                    <CounterTaskInput
+                                        type="text"
+                                        pattern="[0-9]*"
+                                        inputMode="numeric"
+                                        id={`${activeDay}-${task.id}`}
+                                        value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
+                                        onSave={(value) => handleCounterChange(task.id, value)}
+                                        className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
+                                        placeholder="0"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                    {renderConsultorias()}
-                    
-                  {/* Checkbox Tasks */}
-                  <div className="space-y-4 pt-4">
-                    {checkboxTasks.map(task => {
-                        const isChecked = weekData.checkedTasks?.[activeDay]?.[task.id] || false;
-                        return (
-                          <div
-                              key={task.id}
-                              onClick={() => handleTaskCheck(task.id, !isChecked)}
-                              className="flex items-center space-x-4 p-4 rounded-lg bg-card/50 cursor-pointer transition-colors hover:bg-card/70"
-                          >
-                              <div className={cn(
-                                  "h-6 w-6 rounded-full flex-shrink-0 flex items-center justify-center border-2",
-                                  isChecked ? "bg-green-500 border-green-500" : "border-primary"
-                              )}>
-                                  {isChecked && <Check className="h-4 w-4 text-white" />}
+                        ))}
+                        {renderConsultorias()}
+                        
+                      {/* Checkbox Tasks */}
+                      <div className="space-y-4 pt-4">
+                        {checkboxTasks.map(task => {
+                            const isChecked = weekData.checkedTasks?.[activeDay]?.[task.id] || false;
+                            return (
+                              <div
+                                  key={task.id}
+                                  onClick={() => handleTaskCheck(task.id, !isChecked)}
+                                  className="flex items-center space-x-4 p-4 rounded-lg bg-card/50 cursor-pointer transition-colors hover:bg-card/70"
+                              >
+                                  <div className={cn(
+                                      "h-6 w-6 rounded-full flex-shrink-0 flex items-center justify-center border-2",
+                                      isChecked ? "bg-green-500 border-green-500" : "border-primary"
+                                  )}>
+                                      {isChecked && <Check className="h-4 w-4 text-white" />}
+                                  </div>
+                                  <span className={cn("flex-1 text-base font-normal", isChecked && "line-through text-muted-foreground")}>
+                                      {task.label}
+                                  </span>
                               </div>
-                              <span className={cn("flex-1 text-base font-normal", isChecked && "line-through text-muted-foreground")}>
-                                  {task.label}
-                              </span>
-                          </div>
-                      )
-                    })}
-                     <ExtraTasksTextarea 
-                        value={extraTasksForToday}
-                        onSave={handleExtraTasksChange}
-                     />
-                  </div>
+                          )
+                        })}
+                         <ExtraTasksTextarea 
+                            value={extraTasksForToday}
+                            onSave={handleExtraTasksChange}
+                         />
+                      </div>
+                    </div>
+                    <div className="sticky top-20">
+                         <Card className="flex-1">
+                            <CardHeader className="p-3">
+                                <CardTitle className="text-sm font-medium text-center">Nota de Performance (Dia)</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-3 pt-0 flex justify-center">
+                                <ScoreIndicator score={dailyScore} />
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
               )}
           </CardContent>
@@ -922,7 +954,6 @@ export default function RotinaSDRPage() {
                     )}
                 </div>
              </div>
-              {!isAdmin && !FUNCTION_TABS.includes(activeTab) && <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} day={activeDay} week={currentWeek} month={currentMonth}/>}
            </div>
            
            <div className="flex flex-col gap-2 w-full sm:w-auto">
