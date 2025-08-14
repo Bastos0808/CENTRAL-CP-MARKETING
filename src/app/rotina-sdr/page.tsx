@@ -36,7 +36,7 @@ import {
   Calendar as CalendarIcon,
   ShieldAlert,
 } from "lucide-react";
-import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth, format, addDays, eachDayOfInterval } from 'date-fns';
+import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth, format, addDays, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 import { allTasks, WEEKLY_MEETING_GOAL, ptDays, AnyTask, weeklyGoals, ptMonths, scoreWeights, maxScorePerDay } from "@/lib/tasks";
@@ -315,49 +315,32 @@ export default function RotinaSDRPage() {
   }, [user, isAdmin, toast]);
 
 
-  const handleResetData = async () => {
-        setIsLoading(true);
-        try {
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('role', '==', 'comercial'));
-            const usersSnapshot = await getDocs(q);
-            
-            const sdrIdsToReset: string[] = [];
-            usersSnapshot.forEach(userDoc => {
-                sdrIdsToReset.push(userDoc.id);
-            });
+  const calculateScoreForDate = useCallback((date: Date, sdrId: string) => {
+    const sdrYearData = allSdrData[sdrId];
+    if (!sdrYearData) return 0;
 
-            if (sdrIdsToReset.length === 0) {
-                toast({ title: "Nenhum SDR encontrado para zerar.", variant: "default" });
-                return;
-            }
+    const monthKey = ptMonths[getMonth(date)];
+    const weekOfMonth = Math.min(4, Math.max(1, Math.ceil(date.getDate() / 7)));
+    const weekKey = `semana${weekOfMonth}` as const;
+    const dayIndex = getDay(date);
+    const dayKey = dayIndex > 0 ? ptDays[dayIndex - 1] : ptDays[5];
 
-            const batch = writeBatch(db);
-            sdrIdsToReset.forEach(sdrId => {
-                const docRef = doc(db, 'sdr_performance', sdrId);
-                batch.set(docRef, createInitialYearData());
-            });
-            await batch.commit();
-            
-            await fetchAllData();
-            
-            toast({
-                title: "Rotina SDR Reiniciada!",
-                description: "Os dados de performance de todos os SDRs foram zerados com sucesso.",
-                variant: "default",
-                duration: 5000,
-            });
-        } catch (error) {
-            console.error("Error resetting data:", error);
-            toast({
-                title: "Erro ao Zerar Dados",
-                description: "Não foi possível reiniciar os dados. Verifique o console para mais detalhes.",
-                variant: "destructive",
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const weeklyData = sdrYearData[monthKey]?.[weekKey];
+    if (!weeklyData || weeklyData.holidays?.[dayKey]) return 0;
+
+    const dailyCounters = weeklyData.counterTasks?.[dayKey] || {};
+    let score = 0;
+
+    Object.keys(dailyCounters).forEach(taskId => {
+      const weight = scoreWeights[taskId];
+      const value = Number(dailyCounters[taskId] || '0');
+      if (weight) {
+        score += value * weight;
+      }
+    });
+    return Math.min(score, maxScorePerDay);
+  }, [allSdrData]);
+
 
   // Effect to save data with debounce
   useEffect(() => {
@@ -596,51 +579,53 @@ export default function RotinaSDRPage() {
     );
   };
   
-    const TeamRanking = () => {
-        const month = ptMonths[getMonth(new Date())];
-        
-        const rankedSdrs = sdrList
-            .filter(sdr => sdr.email !== 'comercial04@cpmarketing.com.br')
-            .map(sdr => {
-                const sdrMonthData = allSdrData[sdr.id]?.[month];
-                let totalMeetings = 0;
-                if (sdrMonthData) {
-                    totalMeetings = (['semana1', 'semana2', 'semana3', 'semana4'] as const)
-                        .reduce((acc, weekKey) => acc + (sdrMonthData[weekKey]?.meetingsBooked || 0), 0);
-                }
-                return { ...sdr, totalMeetings };
-            })
-            .sort((a, b) => b.totalMeetings - a.totalMeetings);
+  const TeamRanking = () => {
+    const month = ptMonths[getMonth(new Date())];
+    
+    const rankedSdrs = sdrList
+        .filter(sdr => sdr.email !== 'comercial04@cpmarketing.com.br')
+        .map(sdr => {
+            const sdrMonthData = allSdrData[sdr.id]?.[month];
+            let totalScore = 0;
+            if (sdrMonthData) {
+                const monthStartDate = startOfMonth(new Date(new Date().getFullYear(), ptMonths.indexOf(month)));
+                const daysInMonth = eachDayOfInterval({start: monthStartDate, end: new Date()});
+                
+                totalScore = daysInMonth.reduce((acc, day) => acc + calculateScoreForDate(day, sdr.id), 0);
+            }
+            return { ...sdr, totalScore };
+        })
+        .sort((a, b) => b.totalScore - a.totalScore);
 
-        return (
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Trophy /> Ranking de Agendamentos (Mês)</CardTitle>
-                    <CardDescription>Performance dos consultores no mês de {month}.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Posição</TableHead>
-                                <TableHead>Consultor</TableHead>
-                                <TableHead className="text-right">Agendamentos</TableHead>
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Trophy /> Ranking de Notas (Mês)</CardTitle>
+                <CardDescription>Performance dos consultores no mês de {month}.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Posição</TableHead>
+                            <TableHead>Consultor</TableHead>
+                            <TableHead className="text-right">Nota</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {rankedSdrs.map((sdr, index) => (
+                            <TableRow key={sdr.id}>
+                                <TableCell className="font-bold text-lg">{index + 1}º</TableCell>
+                                <TableCell>{sdr.name}</TableCell>
+                                <TableCell className="text-right font-bold text-lg">{Math.round(sdr.totalScore)}</TableCell>
                             </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {rankedSdrs.map((sdr, index) => (
-                                <TableRow key={sdr.id}>
-                                    <TableCell className="font-bold text-lg">{index + 1}º</TableCell>
-                                    <TableCell>{sdr.name}</TableCell>
-                                    <TableCell className="text-right font-bold text-lg">{sdr.totalMeetings}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
-        );
-    }
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+    );
+}
 
 
   const AdminView = () => {
@@ -1126,6 +1111,7 @@ export default function RotinaSDRPage() {
     
 
     
+
 
 
 
