@@ -8,9 +8,6 @@ export const ai = genkit({
   plugins: [
     googleAI({
       apiKey: process.env.GEMINI_API_KEY, // Garante que a chave seja lida exclusivamente do ambiente
-      defaultGenerationOptions: {
-        model: 'gemini-1.5-pro-latest',
-      },
     }),
   ],
   logLevel: 'debug',
