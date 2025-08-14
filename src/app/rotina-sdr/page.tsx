@@ -262,6 +262,9 @@ export default function RotinaSDRPage() {
                 const fetchedSdrList: SdrUser[] = [];
                  usersSnapshot.forEach(userDoc => {
                     const userData = userDoc.data();
+                    if (userData.email === 'comercial04@cpmarketing.com.br') {
+                        return; // Skip this user
+                    }
                     let displayName = userData.username || userData.displayName || '';
                     if (!displayName && userData.email) {
                         displayName = userData.email.split('@')[0];
