@@ -25,7 +25,6 @@ export type AnyTask = Task | CounterTask;
 
 
 export const allTasks: AnyTask[] = [
-    // Ordem redefinida conforme solicitado pelo usuário
     { id: "m-4", label: "Leads Instagram", type: 'counter', goal: 50 },
     { id: "m-1-empresas", label: "Leads (Empresas)", type: 'counter', goal: 30 },
     { id: "m-1-trafego", label: "Leads Tráfego (pago e orgânico)", type: 'counter', goal: 10 },
@@ -58,12 +57,11 @@ export const weeklyGoals: Record<string, { label: string; goal: number }> = {
 export const scoreWeights: Record<string, number> = {
     "m-4": 0.1, 
     "m-1-empresas": 0.2, 
-    "m-1-trafego": 0.5,
+    // "m-1-trafego": 0, // Removido do cálculo da nota
     "m-5": 0.1,
     "a-3": 1,
     "podcasts": 15,
     "daily_meetings": 20, 
-    "closed_clients": 25, 
 };
 
 export const maxScorePerDay = 100;

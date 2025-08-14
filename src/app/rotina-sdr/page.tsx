@@ -586,6 +586,44 @@ export default function RotinaSDRPage() {
       from: startOfMonth(new Date()),
       to: new Date(),
     });
+    
+    const calculateScoreForRange = (sdrId: string, range: DateRange | undefined) => {
+        if (!range?.from) return 0;
+        
+        const sdrYearData = allSdrData[sdrId];
+        if (!sdrYearData) return 0;
+
+        const start = range.from;
+        const end = range.to || range.from;
+        const intervalDays = eachDayOfInterval({ start, end });
+        
+        let totalScore = 0;
+
+        intervalDays.forEach(day => {
+            const monthKey = ptMonths[getMonth(day)];
+            const weekOfMonth = Math.min(4, Math.max(1, Math.ceil(day.getDate() / 7)));
+            const weekKey = `semana${weekOfMonth}` as const;
+            const dayIndex = getDay(day);
+            const dayKey = dayIndex > 0 ? ptDays[dayIndex - 1] : ptDays[5];
+
+            const weeklyData = sdrYearData[monthKey]?.[weekKey];
+            if (!weeklyData || weeklyData.holidays?.[dayKey]) return;
+
+            const dailyCounters = weeklyData.counterTasks?.[dayKey] || {};
+            let score = 0;
+            
+            Object.keys(dailyCounters).forEach(taskId => {
+                const weight = scoreWeights[taskId];
+                const value = Number(dailyCounters[taskId] || '0');
+                if (weight) {
+                    score += value * weight;
+                }
+            });
+            totalScore += score;
+        });
+
+        return Math.round(totalScore);
+    };
 
     if (isLoading) {
       return (
@@ -673,12 +711,18 @@ export default function RotinaSDRPage() {
                     const sdrYearData = allSdrData[sdr.id];
                     if (!sdrYearData) return null;
                     
-                    const month = ptMonths[getMonth(dateRange?.from || new Date())];
+                    const performanceScore = calculateScoreForRange(sdr.id, dateRange);
 
                     return (
                         <Card key={sdr.id}>
                             <CardHeader>
-                                <CardTitle>{sdr.name}</CardTitle>
+                                <div className="flex justify-between items-center">
+                                    <CardTitle>{sdr.name}</CardTitle>
+                                    <div className="flex items-center gap-2 text-lg">
+                                        <span className="font-semibold text-muted-foreground">Nota de Performance:</span>
+                                        <span className="font-bold text-primary">{performanceScore}</span>
+                                    </div>
+                                </div>
                                 <CardDescription>Performance no período selecionado</CardDescription>
                             </CardHeader>
                             <CardContent>
