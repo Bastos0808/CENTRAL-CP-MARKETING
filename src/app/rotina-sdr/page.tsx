@@ -231,7 +231,6 @@ export default function RotinaSDRPage() {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('saved');
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [isDirty, setIsDirty] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
 
   const isAdmin = user?.role === 'admin';
   const effectiveUserId = user?.uid;
@@ -256,6 +255,7 @@ export default function RotinaSDRPage() {
             const fetchedSdrList: SdrUser[] = [];
              usersSnapshot.forEach(userDoc => {
                 const userData = userDoc.data();
+                if(userData.email === 'comercial04@cpmarketing.com.br') return;
                 let displayName = userData.username || userData.displayName || '';
                 if (!displayName && userData.email) {
                     displayName = userData.email.split('@')[0];
@@ -304,6 +304,59 @@ export default function RotinaSDRPage() {
         setIsLoading(false);
     }
   }, [user, isAdmin, toast]);
+
+
+  // ONE-TIME RESET LOGIC - This will run only once when an admin loads the page.
+  const hasRunReset = useRef(false);
+  useEffect(() => {
+    const handleResetData = async () => {
+        try {
+            console.log("Admin detected, attempting to reset SDR data...");
+            const usersRef = collection(db, 'users');
+            const q = query(usersRef, where('role', '==', 'comercial'));
+            const usersSnapshot = await getDocs(q);
+            
+            const sdrIdsToReset: string[] = [];
+            usersSnapshot.forEach(userDoc => {
+                sdrIdsToReset.push(userDoc.id);
+            });
+
+            if (sdrIdsToReset.length === 0) {
+                toast({ title: "Nenhum SDR encontrado para zerar.", variant: "default" });
+                return;
+            }
+
+            console.log(`Found ${sdrIdsToReset.length} SDRs to reset.`);
+            const batch = writeBatch(db);
+            sdrIdsToReset.forEach(sdrId => {
+                const docRef = doc(db, 'sdr_performance', sdrId);
+                batch.set(docRef, createInitialYearData());
+            });
+            await batch.commit();
+            
+            await fetchAllData();
+            
+            toast({
+                title: "Rotina SDR Reiniciada!",
+                description: "Os dados de performance de todos os SDRs foram zerados com sucesso.",
+                variant: "default",
+                duration: 5000,
+            });
+        } catch (error) {
+            console.error("Error resetting data:", error);
+            toast({
+                title: "Erro ao Zerar Dados",
+                description: "Não foi possível reiniciar os dados. Verifique o console para mais detalhes.",
+                variant: "destructive",
+            });
+        }
+    };
+    
+    if (isAdmin && !hasRunReset.current) {
+        hasRunReset.current = true;
+        // handleResetData(); // Uncomment this line to run the reset. Comment it out again after successful reset.
+    }
+  }, [isAdmin, fetchAllData, toast]);
 
   // Effect to save data with debounce
   useEffect(() => {
@@ -489,52 +542,6 @@ export default function RotinaSDRPage() {
       });
   };
 
-  const handleResetData = async () => {
-    setIsResetting(true);
-    try {
-        // Fetch the list of SDRs directly to ensure it's up to date
-        const usersRef = collection(db, 'users');
-        const q = query(usersRef, where('role', '==', 'comercial'));
-        const usersSnapshot = await getDocs(q);
-        
-        const sdrIdsToReset: string[] = [];
-        usersSnapshot.forEach(userDoc => {
-            sdrIdsToReset.push(userDoc.id);
-        });
-
-        if (sdrIdsToReset.length === 0) {
-            toast({ title: "Nenhum SDR encontrado", variant: "destructive" });
-            setIsResetting(false);
-            return;
-        }
-
-        const batch = writeBatch(db);
-        sdrIdsToReset.forEach(sdrId => {
-            const docRef = doc(db, 'sdr_performance', sdrId);
-            batch.set(docRef, createInitialYearData());
-        });
-        await batch.commit();
-        
-        // Refetch all data to update the UI
-        await fetchAllData();
-        
-        toast({
-            title: "Dados Zerados!",
-            description: "Os dados de performance de todos os SDRs foram reiniciados.",
-        });
-    } catch (error) {
-        console.error("Error resetting data:", error);
-        toast({
-            title: "Erro ao Zerar Dados",
-            description: "Não foi possível reiniciar os dados. Tente novamente.",
-            variant: "destructive",
-        });
-    } finally {
-        setIsResetting(false);
-    }
-};
-
-  
     const SaveStatusIndicator = () => {
         if (isAdmin) return null;
 
@@ -759,36 +766,6 @@ export default function RotinaSDRPage() {
             </Card>
             
             <TeamRanking />
-            
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-destructive flex items-center gap-2"><ShieldAlert /> Ações de Administrador</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive" disabled={isResetting}>
-                                {isResetting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-                                Zerar Dados de Todos os SDRs
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Esta ação é irreversível. Todos os dados de performance da Rotina SDR de <strong>todos os consultores</strong> serão apagados permanentemente e substituídos por dados vazios.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleResetData} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">
-                                    Sim, zerar tudo
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                </CardContent>
-            </Card>
 
             <div className="space-y-6">
                  {filteredSdrList.map(sdr => {
@@ -1109,4 +1086,5 @@ export default function RotinaSDRPage() {
     
 
     
+
 
