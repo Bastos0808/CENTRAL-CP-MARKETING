@@ -708,31 +708,6 @@ export default function RotinaSDRPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-end">
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Zerar Dados da Rotina
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Você tem certeza absoluta?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Esta ação é irreversível e irá apagar **TODA** a performance registrada de **TODOS** os SDRs.
-                                Use com cuidado, idealmente apenas no início de um novo ciclo.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleResetData} className="bg-destructive hover:bg-destructive/90">
-                                Sim, Zerar Tudo
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </div>
             <Card>
                 <CardHeader>
                     <CardTitle>Filtros de Performance</CardTitle>
@@ -1151,6 +1126,7 @@ export default function RotinaSDRPage() {
     
 
     
+
 
 
 
