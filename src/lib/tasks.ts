@@ -1,6 +1,6 @@
 
 
-export const WEEKLY_MEETING_GOAL = 12;
+export const WEEKLY_MEETING_GOAL = 10;
 
 export const ptDays = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
@@ -25,10 +25,10 @@ export type AnyTask = Task | CounterTask;
 
 
 export const allTasks: AnyTask[] = [
-    // Counter Tasks
+    // Ordem solicitada pelo usuário
     { id: "m-4", label: "Leads Instagram", type: 'counter', goal: 50 },
     { id: "m-1-empresas", label: "Leads (Empresas)", type: 'counter', goal: 30 },
-    { id: "m-1-trafego", label: "Leads Tráfego (pago e orgânico)", type: 'counter', goal: 5 },
+    { id: "m-1-trafego", label: "Leads Tráfego (pago e orgânico)", type: 'counter', goal: 10 },
     { id: "a-3", label: "Ligações", type: 'counter', goal: 12 },
     { id: "m-5", label: "Leads (Automação)", type: 'counter', goal: 100 },
     
@@ -43,11 +43,11 @@ export const allTasks: AnyTask[] = [
 
 
 export const weeklyGoals: Record<string, { label: string; goal: number }> = {
-  "meetings": { label: "Consultorias", goal: 12 },
+  "meetings": { label: "Consultorias", goal: 10 }, // 2 * 5
   "podcasts": { label: "Confirmado para o Podcast", goal: 4 },
   "m-4": { label: "Leads Instagram", goal: 250 }, // 50 * 5
   "m-1-empresas": { label: "Leads (Empresas)", goal: 150 }, // 30 * 5
-  "m-1-trafego": { label: "Leads Tráfego (pago e orgânico)", goal: 25 }, // 5 * 5
+  "m-1-trafego": { label: "Leads Tráfego (pago e orgânico)", goal: 50 }, // 10 * 5
   "a-3": { label: "Ligações", goal: 60 }, // 12 * 5
   "m-5": { label: "Leads (Automação)", goal: 500 }, // 100 * 5
 };
@@ -69,5 +69,3 @@ export const sdrUsers = [
     { id: "DEBORA_ID", name: "Débora" },
     { id: "VANDIEGO_ID", name: "Van Diego" }
 ]
-
-    

@@ -514,7 +514,7 @@ export default function RotinaSDRPage() {
     return (
       <div className="hidden sm:flex items-center gap-2">
         {kpis.map(kpi => {
-           const goal = weeklyGoals[kpi.id]?.goal || (kpi.id === 'daily_meetings' ? WEEKLY_MEETING_GOAL : 0);
+           const goal = weeklyGoals[kpi.id as keyof typeof weeklyGoals]?.goal || (kpi.id === 'daily_meetings' ? WEEKLY_MEETING_GOAL : 0);
            let current = 0;
 
             if (kpi.id === 'daily_meetings') {
@@ -879,6 +879,7 @@ export default function RotinaSDRPage() {
                     className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
                     placeholder="0"
                     disabled={isHoliday || isSaturday}
+                    goal={2}
                 />
             </div>
         </div>
