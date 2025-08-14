@@ -45,13 +45,16 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
           const dayKey = dayIndex > 0 ? ptDays[dayIndex - 1] : ptDays[5];
 
           const weeklyData = yearData[monthKey]?.[weekKey];
-          if (!weeklyData) return;
+          
+          const isHoliday = weeklyData?.holidays?.[dayKey] || false;
+          const isWeekend = dayIndex === 0 || dayIndex === 6;
 
-          const isHoliday = weeklyData.holidays?.[dayKey] || false;
           // Consider only weekdays for goal calculations
-          if (dayIndex >= 1 && dayIndex <= 5 && !isHoliday) {
+          if (!isWeekend && !isHoliday) {
               workDaysCount++;
           }
+          
+          if (!weeklyData) return;
           
           counterTasksList.forEach(task => {
               const value = Number(weeklyData.counterTasks?.[dayKey]?.[task.id] || '0');
