@@ -492,9 +492,25 @@ export default function RotinaSDRPage() {
   const handleResetData = async () => {
     setIsResetting(true);
     try {
+        // Fetch the list of SDRs directly to ensure it's up to date
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('role', '==', 'comercial'));
+        const usersSnapshot = await getDocs(q);
+        
+        const sdrIdsToReset: string[] = [];
+        usersSnapshot.forEach(userDoc => {
+            sdrIdsToReset.push(userDoc.id);
+        });
+
+        if (sdrIdsToReset.length === 0) {
+            toast({ title: "Nenhum SDR encontrado", variant: "destructive" });
+            setIsResetting(false);
+            return;
+        }
+
         const batch = writeBatch(db);
-        sdrList.forEach(sdr => {
-            const docRef = doc(db, 'sdr_performance', sdr.id);
+        sdrIdsToReset.forEach(sdrId => {
+            const docRef = doc(db, 'sdr_performance', sdrId);
             batch.set(docRef, createInitialYearData());
         });
         await batch.commit();
@@ -1093,3 +1109,4 @@ export default function RotinaSDRPage() {
     
 
     
+
