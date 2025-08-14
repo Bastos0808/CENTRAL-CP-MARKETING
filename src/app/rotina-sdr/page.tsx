@@ -673,6 +673,46 @@ export default function RotinaSDRPage() {
         return Math.round(totalScore);
     };
 
+    const calculateChartDataForRange = (sdrId: string, range: DateRange | undefined) => {
+        if (!range?.from) return [];
+        
+        const sdrYearData = allSdrData[sdrId];
+        if (!sdrYearData) return [];
+
+        const start = range.from;
+        const end = range.to || range.from;
+        const intervalDays = eachDayOfInterval({ start, end });
+        
+        const rangeCounters: Record<string, number> = {};
+
+        intervalDays.forEach(day => {
+            const monthKey = ptMonths[getMonth(day)];
+            const weekOfMonth = Math.min(4, Math.max(1, Math.ceil(day.getDate() / 7)));
+            const weekKey = `semana${weekOfMonth}` as const;
+            const dayIndex = getDay(day);
+            const dayKey = dayIndex > 0 ? ptDays[dayIndex - 1] : ptDays[5];
+
+            const weeklyData = sdrYearData[monthKey]?.[weekKey];
+            if (!weeklyData || weeklyData.holidays?.[dayKey]) return;
+
+            const dailyCounters = weeklyData.counterTasks?.[dayKey] || {};
+             Object.keys(dailyCounters).forEach(taskId => {
+                if (!rangeCounters[taskId]) rangeCounters[taskId] = 0;
+                rangeCounters[taskId] += Number(dailyCounters[taskId] || '0');
+            });
+        });
+
+        const chartTasks = ['m-4', 'a-3', 'daily_meetings'];
+        return chartTasks.map(taskId => {
+            const taskDef = allTasks.find(t => t.id === taskId);
+            return {
+                name: taskDef?.label || taskId,
+                value: rangeCounters[taskId] || 0,
+                fill: `hsl(var(--chart-${chartTasks.indexOf(taskId) + 1}))`
+            }
+        }).filter(item => item.value > 0);
+    };
+
     if (isLoading) {
       return (
         <div className="flex justify-center items-center h-48">
@@ -690,6 +730,12 @@ export default function RotinaSDRPage() {
     const filteredSdrList = selectedSdr === 'all'
       ? sdrListWithoutIsabella
       : sdrListWithoutIsabella.filter(sdr => sdr.id === selectedSdr);
+      
+    const chartConfig: ChartConfig = {
+      "Leads Instagram": { label: "Leads Insta", color: "hsl(var(--chart-1))" },
+      "Ligações": { label: "Ligações", color: "hsl(var(--chart-2))" },
+      "Consultorias": { label: "Consultorias", color: "hsl(var(--chart-3))" },
+    }
 
     return (
         <div className="space-y-6">
@@ -762,15 +808,28 @@ export default function RotinaSDRPage() {
                     if (!sdrYearData) return null;
                     
                     const performanceScore = calculateScoreForRange(sdr.id, dateRange);
+                    const chartData = calculateChartDataForRange(sdr.id, dateRange);
 
                     return (
                         <Card key={sdr.id}>
                             <CardHeader>
                                 <div className="flex justify-between items-center">
                                     <CardTitle>{sdr.name}</CardTitle>
-                                    <div className="flex items-center gap-2 text-lg">
-                                        <span className="font-semibold text-muted-foreground">Nota de Performance:</span>
-                                        <span className="font-bold text-primary">{performanceScore}</span>
+                                    <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-2 text-lg">
+                                            <span className="font-semibold text-muted-foreground">Nota de Performance:</span>
+                                            <span className="font-bold text-primary">{performanceScore}</span>
+                                        </div>
+                                        <ChartContainer config={chartConfig} className="h-[50px] w-[50px]">
+                                           <PieChart>
+                                            <ChartTooltip content={<ChartTooltipContent nameKey="name" hideLabel />} />
+                                                <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={15} outerRadius={25}>
+                                                    {chartData.map((entry) => (
+                                                        <Cell key={`cell-${entry.name}`} fill={entry.fill} />
+                                                    ))}
+                                                </Pie>
+                                           </PieChart>
+                                        </ChartContainer>
                                     </div>
                                 </div>
                                 <CardDescription>Performance no período selecionado</CardDescription>
@@ -780,7 +839,6 @@ export default function RotinaSDRPage() {
                                     sdrId={sdr.id}
                                     yearData={sdrYearData}
                                     dateRange={dateRange}
-                                    isMonthlyView={false} // Force calculation based on range
                                 />
                             </CardContent>
                         </Card>
@@ -841,9 +899,9 @@ export default function RotinaSDRPage() {
     }, [yearData, currentMonth, activeWeekKey, activeDay]);
 
     const chartConfig: ChartConfig = {
-      leads: { label: "Leads Insta", color: "hsl(var(--chart-1))" },
-      ligacoes: { label: "Ligações", color: "hsl(var(--chart-2))" },
-      consultorias: { label: "Consultorias", color: "hsl(var(--chart-3))" },
+      "Leads Instagram": { label: "Leads Insta", color: "hsl(var(--chart-1))" },
+      "Ligações": { label: "Ligações", color: "hsl(var(--chart-2))" },
+      "Consultorias": { label: "Consultorias", color: "hsl(var(--chart-3))" },
     }
 
 
@@ -1107,12 +1165,3 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
-
-    
-
-    
-
-
-
-
-

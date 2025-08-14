@@ -9,7 +9,7 @@ import { allTasks, AnyTask, ptDays, weeklyGoals as weeklyGoalsDef, WEEKLY_MEETIN
 import { cn } from '@/lib/utils';
 import { ScoreIndicator } from './ScoreIndicator';
 import type { YearData } from '@/lib/types';
-import { eachDayOfInterval, getDay, getMonth, getWeek, startOfWeek, endOfWeek } from 'date-fns';
+import { eachDayOfInterval, getDay, getMonth, getDate, startOfWeek, endOfWeek } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 
 
@@ -25,30 +25,9 @@ interface WeeklyProgressProps {
 
 export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, isMonthlyView = false }: WeeklyProgressProps) {
   
-  const { progressItems, overallScore, achievedGoals, totalGoals } = useMemo(() => {
+  const { progressItems, achievedGoals, totalGoals } = useMemo(() => {
     const counterTasksList = allTasks.filter((t): t is AnyTask & { type: 'counter' } => t.type === 'counter');
     
-    // Daily View
-    if (day && week && month && yearData[month]) {
-      const weekKey = `semana${week}` as const;
-      const weeklyData = yearData[month]?.[weekKey];
-      if (!weeklyData) return { progressItems: [], overallScore: 0, achievedGoals: 0, totalGoals: 0 };
-      
-      const dailyCounters = weeklyData.counterTasks?.[day] || {};
-      let score = 0;
-      
-      Object.keys(dailyCounters).forEach(taskId => {
-        const weight = scoreWeights[taskId];
-        const value = Number(dailyCounters[taskId] || '0');
-        if (weight) {
-          score += value * weight;
-        }
-      });
-
-      return { progressItems: [], overallScore: Math.min(score, maxScorePerDay), achievedGoals: 0, totalGoals: 0 };
-    }
-
-
     // Date Range View for Admin
     if (dateRange && dateRange.from) {
       const start = dateRange.from;
@@ -94,7 +73,7 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
           return { id: key, label, current, goal: Math.round(goal), achieved: current >= Math.round(goal) };
       });
       
-      return { progressItems: items, overallScore: 0, achievedGoals: items.filter(i => i.achieved).length, totalGoals: items.length };
+      return { progressItems: items, achievedGoals: items.filter(i => i.achieved).length, totalGoals: items.length };
     }
     
     // Monthly View
@@ -140,7 +119,7 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
           return { id: key, label, current, goal, achieved: current >= goal };
       });
       
-      return { progressItems: items, overallScore: 0, achievedGoals: items.filter(i => i.achieved).length, totalGoals: items.length };
+      return { progressItems: items, achievedGoals: items.filter(i => i.achieved).length, totalGoals: items.length };
 
     } 
     
@@ -148,7 +127,7 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
     else if (week && month && yearData[month]) {
         const weekKey = `semana${week}` as const;
         const weeklyData = yearData[month]?.[weekKey];
-        if (!weeklyData) return { progressItems: [], overallScore: 0, achievedGoals: 0, totalGoals: 0 };
+        if (!weeklyData) return { progressItems: [], achievedGoals: 0, totalGoals: 0 };
 
         const weeklyTotals: Record<string, number> = {};
         
@@ -175,30 +154,14 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
             return { id: key, label, current, goal, achieved: current >= goal };
         });
 
-        return { progressItems: items, overallScore: 0, achievedGoals: items.filter(i => i.achieved).length, totalGoals: items.length };
+        return { progressItems: items, achievedGoals: items.filter(i => i.achieved).length, totalGoals: items.length };
     }
     
-    return { progressItems: [], overallScore: 0, achievedGoals: 0, totalGoals: 0 };
+    return { progressItems: [], achievedGoals: 0, totalGoals: 0 };
 
   }, [yearData, week, month, day, dateRange, isMonthlyView]);
   
 
-  if (day) { // Daily score view
-     return (
-        <div className="flex items-center gap-4">
-            <Card className="flex-1">
-                <CardHeader className="p-3">
-                    <CardTitle className="text-sm font-medium text-center">Nota de Performance (Dia)</CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 pt-0 flex justify-center">
-                    <ScoreIndicator score={overallScore} />
-                </CardContent>
-            </Card>
-        </div>
-     )
-  }
-
-  // Weekly, Monthly, or DateRange view
   return (
     <Card className="bg-card/50">
       <CardHeader>
