@@ -22,10 +22,15 @@ export async function generateProposalContent(
   return proposalGeneratorFlow(input);
 }
 
+// Internal schema to add the processed packages string to the prompt input
+const InternalPromptInputSchema = GenerateProposalInputSchema.extend({
+    packagesString: z.string(),
+});
+
 const proposalGeneratorPrompt = ai.definePrompt({
   name: 'proposalGeneratorPrompt',
   model: googleAI.model('gemini-1.5-pro-latest'),
-  input: { schema: GenerateProposalInputSchema },
+  input: { schema: InternalPromptInputSchema },
   output: { schema: GenerateProposalOutputSchema },
   prompt: `
     Você é um Estrategista de Vendas e Copywriter Sênior na agência "CP Marketing Digital".
@@ -39,13 +44,7 @@ const proposalGeneratorPrompt = ai.definePrompt({
 
     **Serviços Selecionados para a Proposta:**
     ---
-    {{#if packages}}
-      {{#each packages}}
-      - {{this}}
-      {{/each}}
-    {{else}}
-      Nenhum pacote selecionado. Foco em uma abordagem de consultoria geral.
-    {{/if}}
+    {{packagesString}}
     ---
 
     **Instruções Críticas:**
@@ -72,21 +71,34 @@ const proposalGeneratorFlow = ai.defineFlow(
   },
   async (input) => {
     try {
-      const { output } = await proposalGeneratorPrompt(input);
+      // Process the packages into a simple string for the prompt
+      const packagesString = input.packages && input.packages.length > 0 
+        ? input.packages.map(pkg => `- ${pkg}`).join('\n')
+        : "Nenhum pacote selecionado. Foco em uma abordagem de consultoria geral.";
+
+      // Call the prompt with the extended input
+      const { output } = await proposalGeneratorPrompt({
+        ...input,
+        packagesString: packagesString,
+      });
       
-      // Garante que o output não é nulo e que os campos sejam válidos
+      // Ensure the output is not null and that the fields are valid
+      if (!output) {
+        throw new Error("A IA retornou uma resposta vazia.");
+      }
+
       return {
-        partnershipDescription: output?.partnershipDescription || 'Não foi possível gerar a descrição. Tente novamente.',
-        objectiveItems: output?.objectiveItems || [],
-        differentialItems: output?.differentialItems || [],
-        idealPlanItems: output?.idealPlanItems || [],
+        partnershipDescription: output.partnershipDescription || 'Não foi possível gerar a descrição. Tente novamente.',
+        objectiveItems: output.objectiveItems || [],
+        differentialItems: output.differentialItems || [],
+        idealPlanItems: output.idealPlanItems || [],
       };
 
     } catch (error) {
-      console.error('Error generating proposal content:', error);
+      console.error('Erro detalhado no fluxo proposalGeneratorFlow:', error);
       // Retorna uma estrutura válida em caso de erro para não quebrar o frontend
       return {
-        partnershipDescription: 'Ocorreu um erro ao gerar o conteúdo. Por favor, tente novamente ou preencha manually.',
+        partnershipDescription: 'Ocorreu um erro ao gerar o conteúdo. Por favor, verifique os dados de entrada e tente novamente.',
         objectiveItems: [],
         differentialItems: [],
         idealPlanItems: [],
