@@ -466,42 +466,6 @@ export default function RotinaSDRPage() {
             weekData.meetingsBooked = totalMeetings;
         });
   };
-
-  const { completedTasksCount, weeklyProgress } = useMemo(() => {
-    const weekData = monthlyData?.[activeWeekKey];
-    if (!weekData) return { completedTasksCount: 0, weeklyProgress: {} };
-
-    const counterTasksList = allTasks.filter(t => t.type === 'counter' && !t.saturdayOnly);
-    const checkedTasksForToday = weekData.checkedTasks?.[activeDay] || {};
-    const counterTasksForToday = weekData.counterTasks?.[activeDay] || {};
-
-    const completedCheckbox = Object.values(checkedTasksForToday).filter(Boolean).length;
-    
-    const completedCounters = counterTasksList.reduce((acc, task) => {
-        if (task.type === 'counter') {
-            const count = Number(counterTasksForToday[task.id] || 0);
-            if (count >= task.dailyGoal) acc++;
-        }
-        return acc;
-    }, 0);
-    
-    const weeklyTotals: Record<string, number> = {};
-    const weekDays = ptDays.slice(0, 6); // Mon-Sat
-    
-    counterTasksList.forEach(task => {
-        weeklyTotals[task.id] = 0;
-        weekDays.forEach(day => {
-            const dayCount = Number(weekData.counterTasks?.[day]?.[task.id] || 0);
-            weeklyTotals[task.id] += dayCount;
-        });
-    });
-
-
-    return {
-      completedTasksCount: completedCheckbox + completedCounters,
-      weeklyProgress: weeklyTotals,
-    };
-  }, [activeDay, monthlyData, activeWeekKey]);
   
     const SaveStatusIndicator = () => {
         if (isAdmin) return null;
@@ -727,12 +691,6 @@ export default function RotinaSDRPage() {
     const isSaturday = activeDay === 'Sábado';
     
     // Logic for Saturday Catch-up
-    const pendingGoals = allTasks.filter((task): task is AnyTask & {type: 'counter'} => {
-        if (task.type !== 'counter' || task.saturdayOnly) return false;
-        const weeklyTotal = weeklyProgress[task.id] || 0;
-        return weeklyTotal < task.weeklyGoal;
-    });
-    
     const counterTasks = allTasks.filter(task => task.type === 'counter' && !task.saturdayOnly);
     const checkboxTasks = allTasks.filter(task => task.type === 'checkbox' && task.id !== 'a-7');
     
@@ -791,43 +749,7 @@ export default function RotinaSDRPage() {
                   </div>
               ) : isSaturday ? (
                  <>
-                  {pendingGoals.length > 0 ? (
-                      pendingGoals.map(task => {
-                          const weeklyTotal = weeklyProgress[task.id] || 0;
-                          const isGoalMet = weeklyTotal >= task.weeklyGoal;
-                          return (
-                              <div key={task.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg bg-card/50 mb-4">
-                                  <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
-                                  <div className="flex items-center gap-3 w-full sm:w-auto">
-                                      <CounterTaskInput
-                                          type="text"
-                                          pattern="[0-9]*"
-                                          inputMode="numeric"
-                                          id={`${activeDay}-${task.id}`}
-                                          value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
-                                          onSave={(value) => handleCounterChange(task.id, value)}
-                                          className="w-28 h-12 text-lg text-center font-bold bg-input border-2 border-primary/50" placeholder="0"
-                                      />
-                                      <div className="text-right">
-                                          <p className={cn("text-lg font-bold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
-                                              {weeklyTotal} / {task.weeklyGoal}
-                                          </p>
-                                          <p className={cn("text-sm font-semibold", isGoalMet ? 'text-green-500' : 'text-red-500')}>
-                                              {isGoalMet ? 'Meta atingida!' : `Faltam ${Math.max(0, task.weeklyGoal - weeklyTotal)}`}
-                                          </p>
-                                      </div>
-                                  </div>
-                              </div>
-                          )
-                      })
-                  ) : (
-                      <div className="text-center py-12">
-                          <Trophy className="h-12 w-12 mx-auto text-green-500" />
-                          <p className="mt-4 text-lg font-semibold">Parabéns! Todas as metas da semana foram atingidas.</p>
-                          <p className="text-muted-foreground">Bom descanso!</p>
-                      </div>
-                  )}
-                  {renderConsultorias()}
+                  <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} week={currentWeek} month={currentMonth} />
                </>
               ) : (
                 <div className="space-y-4">
@@ -845,9 +767,6 @@ export default function RotinaSDRPage() {
                                     className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
                                     placeholder="0"
                                 />
-                                <span className={cn("text-base font-semibold w-10 text-right", (Number(weekData?.counterTasks?.[activeDay]?.[task.id] || 0) >= task.dailyGoal) ? "text-green-500" : "text-red-500")}>
-                                    / {task.dailyGoal}
-                                </span>
                             </div>
                         </div>
                     ))}
@@ -891,14 +810,11 @@ export default function RotinaSDRPage() {
     const weekData = monthlyData?.[activeWeekKey];
     const dailyMeetings = weekData?.counterTasks?.[activeDay]?.['daily_meetings'] || '';
     const isSaturday = activeDay === 'Sábado';
-    const totalWeeklyMeetings = weekData?.meetingsBooked || 0;
-    const isWeeklyGoalMet = totalWeeklyMeetings >= WEEKLY_MEETING_GOAL;
-    const dailyGoal = 2; // Approximate daily goal to guide the user
     
     return (
-         <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
-            <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-medium flex-1">
-                Consultorias Agendadas
+         <div className="flex items-center justify-between gap-4 p-4 rounded-lg bg-primary/10 border border-primary/20">
+            <Label htmlFor={`consultorias-${activeDay}`} className="text-base font-bold flex-1 text-primary">
+                Consultorias Agendadas (Qualificadas)
             </Label>
             <div className="flex items-center gap-3">
                 <CounterTaskInput
@@ -912,27 +828,6 @@ export default function RotinaSDRPage() {
                     placeholder="0"
                     disabled={isHoliday || isSaturday}
                 />
-                
-                {!isSaturday ? (
-                     <span className={cn(
-                        "text-base font-semibold w-10 text-right", 
-                        (Number(dailyMeetings) >= dailyGoal) ? "text-green-500" : "text-red-500"
-                    )}>
-                        / {dailyGoal}
-                    </span>
-                ) : (
-                     <div className="text-right w-24">
-                        <p className={cn(
-                            "text-lg font-bold", 
-                            isWeeklyGoalMet ? 'text-green-500' : 'text-red-500'
-                        )}>
-                            {totalWeeklyMeetings} / {WEEKLY_MEETING_GOAL}
-                        </p>
-                        <p className={cn("text-xs font-semibold", isWeeklyGoalMet ? 'text-green-500' : 'text-red-500')}>
-                            {isWeeklyGoalMet ? 'Meta semanal!' : `Faltam ${Math.max(0, WEEKLY_MEETING_GOAL - totalWeeklyMeetings)}`}
-                        </p>
-                    </div>
-                )}
             </div>
         </div>
     );
@@ -955,11 +850,14 @@ export default function RotinaSDRPage() {
         if (activeTab === 'Podcast') {
             return <PodcastTab podcastData={monthlyData?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />;
         }
-        if (activeTab === 'Progresso Semanal') {
-            return <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} week={currentWeek} month={currentMonth} />;
-        }
-        if (activeTab === 'Progresso Mensal') {
-            return <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} month={currentMonth} isMonthlyView />;
+        if (activeTab === 'Progresso Semanal' || activeTab === 'Progresso Mensal') {
+            return <WeeklyProgress 
+              sdrId={effectiveUserId!} 
+              yearData={yearData} 
+              week={currentWeek} 
+              month={currentMonth}
+              isMonthlyView={activeTab === 'Progresso Mensal'}
+            />;
         }
     }
 
@@ -1024,7 +922,7 @@ export default function RotinaSDRPage() {
                     )}
                 </div>
              </div>
-              {!isAdmin && <HeaderKpis />}
+              {!isAdmin && !FUNCTION_TABS.includes(activeTab) && <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} day={activeDay} week={currentWeek} month={currentMonth}/>}
            </div>
            
            <div className="flex flex-col gap-2 w-full sm:w-auto">

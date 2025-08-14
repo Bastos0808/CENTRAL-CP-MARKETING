@@ -17,8 +17,6 @@ type CounterTask = {
   id: string;
   label: string;
   type: 'counter';
-  dailyGoal: number;
-  weeklyGoal: number;
   saturdayOnly?: boolean;
 }
 
@@ -27,12 +25,10 @@ export type AnyTask = Task | CounterTask;
 
 export const allTasks: AnyTask[] = [
     // Counter Tasks
-    { id: "m-1-gmaps", label: "Leads (Google Maps)", type: 'counter', dailyGoal: 10, weeklyGoal: 50 },
-    { id: "m-1-exact", label: "Leads (Exact Spotter)", type: 'counter', dailyGoal: 30, weeklyGoal: 150 },
-    { id: "m-3", label: "Conexões no LinkedIn", type: 'counter', dailyGoal: 20, weeklyGoal: 100 },
-    { id: "m-4", label: "Prospecção (Instagram/WhatsApp)", type: 'counter', dailyGoal: 40, weeklyGoal: 200 },
-    { id: "m-5", label: "E-mail Marketing", type: 'counter', dailyGoal: 20, weeklyGoal: 100 },
-    { id: "a-3", label: "Ligações", type: 'counter', dailyGoal: 5, weeklyGoal: 25 },
+    { id: "m-1-empresas", label: "Leads (Empresas)", type: 'counter' },
+    { id: "m-1-trafego", label: "Leads (Tráfego Pago e Orgânico)", type: 'counter' },
+    { id: "m-4", label: "Prospecção (Instagram/WhatsApp)", type: 'counter' },
+    { id: "a-3", label: "Ligações", type: 'counter' },
 
     // Checkbox Tasks
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
@@ -47,10 +43,19 @@ export const allTasks: AnyTask[] = [
 export const weeklyGoals: Record<string, { label: string; goal: number }> = {
   "meetings": { label: "Consultorias", goal: 8 },
   "podcasts": { label: "Podcasts Concluídos", goal: 4 },
-  "m-1-exact": { label: "Leads (Exact Spotter)", goal: 150 },
-  "m-3": { label: "Conexões no LinkedIn", goal: 100 },
+  "m-1-empresas": { label: "Leads (Empresas)", goal: 200 },
+  "m-1-trafego": { label: "Leads (Tráfego)", goal: 50 },
   "m-4": { label: "Prospecção (Instagram/WhatsApp)", goal: 200 },
   "a-3": { label: "Ligações", goal: 25 },
-  "m-1-gmaps": { label: "Leads (Google Maps)", goal: 50 },
-  "m-5": { label: "E-mail Marketing", goal: 100 },
 };
+
+// New scoring system
+export const scoreWeights: Record<string, number> = {
+    "m-1-empresas": 0.2, // 20 leads = 4 points
+    "m-1-trafego": 0.5, // 10 leads = 5 points
+    "m-4": 0.1, // 40 prospecções = 4 points
+    "a-3": 1, // 5 ligações = 5 points
+    "daily_meetings": 20, // 1 agendamento = 20 points
+};
+
+export const maxScorePerDay = 100;
