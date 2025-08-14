@@ -7,7 +7,7 @@ enableFirebaseTelemetry();
 export const ai = genkit({
   plugins: [
     googleAI({
-      apiKey: process.env.GEMINI_API_KEY ?? "AIzaSyBL-nMAyZEV-okxM5ki3W4mFt8HJtSNOo4",
+      apiKey: process.env.GEMINI_API_KEY, // Garante que a chave seja lida exclusivamente do ambiente
       defaultGenerationOptions: {
         model: 'gemini-1.5-pro-latest',
       },
