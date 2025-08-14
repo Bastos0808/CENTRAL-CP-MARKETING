@@ -31,8 +31,8 @@ export const allTasks: AnyTask[] = [
     { id: "m-1-trafego", label: "Leads Tráfego (pago e orgânico)", type: 'counter', goal: 10 },
     { id: "m-5", label: "Leads (Automação)", type: 'counter', goal: 100 },
     { id: "a-3", label: "Ligações", type: 'counter', goal: 12 },
-    { id: "podcasts", label: "Confirmado para o Podcast", type: 'counter', goal: undefined }, // Meta semanal, não diária
-    { id: "daily_meetings", label: "Consultorias Agendadas", type: 'counter', goal: 2 },
+    { id: "podcasts", label: "Confirmado para o Podcast", type: 'counter' },
+    { id: "daily_meetings", label: "Consultorias", type: 'counter', goal: 2 },
     
     // Checkbox Tasks (ordem pode ser mantida ou ajustada se necessário)
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },

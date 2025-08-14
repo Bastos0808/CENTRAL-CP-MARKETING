@@ -278,9 +278,6 @@ export default function RotinaSDRPage() {
                 const fetchedSdrList: SdrUser[] = [];
                  usersSnapshot.forEach(userDoc => {
                     const userData = userDoc.data();
-                    if (userData.email === 'comercial04@cpmarketing.com.br') {
-                        return; // Skip this user
-                    }
                     let displayName = userData.username || userData.displayName || '';
                     if (!displayName && userData.email) {
                         displayName = userData.email.split('@')[0];
@@ -288,14 +285,15 @@ export default function RotinaSDRPage() {
                     fetchedSdrList.push({ id: userDoc.id, name: displayName, email: userData.email, username: userData.username });
                 });
 
-                setSdrList(fetchedSdrList);
+                const filteredSdrList = fetchedSdrList.filter(sdr => sdr.email !== 'comercial04@cpmarketing.com.br');
+                setSdrList(filteredSdrList);
                 
-                const performanceDataPromises = fetchedSdrList.map(sdr => 
+                const performanceDataPromises = filteredSdrList.map(sdr => 
                     getDoc(doc(db, 'sdr_performance', sdr.id))
                 );
                 const performanceDocs = await Promise.all(performanceDataPromises);
 
-                const newAllSdrData = fetchedSdrList.reduce((acc, sdr, index) => {
+                const newAllSdrData = filteredSdrList.reduce((acc, sdr, index) => {
                     const perfDoc = performanceDocs[index];
                     acc[sdr.id] = perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData();
                     return acc;
