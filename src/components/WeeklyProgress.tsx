@@ -235,8 +235,8 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
                            style={{ width: `${Math.min(100, (item.current / item.goal) * 100)}%`}}
                         />
                     </div>
-                    <span className={cn("text-xs font-bold w-16 text-right", item.achieved ? "text-green-500" : "text-foreground/80")}>
-                        {item.current}
+                    <span className={cn("text-xs font-bold w-20 text-right", item.achieved ? "text-green-500" : "text-foreground/80")}>
+                        {item.current} / {item.goal}
                     </span>
                  </div>
               </div>
@@ -259,3 +259,5 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
     </Card>
   );
 }
+
+    

@@ -94,10 +94,12 @@ interface SdrUser {
 const CounterTaskInput = ({
   value,
   onSave,
+  goal,
   ...props
 }: {
   value: string;
   onSave: (newValue: string) => void;
+  goal?: number;
 } & Omit<React.ComponentProps<typeof Input>, 'value' | 'onChange' | 'onBlur'>) => {
   const [localValue, setLocalValue] = useState(value);
 
@@ -109,7 +111,21 @@ const CounterTaskInput = ({
     onSave(localValue);
   };
 
-  return <Input value={localValue} onChange={(e) => setLocalValue(e.target.value)} onBlur={handleBlur} {...props} />;
+  return (
+      <div className="flex items-center gap-3">
+        <Input 
+            value={localValue} 
+            onChange={(e) => setLocalValue(e.target.value)} 
+            onBlur={handleBlur} 
+            {...props} 
+        />
+        {goal !== undefined && (
+             <span className="text-sm font-semibold text-muted-foreground w-12 text-right">
+                / {goal}
+             </span>
+        )}
+      </div>
+  );
 };
 
 
@@ -491,7 +507,7 @@ export default function RotinaSDRPage() {
 
     const kpis = [
       { id: 'a-3', label: 'Ligações', icon: Phone },
-      { id: 'm-4', label: 'Prospecção', icon: MessageSquare },
+      { id: 'm-4', label: 'Leads Instagram', icon: MessageSquare },
       { id: 'daily_meetings', label: 'Agendamentos', icon: CalendarDays },
     ];
     
@@ -790,6 +806,7 @@ export default function RotinaSDRPage() {
                                         onSave={(value) => handleCounterChange(task.id, value)}
                                         className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
                                         placeholder="0"
+                                        goal={allTasks.find(t => t.id === task.id)?.goal}
                                     />
                                 </div>
                             </div>
@@ -990,3 +1007,5 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
+
+    

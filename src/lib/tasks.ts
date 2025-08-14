@@ -1,5 +1,6 @@
 
-export const WEEKLY_MEETING_GOAL = 8;
+
+export const WEEKLY_MEETING_GOAL = 12;
 
 export const ptDays = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 
@@ -17,6 +18,7 @@ type CounterTask = {
   label: string;
   type: 'counter';
   saturdayOnly?: boolean;
+  goal?: number;
 }
 
 export type AnyTask = Task | CounterTask;
@@ -24,11 +26,12 @@ export type AnyTask = Task | CounterTask;
 
 export const allTasks: AnyTask[] = [
     // Counter Tasks
-    { id: "m-1-empresas", label: "Leads (Empresas)", type: 'counter' },
-    { id: "m-1-trafego", label: "Leads Tráfego (pago e orgânico)", type: 'counter' },
-    { id: "m-4", label: "Leads Instagram", type: 'counter' },
-    { id: "a-3", label: "Ligações", type: 'counter' },
-
+    { id: "m-4", label: "Leads Instagram", type: 'counter', goal: 50 },
+    { id: "m-1-empresas", label: "Leads (Empresas)", type: 'counter', goal: 30 },
+    { id: "m-1-trafego", label: "Leads Tráfego (pago e orgânico)", type: 'counter', goal: 5 },
+    { id: "a-3", label: "Ligações", type: 'counter', goal: 12 },
+    { id: "m-5", label: "Leads (Automação)", type: 'counter', goal: 100 },
+    
     // Checkbox Tasks
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
     { id: "a-2", label: "Fazer follow-up com leads em negociação para agendamento.", type: 'checkbox' },
@@ -40,21 +43,23 @@ export const allTasks: AnyTask[] = [
 
 
 export const weeklyGoals: Record<string, { label: string; goal: number }> = {
-  "meetings": { label: "Consultorias", goal: 8 },
+  "meetings": { label: "Consultorias", goal: 12 },
   "podcasts": { label: "Confirmado para o Podcast", goal: 4 },
-  "m-1-empresas": { label: "Leads (Empresas)", goal: 200 },
-  "m-1-trafego": { label: "Leads Tráfego", goal: 50 },
-  "m-4": { label: "Leads Instagram", goal: 200 },
-  "a-3": { label: "Ligações", goal: 25 },
+  "m-4": { label: "Leads Instagram", goal: 250 }, // 50 * 5
+  "m-1-empresas": { label: "Leads (Empresas)", goal: 150 }, // 30 * 5
+  "m-1-trafego": { label: "Leads Tráfego (pago e orgânico)", goal: 25 }, // 5 * 5
+  "a-3": { label: "Ligações", goal: 60 }, // 12 * 5
+  "m-5": { label: "Leads (Automação)", goal: 500 }, // 100 * 5
 };
 
 // New scoring system
 export const scoreWeights: Record<string, number> = {
-    "m-1-empresas": 0.2, // 20 leads = 4 points
-    "m-1-trafego": 0.5, // 10 leads = 5 points
-    "m-4": 0.1, // 40 prospecções = 4 points
-    "a-3": 1, // 5 ligações = 5 points
-    "daily_meetings": 20, // 1 agendamento = 20 points
+    "m-4": 0.1, 
+    "m-1-empresas": 0.2, 
+    "m-1-trafego": 0.5, 
+    "a-3": 1,
+    "m-5": 0.1,
+    "daily_meetings": 20, 
 };
 
 export const maxScorePerDay = 100;
@@ -64,3 +69,5 @@ export const sdrUsers = [
     { id: "DEBORA_ID", name: "Débora" },
     { id: "VANDIEGO_ID", name: "Van Diego" }
 ]
+
+    
