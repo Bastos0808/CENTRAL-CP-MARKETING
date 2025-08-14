@@ -282,18 +282,20 @@ export default function RotinaSDRPage() {
                     if (!displayName && userData.email) {
                         displayName = userData.email.split('@')[0];
                     }
-                    fetchedSdrList.push({ id: userDoc.id, name: displayName, email: userData.email, username: userData.username });
+                    // This is the definitive filter
+                    if (userData.email !== 'comercial04@cpmarketing.com.br') {
+                        fetchedSdrList.push({ id: userDoc.id, name: displayName, email: userData.email, username: userData.username });
+                    }
                 });
 
-                const filteredSdrList = fetchedSdrList.filter(sdr => sdr.email !== 'comercial04@cpmarketing.com.br');
-                setSdrList(filteredSdrList);
+                setSdrList(fetchedSdrList);
                 
-                const performanceDataPromises = filteredSdrList.map(sdr => 
+                const performanceDataPromises = fetchedSdrList.map(sdr => 
                     getDoc(doc(db, 'sdr_performance', sdr.id))
                 );
                 const performanceDocs = await Promise.all(performanceDataPromises);
 
-                const newAllSdrData = filteredSdrList.reduce((acc, sdr, index) => {
+                const newAllSdrData = fetchedSdrList.reduce((acc, sdr, index) => {
                     const perfDoc = performanceDocs[index];
                     acc[sdr.id] = perfDoc.exists() ? (perfDoc.data() as YearData) : createInitialYearData();
                     return acc;
@@ -592,16 +594,14 @@ export default function RotinaSDRPage() {
         </div>
       );
     }
-    
-    const sdrListWithoutExcluded = sdrList.filter(sdr => sdr.email !== 'comercial04@cpmarketing.com.br');
 
-    if (sdrListWithoutExcluded.length === 0) {
+    if (sdrList.length === 0) {
       return <p>Nenhum SDR encontrado.</p>;
     }
 
     const filteredSdrList = selectedSdr === 'all'
-      ? sdrListWithoutExcluded
-      : sdrListWithoutExcluded.filter(sdr => sdr.id === selectedSdr);
+      ? sdrList
+      : sdrList.filter(sdr => sdr.id === selectedSdr);
 
     return (
         <div className="space-y-6">
@@ -618,7 +618,7 @@ export default function RotinaSDRPage() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Todos os SDRs</SelectItem>
-                                {sdrListWithoutExcluded.map(sdr => (
+                                {sdrList.map(sdr => (
                                     <SelectItem key={sdr.id} value={sdr.id}>{sdr.name}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -784,29 +784,28 @@ export default function RotinaSDRPage() {
                   <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} week={currentWeek} month={currentMonth} />
                </>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-                    <div className="md:col-span-2 space-y-4">
-                        {counterTasks.map((task) => (
-                             <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
-                                <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
-                                <div className="flex items-center gap-3">
-                                    <CounterTaskInput
-                                        type="text"
-                                        pattern="[0-9]*"
-                                        inputMode="numeric"
-                                        id={`${activeDay}-${task.id}`}
-                                        value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
-                                        onSave={(value) => handleCounterChange(task.id, value)}
-                                        className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
-                                        placeholder="0"
-                                        goal={task.goal}
-                                    />
-                                </div>
+                <div className="space-y-4">
+                    {counterTasks.map((task) => (
+                         <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
+                            <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
+                            <div className="flex items-center gap-3">
+                                <CounterTaskInput
+                                    type="text"
+                                    pattern="[0-9]*"
+                                    inputMode="numeric"
+                                    id={`${activeDay}-${task.id}`}
+                                    value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
+                                    onSave={(value) => handleCounterChange(task.id, value)}
+                                    className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
+                                    placeholder="0"
+                                    goal={task.goal}
+                                />
                             </div>
-                        ))}
+                        </div>
+                    ))}
                         
                       {/* Checkbox Tasks */}
-                      <div className="space-y-4 pt-4">
+                    <div className="space-y-4 pt-4">
                         {checkboxTasks.map(task => {
                             const isChecked = weekData.checkedTasks?.[activeDay]?.[task.id] || false;
                             return (
@@ -831,18 +830,16 @@ export default function RotinaSDRPage() {
                             value={extraTasksForToday}
                             onSave={handleExtraTasksChange}
                          />
-                      </div>
                     </div>
-                    <div className="sticky top-20">
-                         <Card className="flex-1">
-                            <CardHeader className="p-3">
-                                <CardTitle className="text-sm font-medium text-center">Nota de Performance (Dia)</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-3 pt-0 flex justify-center">
-                                <ScoreIndicator score={dailyScore} />
-                            </CardContent>
-                        </Card>
-                    </div>
+                    
+                    <Card className="flex-1 mt-6">
+                        <CardHeader className="p-3">
+                            <CardTitle className="text-sm font-medium text-center">Nota de Performance (Dia)</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-3 pt-0 flex justify-center">
+                            <ScoreIndicator score={dailyScore} />
+                        </CardContent>
+                    </Card>
                 </div>
               )}
           </CardContent>
@@ -972,5 +969,7 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
+
+    
 
     
