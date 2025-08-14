@@ -64,19 +64,22 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
     );
 
     const renderPackageServices = () => (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
+        <div className="flex flex-wrap justify-center gap-8 text-left">
             {packages?.map(pkgKey => {
                 const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
                 if (!pkg) return null;
                 const Icon = pkg.icon;
                 return (
-                    <div key={pkgKey} className="bg-gray-900/70 p-6 rounded-lg border border-gray-700 flex flex-col">
+                    <div key={pkgKey} className="bg-gray-900/70 p-8 rounded-lg border border-gray-700 flex flex-col w-full max-w-lg">
                         <div className="flex-grow">
                             <div className="flex items-center gap-4 mb-4">
                                 <Icon className="h-10 w-10 text-[#FE5412]" />
                                 <h3 className="font-bold text-2xl">{pkg.name}</h3>
                             </div>
-                            <p className="text-sm text-gray-300 mt-2 whitespace-pre-line leading-relaxed">{pkg.description}</p>
+                            <p 
+                                className="text-sm text-gray-300 mt-2 whitespace-pre-wrap leading-relaxed" 
+                                dangerouslySetInnerHTML={{ __html: pkg.description.replace(/\n/g, '<br />') }}
+                            />
                         </div>
                         <div className="pt-4 mt-auto text-right">
                             <span className="text-2xl font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
@@ -183,3 +186,5 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
     </div>
   );
 };
+
+    
