@@ -25,16 +25,16 @@ export type AnyTask = Task | CounterTask;
 
 
 export const allTasks: AnyTask[] = [
-    // Ordem redefinida conforme solicitado
+    // Ordem redefinida conforme solicitado pelo usuário
     { id: "m-4", label: "Leads Instagram", type: 'counter', goal: 50 },
     { id: "m-1-empresas", label: "Leads (Empresas)", type: 'counter', goal: 30 },
     { id: "m-1-trafego", label: "Leads Tráfego (pago e orgânico)", type: 'counter', goal: 10 },
-    { id: "a-3", label: "Ligações", type: 'counter', goal: 12 },
     { id: "m-5", label: "Leads (Automação)", type: 'counter', goal: 100 },
+    { id: "a-3", label: "Ligações", type: 'counter', goal: 12 },
+    { id: "podcasts", label: "Confirmado para o Podcast", type: 'counter', goal: undefined }, // Meta semanal, não diária
     { id: "daily_meetings", label: "Consultorias Agendadas", type: 'counter', goal: 2 },
-    { id: "closed_clients", label: "Clientes Fechados", type: 'counter', goal: undefined }, // Goal is weekly/monthly
-
-    // Checkbox Tasks
+    
+    // Checkbox Tasks (ordem pode ser mantida ou ajustada se necessário)
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
     { id: "a-2", label: "Fazer follow-up com leads em negociação para agendamento.", type: 'checkbox' },
     { id: "a-4", label: "Atualizar o CRM, contatar e qualificar os leads que chegaram.", type: 'checkbox' },
@@ -45,25 +45,25 @@ export const allTasks: AnyTask[] = [
 
 
 export const weeklyGoals: Record<string, { label: string; goal: number }> = {
-  "meetings": { label: "Consultorias", goal: 10 }, // 2 * 5
+  "m-4": { label: "Leads Instagram", goal: 250 }, 
+  "m-1-empresas": { label: "Leads (Empresas)", goal: 150 }, 
+  "m-1-trafego": { label: "Leads Tráfego (pago e orgânico)", goal: 50 }, 
+  "m-5": { label: "Leads (Automação)", goal: 500 }, 
+  "a-3": { label: "Ligações", goal: 60 },
   "podcasts": { label: "Confirmado para o Podcast", goal: 4 },
-  "closed_clients": { label: "Clientes Fechados", goal: 1}, // 4 per month = 1 per week
-  "m-4": { label: "Leads Instagram", goal: 250 }, // 50 * 5
-  "m-1-empresas": { label: "Leads (Empresas)", goal: 150 }, // 30 * 5
-  "m-1-trafego": { label: "Leads Tráfego (pago e orgânico)", goal: 50 }, // 10 * 5
-  "a-3": { label: "Ligações", goal: 60 }, // 12 * 5
-  "m-5": { label: "Leads (Automação)", goal: 500 }, // 100 * 5
+  "daily_meetings": { label: "Consultorias", goal: 10 },
 };
 
 // New scoring system
 export const scoreWeights: Record<string, number> = {
     "m-4": 0.1, 
     "m-1-empresas": 0.2, 
-    "m-1-trafego": 0.5, 
-    "a-3": 1,
+    "m-1-trafego": 0.5,
     "m-5": 0.1,
+    "a-3": 1,
+    "podcasts": 15,
     "daily_meetings": 20, 
-    "closed_clients": 25, // High value for closed clients
+    "closed_clients": 25, 
 };
 
 export const maxScorePerDay = 100;

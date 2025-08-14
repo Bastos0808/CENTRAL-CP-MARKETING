@@ -158,22 +158,19 @@ export function WeeklyProgress({ sdrId, yearData, week, month, day, dateRange, i
            // This seems to be monthly, let's assume it should be weekly.
            // This logic might need refinement based on how podcast goals are tracked.
         }
-        weeklyTotals['podcasts'] = podcastsDone;
-
-        const holidaysInWeek = Object.keys(weeklyData.holidays || {}).filter(day => weeklyData.holidays[day] && ptDays.slice(0, 5).includes(day)).length;
         
-        const adjustedWeeklyGoals = JSON.parse(JSON.stringify(weeklyGoalsDef));
-
         ptDays.slice(0, 5).forEach(day => { // Only count Mon-Fri for weekly total
-            const dailyCounters = weeklyData.counterTasks?.[day] || {};
-            counterTasksList.forEach(task => {
-                const value = Number(dailyCounters[task.id] || '0');
-                if (!weeklyTotals[task.id]) weeklyTotals[task.id] = 0;
-                weeklyTotals[task.id] += value;
-            });
+          const dailyCounters = weeklyData.counterTasks?.[day] || {};
+          counterTasksList.forEach(task => {
+              if(!weeklyTotals[task.id]) weeklyTotals[task.id] = 0;
+              weeklyTotals[task.id] += Number(dailyCounters[task.id] || '0');
+          });
         });
 
-        const items = Object.entries(adjustedWeeklyGoals).map(([key, { label, goal }]) => {
+        // Sum up podcast confirmations for the week
+        weeklyTotals['podcasts'] = ptDays.slice(0, 5).reduce((acc, day) => acc + Number(weeklyData.counterTasks?.[day]?.['podcasts'] || '0'), 0);
+
+        const items = Object.entries(weeklyGoalsDef).map(([key, { label, goal }]) => {
             const current = weeklyTotals[key] || 0;
             return { id: key, label, current, goal, achieved: current >= goal };
         });
