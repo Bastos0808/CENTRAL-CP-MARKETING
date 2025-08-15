@@ -152,7 +152,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                  <div className="bg-gray-900/50 p-12 rounded-lg border border-gray-800">
                     <p className="text-2xl text-gray-300">Valor do investimento mensal</p>
                     {originalInvestmentValue && (
-                         <p className="text-5xl font-bold text-gray-500 my-2 tracking-tighter line-through">{originalInvestmentValue}</p>
+                         <p className="text-5xl font-semibold text-red-500 my-2 tracking-tighter line-through decoration-red-500">{originalInvestmentValue}</p>
                     )}
                     <p className="text-8xl font-bold text-primary my-4 tracking-tighter">{investmentValue}</p>
                  </div>
