@@ -204,10 +204,13 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
             episode.guests.forEach(guest => {
                 const sdrName = guest.sdrName;
                 if (sdrName) {
-                    const matchedSdr = Object.values(sdrUserDisplayMap).find(info => info.name.toLowerCase() === sdrName.toLowerCase());
+                    // Find the canonical name (e.g., "Van Diego") by checking the map
+                    const sdrKey = Object.keys(sdrUserDisplayMap).find(key => sdrName.toLowerCase() === key.toLowerCase());
+                    const matchedSdr = sdrKey ? sdrUserDisplayMap[sdrKey] : null;
+
                     if (matchedSdr) {
-                         const sdrDisplayName = matchedSdr.name;
-                         if (counts.hasOwnProperty(sdrDisplayName)) {
+                        const sdrDisplayName = matchedSdr.name;
+                        if (counts.hasOwnProperty(sdrDisplayName)) {
                            counts[sdrDisplayName]++;
                         }
                     } else if (counts.hasOwnProperty(sdrName)) {
