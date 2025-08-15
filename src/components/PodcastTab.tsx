@@ -6,12 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen } from "lucide-react";
-import { Separator } from "./ui/separator";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo } from "react";
-import { Calendar } from "./ui/calendar";
 import { Button } from "./ui/button";
-import { addDays, format, getDay, startOfWeek, endOfWeek, isSameDay, getWeekOfMonth, startOfMonth } from "date-fns";
+import { addDays, format, startOfWeek, endOfWeek, isSameDay } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
@@ -49,21 +47,43 @@ type EpisodeConfig = {
 };
 
 const weeklyEpisodeConfig: EpisodeConfig[] = [
-    { id: 'podcast1', title: 'EPISÓDIO 1 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 1, dayName: 'SEGUNDA' }, 
-    { id: 'podcast2', title: 'EPISÓDIO 2 - SAÚDE E ESTÉTICA', type: 'saude_estetica', guestCount: 2, dayOfWeek: 2, dayName: 'TERÇA' }, 
+    { id: 'podcast1', title: 'EPISÓDIO 1 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 1, dayName: 'SEGUNDA' },
+    { id: 'podcast2', title: 'EPISÓDIO 2 - SAÚDE E ESTÉTICA', type: 'saude_estetica', guestCount: 2, dayOfWeek: 2, dayName: 'TERÇA' },
     { id: 'podcast3', title: 'EPISÓDIO 3 - EMPRESÁRIO', type: 'empresario', guestCount: 1, dayOfWeek: 3, dayName: 'QUARTA' },
     { id: 'podcast4', title: 'EPISÓDIO 4 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 4, dayName: 'QUINTA' },
     { id: 'podcast5', title: 'EPISÓDIO 5 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 5, dayName: 'SEXTA' },
 ];
 
+
+const generateWeeks = (baseDate: Date): Date[] => {
+    const startOfCurrentWeek = startOfWeek(baseDate, { weekStartsOn: 1 });
+    return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
+};
+
+
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedWeek, setSelectedWeek] = useState(getWeekOfMonth(new Date(), { weekStartsOn: 1 }));
+  
+  const [weeks, setWeeks] = useState(generateWeeks(new Date()));
+  const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(weeks[0]);
   const [schedule, setSchedule] = useState<Record<string, ScheduledEpisode>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+        const newWeeks = generateWeeks(new Date());
+        setWeeks(newWeeks);
+        // If the selected week is no longer in the list, default to the first one
+        if (!newWeeks.some(week => isSameDay(week, selectedWeekStart))) {
+            setSelectedWeekStart(newWeeks[0]);
+        }
+    }, 60000); // Check every minute for week changes
+
+    return () => clearInterval(timer);
+  }, [selectedWeekStart]);
+
 
   // Listen to schedule changes in real-time
   useEffect(() => {
@@ -116,12 +136,8 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
       setIsSubmitting(true);
       const batch = writeBatch(db);
       
-      const firstDayOfMonth = startOfMonth(currentDate);
-      const firstDayOfWeekInMonth = startOfWeek(firstDayOfMonth, { weekStartsOn: 1 });
-      const weekStartDate = addDays(firstDayOfWeekInMonth, (selectedWeek - 1) * 7);
-
       const episodesInView = weeklyEpisodeConfig.map(config => {
-        const dateForDay = addDays(weekStartDate, config.dayOfWeek - 1);
+        const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
         const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
         return schedule[episodeId];
       }).filter(Boolean);
@@ -129,7 +145,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
       try {
           episodesInView.forEach(episode => {
-              if (episode.guests.some(g => g.guestName.trim() !== '')) { // Only save if there's at least one guest
+              if (episode && episode.guests.some(g => g.guestName.trim() !== '')) { // Only save if there's at least one guest
                 const docRef = doc(db, 'podcast_schedule', episode.id);
                 batch.set(docRef, episode);
               }
@@ -175,33 +191,30 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     )
   }
   
-  const firstDayOfMonth = startOfMonth(currentDate);
-  const firstDayOfWeekInMonth = startOfWeek(firstDayOfMonth, { weekStartsOn: 1 });
-  const weekStartDate = addDays(firstDayOfWeekInMonth, (selectedWeek - 1) * 7);
 
   return (
     <div className="space-y-6">
         <Card>
             <CardHeader>
                 <CardTitle>
-                    Agenda da Semana {selectedWeek}
+                    Agenda da Semana
                 </CardTitle>
                 <CardDescription>Preencha os convidados para os episódios da semana. O agendamento é colaborativo.</CardDescription>
                 <div className="flex items-center gap-2 pt-2">
-                    {[1, 2, 3, 4].map(week => (
+                    {weeks.map((weekStart, index) => (
                         <Button
-                            key={week}
-                            variant={selectedWeek === week ? 'default' : 'outline'}
-                            onClick={() => setSelectedWeek(week)}
+                            key={weekStart.toISOString()}
+                            variant={isSameDay(selectedWeekStart, weekStart) ? 'default' : 'outline'}
+                            onClick={() => setSelectedWeekStart(weekStart)}
                         >
-                            Semana {week}
+                            {`Semana ${index + 1} (${format(weekStart, 'dd/MM')} - ${format(endOfWeek(weekStart, {weekStartsOn: 1}), 'dd/MM')})`}
                         </Button>
                     ))}
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 {weeklyEpisodeConfig.map(config => {
-                    const dateForDay = addDays(weekStartDate, config.dayOfWeek - 1);
+                    const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
                     const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
                     const episodeData = schedule[episodeId] || {
                         id: episodeId,
