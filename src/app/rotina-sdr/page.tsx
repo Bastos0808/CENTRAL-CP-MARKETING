@@ -35,6 +35,7 @@ import {
   Trash2,
   Calendar as CalendarIcon,
   ShieldAlert,
+  DollarSign,
 } from "lucide-react";
 import { getWeekOfMonth, startOfMonth, getDate, getDay, getMonth, format, addDays, eachDayOfInterval, startOfWeek, endOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -993,18 +994,12 @@ export default function RotinaSDRPage() {
                   ) : (
                     <div className="space-y-2">
                         {counterTasks.map((task, index) => {
-                             const goal = weeklyGoals[task.id as keyof typeof weeklyGoals]?.goal || (task.id === 'daily_meetings' ? WEEKLY_MEETING_GOAL : undefined);
+                             const goal = task.goal; // Use the daily goal directly from the task definition
                              let cumulativeValue: number | undefined;
 
                              if (goal !== undefined) {
-                                if (task.id === 'daily_meetings') {
-                                    cumulativeValue = weekData.meetingsBooked || 0;
-                                } else {
-                                     cumulativeValue = ptDays.reduce((acc, day) => {
-                                        const count = Number(weekData.counterTasks?.[day]?.[task.id] || 0);
-                                        return acc + count;
-                                    }, 0);
-                                }
+                                // For daily view, cumulative is just the day's value
+                                cumulativeValue = Number(weekData?.counterTasks?.[activeDay]?.[task.id] || 0);
                              }
 
                             return (

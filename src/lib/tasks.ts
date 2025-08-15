@@ -18,7 +18,7 @@ type CounterTask = {
   label: string;
   type: 'counter';
   saturdayOnly?: boolean;
-  goal?: number;
+  goal?: number; // Daily goal
 }
 
 export type AnyTask = Task | CounterTask;
@@ -31,7 +31,8 @@ export const allTasks: AnyTask[] = [
     { id: "m-5", label: "Leads (Automação)", type: 'counter', goal: 100 },
     { id: "a-3", label: "Ligações", type: 'counter', goal: 12 },
     { id: "daily_meetings", label: "Consultorias", type: 'counter', goal: 2 },
-    { id: "podcasts", label: "Confirmado para o Podcast", type: 'counter' },
+    { id: "venda_fechada", label: "Venda Fechada", type: 'counter', goal: 1/5 }, // 1 per week = 0.2 per day
+    { id: "podcasts", label: "Confirmado para o Podcast", type: 'counter', goal: 4/5 }, // 4 per week
     
     // Checkbox Tasks (ordem pode ser mantida ou ajustada se necessário)
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
@@ -51,6 +52,7 @@ export const weeklyGoals: Record<string, { label: string; goal: number }> = {
   "a-3": { label: "Ligações", goal: 60 },
   "podcasts": { label: "Confirmado para o Podcast", goal: 4 },
   "daily_meetings": { label: "Consultorias", goal: 10 },
+  "venda_fechada": { label: "Venda Fechada", goal: 1 },
 };
 
 // New scoring system
@@ -61,7 +63,8 @@ export const scoreWeights: Record<string, number> = {
     "m-5": 0.1,
     "a-3": 1,
     "podcasts": 15,
-    "daily_meetings": 20, 
+    "daily_meetings": 20,
+    "venda_fechada": 30, // High value for a closed sale
 };
 
 export const maxScorePerDay = 100;
