@@ -1,33 +1,32 @@
 
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // Allow logged-in users to read and write their own user document
-    match /users/{userId} {
-      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null;
+
+    // Helper function to check if user is an admin
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
-    // Allow logged-in users to read and write client documents
-    match /clients/{clientId} {
+    // Users can only read their own data, but admins can read anyone's
+    match /users/{userId} {
+      allow read: if request.auth.uid == userId || isAdmin();
+      allow write: if request.auth.uid == userId;
+    }
+
+    // SDRs can only read/write their own performance data, but admins can read anyone's
+    match /sdr_performance/{userId} {
+        allow read, write: if request.auth.uid == userId || isAdmin();
+    }
+    
+    // Podcast schedule can be read/written by any authenticated user
+    match /podcast_schedule/{docId} {
       allow read, write: if request.auth != null;
     }
-    
-    // Allow SDRs to read and write their own performance data
-    match /sdr_performance/{sdrId} {
-      allow read, write: if request.auth != null && request.auth.uid == sdrId;
-    }
-    
-    // Allow logged-in users to manage the podcast schedule
-    match /podcast_schedule/{episodeId} {
-        allow read, write: if request.auth != null;
-    }
 
-    // Fallback for any other path - deny all
-    match /{document=**} {
-      allow read, write: if false;
+    // Client data can be read/written by any authenticated user
+    match /clients/{clientId} {
+      allow read, write: if request.auth != null;
     }
   }
 }
