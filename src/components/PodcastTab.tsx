@@ -189,30 +189,35 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   
   const weeklyBookingCount = useMemo(() => {
     const counts: Record<string, number> = {};
-    sdrOrder.forEach(name => {
-      counts[name] = 0;
-    });
 
-    if (!selectedWeekStart) {
-      return counts;
+    if (!selectedWeekStart || !schedule) {
+      return sdrOrder.reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
     }
 
     const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
     const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
 
+    // Initialize counts for all SDRs in the order
+    sdrOrder.forEach(name => {
+        counts[name] = 0;
+    });
+
     Object.values(schedule).forEach(episode => {
+      // Check if the episode is in the selected week
       if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
         episode.guests.forEach(guest => {
           if (guest?.sdrName) {
-            const sdrName = guest.sdrName;
-            const displayName = Object.values(sdrUserDisplayMap).find(
-              (v) => v.name === sdrName
+            const guestSdrName = guest.sdrName;
+            
+            // Find the display name from the map (e.g., "heloysa.santos" -> "Heloysa")
+            const sdrInfo = Object.values(sdrUserDisplayMap).find(info =>
+              guestSdrName.toLowerCase().includes(info.name.toLowerCase())
             );
-            if (displayName && counts.hasOwnProperty(displayName.name)) {
-              counts[displayName.name]++;
-            } else if (counts.hasOwnProperty(sdrName)) {
-                // Fallback for names not in map
-                counts[sdrName]++;
+            
+            const displayName = sdrInfo ? sdrInfo.name : guestSdrName;
+
+            if (counts.hasOwnProperty(displayName)) {
+              counts[displayName]++;
             }
           }
         });
@@ -356,7 +361,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const isBookedByCurrentUser = guest.sdrId === user?.uid;
                               const isBooked = !!guest.sdrId;
 
-                              const sdrInfo = Object.values(sdrUserDisplayMap).find(info => info.name.toLowerCase() === guestSdrName?.toLowerCase()) || {};
+                              const sdrInfo = Object.values(sdrUserDisplayMap).find(info => guestSdrName && info.name.toLowerCase() === guestSdrName.toLowerCase()) || {};
                               const sdrColorClass = sdrInfo.color || 'text-muted-foreground';
                               const displayName = sdrInfo.name || guestSdrName;
 
