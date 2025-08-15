@@ -213,9 +213,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                             id={`${episodeId}-filled`}
                                             checked={episodeData.isFilled}
                                             disabled
-                                            className={cn("h-5 w-5 rounded-md border-2", episodeData.isFilled ? "border-green-500 data-[state=checked]:bg-green-500" : "border-primary")}
+                                            className={cn("h-6 w-6 rounded-md border-2", episodeData.isFilled ? "border-green-400 data-[state=checked]:bg-green-400" : "border-primary")}
                                         />
-                                        <Label htmlFor={`${episodeId}-filled`} className="font-normal cursor-pointer">
+                                        <Label htmlFor={`${episodeId}-filled`} className="font-normal cursor-pointer text-base">
                                             Preenchido
                                         </Label>
                                     </div>
