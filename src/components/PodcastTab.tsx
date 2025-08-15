@@ -48,9 +48,9 @@ type EpisodeConfig = {
 };
 
 const weeklyEpisodeConfig: EpisodeConfig[] = [
-    { id: 'podcast2', title: 'EPISÓDIO 2 - EMPRESÁRIO', type: 'empresario', guestCount: 1, dayOfWeek: 1 }, // Monday
-    { id: 'podcast1', title: 'EPISÓDIO 1 - SAÚDE E ESTÉTICA', type: 'saude_estetica', guestCount: 2, dayOfWeek: 2 }, // Tuesday
-    { id: 'podcast3', title: 'EPISÓDIO 3 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 3 }, // Wednesday - Assuming GERAL here now
+    { id: 'podcast1', title: 'EPISÓDIO 1 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 1 }, // Monday
+    { id: 'podcast2', title: 'EPISÓDIO 2 - SAÚDE E ESTÉTICA', type: 'saude_estetica', guestCount: 2, dayOfWeek: 2 }, // Tuesday
+    { id: 'podcast3', title: 'EPISÓDIO 3 - EMPRESÁRIO', type: 'empresario', guestCount: 1, dayOfWeek: 3 }, // Wednesday
     { id: 'podcast4', title: 'EPISÓDIO 4 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 4 }, // Thursday
     { id: 'podcast5', title: 'EPISÓDIO 5 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 5 }, // Friday
 ];
