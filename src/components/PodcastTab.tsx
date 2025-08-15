@@ -50,9 +50,9 @@ const generateWeeks = (baseDate: Date): Date[] => {
 };
 
 const sdrColors: Record<string, string> = {
-    'Van Diego': 'text-blue-500', // Royal Blue
-    'Heloysa': 'text-emerald-500', // Emerald Green
-    'Débora': 'text-purple-500', // Strong Purple
+    'Van Diego': 'text-orange-500',
+    'Heloysa': 'text-blue-500',
+    'Débora': 'text-purple-500',
 };
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
