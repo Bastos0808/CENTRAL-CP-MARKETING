@@ -31,11 +31,11 @@ export const allTasks: AnyTask[] = [
     { id: "m-5", label: "Leads (Automação)", type: 'counter', goal: 100 },
     { id: "a-3", label: "Ligações", type: 'counter', goal: 12 },
     { id: "daily_meetings", label: "Consultorias", type: 'counter', goal: 2 },
-    { id: "venda_fechada", label: "Venda Fechada", type: 'counter', goal: 1/5 }, // 1 per week = 0.2 per day
-    { id: "podcasts", label: "Confirmado para o Podcast", type: 'counter', goal: 4/5 }, // 4 per week
+    { id: "venda_fechada", label: "Venda Fechada", type: 'counter', goal: 1/5 }, 
+    { id: "podcasts", label: "Confirmado para o Podcast", type: 'counter', goal: 4/5 },
     
-    // Checkbox Tasks (ordem pode ser mantida ou ajustada se necessário)
-    { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
+    // Checkbox Tasks
+    { id: "a-1", label: "Responder a todas as mensagens.", type: 'checkbox' },
     { id: "a-2", label: "Fazer follow-up com leads em negociação para agendamento.", type: 'checkbox' },
     { id: "a-4", label: "Atualizar o CRM, contatar e qualificar os leads que chegaram.", type: 'checkbox' },
     { id: "a-5", label: "Priorizar agendamento de convidados para o podcast (de acordo com a área).", type: 'checkbox' },
@@ -52,19 +52,18 @@ export const weeklyGoals: Record<string, { label: string; goal: number }> = {
   "a-3": { label: "Ligações", goal: 60 },
   "podcasts": { label: "Confirmado para o Podcast", goal: 4 },
   "daily_meetings": { label: "Consultorias", goal: 10 },
-  "venda_fechada": { label: "Venda Fechada", goal: 1 },
+  "venda_fechada": { label: "Venda Fechada", goal: 5 }, // Monthly goal, weekly display will be different
 };
 
 // New scoring system
 export const scoreWeights: Record<string, number> = {
     "m-4": 0.1, 
     "m-1-empresas": 0.2, 
-    // "m-1-trafego": 0, // Removido do cálculo da nota
     "m-5": 0.1,
     "a-3": 1,
     "podcasts": 15,
     "daily_meetings": 20,
-    "venda_fechada": 30, // High value for a closed sale
+    "venda_fechada": 30, 
 };
 
 export const maxScorePerDay = 100;

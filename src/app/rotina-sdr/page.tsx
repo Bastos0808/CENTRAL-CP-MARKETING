@@ -895,6 +895,22 @@ export default function RotinaSDRPage() {
         }, 0);
     }, [yearData, currentMonth, activeWeekKey]);
     
+    const monthlySales = useMemo(() => {
+        const monthData = yearData[currentMonth];
+        if (!monthData) return 0;
+        
+        let sales = 0;
+        (['semana1', 'semana2', 'semana3', 'semana4'] as const).forEach(weekKey => {
+            const week = monthData[weekKey];
+            if (!week) return;
+            ptDays.slice(0, 5).forEach(day => {
+                 sales += Number(week.counterTasks?.[day]?.['venda_fechada'] || 0);
+            });
+        });
+        return sales;
+    }, [yearData, currentMonth]);
+
+
     const dailyScore = useMemo(() => {
         const weeklyData = yearData[currentMonth]?.[activeWeekKey];
         if (!weeklyData) return 0;
@@ -994,13 +1010,19 @@ export default function RotinaSDRPage() {
                   ) : (
                     <div className="space-y-2">
                         {counterTasks.map((task, index) => {
-                             const goal = task.goal; // Use the daily goal directly from the task definition
-                             let cumulativeValue: number | undefined;
+                            let displayGoal;
+                            let cumulativeValue;
 
-                             if (goal !== undefined) {
-                                // For daily view, cumulative is just the day's value
+                            if (task.id === 'podcasts') {
+                                cumulativeValue = weeklyPodcastConfirmations;
+                                displayGoal = 4;
+                            } else if (task.id === 'venda_fechada') {
+                                cumulativeValue = monthlySales;
+                                displayGoal = 5;
+                            } else {
                                 cumulativeValue = Number(weekData?.counterTasks?.[activeDay]?.[task.id] || 0);
-                             }
+                                displayGoal = task.goal;
+                            }
 
                             return (
                                 <div key={task.id} className={cn("flex items-center justify-between gap-4 p-4 rounded-lg", index % 2 === 0 ? 'bg-card/50' : 'bg-primary/5')}>
@@ -1016,9 +1038,9 @@ export default function RotinaSDRPage() {
                                             className="w-20 h-10 text-base text-center font-bold bg-input border-2 border-primary/50"
                                             placeholder="0"
                                         />
-                                        {goal !== undefined && (
+                                        {displayGoal !== undefined && (
                                             <span className="text-sm font-semibold text-muted-foreground w-16 text-right">
-                                                {cumulativeValue !== undefined ? `${cumulativeValue} / ${goal}` : ''}
+                                                {`${cumulativeValue} / ${displayGoal}`}
                                             </span>
                                         )}
                                     </div>
