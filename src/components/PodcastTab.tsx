@@ -105,95 +105,47 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     return () => unsubscribe();
   }, [toast]);
   
-  const handleGuestChange = (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
+  const handleGuestChange = async (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
       if (!user?.uid) return;
-  
-      setSchedule(prevSchedule => {
-          const currentEpisode = prevSchedule[episodeId] || {
-              id: episodeId,
-              date: episodeId.split('-')[0], 
-              episodeType: 'geral', // This default might need to be smarter
-              episodeTitle: '', // This default might need to be smarter
-              guests: Array(weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.guestCount || 1).fill({ guestName: '', instagram: '' }),
-              sdrId: user.uid,
-              sdrName: user.displayName || user.email || 'SDR',
-              isFilled: false,
-          };
-  
-          const newGuests = [...currentEpisode.guests];
-          // Ensure guest object exists
-          if (!newGuests[guestIndex]) {
-             newGuests[guestIndex] = { guestName: '', instagram: '' };
-          }
-          newGuests[guestIndex] = { ...newGuests[guestIndex], [field]: value };
-          
-          const isFilled = newGuests.every(g => g && g.guestName.trim() !== '');
-  
-          const updatedEpisode: ScheduledEpisode = {
-              ...currentEpisode,
-              guests: newGuests,
-              isFilled: isFilled,
-              sdrId: currentEpisode.sdrId || user.uid,
-              sdrName: currentEpisode.sdrName || (user.displayName || user.email || 'SDR'),
-          };
-          
-          return { ...prevSchedule, [episodeId]: updatedEpisode };
-      });
-  };
-  
-  const handleSaveWeek = async () => {
-      if (!user) {
-          toast({ title: "Usuário não autenticado", variant: "destructive" });
-          return;
+
+      const currentEpisode = schedule[episodeId] || {
+          id: episodeId,
+          date: episodeId.split('-')[0],
+          episodeType: weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.type || 'geral',
+          episodeTitle: weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.title || 'Episódio',
+          guests: Array(weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.guestCount || 1).fill({ guestName: '', instagram: '' }),
+          sdrId: user.uid,
+          sdrName: user.displayName || user.email || 'SDR',
+          isFilled: false,
+      };
+
+      const newGuests = [...currentEpisode.guests];
+      if (!newGuests[guestIndex]) {
+          newGuests[guestIndex] = { guestName: '', instagram: '' };
       }
-      setIsSubmitting(true);
-      const batch = writeBatch(db);
+      newGuests[guestIndex] = { ...newGuests[guestIndex], [field]: value };
       
-      const episodesInView = weeklyEpisodeConfig.map(config => {
-        const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
-        const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
-        return schedule[episodeId];
-      }).filter(Boolean);
+      const isFilled = newGuests.every(g => g && g.guestName.trim() !== '');
 
-
+      const updatedEpisode: ScheduledEpisode = {
+          ...currentEpisode,
+          guests: newGuests,
+          isFilled: isFilled,
+          sdrId: currentEpisode.sdrId || user.uid, // Persist original SDR
+          sdrName: currentEpisode.sdrName || (user.displayName || user.email || 'SDR'),
+      };
+      
+      setSchedule(prevSchedule => ({ ...prevSchedule, [episodeId]: updatedEpisode }));
+      
+      // Auto-save to Firestore
       try {
-          episodesInView.forEach(episode => {
-              if (episode && episode.guests.some(g => g.guestName.trim() !== '')) { // Only save if there's at least one guest
-                const docRef = doc(db, 'podcast_schedule', episode.id);
-                batch.set(docRef, episode);
-              }
-          });
-          
-          await batch.commit();
-          toast({ title: "Agendamentos Salvos!", description: `Os dados da semana foram salvos.`});
+          const docRef = doc(db, 'podcast_schedule', episodeId);
+          await writeBatch(db).set(docRef, updatedEpisode).commit();
       } catch (error) {
-          console.error("Error saving schedule:", error);
-          toast({ title: "Erro ao salvar", description: "Não foi possível salvar as alterações.", variant: "destructive" });
-      } finally {
-          setIsSubmitting(false);
+          console.error("Error auto-saving schedule:", error);
+          toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
       }
   };
-
-  const handleDeleteEpisode = async (episodeId: string) => {
-    setIsSubmitting(true);
-     try {
-        await deleteDoc(doc(db, "podcast_schedule", episodeId));
-        
-        // Optimistic UI update
-        setSchedule(prev => {
-            const newState = {...prev};
-            delete newState[episodeId];
-            return newState;
-        });
-
-        toast({title: "Agendamento Excluído", description: "O episódio foi removido da agenda."})
-    } catch(error) {
-        console.error("Error deleting episode", error);
-        toast({title: "Erro ao excluir", variant: "destructive"});
-    } finally {
-        setIsSubmitting(false);
-    }
-  }
 
 
   if (isLoading) {
@@ -239,7 +191,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                         sdrName: '',
                         isFilled: false,
                     };
-                    const isScheduledByOther = schedule[episodeId] && schedule[episodeId].sdrId !== user?.uid;
                     
                     return (
                         <Card key={episodeId} className="bg-card/50">
@@ -295,13 +246,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                 })}
             </CardContent>
         </Card>
-
-        <div className="flex justify-end pt-4">
-            <Button onClick={handleSaveWeek} disabled={isSubmitting} size="lg">
-                {isSubmitting ? <Loader2 className="animate-spin mr-2"/> : null}
-                Salvar Alterações da Semana
-            </Button>
-        </div>
     </div>
   );
 }
