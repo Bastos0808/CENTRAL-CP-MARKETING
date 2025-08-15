@@ -204,9 +204,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                         <Card key={episodeId} className="bg-card/50">
                             <CardHeader>
                                 <div className="flex items-center justify-between">
-                                    <CardTitle className="font-headline flex items-center text-primary text-base">
-                                    <Mic className="mr-3 h-5 w-5" />
-                                    {episodeData.episodeTitle}
+                                    <CardTitle className={cn("font-headline flex items-center text-base", episodeData.isFilled ? "text-green-400" : "text-primary")}>
+                                        <Mic className="mr-3 h-5 w-5" />
+                                        {episodeData.episodeTitle}
                                     </CardTitle>
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
@@ -224,10 +224,11 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                             <CardContent className="space-y-4">
                             {episodeData.guests.map((guest, index) => {
                                 const guestSdrName = guest?.sdrName;
+                                const isGuestFilled = guest && guest.guestName.trim() !== '';
 
                                 return (
                                 <div key={index} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
-                                    <Label className="text-sm text-muted-foreground">
+                                    <Label className={cn("text-sm text-muted-foreground", isGuestFilled && "text-green-400")}>
                                         Convidado {index + 1}
                                         {guestSdrName && <span className="font-semibold text-primary"> (Agendado por: {guestSdrName})</span>}
                                     </Label>
