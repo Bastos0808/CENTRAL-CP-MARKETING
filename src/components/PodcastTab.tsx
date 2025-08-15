@@ -265,8 +265,8 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               'bg-green-600 border-green-500 text-white hover:bg-green-700 hover:text-white': isFilled,
                               'bg-primary text-primary-foreground hover:bg-primary/90': isSelected && !isFilled,
                               'ring-2 ring-primary ring-offset-2 ring-offset-background': isSelected && !isFilled,
-                              'hover:!bg-green-600/90': isFilled,
-                          })}
+                              'hover:!bg-green-600/90': isFilled && !isSelected,
+                           })}
                       >
                          <div className="flex items-center gap-2">
                             {isFilled && <Check className="h-4 w-4" />}
@@ -322,15 +322,17 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const guestSdrName = guest.sdrName;
                               const isGuestFilled = guest && (guest.guestName && guest.guestName.trim() !== '');
                               const sdrColorClass = guestSdrName ? sdrUserDisplayMap[guestSdrName]?.color || 'text-muted-foreground' : 'text-muted-foreground';
+                              const displayName = (guestSdrName && sdrUserDisplayMap[guestSdrName]?.name) || guestSdrName;
+
 
                               return (
                               <div key={`${episodeId}-guest-${index}`} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
                                   <div className="flex justify-between items-center">
                                       <Label htmlFor={`${episodeId}-guest-${index}-name`} className={cn("text-sm", isGuestFilled ? "text-green-400" : "text-muted-foreground")}>
                                           Convidado {index + 1}
-                                           {guestSdrName && (
+                                           {displayName && (
                                             <span className={cn("font-semibold ml-2", sdrColorClass)}>
-                                                (Agendado por: {sdrUserDisplayMap[guestSdrName]?.name || guestSdrName})
+                                                (Agendado por: {displayName})
                                             </span>
                                           )}
                                       </Label>
