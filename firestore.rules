@@ -1,35 +1,33 @@
 
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // Allow authenticated users to read/write their own user data
+  
+    // Allow logged-in users to read and write their own user document
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-    
-    // Allow authenticated users to read/write their own performance data
-    match /sdr_performance/{userId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null;
     }
 
-    // Allow admins to read all sdr_performance data
-    match /sdr_performance/{userId} {
-        allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-
-    // Allow authenticated users to read/write their own client data.
+    // Allow logged-in users to read and write client documents
     match /clients/{clientId} {
       allow read, write: if request.auth != null;
     }
     
-    // Allow authenticated users to read and write to the shared podcast schedule.
-    // 'list' is crucial for querying the collection.
-    match /podcast_schedule/{scheduleId} {
-      allow get, list, create, update, delete: if request.auth != null;
+    // Allow SDRs to read and write their own performance data
+    match /sdr_performance/{sdrId} {
+      allow read, write: if request.auth != null && request.auth.uid == sdrId;
+    }
+    
+    // Allow logged-in users to manage the podcast schedule
+    match /podcast_schedule/{episodeId} {
+        allow read, write: if request.auth != null;
+    }
+
+    // Fallback for any other path - deny all
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
