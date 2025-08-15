@@ -178,8 +178,8 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   const weeklySdrCount = useMemo(() => {
     const counts: Record<string, number> = {};
     
-    Object.keys(sdrUserDisplayMap).forEach(key => {
-        counts[sdrUserDisplayMap[key]] = 0;
+    Object.values(sdrUserDisplayMap).forEach(displayName => {
+        counts[displayName] = 0;
     });
 
     weeklyEpisodeConfig.forEach(config => {
@@ -251,10 +251,11 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                       return (
                       <Button
                           key={weekStart.toISOString()}
-                          variant={isSelected ? 'default' : 'outline'}
+                          variant={isFilled ? "secondary" : (isSelected ? 'default' : 'outline')}
                           onClick={() => setSelectedWeekStart(weekStart)}
                           className={cn({
-                              'bg-green-600/80 border-green-500 text-white hover:bg-green-600': isFilled && !isSelected,
+                              'bg-green-600/80 border-green-500 text-white hover:bg-green-600': isFilled,
+                              'bg-primary text-primary-foreground': isSelected && !isFilled,
                           })}
                       >
                          {isFilled && <Check className="mr-2 h-4 w-4" />}
@@ -301,7 +302,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           {Array.from({ length: config.guestCount }).map((_, index) => {
                               const guest = episodeData.guests[index] || { guestName: '', instagram: '' };
                               const guestSdrName = guest.sdrName;
-                              const isGuestFilled = guest && guest.sdrName;
+                              const isGuestFilled = guest && (guest.guestName || guest.instagram);
                               const sdrColorClass = guestSdrName ? sdrUserColorMap[guestSdrName] || 'text-muted-foreground' : 'text-muted-foreground';
 
                               return (
