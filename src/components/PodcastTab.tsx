@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen, Trash2, Palette } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button } from "./ui/button";
 import { addDays, format, startOfWeek, endOfWeek, isSameDay } from "date-fns";
 import { ptBR } from 'date-fns/locale';
@@ -60,13 +60,6 @@ const generateWeeks = (baseDate: Date): Date[] => {
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
 
-const sdrColors: Record<string, string> = {
-    'Van Diego': 'border-blue-400/80',
-    'Heloysa': 'border-pink-400/80',
-    'Débora': 'border-green-400/80',
-    'default': 'border-muted'
-};
-
 const sdrColorsMap: Record<string, { bg: string, text: string, border: string }> = {
     'Van Diego': { bg: 'bg-blue-900/30', text: 'text-blue-300', border: 'border-blue-400/50' },
     'Heloysa':   { bg: 'bg-pink-900/30', text: 'text-pink-300', border: 'border-pink-400/50' },
@@ -116,63 +109,70 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     return () => unsubscribe();
   }, [toast]);
   
-  const handleGuestChange = async (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
-      if (!user?.uid) return;
+  const handleGuestChange = useCallback(async (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
+    if (!user?.uid) return;
 
-      const currentEpisode = schedule[episodeId] || {
-          id: episodeId,
-          date: episodeId.split('-')[0],
-          episodeType: weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.type || 'geral',
-          episodeTitle: weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.title || 'Episódio',
-          guests: Array(weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.guestCount || 1).fill({ guestName: '', instagram: '' }),
-          isFilled: false,
-      };
+    const originalEpisodeState = schedule[episodeId] || {
+        id: episodeId,
+        date: episodeId.split('-')[0],
+        episodeType: weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.type || 'geral',
+        episodeTitle: weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.title || 'Episódio',
+        guests: Array(weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.guestCount || 1).fill({ guestName: '', instagram: '' }),
+        isFilled: false,
+    };
+    
+    // --- Optimistic UI Update ---
+    setSchedule(currentSchedule => {
+        const currentEpisode = currentSchedule[episodeId] || originalEpisodeState;
+        const newGuests = [...currentEpisode.guests];
+        const updatedGuest = { ...newGuests[guestIndex], [field]: value };
+        
+        // Assign SDR if the field is being filled and no SDR is assigned
+        if (value.trim() !== '' && !updatedGuest.sdrId) {
+            updatedGuest.sdrId = user.uid;
+            updatedGuest.sdrName = user.displayName || user.email || 'SDR';
+        }
+        // Clear SDR if both fields are now empty
+        else if (
+            (field === 'guestName' && value.trim() === '' && (updatedGuest.instagram || '').trim() === '') ||
+            (field === 'instagram' && value.trim() === '' && (updatedGuest.guestName || '').trim() === '')
+        ) {
+            delete updatedGuest.sdrId;
+            delete updatedGuest.sdrName;
+        }
 
-      const newGuests = [...currentEpisode.guests];
-      // Ensure guest object exists at index
-      if (!newGuests[guestIndex]) {
-          newGuests[guestIndex] = { guestName: '', instagram: '' };
-      }
-      
-      const updatedGuest = { ...newGuests[guestIndex], [field]: value };
+        newGuests[guestIndex] = updatedGuest;
+        const isEpisodeFilled = newGuests.every(g => g && g.guestName.trim() !== '');
 
-      // If the field is being filled and no SDR is assigned to this guest, assign current user
-      if (value.trim() !== '' && !updatedGuest.sdrId) {
-          updatedGuest.sdrId = user.uid;
-          updatedGuest.sdrName = user.displayName || user.email || 'SDR';
-      } 
-      // If both fields for a guest are empty, clear the SDR info
-      else if (updatedGuest.guestName.trim() === '' && updatedGuest.instagram.trim() === '' && field in updatedGuest) {
-          delete updatedGuest.sdrId;
-          delete updatedGuest.sdrName;
-      }
-      
-      newGuests[guestIndex] = updatedGuest;
-      
-      const isEpisodeFilled = newGuests.every(g => g && g.guestName.trim() !== '');
+        const updatedEpisode = {
+            ...currentEpisode,
+            guests: newGuests,
+            isFilled: isEpisodeFilled,
+        };
 
-      const updatedEpisode: ScheduledEpisode = {
-          ...currentEpisode,
-          guests: newGuests,
-          isFilled: isEpisodeFilled,
-          sdrId: currentEpisode.sdrId || user.uid, // Track who last touched the episode
-          sdrName: currentEpisode.sdrName || (user.displayName || user.email || 'SDR'),
-      };
-      
-      // Optimistic UI update
-      setSchedule(prevSchedule => ({ ...prevSchedule, [episodeId]: updatedEpisode }));
-      
-      try {
-          const docRef = doc(db, 'podcast_schedule', episodeId);
-          // Using set with merge might be safer if multiple fields could be updated simultaneously
-          await writeBatch(db).set(docRef, updatedEpisode, { merge: true }).commit();
-      } catch (error) {
-          console.error("Error auto-saving schedule:", error);
-          toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
-          // Revert on failure
-          setSchedule(prev => ({...prev, [episodeId]: currentEpisode}));
-      }
-  };
+        return { ...currentSchedule, [episodeId]: updatedEpisode };
+    });
+
+    // --- Persist to Firestore ---
+    try {
+        const docRef = doc(db, 'podcast_schedule', episodeId);
+        
+        // Get latest from state to ensure we save the right data
+        setSchedule(async currentSchedule => {
+            const episodeToSave = currentSchedule[episodeId];
+            if(episodeToSave) {
+                 await writeBatch(db).set(docRef, episodeToSave, { merge: true }).commit();
+            }
+            return currentSchedule;
+        });
+
+    } catch (error) {
+        console.error("Error auto-saving schedule:", error);
+        toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
+        // Revert on failure
+        setSchedule(prev => ({...prev, [episodeId]: originalEpisodeState}));
+    }
+  }, [schedule, user, toast]);
 
 
   if (isLoading) {
