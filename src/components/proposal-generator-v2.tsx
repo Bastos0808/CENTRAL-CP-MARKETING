@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -42,6 +43,8 @@ export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
 export default function ProposalGeneratorV2() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
   const [isGeneratingAi, setIsGeneratingAi] = React.useState(false);
+  const [investmentValue, setInvestmentValue] = React.useState('R$ 0,00');
+
   const { toast } = useToast();
   
   const proposalRef = React.useRef<HTMLDivElement>(null);
@@ -67,15 +70,18 @@ export default function ProposalGeneratorV2() {
   const watchedValues = form.watch();
   const useCustomServices = watchedValues.useCustomServices;
   
-  const investmentValue = React.useMemo(() => {
-    if (useCustomServices) return 'Personalizado';
-
-    const total = watchedValues.packages?.reduce((acc, pkgKey) => {
-        const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
-        return acc + (pkg ? pkg.price : 0);
-    }, 0) || 0;
-    
-    return total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  React.useEffect(() => {
+    if (useCustomServices) {
+        // Allow manual input or keep it as 'Personalizado'
+        // If you want to enable manual input, you would manage another state for it.
+        // For now, let's keep it simple.
+    } else {
+        const total = watchedValues.packages?.reduce((acc, pkgKey) => {
+            const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+            return acc + (pkg ? pkg.price : 0);
+        }, 0) || 0;
+        setInvestmentValue(total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+    }
   }, [watchedValues.packages, useCustomServices]);
 
 
@@ -246,7 +252,7 @@ export default function ProposalGeneratorV2() {
                                <FormItem>
                                 <FormLabel>Valor do Investimento</FormLabel>
                                 <FormControl>
-                                    <Input value={investmentValue} readOnly={!useCustomServices} onChange={(e) => form.setValue('investmentValue', e.target.value)} />
+                                    <Input value={investmentValue} readOnly={!useCustomServices} onChange={(e) => setInvestmentValue(e.target.value)} />
                                 </FormControl>
                                 <FormMessage />
                                </FormItem>
@@ -305,9 +311,7 @@ export default function ProposalGeneratorV2() {
         
         {/* Hidden component for rendering PDF */}
         <div className="fixed -left-[9999px] -top-[9999px]">
-            <div ref={proposalRef}>
-                <GeneratedProposal {...watchedValues} investmentValue={investmentValue} />
-            </div>
+            <GeneratedProposal ref={proposalRef} {...watchedValues} investmentValue={investmentValue} />
         </div>
     </>
   );

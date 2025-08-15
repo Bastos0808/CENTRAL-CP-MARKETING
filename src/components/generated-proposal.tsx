@@ -46,10 +46,10 @@ const Page = React.forwardRef<HTMLDivElement, {children: React.ReactNode, classN
 Page.displayName = 'Page';
 
 interface GeneratedProposalProps extends ProposalFormValues {
-  investmentValue: string;
+    investmentValue: string;
 }
 
-export const GeneratedProposal = (props: GeneratedProposalProps) => {
+export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedProposalProps>((props, ref) => {
     const {
         clientName,
         packages,
@@ -95,7 +95,7 @@ export const GeneratedProposal = (props: GeneratedProposalProps) => {
     );
     
   return (
-    <div>
+    <div ref={ref}>
         <Page className="bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1749680287741-243118ed6b2c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"}}>
               <div className="z-10 text-center flex flex-col items-center" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.5)' }}>
                   <p className="text-[#FE5412] font-semibold tracking-widest mb-4 text-2xl">PROPOSTA COMERCIAL</p>
@@ -189,4 +189,5 @@ export const GeneratedProposal = (props: GeneratedProposalProps) => {
         </Page>
     </div>
   );
-};
+});
+GeneratedProposal.displayName = "GeneratedProposal";
