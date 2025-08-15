@@ -101,8 +101,8 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   
   const handleGuestChange = useCallback((episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
     if (!user?.uid || !user.displayName) return;
-    
-    // Optimistic UI update
+
+    // Optimistic UI update using Immer for safety
     setSchedule(prevSchedule => {
         const newSchedule = produce(prevSchedule, draft => {
             const episode = draft[episodeId];
@@ -113,12 +113,12 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     
             const sdrName = user.displayName || '';
     
-            const otherField = field === 'guestName' ? guest.instagram : guest.guestName;
-
-            if (value.trim() !== '' || (otherField || '').trim() !== '') {
+            // Check if either field has content to assign the SDR
+            if (guest.guestName.trim() !== '' || guest.instagram.trim() !== '') {
                 guest.sdrId = user.uid;
                 guest.sdrName = sdrName;
             } else {
+                // If both are empty, clear the SDR info
                 delete guest.sdrId;
                 delete guest.sdrName;
             }
@@ -126,7 +126,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
             episode.isFilled = episode.guests.every(g => g && g.guestName.trim() !== '');
         });
 
-        // Debounced Firestore Update after optimistic update
+        // Debounced Firestore Update
         if (debounceTimeoutRef.current) {
             clearTimeout(debounceTimeoutRef.current);
         }
@@ -140,14 +140,13 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                 } catch (error) {
                     console.error("Error auto-saving schedule:", error);
                     toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
-                    setSchedule(prevSchedule); // Revert to previous state on error
+                    // Optionally revert state here, though optimistic UI often doesn't
                 }
             }
         }, 1000); // 1-second debounce
 
         return newSchedule;
     });
-
 }, [user, toast]);
 
 
@@ -229,7 +228,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                 const sdrStyle = guestSdrName ? sdrColorsMap[guestSdrName] : null;
 
                                 return (
-                                <div key={index} className={cn("space-y-2 p-3 rounded-lg border transition-colors", sdrStyle ? sdrStyle.border : 'border-muted/30', sdrStyle ? sdrStyle.bg : 'bg-muted/30')}>
+                                <div key={index} className={cn("space-y-2 p-3 rounded-lg border transition-colors", sdrStyle ? `${sdrStyle.border} ${sdrStyle.bg}` : 'border-muted/30 bg-muted/30')}>
                                     <Label className={cn("text-sm", sdrStyle ? sdrStyle.text : 'text-muted-foreground')}>Convidado {index + 1}</Label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="relative">
@@ -263,3 +262,5 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
+
+    
