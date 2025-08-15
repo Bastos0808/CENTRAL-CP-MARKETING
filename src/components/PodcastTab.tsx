@@ -9,7 +9,7 @@ import { Mic, Loader2, Check } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button } from "./ui/button";
-import { addDays, format, startOfWeek, endOfWeek, isSameDay, getDay, endOfDay } from "date-fns";
+import { addDays, format, startOfWeek, endOfWeek, isSameDay, getDay } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
@@ -46,8 +46,14 @@ const generateWeeks = (baseDate: Date): Date[] => {
     // getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday
     const today = getDay(baseDate); 
     
-    // Always start from the current week's Monday.
+    // If it's Saturday (6) or Sunday (0), start from next Monday.
+    // Otherwise, start from the current week's Monday.
     let startOfCurrentWeek = startOfWeek(baseDate, { weekStartsOn: 1 });
+    if (today === 6) {
+        startOfCurrentWeek = addDays(startOfCurrentWeek, 7);
+    } else if (today === 0) {
+        startOfCurrentWeek = addDays(startOfCurrentWeek, 1);
+    }
     
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
@@ -97,6 +103,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
  const handleGuestChange = useCallback(async (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
     if (!user?.uid || !user.displayName) return;
 
+    // Use displayName from auth context, which should be the unique key like 'heloysa.santos'
     const sdrName = user.displayName;
     const sdrId = user.uid;
 
@@ -110,26 +117,31 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     };
     
     const guestToUpdate = episodeToUpdate.guests[guestIndex];
+    // A user can only edit a slot if it's empty or if they were the one who booked it.
     if (guestToUpdate && guestToUpdate.sdrId && guestToUpdate.sdrId !== sdrId) {
         toast({ title: "Acesso Negado", description: "Você só pode editar os convidados que você mesmo agendou.", variant: "destructive" });
         return;
     }
 
     const updatedGuests = [...episodeToUpdate.guests];
+    // Ensure the guest array is long enough
     while (updatedGuests.length <= guestIndex) {
         updatedGuests.push({ guestName: '', instagram: '' });
     }
     
     const updatedGuest: GuestInfo = { ...updatedGuests[guestIndex] };
 
+    // Update the specific field
     updatedGuest[field] = value;
     
+    // Check if the slot is now considered "booked"
     const hasName = field === 'guestName' ? value.trim() !== '' : (updatedGuest.guestName || '').trim() !== '';
     const hasInsta = field === 'instagram' ? value.trim() !== '' : (updatedGuest.instagram || '').trim() !== '';
 
+    // If either field has content, assign the SDR. If both are empty, clear the SDR.
     if (hasName || hasInsta) {
         updatedGuest.sdrId = sdrId;
-        updatedGuest.sdrName = sdrName;
+        updatedGuest.sdrName = sdrName; // This should be the unique key
     } else {
         delete updatedGuest.sdrId;
         delete updatedGuest.sdrName;
@@ -146,6 +158,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     
     try {
         const docRef = doc(db, 'podcast_schedule', episodeId);
+        // Using setDoc with merge will create or update the document
         await setDoc(docRef, updatedEpisode, { merge: true });
     } catch (error) {
         console.error("Error saving schedule:", error);
@@ -158,6 +171,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   const weeklySdrCount = useMemo(() => {
     const counts: Record<string, number> = {};
     
+    // Initialize counts for all possible display names
     Object.values(sdrUserDisplayMap).forEach(displayName => {
         counts[displayName] = 0;
     });
@@ -169,7 +183,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
         if (episodeData) {
             episodeData.guests.forEach(guest => {
+                // Count if there is an sdrName (meaning it's a booked slot)
                 if (guest && guest.sdrName) {
+                    // Find the display name from the map using the sdrName key
                     const displayName = sdrUserDisplayMap[guest.sdrName];
                     if (displayName) {
                         counts[displayName]++;
@@ -223,7 +239,8 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
             </CardHeader>
             <CardContent className="space-y-2">
                 {Object.entries(sdrUserDisplayMap)
-                    .sort(([keyA, nameA], [keyB, nameB]) => nameA.localeCompare(nameB))
+                    // Sort by the display name (e.g., "Débora", "Heloysa", "Van Diego")
+                    .sort(([, nameA], [, nameB]) => nameA.localeCompare(nameB))
                     .map(([sdrKey, displayName], index) => (
                    <div key={displayName} className="flex justify-between items-center text-lg p-2 rounded-md bg-muted/50">
                        <span className="font-semibold">{index + 1}- {displayName}</span>
@@ -253,9 +270,10 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           variant={'outline'}
                           onClick={() => setSelectedWeekStart(weekStart)}
                            className={cn("h-auto flex-col p-3 transition-all", {
-                              'bg-green-600 border-green-500 text-white hover:bg-green-600 hover:text-white ring-green-500': isFilled,
+                              'bg-green-600 border-green-500 text-white hover:bg-green-700 hover:text-white ring-green-500': isFilled,
                               'bg-primary text-primary-foreground hover:bg-primary/90': isSelected && !isFilled,
                               'ring-2 ring-primary ring-offset-2 ring-offset-background': isSelected,
+                              'hover:bg-green-600/90': isFilled, // Keep green on hover if filled
                           })}
                       >
                          <div className="flex items-center gap-2">
