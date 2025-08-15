@@ -77,7 +77,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DateRange } from "react-day-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { ScoreIndicator } from "@/components/ScoreIndicator";
+import { ScoreIndicator } from "@/components/ui/ScoreIndicator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -633,9 +633,10 @@ export default function RotinaSDRPage() {
 
   const AdminView = () => {
     const [selectedSdr, setSelectedSdr] = useState('all');
+    const [adminSubTab, setAdminSubTab] = useState('Progresso Semanal');
     const [dateRange, setDateRange] = useState<DateRange | undefined>({
-      from: startOfMonth(new Date()),
-      to: new Date(),
+      from: startOfWeek(new Date(), { weekStartsOn: 1 }),
+      to: endOfWeek(new Date(), { weekStartsOn: 1 }),
     });
     
     const calculateScoreForRange = (sdrId: string, range: DateRange | undefined) => {
@@ -802,52 +803,83 @@ export default function RotinaSDRPage() {
                     </div>
                 </CardContent>
             </Card>
-            
-            <TeamRanking />
 
-            <div className="space-y-6">
-                 {filteredSdrList.map(sdr => {
-                    const sdrYearData = allSdrData[sdr.id];
-                    if (!sdrYearData) return null;
+            <div className="grid grid-cols-3 gap-2">
+                {FUNCTION_TABS.map(tab => {
+                    const isActive = adminSubTab === tab;
+                    const tabClasses = {
+                        'Podcast': isActive ? "bg-purple-600 text-white shadow-lg" : "bg-purple-600/10 text-purple-400 hover:bg-purple-600/20",
+                        'Progresso Semanal': isActive ? "bg-green-600 text-white shadow-lg" : "bg-green-600/10 text-green-400 hover:bg-green-600/20",
+                        'Progresso Mensal': isActive ? "bg-blue-600 text-white shadow-lg" : "bg-blue-600/10 text-blue-400 hover:bg-blue-600/20",
+                    };
+                    const tabIcons = { 'Podcast': Mic, 'Progresso Semanal': BarChart, 'Progresso Mensal': BarChart };
+                    const Icon = tabIcons[tab as keyof typeof tabIcons];
                     
-                    const performanceScore = calculateScoreForRange(sdr.id, dateRange);
-                    const chartData = calculateChartDataForRange(sdr.id, dateRange);
-
                     return (
-                        <Card key={sdr.id}>
-                            <CardHeader>
-                                <div className="flex justify-between items-center">
-                                    <CardTitle>{sdr.name}</CardTitle>
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex items-center gap-2 text-lg">
-                                            <span className="font-semibold text-muted-foreground">Nota de Performance:</span>
-                                            <span className="font-bold text-primary">{performanceScore}</span>
-                                        </div>
-                                        <ChartContainer config={chartConfig} className="h-[50px] w-[50px]">
-                                           <PieChart>
-                                            <ChartTooltip content={<ChartTooltipContent nameKey="name" hideLabel />} />
-                                                <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={15} outerRadius={25}>
-                                                    {chartData.map((entry) => (
-                                                        <Cell key={`cell-${entry.name}`} fill={entry.fill} />
-                                                    ))}
-                                                </Pie>
-                                           </PieChart>
-                                        </ChartContainer>
-                                    </div>
-                                </div>
-                                <CardDescription>Performance no período selecionado</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <WeeklyProgress 
-                                    sdrId={sdr.id}
-                                    yearData={sdrYearData}
-                                    dateRange={dateRange}
-                                />
-                            </CardContent>
-                        </Card>
-                    )
-                 })}
+                        <Button
+                            key={tab}
+                            variant="ghost"
+                            onClick={() => setAdminSubTab(tab)}
+                            className={cn("flex-1 text-sm py-2.5 px-3 transition-all duration-300 rounded-md flex items-center justify-center gap-2", tabClasses[tab as keyof typeof tabClasses])}
+                        >
+                            <Icon className="h-4 w-4" />
+                            {tab}
+                        </Button>
+                    );
+                })}
             </div>
+            
+            {adminSubTab === 'Podcast' ? (
+                <PodcastTab podcastData={yearData[currentMonth]?.podcasts} onPodcastChange={handlePodcastChange} onPodcastCheck={handlePodcastCheck} />
+            ) : (
+              <>
+                <TeamRanking />
+                <div className="space-y-6">
+                    {filteredSdrList.map(sdr => {
+                        const sdrYearData = allSdrData[sdr.id];
+                        if (!sdrYearData) return null;
+                        
+                        const performanceScore = calculateScoreForRange(sdr.id, dateRange);
+                        const chartData = calculateChartDataForRange(sdr.id, dateRange);
+
+                        return (
+                            <Card key={sdr.id}>
+                                <CardHeader>
+                                    <div className="flex justify-between items-center">
+                                        <CardTitle>{sdr.name}</CardTitle>
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex items-center gap-2 text-lg">
+                                                <span className="font-semibold text-muted-foreground">Nota de Performance:</span>
+                                                <span className="font-bold text-primary">{performanceScore}</span>
+                                            </div>
+                                            <ChartContainer config={chartConfig} className="h-[50px] w-[50px]">
+                                            <PieChart>
+                                                <ChartTooltip content={<ChartTooltipContent nameKey="name" hideLabel />} />
+                                                    <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={15} outerRadius={25}>
+                                                        {chartData.map((entry) => (
+                                                            <Cell key={`cell-${entry.name}`} fill={entry.fill} />
+                                                        ))}
+                                                    </Pie>
+                                            </PieChart>
+                                            </ChartContainer>
+                                        </div>
+                                    </div>
+                                    <CardDescription>Performance no período selecionado</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <WeeklyProgress 
+                                        sdrId={sdr.id}
+                                        yearData={sdrYearData}
+                                        dateRange={dateRange}
+                                        isMonthlyView={adminSubTab === 'Progresso Mensal'}
+                                    />
+                                </CardContent>
+                            </Card>
+                        )
+                    })}
+                </div>
+              </>
+            )}
         </div>
     );
   };
@@ -1180,3 +1212,5 @@ export default function RotinaSDRPage() {
     </div>
   );
 }
+
+    
