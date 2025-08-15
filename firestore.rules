@@ -1,39 +1,22 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Regras para a coleção 'users'
-    match /users/{userId} {
-      allow read: if request.auth != null; // Permite que usuários autenticados leiam a lista de usuários.
-      allow write: if request.auth.uid == userId; // Permite que cada usuário atualize seu próprio perfil.
-    }
-
-    // Regras para a coleção 'sdr_performance'
-    match /sdr_performance/{userId} {
-      // Permite que um usuário leia e escreva seus próprios dados de performance.
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-
-      // Um administrador precisaria de uma regra mais sofisticada,
-      // geralmente implementada com custom claims ou uma função de backend.
-      // Para este escopo, permitimos que usuários autenticados leiam para a funcionalidade de admin.
-      allow read: if request.auth != null;
-    }
-    
-    // Regras para a coleção 'clients'
-    match /clients/{clientId} {
-       // Permite que qualquer usuário autenticado leia e escreva na coleção de clientes.
-       // Em um ambiente de produção, isso seria restringido por papéis (ex: admin, comercial).
+  
+    // Regra geral: Apenas usuários autenticados podem ler/escrever.
+    // Ajuste esta regra para ser mais granular conforme necessário.
+    match /{document=**} {
       allow read, write: if request.auth != null;
     }
-
-    // Regras para a coleção 'conversations' do chat
-    match /conversations/{conversationId}/{message=**} {
-        // Permite que usuários autenticados leiam e escrevam mensagens.
-        // Em um ambiente de produção real, você restringiria isso para que 
-        // apenas os participantes da conversa pudessem acessar.
-        allow read, write: if request.auth != null;
+    
+    // Regra específica para a coleção de usuários
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Regra específica para a coleção de agendamentos de podcast
+    match /podcast_schedule/{scheduleId} {
+      allow read, write: if request.auth != null;
     }
   }
 }
