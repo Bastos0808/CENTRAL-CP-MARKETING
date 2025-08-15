@@ -1099,7 +1099,7 @@ export default function RotinaSDRPage() {
 
   const renderTabContent = () => {
     if (isAdmin) {
-      if (activeTab === 'Visão Geral') return <AdminView />;
+      return <AdminView />;
     }
     
     if (FUNCTION_TABS.includes(activeTab)) {
