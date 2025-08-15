@@ -1,16 +1,17 @@
+
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram } from "lucide-react";
+import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen } from "lucide-react";
 import { Separator } from "./ui/separator";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo } from "react";
 import { Calendar } from "./ui/calendar";
 import { Button } from "./ui/button";
-import { addDays, format, getDay } from "date-fns";
+import { addDays, format, getDay, startOfWeek, endOfWeek } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
@@ -175,6 +176,19 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
       }
   }
 
+  const weeklyEpisodes = useMemo(() => {
+    if (!selectedDate) return [];
+    const start = startOfWeek(selectedDate, { weekStartsOn: 1 }); // Monday
+    const end = endOfWeek(selectedDate, { weekStartsOn: 1 }); // Sunday
+    
+    return Object.values(schedule)
+        .filter(ep => {
+            const epDate = new Date(ep.date + "T00:00:00");
+            return epDate >= start && epDate <= end;
+        })
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [selectedDate, schedule]);
+
 
   if (isLoading) {
     return (
@@ -304,6 +318,40 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                     </CardContent>
                 </Card>
              )}
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><BookOpen/> Agenda da Semana</CardTitle>
+                    <CardDescription>Visão geral dos episódios agendados para esta semana.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {weeklyEpisodes.length > 0 ? (
+                        <div className="space-y-4">
+                            {weeklyEpisodes.map(ep => (
+                                <div key={ep.id} className="p-4 border rounded-lg bg-card/50">
+                                    <h4 className="font-bold text-primary flex justify-between items-center">
+                                        <span>{format(new Date(ep.date + 'T00:00'), "eeee, dd/MM", { locale: ptBR })}</span>
+                                        <span className={cn("text-xs font-medium px-2 py-1 rounded-full", ep.isFilled ? "bg-green-500/20 text-green-700" : "bg-yellow-500/20 text-yellow-700")}>
+                                            {ep.isFilled ? "Completo" : "Pendente"}
+                                        </span>
+                                    </h4>
+                                    <p className="text-sm font-semibold mb-2">{ep.episodeTitle}</p>
+                                    <ul className="space-y-1 text-sm text-muted-foreground">
+                                        {ep.guests.map((guest, index) => (
+                                            <li key={index} className="flex items-center gap-2">
+                                                <User className="h-4 w-4"/> {guest.guestName || <i className='opacity-70'>Convidado {index+1}...</i>}
+                                                <Instagram className="h-4 w-4"/> {guest.instagram || <i className='opacity-70'>@instagram...</i>}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center text-muted-foreground p-6">Nenhum episódio agendado para esta semana.</div>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     </div>
   );
