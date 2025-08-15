@@ -77,7 +77,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DateRange } from "react-day-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { ScoreIndicator } from "@/components/ui/ScoreIndicator";
+import { ScoreIndicator } from "@/components/ScoreIndicator";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -1078,14 +1078,13 @@ export default function RotinaSDRPage() {
                 </Card>
               )}
               <TeamRanking />
+              {!isSaturday && (
+                <div className="flex justify-end items-center gap-4 pt-4">
+                  <Label htmlFor="holiday-switch">Marcar dia como feriado?</Label>
+                  <Switch id="holiday-switch" checked={isHoliday} onCheckedChange={handleHolidayToggle} />
+                </div>
+              )}
           </div>
-          
-          {!isSaturday && (
-            <div className="flex justify-end items-center gap-4 pt-4">
-              <Label htmlFor="holiday-switch">Marcar dia como feriado?</Label>
-              <Switch id="holiday-switch" checked={isHoliday} onCheckedChange={handleHolidayToggle} />
-            </div>
-          )}
       </div>
     );
   }
