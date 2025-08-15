@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -165,42 +164,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     });
   }, [user, toast, selectedWeekStart]);
 
-  const handleGuestDelete = useCallback((episodeId: string, guestIndex: number) => {
-    if (!user?.uid) return;
-
-    setSchedule(prevSchedule => {
-      const newSchedule = produce(prevSchedule, draft => {
-        const episode = draft[episodeId];
-        if (episode && episode.guests[guestIndex]) {
-          // Reset guest info instead of deleting the object to maintain array length
-          episode.guests[guestIndex] = { guestName: '', instagram: '' };
-          episode.isFilled = episode.guests.every(g => g && g.guestName.trim() !== '');
-        }
-      });
-
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-
-      debounceTimeoutRef.current = setTimeout(async () => {
-        const episodeToSave = newSchedule[episodeId];
-        if (episodeToSave) {
-          try {
-            const docRef = doc(db, 'podcast_schedule', episodeId);
-            await setDoc(docRef, episodeToSave, { merge: true });
-            toast({ title: "Convidado Removido", description: "O agendamento foi liberado." });
-          } catch (error) {
-            console.error("Error deleting guest:", error);
-            toast({ title: "Erro ao Remover", variant: "destructive" });
-          }
-        }
-      }, 500);
-
-      return newSchedule;
-    });
-  }, [user, toast]);
-
-
   if (isLoading) {
     return (
         <div className="flex justify-center items-center h-64">
@@ -281,12 +244,11 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const guest = episodeData.guests[index] || { guestName: '', instagram: '' };
                               const guestSdrName = guest.sdrName;
                               const isGuestFilled = guest && guest.guestName.trim() !== '';
-                              const canDelete = user?.displayName === guestSdrName;
 
                               return (
                               <div key={index} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
                                   <div className="flex justify-between items-center">
-                                      <Label className={cn("text-sm text-muted-foreground", isGuestFilled && "text-green-400")}>
+                                      <Label className={cn("text-sm", isGuestFilled ? "text-green-400" : "text-muted-foreground")}>
                                           Convidado {index + 1}
                                           {guestSdrName && (
                                             <span className={cn('font-semibold ml-2', sdrColors[guestSdrName] || 'text-muted-foreground')}>
@@ -294,11 +256,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                             </span>
                                           )}
                                       </Label>
-                                      {isGuestFilled && canDelete && (
-                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleGuestDelete(episodeId, index)}>
-                                            <Trash2 className="h-4 w-4 text-destructive"/>
-                                        </Button>
-                                      )}
                                   </div>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                       <div className="relative">
