@@ -45,7 +45,11 @@ const Page = React.forwardRef<HTMLDivElement, {children: React.ReactNode, classN
 ));
 Page.displayName = 'Page';
 
-export const GeneratedProposal = (props: ProposalFormValues) => {
+interface GeneratedProposalProps extends ProposalFormValues {
+  investmentValue: string;
+}
+
+export const GeneratedProposal = (props: GeneratedProposalProps) => {
     const {
         clientName,
         packages,
@@ -116,7 +120,7 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
                 <h2 className="text-7xl font-bold uppercase mb-12">Nossos Objetivos</h2>
                 <ul className="space-y-6 text-3xl font-light">
                     {(objectiveItems && objectiveItems.length > 0) ? objectiveItems.map((item, i) => (
-                        <li key={i} className="flex items-center gap-6"><Goal className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item.value}</span></li>
+                        <li key={i} className="flex items-center gap-6"><Goal className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item}</span></li>
                     )) : <li>Aumentar a autoridade da marca no setor.</li>}
                 </ul>
             </div>
@@ -126,7 +130,7 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
                 <h2 className="text-7xl font-bold uppercase mb-12">Nossos Diferenciais</h2>
                 <ul className="space-y-6 text-3xl font-light columns-2 gap-x-16">
                     {(differentialItems && differentialItems.length > 0) ? differentialItems.map((item, i) => (
-                        <li key={i} className="flex items-center gap-6 mb-6 break-inside-avoid"><Sparkles className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item.value}</span></li>
+                        <li key={i} className="flex items-center gap-6 mb-6 break-inside-avoid"><Sparkles className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item}</span></li>
                     )) : <li>Planejamento estratégico focado em resultados.</li>}
                 </ul>
              </div>
@@ -142,7 +146,7 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
                 <h2 className="text-7xl font-bold uppercase mb-12">Por que este plano é <span className="text-[#FE5412]">ideal</span>?</h2>
                  <ul className="space-y-6 text-3xl font-light text-left max-w-4xl mx-auto">
                     {(idealPlanItems && idealPlanItems.length > 0) ? idealPlanItems.map((item, i) => (
-                        <li key={i} className="flex items-center gap-6"><Check className="h-10 w-10 text-green-400 flex-shrink-0" /><span>{item.value}</span></li>
+                        <li key={i} className="flex items-center gap-6"><Check className="h-10 w-10 text-green-400 flex-shrink-0" /><span>{item}</span></li>
                     )): <li>Construção de uma marca forte e reconhecida.</li>}
                 </ul>
              </div>
@@ -186,5 +190,3 @@ export const GeneratedProposal = (props: ProposalFormValues) => {
     </div>
   );
 };
-
-    

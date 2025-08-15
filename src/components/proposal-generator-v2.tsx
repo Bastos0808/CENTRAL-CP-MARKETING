@@ -1,8 +1,7 @@
-
 "use client";
 
 import * as React from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -31,11 +30,10 @@ const proposalFormSchema = z.object({
     clientAudience: z.string().min(1, 'O público-alvo é obrigatório.'),
     useCustomServices: z.boolean().default(false),
     packages: z.array(z.string()).optional(), // Form stores an array of package keys (strings)
-    investmentValue: z.string().optional(),
     partnershipDescription: z.string().optional(),
-    objectiveItems: z.array(z.object({ value: z.string() })).optional(),
-    differentialItems: z.array(z.object({ value: z.string() })).optional(),
-    idealPlanItems: z.array(z.object({ value: z.string() })).optional(),
+    objectiveItems: z.array(z.string()).optional(),
+    differentialItems: z.array(z.string()).optional(),
+    idealPlanItems: z.array(z.string()).optional(),
 });
 
 
@@ -58,7 +56,6 @@ export default function ProposalGeneratorV2() {
       clientAudience: '',
       useCustomServices: false,
       packages: [],
-      investmentValue: 'R$ 0,00',
       partnershipDescription: '',
       objectiveItems: [],
       differentialItems: [],
@@ -69,18 +66,18 @@ export default function ProposalGeneratorV2() {
 
   const watchedValues = form.watch();
   const useCustomServices = watchedValues.useCustomServices;
-
-  React.useEffect(() => {
-    if (useCustomServices) return;
+  
+  const investmentValue = React.useMemo(() => {
+    if (useCustomServices) return 'Personalizado';
 
     const total = watchedValues.packages?.reduce((acc, pkgKey) => {
         const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
         return acc + (pkg ? pkg.price : 0);
     }, 0) || 0;
     
-    form.setValue('investmentValue', total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+    return total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }, [watchedValues.packages, useCustomServices]);
 
-  }, [watchedValues.packages, useCustomServices, form]);
 
   const handleDownloadPdf = async () => {
     const { clientName } = form.getValues();
@@ -158,9 +155,9 @@ export default function ProposalGeneratorV2() {
           const result = await generateProposalContentV2(inputForAI);
           
           form.setValue('partnershipDescription', result.partnershipDescription);
-          form.setValue('objectiveItems', result.objectiveItems.map(item => ({value: item})));
-          form.setValue('differentialItems', result.differentialItems.map(item => ({value: item})));
-          form.setValue('idealPlanItems', result.idealPlanItems.map(item => ({value: item})));
+          form.setValue('objectiveItems', result.objectiveItems);
+          form.setValue('differentialItems', result.differentialItems);
+          form.setValue('idealPlanItems', result.idealPlanItems);
 
           toast({ title: "Conteúdo Gerado!", description: "A IA preencheu os campos da proposta." });
       } catch (error) {
@@ -246,7 +243,13 @@ export default function ProposalGeneratorV2() {
                          <AccordionItem value="item-3">
                             <AccordionTrigger className="px-6 font-semibold"><DollarSign className="mr-2 h-5 w-5 text-primary" />Investimento</AccordionTrigger>
                             <AccordionContent className="space-y-4 px-6 pt-4">
-                                <FormField control={form.control} name="investmentValue" render={({ field }) => <FormItem><FormLabel>Valor do Investimento</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
+                               <FormItem>
+                                <FormLabel>Valor do Investimento</FormLabel>
+                                <FormControl>
+                                    <Input value={investmentValue} readOnly={!useCustomServices} onChange={(e) => form.setValue('investmentValue', e.target.value)} />
+                                </FormControl>
+                                <FormMessage />
+                               </FormItem>
                             </AccordionContent>
                         </AccordionItem>
 
@@ -264,9 +267,27 @@ export default function ProposalGeneratorV2() {
 
                                <FormField control={form.control} name="partnershipDescription" render={({ field }) => <FormItem><FormLabel>Sobre a Parceria</FormLabel><FormControl><Textarea {...field} className="min-h-32" /></FormControl><FormMessage /></FormItem>} />
                                
-                               <FormItem><FormLabel>Objetivos</FormLabel><Controller name="objectiveItems" control={form.control} render={({ field }) => <Textarea value={field.value?.map(v => v.value).join('\n')} onChange={e => field.onChange(e.target.value.split('\n').map(v => ({value: v})))} className="min-h-32" /> }/><FormMessage /></FormItem>
-                               <FormItem><FormLabel>Diferenciais</FormLabel><Controller name="differentialItems" control={form.control} render={({ field }) => <Textarea value={field.value?.map(v => v.value).join('\n')} onChange={e => field.onChange(e.target.value.split('\n').map(v => ({value: v})))} className="min-h-32" /> }/><FormMessage /></FormItem>
-                               <FormItem><FormLabel>Por que este plano é ideal?</FormLabel><Controller name="idealPlanItems" control={form.control} render={({ field }) => <Textarea value={field.value?.map(v => v.value).join('\n')} onChange={e => field.onChange(e.target.value.split('\n').map(v => ({value: v})))} className="min-h-32" /> }/><FormMessage /></FormItem>
+                               <FormItem>
+                                    <FormLabel>Objetivos</FormLabel>
+                                    <FormControl>
+                                        <Textarea value={watchedValues.objectiveItems?.join('\n') || ''} onChange={e => form.setValue('objectiveItems', e.target.value.split('\n'))} className="min-h-32" />
+                                    </FormControl>
+                                    <FormMessage />
+                               </FormItem>
+                               <FormItem>
+                                    <FormLabel>Diferenciais</FormLabel>
+                                    <FormControl>
+                                        <Textarea value={watchedValues.differentialItems?.join('\n') || ''} onChange={e => form.setValue('differentialItems', e.target.value.split('\n'))} className="min-h-32" />
+                                    </FormControl>
+                                    <FormMessage />
+                               </FormItem>
+                               <FormItem>
+                                    <FormLabel>Por que este plano é ideal?</FormLabel>
+                                    <FormControl>
+                                        <Textarea value={watchedValues.idealPlanItems?.join('\n') || ''} onChange={e => form.setValue('idealPlanItems', e.target.value.split('\n'))} className="min-h-32" />
+                                    </FormControl>
+                                    <FormMessage />
+                               </FormItem>
 
                            </AccordionContent>
                        </AccordionItem>
@@ -285,7 +306,7 @@ export default function ProposalGeneratorV2() {
         {/* Hidden component for rendering PDF */}
         <div className="fixed -left-[9999px] -top-[9999px]">
             <div ref={proposalRef}>
-                <GeneratedProposal {...watchedValues} />
+                <GeneratedProposal {...watchedValues} investmentValue={investmentValue} />
             </div>
         </div>
     </>
