@@ -1,5 +1,4 @@
 
-
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -22,207 +21,153 @@ export const packageOptions = {
     "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
 };
 
-const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiPgo8cGF0aCBkPSJNNjMuMDY2NiA2MS4wMDM5QzYwLjA1ODUgNjEuMDAzOSA1Ny40NDkzIDU5Ljk0MzUgNTUuNjU0IDU4LjE0ODJDNTEuODYzNyA1NC4zNTc5IDUxLjg2MzcgNDcuODQwMiA1NS42NTQgNDQuMDQ5OUw3Ni44NjI4IDIzLjQ1MDJDODAuNjUzMSAxOS42NTk5IDg3LjIyMjggMTkuNjU5OSA5MS4wMTMxIDIzLjQ1MDJDMTAwLjU1NyAzMi45OTQ2IDEwMC41NTcgNDguNDk0NiA5MS4wMTMxIDU4LjAzOTFMNjkuODAzNSA3OS44Mjk3QzY4LjAwODMgODELjYyNDkgNjUuMzk4MSA4Mi42ODUzIDYyLjM5IDgyLjY4NTNINDQuMDA4Nkw1MS43MjkgOTAuNDA1N0w2Mi4wNDEgODIuNjgzOEw2Ni4xMzM2IDc4LjU5MTMgNzIuNTg0NiA3OC41OTEzIDc2LjY3NzEgODIuNjgzOEwxMTIuMDQxIDExOC4wNDhDMTIzLjMyNSAxMjkuMzMyIDEyMy4zMjUgMTQ3LjQ0MyAxMTIuMDQxIDE1Mzg3MjdDMTExLjE0NCAxNTkuNjIzIDEwOS45MTkgMTYwLjMxMiAxMDguNjU0IDE2MC44MzdINzguMTkxN0w4Ni40MzM4IDE1Mi41NzVDOTMuMDkzNiAxNDUuODU0IDkzLjA5MzYgMTM1LjEyNyA4Ni40MzM4IDEyOC40MDZMNzYuNTEwNCAxMTguMjc2QzcyLjQxNzkgMTE0LjE4NCA2NS45NjY5IDExNC4xODQgNjEuODc0NCAxMTguMjc2TDQzLjgwMSA3OS44OTNDNDAuOTkzNSA4Mi43MTI2IDM3LjIzNzUgODQuMTk0NSAzMy4zNjcxIDg0LjE5NDVIMTUuNDEzN0wxMS4wMDYxIDg4LjYwMjFIMzMuMzY3MUMzOC42MzQ4IDg4LjYwMjEgNDMuNTUzIDg2LjQ1MjIgNDcuMjE2MyA4Mi43ODg5TDY1LjY5NDIgNjQuMzA5NUM2OC40NTQxIDYxLjU0OTUgNjYuODg2MyA1Ny4wMzAxIDYzLjA2NjYgNjEuMDAzOVoiIGZpbGw9IiNGRTU0MTIiLz4KPHBhdGggZD0iTTMwLjY2MSA3OS44Mjk3TDQxLjY0MjQgNjguODM4NEwzMC42NjEgNTcuODQ3MUw0MS42NDI0IDQ2Ljg1NTdMNTIuNjIzOCANTcuODQ3MUw0MS42NDI0IDY4LjgzODRMNzYuODYyOCA4Mi42ODUzQzgyLjA5NzUgODMuNzgyNSA4My4wMzMgODkuNTgxNSA3OC42NjU3IDkzLjEzMTlMNjEuODc0NCAxMTAuMzczTDQzLjgwMSA5MS42OTg2TDYxLjg3NDQgNzMuNjI0M0w3OC42NjU3IDU2Ljg1MzlMODQuMzkzNiA2Mi42MTE5TDYxLjg3NDQgODUuMTMxNkw0My44MDEgMTAzLjE2NUw2MS44NzQ0IDEyMS4yMzlMODkuMjExNyA5My44NTE5QzExMS4zMDQgNzEuNzU4NSAxMTIuOTQxIDM2LjczODIgOTMuNjM2NyAxNy40MzM5TDg0LjM5MzYgOC4xOTAyNkM3My41NTU0IC0yLjY0Nzk0IDU2LjczOTMgLTIuNjQ3OTQgNDUuODU5NyA4LjE5MDI2TDguMTkwMjUgNDUuODk5OEMtMi42MDMgNTYuNjAwNyAtMi43MjYxNyA3My44NjI4IDcuOTQ5MDQgODQuNTM4TDQzLjgwMSAxMjAuNjkzQzQ3LjQ2NDMgMTI0LjM1NiA1Mi4zNTAzIDEyNi4yMzQgNTcuMjU3NyAxMjYuMjM0SDExMC43MDdMMTM3LjQ4NiA5OS40NTYxSDU3LjI1NzdDNTEuMTIxNyA5OS40NTYxIDQ1LjU0ODQgOTcuMjQxNiA0MS4xNTU3IDkyLjg0ODlMMzAuNjYxIDc5LjgyOTdaIiBmaWxsPSIjRkU1NDEyIi8+CjxwYXRoIGQ9Ik0xODUuMjcxIDEyMS40MDZIMTY2Ljc4N1Y1MC4xMDc0SDE4NS4yNzFWMjMuNDE3OUgxNDIuMTU3VjE0OC4xMDJIMTg1LjI3MVYxMjEuNDA2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTI0MC4zNDQgNTAuMTA3NEgyNTguODNWMTE4LjAyNkgyNDQuNTM0QzIyMS4zOTcgMTE4LjAyNiAyMDcuNDEgMTA3LjE4OCAyMDcuNDEgODYuNDMzOUMyMDcuNDEgNjUuNjc5OCAyMjEuMzk3IDUwLjEwNzQgMjQ0LjUzNCA1MC4xMDc0Wk0yNDUuMDk3IDU5LjgwMjVDMjI4LjMwOCA1OS44MDI3IDIyMC43MDcgNjkuNjcyMiAyMjAuNzA3IDg2LjQzMzlDMjIwLjcwNyAxMDQuMTE1IDIyOC4zMDggMTA4LjkzNCAyNDUuMDk3IDEwOC45MzRIMjU4LjgzVjU5LjgwMjRIMjQ1LjA5N1oiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00MjEuNjEgMTQ4LjEwMlY1MC4xMDc0SDQ0MC4xVjEyMy4yMDNINDgwLjg4N1Y1MC4xMDc0SDQ5OS4zN1YxNDguMTAySDQ4MC44ODdWMTM5LjU4M0g0NDAuMVYxNDguMTAySDQyMS42MVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNzIuMzk5IDIzLjQxNzlMMzA2LjIzNyAxMDAuODgxTDM0MC4wNzQgMjMuNDE3OUgyNjguMjA5SDI3Mi4zOTlaTTM1Mi45MTMgMjMuNDE3OUwyOTQuMzU0IDEzMS4zNDdMMjkxLjQ4OCAxMzEuMzQ3TDI4OC45NzEgMTIxLjQ0N0gyNzguMjMxTDI3NS45NTUgMTMxLjM0N0wyNzMuMDggMTMxLjM0N0wyMTUuMjQ2IDIzLjQxNzlIMjM1LjY4OUwyODQuMzIyIDEwMC44ODFMNDE3LjU1NCAyMy40MTc5SDM1Mi45MTNaIiBmaWxsPSJ3aGl0ZSIvLz4KPHBhdGggZD0iTTQxNy4zMzEgMTQ4LjEwMlY1MC4xMDc0SDQzNS44MTZWMTE4LjAyNkM0NDIuMjQxIDEyMi4zMjcgNDQ4Ljk0MyAxMjYuNTQ0IDQ1NS42ODQgMTI4LjgwN0w0NTkuNTY4IDExMC44MjFDNDUzLjc4NSAxMDguNTgyIDQ0OC4wMDMgMTA0LjM4MSA0NDEuNjE3IDEwMS40NzdINDQwLjFWNTAuMTA3NEg0NTguNTg0Vjg2LjgwMTlINDc0LjIzN1Y1MC4xMDc0SDQ5Mi43MjFWMTE2Ljc5NEM0OTcuODQzIDExNS41NDMgNTAyLjI5MiAxMTQuMTQ4IDUwNi4zOTggMTEyLjU1N0w1MDcuNjU3IDEyNi4xMjNDNDk4LjQxNCAxMjkuOTA3IDQ4OC40OTcgMTMyLjgwOCA0NzkuMjU0IDEzNC4wMjFMNzUuNjM1MyAxNzIuNjA1QzM4LjkwNTcgMTc5LjU3MSAwIDE1OC4zNDUgMCAxMjAuODc0VjE0Ljg5OTlDNS4wNjEyMiAxMC40NjAyIDExLjgxMDggMTIuNTk3MiAxMi4zMzE4IDE4LjQzOTVMMTIuNDkxNCAxMjAuODc0QzEyLjQ5MTQgMTQ5LjQyNyA0My45Njc1IDE2MS4zMjggNjcuODQxNSAxNTYuNDc1TDQ3OS4yNTQgMTM0LjAyMUM0ODIuOTMgMTMzLjM0NiA0ODYuNDggMTMyLjUxMSA0ODkuODgyIDEzMS41MDlMNjgxLjQwNiAyMi43NTAzQzY4Ny44MzEgMTYuMzI1NSA2NzguNTg4IDYuNDIyMzYgNjcxLjE2IDExLjIxMzJMNjU5LjA2MyAxOS40MzQ4QzY0OC4xODUgMjYuODIzNyA2NDUuMDYgNDAuODMwMSA2NTMuMjgyIDUwLjM1NTNMNzUuNjM1MyAxNzIuNjA1WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTM1Ny4wMDggODUuOTgzM1Y1MC4xMDc0SDM3NS40OTNWMTAyLjMyMUgzOTIuOTcyVjUwLjEwNzRINDExLjQ1N1YxNDguMTAySDM5Mi45NzJWMTIuNTgyMUgzNTcuMDA4Vjg1Ljk4MzNaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxkZWZzPgo8Y2xpcGF0aCBpZD0iY2xpcDAiPgo8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgZmlsbD0id2hpdGUiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K";
-
-const Page = React.forwardRef<HTMLDivElement, {children: React.ReactNode, className?: string, style?: React.CSSProperties}>(({ children, className, style }, ref) => (
-  <div
-    ref={ref}
-    data-slide
-    style={style}
-    className={cn(
-        "w-[1920px] h-[1080px] bg-[#0A0A0A] text-white p-24 flex flex-col justify-center items-center relative font-sans overflow-hidden",
-        className
-    )}
-    >
-        <div className="absolute inset-0 w-full h-full">
-            <Image crossOrigin="anonymous" src={logoHorizontalBase64} alt="CP Marketing Logo Watermark" layout="fill" objectFit="contain" className="opacity-5" />
-        </div>
-        <div className="absolute bottom-12 right-12 w-48 h-12 opacity-30">
-             <Image crossOrigin="anonymous" src={logoHorizontalBase64} alt="CP Marketing Logo" layout="fill" objectFit="contain" />
-        </div>
-        {children}
-    </div>
-));
-Page.displayName = 'Page';
+const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik02My4wNjY2IDYxLjAwMzlDNjAuMDU4NSA2MS4wMDM5IDU3LjQ0OTMgNTkuOTQzNSA1NS42NTQgNTguMTQ4MkM1MS44NjM3IDU0LjM1NzkgNTEuODYzNyA0Ny44NDAyIDU1LjY1NCA0NC4wNDk5TDc2Ljg2MjggMjMuNDUwMkM4MC42NTMxIDE5LjY1OTkgODcuMjIyOCAxOS42NTk5IDkxLjAxMzEgMjMuNDUwMkMxMDAuNTU3IDMyLjk5NDYgMTAwLjU1NyA0OC40OTQ2IDkxLjAxMzEgNTguMDM5MUw2OS44MDM1IDc5LjgyOTdDNDcuMjE2MyA4Mi43ODg5IDQzLjgwMSA3OS44OTMgNDAuOTkzNSA4Mi43MTI2QzM3LjIzNzUgODQuMTk0NSAzMy4zNjcxIDg0LjE5NDVIMTEuMDA2MUwzMC42NjEgNjEuMDAzOUw0MS42NDI0IDUwLjg0NzFMNTIuNjIzOCA2MS44Mzg0TDQxLjY0MjQgNzIuODI5N0wzMC42NjEgNjEuMDAzOUw0MS42NDI0IDUwLjg0NzFMNTIuNjIzOCA2MS44Mzg0TDQxLjY0MjQgNzIuODI5N0wzMC42NjEgNjEuMDAzOVoiIGZpbGw9IiMwMzBCNjAiLz4KPHBhdGggZD0iTTYzLjA2NjYgNjEuMDAzOUM2MC4wNTg1IDYxLjAwMzkgNTcuNDQ5MyA1OS45NDM1IDU1LjY1NCA1OC4xNDgyQzUxLjg2MzcgNTQuMzU3OSA1MS44NjM3IDQ3Ljg0MDIgNTUuNjU0IDQ0LjA0OTlMNzYuODYyOCAyMy40NTAyQzgwLjY1MzEgMTkuNjU5OSA4Ny4yMjI4IDE5LjY1OTkgOTEuMDEzMSAyMy40NTAyQzEwMC41NTcgMzIuOTk0NiAxMDAuNTU3IDQ4LjQ5NDYgOTEuMDEzMSA1OC4wMzkxTDY5LjgwMzUgNzkuODI5N0M2OC4wMDgzIDgxLjYyNDkgNjUuMzk4MSA4Mi42ODUzIDYyLjM5IDgyLjY4NTNINDQuMDA4Nkw1MS43MjkgOTAuNDA1N0w2Mi4wNDEgODIuNjgzOEw2Ni4xMzM2IDc4LjU5MTMgNzIuNTg0NiA3OC41OTEzIDc2LjY3NzEgODIuNjgzOEwxMTIuMDQxIDExOC4wNDhDMTIzLjMyNSAxMjkuMzMyIDEyMy4zMjUgMTQ3LjQ0MyAxMTIuMDQxIDE1OC43MjdDMTExLjE0NCAxNTkuNjIzIDEwOS45MTkgMTYwLjMxMiAxMDguNjU0IDE2MC44MzdINzguMTkxN0w4Ni40MzM4IDE1Mi41NzVDOTMuMDkzNiAxNDUuODU0IDkzLjA5MzYgMTM1LjEyNyA4Ni40MzM4IDEyOC40MDZMNzYuNTEwNCAxMTguMjc2QzcyLjQxNzkgMTE0LjE4NCA2NS45NjY5IDExNC4xODQgNjEuODc0NCAxMTguMjc2TDQzLjgwMSA5OS44OTNDNDAuOTkzNSA4Mi43MTI2IDM3LjIzNzUgODQuMTk0NSAzMy4zNjcxIDg0LjE5NDVIMTUuNDEzN0wxMS4wMDYxIDg4LjYwMjFIMzMuMzY3MUMzOC42MzQ4IDg4LjYwMjEgNDMuNTUzIDg2LjQ1MjIgNDcuMjE2MyA4Mi43ODg5TDY1LjY5NDIgNjQuMzA5NUM2OC40NTQxIDYxLjU0OTUgNjYuODg2MyA1Ny4wMzAxIDYzLjA2NjYgNjEuMDAzOVoiIGZpbGw9IiNGRTU0MTIiLz4KPC9zdmc+";
 
 interface GeneratedProposalProps extends ProposalFormValues {
-    investmentValue: string;
+  investmentValue: string;
 }
 
 export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedProposalProps>((props, ref) => {
-    const {
-        clientName,
-        packages,
-        investmentValue,
-    } = props;
+    const { clientName, packages = [], investmentValue } = props;
+    const selectedPackages = packages.map(key => packageOptions[key as keyof typeof packageOptions]).filter(Boolean);
 
-    const hasTrafficPackage = packages?.includes('trafego_pago');
-    const hasPodcastPackage = packages?.some(p => p.startsWith('podcast'));
+    const renderPackageServices = (description: string) => {
+        return description.split('\n').map((item, index) => (
+            item && <li key={index} className="flex items-start gap-2"><Check className="h-4 w-4 text-green-500 mt-1 flex-shrink-0" /><span>{item}</span></li>
+        ));
+    };
+    
+    // Determine which sections to show based on selected packages
+    const showMarketing = packages.some(p => p.startsWith('marketing'));
+    const showPodcast = packages.some(p => p.startsWith('podcast'));
+    const showCreative = packages.some(p => p.startsWith('identidade') || p.startsWith('website') || p.startsWith('landing'));
+    const showTraffic = packages.some(p => p.startsWith('trafego'));
 
-    // Partnership Description
-    const partnershipDescription = `Para a ${clientName || '[Nome do Cliente]'}, estar online não é o bastante. O objetivo é dominar. Nossa parceria é a união da sua expertise de negócio com a nossa capacidade comprovada de transformar presença digital em performance de vendas. Nós não apenas criamos conteúdo; nós construímos sistemas de aquisição de clientes e posicionamos marcas como líderes de seus mercados.`;
 
-    // Objectives
-    const objectiveItems = [
-      "Transformar a marca em uma autoridade inquestionável no seu nicho.",
-      "Implementar um sistema de aquisição de clientes previsível e escalável.",
-      "Converter seguidores em uma comunidade de defensores da marca.",
-      "Maximizar a percepção de valor, sustentando um posicionamento de alto padrão."
-    ];
-    if(hasTrafficPackage) objectiveItems.push("Estruturar e otimizar campanhas de tráfego pago que geram ROI real e mensurável.");
-    if(hasPodcastPackage) objectiveItems.push("Estabelecer um canal de conteúdo de longa duração (podcast) para aprofundar a conexão com o público mais qualificado.");
+    return (
+        <div ref={ref} className="font-body">
+            {/* Slide 1: Capa */}
+            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20">
+                <Image src={logoHorizontalBase64} alt="Logo CP Marketing" width={600} height={200} />
+                <h1 className="text-8xl font-bold mt-8 tracking-tighter">PROPOSTA DE MARKETING</h1>
+                <p className="text-4xl font-light mt-4 text-primary">{clientName}</p>
+            </div>
 
-    // Differentials
-    const differentialItems = [
-      { title: "Obsessão pelo Resultado", text: "Sua meta de faturamento se torna nossa métrica de sucesso." },
-      { title: "Inteligência Estratégica", text: "Não vendemos posts. Vendemos planos de crescimento baseados em dados." },
-      { title: "Criatividade que Converte", text: "Nossas ideias são desenhadas para gerar ação, não apenas aplausos." },
-      { title: "Transparência Radical", text: "Relatórios focados em ROI que provam o valor de cada real investido." },
-      { title: "Time de Elite", text: "Uma equipe multidisciplinar que vive e respira a vanguarda do marketing digital." },
-    ];
-
-    // Ideal Plan
-    const idealPlanItems = [
-      "A sinergia entre os serviços selecionados cria um ecossistema de marketing completo, onde cada frente potencializa a outra.",
-      "Atacamos o crescimento em todas as frentes: da aquisição imediata com tráfego pago à construção de autoridade a longo prazo com conteúdo.",
-      "Este plano não é uma despesa. É a construção de ativos de marketing que valorizam o seu negócio a cada dia.",
-      "É a decisão lógica para uma marca que não se contenta em competir, mas que nasceu para liderar."
-    ];
-
-  return (
-    <div ref={ref}>
-        <Page className="bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1749680287741-243118ed6b2c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"}}>
-              <div className="z-10 text-center flex flex-col items-center" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.5)' }}>
-                  <p className="text-[#FE5412] font-semibold tracking-widest mb-4 text-2xl">PROPOSTA DE PARCERIA ESTRATÉGICA</p>
-                  <h1 className="text-[160px] font-extrabold max-w-5xl leading-snug">{clientName || '[Nome do Cliente]'}</h1>
-                  <p className="text-3xl font-light text-gray-200 mt-6">Aceleração de Performance em Marketing Digital</p>
-              </div>
-        </Page>
-        <Page className="items-start justify-center">
-            <div className="w-full max-w-6xl relative z-10">
-                <h2 className="text-7xl font-bold uppercase mb-4 text-left">SOBRE A PARCERIA</h2>
-                <p className="text-2xl text-gray-400 font-light mb-8 max-w-4xl">Uma extensão do seu negócio, focada em uma única missão: crescimento.</p>
-                <div className="flex items-start gap-8">
-                    <div className="w-2 bg-[#FE5412] self-stretch"></div>
-                    <p className="text-3xl font-light text-gray-200 text-left">{partnershipDescription}</p>
+            {/* Slide 2: Sobre a Parceria */}
+             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+                <div className="max-w-7xl">
+                    <p className="text-2xl font-normal text-primary mb-4">SOBRE A PARCERIA</p>
+                    <h2 className="text-7xl font-bold mb-8 tracking-tighter">Nós não somos uma agência.<br/>Somos seu motor de crescimento.</h2>
+                    <div className="grid grid-cols-2 gap-x-12 gap-y-6 text-2xl font-normal text-gray-300">
+                        <p>Nosso trabalho é transformar potencial em performance, e performance em lucro. Não entregamos posts, entregamos um sistema. Não gerenciamos redes, construímos ativos que geram valor para o seu negócio 24/7.</p>
+                        <p>Enquanto outras agências se concentram em métricas de vaidade, nossa obsessão é o resultado que impacta sua última linha: o faturamento. Esta proposta é o primeiro passo para profissionalizar sua presença digital e construir uma máquina de vendas previsível.</p>
+                    </div>
                 </div>
             </div>
-        </Page>
-        <Page className="justify-center items-start">
-            <div className="w-full max-w-6xl">
-                <h2 className="text-7xl font-bold uppercase mb-4">OBJETIVOS DE PERFORMANCE</h2>
-                <p className="text-2xl text-gray-400 font-light mb-12 max-w-4xl">Metas claras que guiarão nossas ações e medirão nosso sucesso conjunto.</p>
-                <ul className="space-y-6 text-3xl font-light">
-                    {objectiveItems.map((item, i) => (
-                        <li key={i} className="flex items-center gap-6"><Goal className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item}</span></li>
-                    ))}
-                </ul>
+
+            {/* Slide 3: Objetivos */}
+             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+                <div className="max-w-7xl">
+                    <p className="text-2xl font-normal text-primary mb-4">NOSSOS OBJETIVOS</p>
+                    <h2 className="text-7xl font-bold mb-8 tracking-tighter">O plano é claro: dominar, não competir.</h2>
+                    <p className="text-2xl font-normal text-gray-300 max-w-5xl mb-12">Para isso, focaremos em três pilares que, juntos, criam uma base sólida para o crescimento acelerado e sustentável da sua marca no ambiente digital.</p>
+                    <div className="grid grid-cols-3 gap-8 text-2xl font-normal">
+                        <div className="border-t-2 border-primary pt-4"><strong className="text-white">Posicionamento de Autoridade:</strong> Transformar sua marca na primeira e única opção na mente do seu cliente ideal.</div>
+                        <div className="border-t-2 border-primary pt-4"><strong className="text-white">Aquisição de Clientes:</strong> Implementar um sistema de aquisição de clientes que funcione de forma previsível e escalável.</div>
+                        <div className="border-t-2 border-primary pt-4"><strong className="text-white">Maximização de Lucro:</strong> Otimizar cada ponto de contato para aumentar o retorno sobre o investimento e o valor do ciclo de vida do cliente.</div>
+                    </div>
+                </div>
             </div>
-        </Page>
-        <Page className="justify-center items-center">
-             <div className="w-full max-w-7xl grid grid-cols-2 gap-x-24 items-center">
-                <div className='text-left'>
-                    <h2 className="text-7xl font-bold uppercase mb-4">NOSSOS DIFERENCIAIS</h2>
-                    <p className="text-2xl text-gray-400 font-light max-w-lg">O que nos torna o parceiro ideal para escalar seus resultados.</p>
+
+            {/* Slide 4: Diferenciais */}
+             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+                <div className="grid grid-cols-2 gap-16 items-center">
+                    <div className="max-w-2xl">
+                        <p className="text-2xl font-normal text-primary mb-4">NOSSOS DIFERENCIAIS</p>
+                        <h2 className="text-7xl font-bold mb-8 tracking-tighter">Por que a CP é a escolha certa?</h2>
+                        <p className="text-2xl font-normal text-gray-300">Em um mercado comoditizado, nosso processo e nossa cultura são nosso maior ativo. É isso que nos permite entregar resultados onde outros entregam apenas relatórios.</p>
+                    </div>
+                     <div className="text-2xl font-normal text-gray-300 space-y-6">
+                        <div className="border-l-2 border-primary pl-6 py-2">
+                            <h3 className="font-bold text-white text-3xl mb-1">Obsessão pelo Resultado</h3>
+                            <p>Nossa remuneração e nosso sucesso estão diretamente atrelados ao seu. Se você não cresce, nós falhamos.</p>
+                        </div>
+                         <div className="border-l-2 border-primary pl-6 py-2">
+                            <h3 className="font-bold text-white text-3xl mb-1">Processo Próprio (CP MÖDUS)</h3>
+                            <p>Não usamos "fórmulas prontas". Aplicamos uma metodologia testada e validada para diagnosticar e executar com precisão.</p>
+                        </div>
+                         <div className="border-l-2 border-primary pl-6 py-2">
+                            <h3 className="font-bold text-white text-3xl mb-1">Transparência Radical</h3>
+                            <p>Você terá acesso total ao que está sendo feito, por que está sendo feito e aos resultados em tempo real. Sem desculpas, sem rodeios.</p>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <ul className="space-y-8 text-2xl font-light">
-                        {differentialItems.map((item, i) => (
-                            <li key={i} className="flex items-start gap-6">
-                                <Sparkles className="h-8 w-8 text-[#FE5412] flex-shrink-0 mt-1" />
-                                <div>
-                                    <span className="font-semibold">{item.title}:</span>
-                                    <span className="text-gray-300"> {item.text}</span>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-             </div>
-        </Page>
-        <Page className="p-16 items-start justify-start">
-            <div className="w-full text-center">
-                <h2 className="text-7xl font-bold uppercase mb-12">ESCOPO DOS SERVIÇOS</h2>
-                <div className="flex flex-wrap justify-center gap-8 text-left max-w-7xl mx-auto">
-                     {packages?.map(pkgKey => {
-                        const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
-                        if (!pkg) return null;
-                        const Icon = pkg.icon;
-                        return (
-                            <div key={pkgKey} className="bg-gray-900/70 p-8 rounded-lg border border-gray-700 flex flex-col w-full max-w-lg">
+            </div>
+
+            {/* Slide 5: Escopo do Projeto */}
+            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+                <div className="max-w-7xl w-full">
+                    <p className="text-2xl font-normal text-primary mb-4">ESCOPO DO PROJETO</p>
+                    <h2 className="text-7xl font-bold mb-12 tracking-tighter">O que faremos juntos.</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {selectedPackages.map(pkg => (
+                            <div key={pkg.name} className="bg-gray-900/50 p-8 rounded-lg border border-gray-800 flex flex-col">
                                 <div className="flex-grow">
-                                    <div className="flex items-center gap-4 mb-4">
-                                        <Icon className="h-10 w-10 text-[#FE5412]" />
-                                        <h3 className="font-bold text-2xl">{pkg.name}</h3>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <pkg.icon className="h-8 w-8 text-primary" />
+                                        <h3 className="text-3xl font-bold">{pkg.name}</h3>
                                     </div>
-                                    <ul className="space-y-2 mt-4">
-                                        {pkg.description.split('\n').map((line, index) => (
-                                            <li key={index} className="flex items-start gap-3 text-sm text-gray-300">
-                                                <Check className="h-4 w-4 mt-1 text-green-500 flex-shrink-0" />
-                                                <span>{line}</span>
-                                            </li>
-                                        ))}
+                                    <ul className="text-lg text-gray-300 space-y-2 font-normal">
+                                        {renderPackageServices(pkg.description)}
                                     </ul>
                                 </div>
-                                <div className="pt-4 mt-auto text-right">
-                                    <span className="text-2xl font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                                    <span className="text-sm text-gray-400">/mês</span>
-                                </div>
                             </div>
-                        )
-                    })}
-                </div>
-            </div>
-        </Page>
-        <Page>
-             <div className="w-full max-w-6xl text-center">
-                <h2 className="text-7xl font-bold uppercase mb-4">POR QUE ESTE PLANO É <span className="text-[#FE5412]">A DECISÃO CERTA?</span></h2>
-                 <p className="text-2xl text-gray-400 font-light mb-12 max-w-4xl mx-auto">Este não é apenas um conjunto de serviços, mas uma estratégia integrada para um crescimento robusto e sustentável.</p>
-                 <ul className="space-y-6 text-3xl font-light text-left max-w-4xl mx-auto">
-                    {idealPlanItems.map((item, i) => (
-                        <li key={i} className="flex items-center gap-6"><Check className="h-10 w-10 text-green-400 flex-shrink-0" /><span>{item}</span></li>
-                    ))}
-                </ul>
-             </div>
-        </Page>
-        <Page>
-            <div className="w-full max-w-6xl text-center flex justify-center items-center">
-              <div className="border-8 border-[#FE5412] p-16 rounded-2xl max-w-5xl w-full">
-                  <h2 className="text-6xl font-bold uppercase mb-4">Investimento Mensal</h2>
-                  <p className="text-9xl font-extrabold text-[#FE5412] mb-6">{investmentValue || 'R$ 0,00'}</p>
-              </div>
-            </div>
-        </Page>
-        <Page>
-            <div className="w-full max-w-6xl text-center">
-                <h2 className="text-7xl font-bold uppercase mb-12">PRÓXIMOS PASSOS</h2>
-                <div className="flex justify-center items-stretch gap-10 text-left">
-                    <div className="bg-gray-900/50 border-gray-800 border-2 rounded-lg w-1/3 p-10 flex flex-col">
-                        <div className="text-8xl font-extrabold text-[#FE5412] mb-6">1</div>
-                        <h3 className="font-bold text-3xl mb-3">Aprovação</h3>
-                        <p className="text-xl text-gray-300">Análise e aprovação da proposta.</p>
-                    </div>
-                    <div className="bg-gray-900/50 border-gray-800 border-2 rounded-lg w-1/3 p-10 flex flex-col">
-                        <div className="text-8xl font-extrabold text-[#FE5412] mb-6">2</div>
-                        <h3 className="font-bold text-3xl mb-3">Assinatura</h3>
-                        <p className="text-xl text-gray-300">Assinatura do contrato de prestação de serviços.</p>
-                    </div>
-                    <div className="bg-gray-900/50 border-gray-800 border-2 rounded-lg w-1/3 p-10 flex flex-col">
-                        <div className="text-8xl font-extrabold text-[#FE5412] mb-6">3</div>
-                        <h3 className="font-bold text-3xl mb-3">Onboarding</h3>
-                        <p className="text-xl text-gray-300">Início da parceria e alinhamento estratégico.</p>
+                        ))}
                     </div>
                 </div>
             </div>
-        </Page>
-        <Page>
-            <div className="text-center">
-                <h2 className="text-9xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
-                <p className="text-4xl mt-6 text-gray-300 max-w-4xl mx-auto">Esta proposta representa o primeiro passo para o próximo nível do seu negócio. O próximo passo é simples: responda a este e-mail para agendarmos a conversa de alinhamento e darmos início à parceria.</p>
+            
+            {/* Slide 6: Por que este plano? */}
+            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+                <div className="max-w-6xl">
+                    <p className="text-2xl font-normal text-primary mb-4">PLANO DE AÇÃO</p>
+                    <h2 className="text-7xl font-bold mb-8 tracking-tighter">Por que este plano é ideal para você?</h2>
+                    <div className="text-2xl font-normal text-gray-300 space-y-6 max-w-5xl">
+                        <p>Analisamos seu cenário atual e seus objetivos de crescimento. Com base nisso, montamos uma proposta que não é apenas um "pacote de serviços", mas um plano estratégico desenhado para atacar suas maiores alavancas de crescimento agora.</p>
+                        {(showMarketing || showTraffic) && <p><strong className="text-white">A base de Marketing e Tráfego Pago</strong> garante que sua marca seja vista pelo público certo, enquanto construímos uma base sólida de autoridade e conteúdo.</p>}
+                        {showPodcast && <p><strong className="text-white">A inclusão do Podcast</strong> é o seu acelerador de autoridade. É a ferramenta que vai te posicionar como a referência do seu mercado, criando uma conexão profunda com a audiência.</p>}
+                        {showCreative && <p><strong className="text-white">Os serviços criativos, como Identidade Visual e Website,</strong> são o alicerce da sua presença digital. Eles garantem que a primeira impressão seja impecável e que sua marca transmita a qualidade que seu serviço possui.</p>}
+                        <p className="font-bold text-white pt-4">Esta combinação foi pensada para gerar resultados sinérgicos, onde cada frente de trabalho potencializa a outra, garantindo o máximo de Retorno Sobre o Investimento.</p>
+                    </div>
+                </div>
             </div>
-        </Page>
-    </div>
-  );
-});
-GeneratedProposal.displayName = "GeneratedProposal";
 
+            {/* Slide 7: Investimento */}
+            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20 text-center">
+                 <p className="text-2xl font-normal text-primary mb-4">INVESTIMENTO</p>
+                 <h2 className="text-7xl font-bold tracking-tighter">Proposta Financeira</h2>
+                 <p className="text-2xl font-normal text-gray-300 mt-4 mb-12">Um investimento claro para um retorno exponencial.</p>
+                 <div className="bg-gray-900/50 p-12 rounded-lg border border-gray-800">
+                    <p className="text-2xl text-gray-300">Valor do investimento mensal</p>
+                    <p className="text-9xl font-bold text-primary my-4 tracking-tighter">{investmentValue}</p>
+                    <p className="text-lg text-gray-400">Contrato de 6 meses | Pix ou Boleto</p>
+                 </div>
+            </div>
+
+             {/* Slide 8: Próximos Passos */}
+            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20 text-center">
+                <Goal className="h-24 w-24 text-primary mb-8"/>
+                 <h2 className="text-7xl font-bold tracking-tighter">Vamos construir juntos?</h2>
+                 <p className="text-3xl font-normal text-gray-300 mt-4 mb-12 max-w-4xl">Estamos prontos para aplicar nossa metodologia e nossa paixão para transformar os resultados do seu negócio. Este é o início de uma parceria de sucesso.</p>
+                 <div className="text-2xl font-normal space-y-4 text-left border-t border-b border-primary/20 py-8">
+                    <p className="flex items-center gap-3"><strong className="text-primary">1.</strong> Alinhamento e assinatura da proposta.</p>
+                    <p className="flex items-center gap-3"><strong className="text-primary">2.</strong> Reunião de Onboarding e Kick-off estratégico.</p>
+                    <p className="flex items-center gap-3"><strong className="text-primary">3.</strong> Início da execução e busca pelos primeiros resultados.</p>
+                 </div>
+            </div>
+
+        </div>
+    );
+});
+
+GeneratedProposal.displayName = "GeneratedProposal";
