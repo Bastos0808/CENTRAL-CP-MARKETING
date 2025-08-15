@@ -22,7 +22,7 @@ export const packageOptions = {
     "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
 };
 
-const logoUrl = "https://i.postimg.cc/sX0CPjPp/NOVA-LOGO.png";
+const logoUrl = "https://i.postimg.cc/1zfkmh1X/LOGO-RTANGULAR-PARA-EMAIL.png";
 
 interface GeneratedProposalProps extends ProposalFormValues {
   investmentValue: string;
@@ -152,9 +152,15 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                  <div className="bg-gray-900/50 p-12 rounded-lg border border-gray-800">
                     <p className="text-2xl text-gray-300">Valor do investimento mensal</p>
                     {originalInvestmentValue && (
-                        <p className="text-5xl font-semibold text-red-500 my-2 tracking-tighter line-through decoration-red-500/80">DE {originalInvestmentValue}</p>
+                         <div className="flex items-baseline justify-center gap-4">
+                            <span className="text-3xl text-red-500 font-semibold">DE</span>
+                            <p className="text-5xl font-semibold text-red-500 my-2 tracking-tighter line-through decoration-red-500/80">{originalInvestmentValue}</p>
+                         </div>
                     )}
-                    <p className="text-8xl font-bold text-primary my-4 tracking-tighter">{investmentValue}</p>
+                    <div className="flex items-baseline justify-center gap-4">
+                        {originalInvestmentValue && <span className="text-3xl text-primary font-semibold">POR</span>}
+                        <p className="text-8xl font-bold text-primary my-4 tracking-tighter">{investmentValue}</p>
+                    </div>
                  </div>
             </div>
 
