@@ -29,6 +29,11 @@ interface GeneratedProposalProps extends ProposalFormValues {
   originalInvestmentValue: string | null;
 }
 
+const slideBaseStyle: React.CSSProperties = {
+    background: "radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A",
+};
+
+
 export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedProposalProps>((props, ref) => {
     const { clientName, packages = [], investmentValue, originalInvestmentValue } = props;
     const selectedPackages = packages.map(key => packageOptions[key as keyof typeof packageOptions]).filter(Boolean);
@@ -49,14 +54,14 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
     return (
         <div ref={ref} className="font-body">
             {/* Slide 1: Capa */}
-            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20">
+            <div data-slide style={slideBaseStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-20">
                 <Image src={logoUrl} alt="Logo CP Marketing" width={600} height={200} />
                 <h1 className="text-7xl font-bold mt-4 tracking-tighter">PROPOSTA DE MARKETING</h1>
                 <p className="text-4xl font-normal mt-4 text-primary">{clientName}</p>
             </div>
 
             {/* Slide 2: Sobre a Parceria */}
-             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+             <div data-slide style={slideBaseStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="max-w-7xl">
                     <p className="text-3xl font-normal text-primary mb-4">SOBRE A PARCERIA</p>
                     <h2 className="text-8xl font-bold mb-8 tracking-tighter">Nós não somos uma agência.<br/>Somos seu motor de crescimento.</h2>
@@ -68,7 +73,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             </div>
 
             {/* Slide 3: Objetivos */}
-             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+             <div data-slide style={slideBaseStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="max-w-7xl">
                     <p className="text-3xl font-normal text-primary mb-4">NOSSOS OBJETIVOS</p>
                     <h2 className="text-8xl font-bold mb-8 tracking-tighter">O plano é claro: dominar, não competir.</h2>
@@ -82,7 +87,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             </div>
 
             {/* Slide 4: Diferenciais */}
-             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+             <div data-slide style={slideBaseStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="grid grid-cols-2 gap-16 items-center">
                     <div className="max-w-2xl">
                         <p className="text-3xl font-normal text-primary mb-4">NOSSOS DIFERENCIAIS</p>
@@ -107,7 +112,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             </div>
 
             {/* Slide 5: Escopo do Projeto */}
-            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+            <div data-slide style={slideBaseStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="max-w-7xl w-full">
                     <p className="text-3xl font-normal text-primary mb-4">ESCOPO DO PROJETO</p>
                     <h2 className="text-8xl font-bold mb-12 tracking-tighter">O que faremos juntos.</h2>
@@ -130,7 +135,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             </div>
             
             {/* Slide 6: Por que este plano? */}
-            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
+            <div data-slide style={slideBaseStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="max-w-6xl">
                     <p className="text-3xl font-normal text-primary mb-4">PLANO DE AÇÃO</p>
                     <h2 className="text-8xl font-bold mb-8 tracking-tighter">Por que este plano é ideal para você?</h2>
@@ -145,7 +150,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             </div>
 
             {/* Slide 7: Investimento */}
-            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20 text-center">
+            <div data-slide style={slideBaseStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-20 text-center">
                  <p className="text-2xl font-normal text-primary mb-4">INVESTIMENTO</p>
                  <h2 className="text-7xl font-bold tracking-tighter">Proposta Financeira</h2>
                  <p className="text-3xl font-normal text-gray-300 mt-4 mb-12">Um investimento claro para um retorno exponencial.</p>
@@ -165,7 +170,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             </div>
 
              {/* Slide 8: Próximos Passos */}
-            <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20 text-center">
+            <div data-slide style={slideBaseStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-20 text-center">
                 <Goal className="h-24 w-24 text-primary mb-8"/>
                  <h2 className="text-7xl font-bold tracking-tighter">Vamos construir juntos?</h2>
                  <p className="text-3xl font-normal text-gray-300 mt-6 mb-12 max-w-5xl">Estamos prontos para aplicar nossa metodologia e nossa paixão para transformar os resultados do seu negócio. Este é o início de uma parceria de sucesso.</p>
