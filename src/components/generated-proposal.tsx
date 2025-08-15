@@ -1,4 +1,5 @@
 
+
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -21,14 +22,15 @@ export const packageOptions = {
     "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
 };
 
-const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiPgo8cGF0aCBkPSJNNjMuMDY2NiA2MS4wMDM5QzYwLjA1ODUgNjEuMDAzOSA1Ny40NDkzIDU5Ljk0MzUgNTUuNjU0IDU4LjE0ODJDNTEuODYzNyA1NC4zNTc5IDUxLjg2MzcgNDcuODQwMiA1NS42NTQgNDQuMDQ5OUw3Ni44NjI4IDIzLjQ1MDJDODAuNjUzMSAxOS42NTk5IDg3LjIyMjggMTkuNjU5OSA5MS4wMTMxIDIzLjQ1MDJDMTAwLjU1NyAzMi45OTQ2IDEwMC41NTcgNDguNDk0NiA5MS4wMTMxIDU4LjAzOTFMNjkuODAzNSA3OS44Mjk3QzY4LjAwODMgODEuNjI0OSA2NS4zOTgxIDgyLjY4NTMgNjIuMzkgODIuNjg1M0g0NC4wMDg2TDUxLjcyOSA5MC40MDU3TDYyLjA0MSA4Mi42ODM4TDY2LjEzMzYgNzguNTkxMyA3Mi41ODQ2IDc4LjU5MTMgNzYuNjc3MSA4Mi42ODM4TDExMi4wNDEgMTE4LjA0OEMxMjMuMzI1IDEyOS4zMzIgMTIzLjMyNSAxNDcuNDQzIDExMi4wNDEgMTU4LjcyN0MxMTEuMTQ0IDE1OS42MjMgMTA5LjkxOSAxNjAuMzEyIDEwOC42NTQgMTYwLjgzN0g3OC4xOTE3TDg2LjQzMzggMTUyLjU3NUM5My4wOTM2IDE0NS44NTQgOTMuMDkzNiAxMzUuMTI3IDg2LjQzMzggMTI4LjQwNkw3Ni41MTA0IDExOC4yNzZDNzIuNDE3OSAxMTQuMTg0IDY1Ljk2NjkgMTE0LjE4NCA2MS44NzQ0IDExOC4yNzZMNDMuODAxIDk5Ljg5M0M0MC45OTM1IDgyLjcxMjYgMzcuMjM3NSA4NC4xOTQ1IDMzLjM2NzEgODQuMTk0NUgxNS40MTM3TDExLjAwNjEgODguNjAyMUgzMy4zNjcxQzM4LjYzNDggODguNjAyMSA0My41NTMgODYuNDUyMiA0Ny4yMTYzIDgyLjc4ODlMNjUuNjk0MiA2NC4zMDk1QzY4LjQ1NDEgNjEuNTQ5NSA2Ni44ODYzIDU3LjAzMDEgNjMuMDY2NiA2MS4wMDM5WiIgZmlsbD0iI0ZFNTQxMiIvPgo8cGF0aCBkPSJNMzAuNjYxIDc5LjgyOTdMNDEuNjQyNCA2OC44Mzg0TDMwLjY2MSA1OC44NDcxTDQxLjY0MjQgNDYuODU1N0w1Mi42MjM4IDU3Ljg0NzFMNDEuNjQyNCA2OC44Mzg0TDc2Ljg2MjggODIuNjg1M0M4Mi4wOTc1IDgzLjc4MjUgODMuMDMzIDg5LjU4MTUgNzguNjY1NyA5My4xMzE5TDYxLjg3NDQgMTEwLjM3M0w0My44MDEgOTEuNjk4Nkw2MS44NzQ0IDczLjYyNDNMNzguNjY1ciiA1Ni44NTM5TDg0LjM5MzYgNjIuNjExOUw2MS44NzQ0IDg1LjEzMTZMNzMuODAxIDEwMy4xNjVMMTEuODc0NCAxMjEuMjM5TDg5LjIxMTcgOTMuODUxOUMxMTIuODk0IDcxLjQ3OTYgODQuMzkzNiA0My4wOTU2IDYwLjcwNzYgNjUuNDY3OUwzMC42NjEgOTAuNDEyOEwzMC42NjEgNzkuODI5N1oiIGZpbGw9IiMwMzBCNjAiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMCI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iMTczIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo=";
+const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiPgo8cGF0aCBkPSJNNjMuMDY2NiA2MS4wMDM5QzYwLjA1ODUgNjEuMDAzOSA1Ny40NDkzIDU5Ljk0MzUgNTUuNjU0IDU4LjE0ODJDNTEuODYzNyA1NC4zNTc5IDUxLjg2MzcgNDcuODQwMiA1NS42NTQgNDQuMDQ5OUw3Ni44NjI4IDIzLjQ1MDJDODAuNjUzMSAxOS42NTk5IDg3LjIyMjggMTkuNjU5OSA5MS4wMTMxIDIzLjQ1MDJDMTAwLjU1NyAzMi45OTQ2IDEwMC41NTcgNDguNDk0NiA5MS4wMTMxIDU4LjAzOTFMNjkuODAzNSA3OS44Mjk3QzY4LjAwODMgODEuNjI0OSA2NS4zOTgxIDgyLjY4NTMgNjIuMzkgODIuNjg1M0g0NC4wMDg2TDUxLjcyOSA5MC40MDU3TDYyLjA0MSA4Mi42ODM4TDY2LjEzMzYgNzguNTkxMyA3Mi41ODQ2IDc4LjU5MTMgNzYuNjc3MSA4Mi42ODM4TDExMi4wNDEgMTE4LjA0OEMxMjMuMzI1IDEyOS4zMzIgMTIzLjMyNSAxNDcuNDQzIDExMi4wNDEgMTU4LjcyN0MxMTEuMTQ0IDE1OS42MjMgMTA5LjkxOSAxNjAuMzEyIDEwOC42NTQgMTYwLjgzN0g3OC4xOTE3TDg2LjQzMzggMTUyLjU3NUM5My4wOTM2IDE0NS44NTQgOTMuMDkzNiAxMzUuMTI3IDg2LjQzMzggMTI4LjQwNkw3Ni41MTA0IDExOC4yNzZDNzIuNDE3OSAxMTQuMTg0IDY1Ljk2NjkgMTE0LjE4NCA2MS44NzQ0IDExOC4yNzZMNjMuODAxIDk5Ljg5M0M0MC45OTM1IDgyLjcxMjYgMzcuMjM3NSA4NC4xOTQ1IDMzLjM2NzEgODQuMTk0NUgxNS40MTM3TDExLjAwNjEgODguNjAyMUgzMy4zNjcxQzM4LjYzNDggODguNjAyMSA0My41NTMgODYuNDUyMiA0Ny4yMTYzIDgyLjc4ODlMNjUuNjk0MiA2NC4zMDk1QzY4LjQ1NDEgNjEuNTQ5NSA2Ni44ODYzIDU3LjAzMDEgNjMuMDY2NiA2MS4wMDM5WiIgZmlsbD0iI0ZFNTQxMiIvPgo8cGF0aCBkPSJNMzAuNjYxIDc5LjgyOTdMNDEuNjQyNCA2OC44Mzg0TDMwLjY2MSA1OC44NDcxTDQxLjY0MjQgNDYuODU1N0w1Mi42MjM4IDU3Ljg0NzFMNDEuNjQyNCA2OC44Mzg0TDc2Ljg2MjggODIuNjg1M0M4Mi4wOTc1IDgzLjc4MjUgODMuMDMzIDg5LjU4MTUgNzguNjY1NyA5My4xMzE5TDYxLjg3NDQgMTEwLjM3M0w0My44MDEgOTEuNjk4Nkw2MS44NzQ0IDczLjYyNDNMNzguNjY1NyA1Ni44NTM5TDg0LjM5MzYgNjIuNjExOUw2MS44NzQ0IDg1LjEzMTZMNzMuODAxIDEwMy4xNjVMMTEuODc0NCAxMjEuMjM5TDg5LjIxMTcgOTMuODUxOUMxMTIuODk0IDcxLjQ3OTYgODQuMzkzNiA0My4wOTU2IDYwLjcwNzYgNjUuNDY3OUwzMC42NjEgOTAuNDEyOEwzMC42NjEgNzkuODI5N1oiIGZpbGw9IiMwMzBCNjAiLz4KPC9nPgo8ZGVmcz4KPGNsaXBQYXRoIGlkPSJjbGlwMCI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iMTczIiBmaWxsPSJ3aGl0ZSIvPgo8L2NsaXBQYXRoPgo8L2RlZnM+Cjwvc3ZnPgo=";
 
 interface GeneratedProposalProps extends ProposalFormValues {
   investmentValue: string;
+  originalInvestmentValue: string | null;
 }
 
 export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedProposalProps>((props, ref) => {
-    const { clientName, packages = [], investmentValue } = props;
+    const { clientName, packages = [], investmentValue, originalInvestmentValue } = props;
     const selectedPackages = packages.map(key => packageOptions[key as keyof typeof packageOptions]).filter(Boolean);
 
     const renderPackageServices = (description: string) => {
@@ -149,6 +151,9 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                  <p className="text-3xl font-normal text-gray-300 mt-4 mb-12">Um investimento claro para um retorno exponencial.</p>
                  <div className="bg-gray-900/50 p-12 rounded-lg border border-gray-800">
                     <p className="text-2xl text-gray-300">Valor do investimento mensal</p>
+                    {originalInvestmentValue && (
+                         <p className="text-5xl font-bold text-gray-500 my-2 tracking-tighter line-through">{originalInvestmentValue}</p>
+                    )}
                     <p className="text-8xl font-bold text-primary my-4 tracking-tighter">{investmentValue}</p>
                  </div>
             </div>

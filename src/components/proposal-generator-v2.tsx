@@ -21,6 +21,7 @@ import { GeneratedProposal, packageOptions } from './generated-proposal';
 const proposalFormSchema = z.object({
     clientName: z.string().min(1, 'O nome do cliente é obrigatório.'),
     packages: z.array(z.string()).optional(),
+    discount: z.number().optional(),
 });
 
 
@@ -29,6 +30,7 @@ export type ProposalFormValues = z.infer<typeof proposalFormSchema>;
 export default function ProposalGeneratorV2() {
   const [isGeneratingPdf, setIsGeneratingPdf] = React.useState(false);
   const [investmentValue, setInvestmentValue] = React.useState('R$ 0,00');
+  const [originalInvestmentValue, setOriginalInvestmentValue] = React.useState<string | null>(null);
   const { toast } = useToast();
   const proposalRef = React.useRef<HTMLDivElement>(null);
 
@@ -37,6 +39,7 @@ export default function ProposalGeneratorV2() {
     defaultValues: {
       clientName: '',
       packages: [],
+      discount: 0,
     },
     mode: 'onChange'
   });
@@ -48,8 +51,19 @@ export default function ProposalGeneratorV2() {
         const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
         return acc + (pkg ? pkg.price : 0);
     }, 0) || 0;
-    setInvestmentValue(total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
-  }, [watchedValues.packages]);
+
+    const discount = watchedValues.discount || 0;
+    const finalValue = total - discount;
+
+    if (discount > 0 && total > 0) {
+      setOriginalInvestmentValue(total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+    } else {
+      setOriginalInvestmentValue(null);
+    }
+    
+    setInvestmentValue(finalValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+
+  }, [watchedValues.packages, watchedValues.discount]);
 
 
   const handleDownloadPdf = async () => {
@@ -156,8 +170,26 @@ export default function ProposalGeneratorV2() {
                          <AccordionItem value="item-2">
                             <AccordionTrigger className="font-semibold"><DollarSign className="mr-2 h-5 w-5 text-primary" />Investimento</AccordionTrigger>
                             <AccordionContent className="space-y-4 pt-4">
+                               <FormField
+                                    control={form.control}
+                                    name="discount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Desconto (R$)</FormLabel>
+                                            <FormControl>
+                                                <Input 
+                                                    type="number" 
+                                                    placeholder="0" 
+                                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                                    value={field.value || ''}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                                <FormItem>
-                                <FormLabel>Valor Total do Investimento</FormLabel>
+                                <FormLabel>Valor Final do Investimento</FormLabel>
                                 <FormControl>
                                     <Input value={investmentValue} readOnly />
                                 </FormControl>
@@ -180,7 +212,12 @@ export default function ProposalGeneratorV2() {
 
         {/* Hidden component for rendering PDF */}
         <div className="fixed -left-[9999px] -top-[9999px]">
-            <GeneratedProposal ref={proposalRef} {...watchedValues} investmentValue={investmentValue} />
+            <GeneratedProposal 
+                ref={proposalRef} 
+                {...watchedValues} 
+                investmentValue={investmentValue} 
+                originalInvestmentValue={originalInvestmentValue}
+            />
         </div>
     </>
   );
