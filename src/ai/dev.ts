@@ -8,3 +8,8 @@ import './flows/proposal-generator-flow';
 import './flows/channel-analyzer-flow';
 import './flows/channel-strategy-flow';
 import './flows/traffic-report-flow';
+import './flows/proposal-generator-v2-flow';
+import './flows/proposal-v2/partnership-flow';
+import './flows/proposal-v2/objectives-flow';
+import './flows/proposal-v2/differentials-flow';
+import './flows/proposal-v2/ideal-plan-flow';

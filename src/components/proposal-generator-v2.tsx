@@ -15,10 +15,10 @@ import { Download, Loader2, Wand2, Target, DollarSign, ListChecks, FileText, Che
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useToast } from '@/hooks/use-toast';
-import { generateProposalContent } from '@/ai/flows/proposal-generator-flow';
+import { generateProposalContentV2 } from '@/ai/flows/proposal-generator-v2-flow';
 import { GeneratedProposal, packageOptions } from './generated-proposal';
 import { Switch } from './ui/switch';
-import { GenerateProposalInputSchema } from '@/ai/schemas/proposal-generator-schemas';
+import { GenerateProposalV2InputSchema } from '@/ai/schemas/proposal-v2-schemas';
 import { FormDescription as UiFormDescription } from './ui/form';
 
 
@@ -137,15 +137,9 @@ export default function ProposalGeneratorV2() {
   const handleGenerateContent = async () => {
       const { clientName, clientSector, packages, clientObjective, clientChallenge, clientAudience } = form.getValues();
       
-       const packagesWithDetails = packages?.map(key => {
-        const pkg = packageOptions[key as keyof typeof packageOptions];
-        return { name: pkg.name, description: pkg.description };
-      }) || [];
-      
-      const inputForAI = { clientName, clientSector, clientObjective, clientChallenge, clientAudience, packages: packagesWithDetails.map(p => p.name) };
+      const inputForAI = { clientName, clientSector, clientObjective, clientChallenge, clientAudience, packages: packages || [] };
 
-
-      const validation = GenerateProposalInputSchema.safeParse(inputForAI);
+      const validation = GenerateProposalV2InputSchema.safeParse(inputForAI);
 
        if (!validation.success) {
             validation.error.errors.forEach((err) => {
@@ -161,7 +155,7 @@ export default function ProposalGeneratorV2() {
       setIsGeneratingAi(true);
 
       try {
-          const result = await generateProposalContent(inputForAI);
+          const result = await generateProposalContentV2(inputForAI);
           
           form.setValue('partnershipDescription', result.partnershipDescription);
           form.setValue('objectiveItems', result.objectiveItems.map(item => ({value: item})));
@@ -183,7 +177,7 @@ export default function ProposalGeneratorV2() {
         <Card>
             <Form {...form}>
                 <form className="space-y-4">
-                    <Accordion type="multiple" defaultValue={[]} className="w-full">
+                    <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
                         <AccordionItem value="item-1">
                             <AccordionTrigger className="px-6 font-semibold"><Target className="mr-2 h-5 w-5 text-primary" />Informações Estratégicas</AccordionTrigger>
                             <AccordionContent className="space-y-4 px-6 pt-4">
