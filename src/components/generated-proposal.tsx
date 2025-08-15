@@ -53,19 +53,42 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
     const {
         clientName,
         packages,
-        useCustomServices,
         investmentValue,
-        partnershipDescription,
-        objectiveItems,
-        differentialItems,
-        idealPlanItems,
     } = props;
-    
-    const renderCustomServices = () => (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
-         
-      </div>
-    );
+
+    const hasMarketingPackage = packages?.some(p => p.startsWith('marketing'));
+    const hasPodcastPackage = packages?.some(p => p.startsWith('podcast'));
+    const hasTrafficPackage = packages?.includes('trafego_pago');
+
+    // Partnership Description
+    const partnershipDescription = `Em um mercado onde a atenção é o ativo mais valioso, a parceria com a CP Marketing Digital para ${clientName} é a união da sua expertise de negócio com a nossa especialidade em criar conexões digitais que geram resultados. Entendemos que seu desafio não é apenas estar online, mas sim transformar presença em performance, e é exatamente aí que nossa colaboração se inicia.`;
+
+    // Objectives
+    const objectiveItems = [
+      "Posicionar a marca como autoridade e referência em seu nicho de atuação.",
+      "Construir uma comunidade engajada e fiel, que não apenas consome, mas defende a marca.",
+      "Gerar um fluxo consistente e previsível de oportunidades de negócio e vendas.",
+      "Aumentar a percepção de valor dos seus produtos/serviços, justificando um posicionamento premium."
+    ];
+    if(hasTrafficPackage) objectiveItems.push("Estruturar um sistema de aquisição de clientes através de anúncios de alta performance.");
+    if(hasPodcastPackage) objectiveItems.push("Transformar conhecimento em um ativo de conteúdo de longa duração através de um podcast profissional.");
+
+    // Differentials
+    const differentialItems = [
+      "Somos obcecados pelo resultado do cliente. Sua meta é a nossa meta.",
+      "Planejamento estratégico focado em resolver problemas reais do negócio, não apenas em postar.",
+      "Criatividade com propósito: cada ideia é desenhada para atingir um objetivo claro.",
+      "Transparência total nos relatórios, focados em ROI e métricas que importam.",
+      "Equipe multidisciplinar e antenada com as últimas tendências do mercado digital."
+    ];
+
+    // Ideal Plan
+    const idealPlanItems = [
+      "A combinação dos serviços selecionados ataca o crescimento em múltiplas frentes, do alcance imediato à construção de autoridade a longo prazo.",
+      "Foca em criar ativos para a marca (como conteúdo de qualidade e autoridade), que geram valor contínuo.",
+      "O plano é desenhado para não apenas atrair, mas para construir um relacionamento sólido e de confiança com o público-alvo.",
+      "Permite a flexibilidade de adaptar a estratégia com base nos dados e no desempenho, otimizando o investimento continuamente."
+    ];
 
     const renderPackageServices = () => (
         <div className="flex flex-wrap justify-center gap-8 text-left">
@@ -80,8 +103,8 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                                 <Icon className="h-10 w-10 text-[#FE5412]" />
                                 <h3 className="font-bold text-2xl">{pkg.name}</h3>
                             </div>
-                            <p 
-                                className="text-sm text-gray-300 mt-2 whitespace-pre-wrap leading-relaxed" 
+                            <p
+                                className="text-sm text-gray-300 mt-2 whitespace-pre-wrap leading-relaxed"
                                 dangerouslySetInnerHTML={{ __html: pkg.description.replace(/\n/g, '<br />') }}
                             />
                         </div>
@@ -93,7 +116,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             })}
         </div>
     );
-    
+
   return (
     <div ref={ref}>
         <Page className="bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1749680287741-243118ed6b2c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"}}>
@@ -111,7 +134,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 <h2 className="text-7xl font-bold uppercase mb-12 text-left">Sobre a Parceria</h2>
                 <div className="flex items-start gap-8">
                     <div className="w-2 bg-[#FE5412] self-stretch"></div>
-                    <p className="text-4xl font-light text-gray-200 text-left">{partnershipDescription || 'Nossa parceria visa transformar o potencial do seu negócio em performance de mercado, construindo uma presença digital sólida e gerando resultados concretos.'}</p>
+                    <p className="text-4xl font-light text-gray-200 text-left">{partnershipDescription}</p>
                 </div>
             </div>
         </Page>
@@ -119,9 +142,9 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             <div className="w-full max-w-6xl">
                 <h2 className="text-7xl font-bold uppercase mb-12">Nossos Objetivos</h2>
                 <ul className="space-y-6 text-3xl font-light">
-                    {(objectiveItems && objectiveItems.length > 0) ? objectiveItems.map((item, i) => (
+                    {objectiveItems.map((item, i) => (
                         <li key={i} className="flex items-center gap-6"><Goal className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item}</span></li>
-                    )) : <li>Aumentar a autoridade da marca no setor.</li>}
+                    ))}
                 </ul>
             </div>
         </Page>
@@ -129,25 +152,25 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
              <div className="w-full max-w-6xl">
                 <h2 className="text-7xl font-bold uppercase mb-12">Nossos Diferenciais</h2>
                 <ul className="space-y-6 text-3xl font-light columns-2 gap-x-16">
-                    {(differentialItems && differentialItems.length > 0) ? differentialItems.map((item, i) => (
+                    {differentialItems.map((item, i) => (
                         <li key={i} className="flex items-center gap-6 mb-6 break-inside-avoid"><Sparkles className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item}</span></li>
-                    )) : <li>Planejamento estratégico focado em resultados.</li>}
+                    ))}
                 </ul>
              </div>
         </Page>
         <Page className="p-16 items-start justify-start">
             <div className="w-full">
                 <h2 className="text-7xl font-bold uppercase mb-12 text-center">Escopo dos Serviços</h2>
-                {useCustomServices ? renderCustomServices() : renderPackageServices()}
+                {renderPackageServices()}
             </div>
         </Page>
         <Page>
              <div className="w-full max-w-6xl text-center">
                 <h2 className="text-7xl font-bold uppercase mb-12">Por que este plano é <span className="text-[#FE5412]">ideal</span>?</h2>
                  <ul className="space-y-6 text-3xl font-light text-left max-w-4xl mx-auto">
-                    {(idealPlanItems && idealPlanItems.length > 0) ? idealPlanItems.map((item, i) => (
+                    {idealPlanItems.map((item, i) => (
                         <li key={i} className="flex items-center gap-6"><Check className="h-10 w-10 text-green-400 flex-shrink-0" /><span>{item}</span></li>
-                    )): <li>Construção de uma marca forte e reconhecida.</li>}
+                    ))}
                 </ul>
              </div>
         </Page>
