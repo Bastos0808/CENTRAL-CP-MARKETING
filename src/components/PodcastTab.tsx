@@ -203,7 +203,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
         if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
             episode.guests.forEach(guest => {
                 if (guest.sdrName) {
-                    const sdrInfo = sdrUserDisplayMap[guest.sdrName.toLowerCase()];
+                    const sdrInfo = Object.values(sdrUserDisplayMap).find(info => info.name === guest.sdrName);
                     if (sdrInfo) {
                         const sdrDisplayName = sdrInfo.name;
                         if (counts.hasOwnProperty(sdrDisplayName)) {
