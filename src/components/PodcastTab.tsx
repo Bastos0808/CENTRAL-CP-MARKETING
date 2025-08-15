@@ -36,7 +36,7 @@ type EpisodeConfig = {
 const weeklyEpisodeConfig: EpisodeConfig[] = [
     { id: 'podcast1', title: 'EPISÓDIO 1 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 1, dayName: 'SEGUNDA' },
     { id: 'podcast2', title: 'EPISÓDIO 2 - SAÚDE E ESTÉTICA', type: 'saude_estetica', guestCount: 2, dayOfWeek: 2, dayName: 'TERÇA' },
-    { id: 'podcast3', title: 'EPISÓDIO 3 - EMPRESÁRIO', type: 'empresario', guestCount: 1, dayOfWeek: 3, dayName: 'QUARTA' },
+    { id: 'podcast3', title: 'EPISÓDIO 3 - EMPRESÁRIO', type: 'empresario', guestCount: 3, dayOfWeek: 3, dayName: 'QUARTA' },
     { id: 'podcast4', title: 'EPISÓDIO 4 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 4, dayName: 'QUINTA' },
     { id: 'podcast5', title: 'EPISÓDIO 5 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 5, dayName: 'SEXTA' },
 ];
@@ -222,7 +222,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
-    const totalSlots = 12;
+    const totalSlots = 14; // Corrected total slots
     let filledSlots = 0;
 
     weeklyEpisodeConfig.forEach(config => {
@@ -417,5 +417,3 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
-
-    
