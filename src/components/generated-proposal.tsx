@@ -22,7 +22,7 @@ export const packageOptions = {
     "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
 };
 
-const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiPgo8cGF0aCBkPSJNNjMuMDY2NiA2MS4wMDM5QzYwLjA1ODUgNjEuMDAzOSA1Ny40NDkzIDU5Ljk0MzUgNTUuNjU0IDU4LjE0ODJDNTEuODYzNyA1NC4zNTc5IDUxLjg2MzcgNDcuODQwMiA1NS42NTQgNDQuMDQ5OUw3Ni44NjI4IDIzLjQ1MDJDODAuNjUzMSAxOS42NTk5IDg3LjIyMjggMTkuNjU5OSA5MS4wMTMxIDIzLjQ1MDJDMTAwLjU1NyAzMi45OTQ2IDEwMC41NTcgNDguNDk0NiA5MS4wMTMxIDU4LjAzOTFMNjkuODAzNSA3OS44Mjk3QzY4LjAwODMgODELjYyNDkgNjUuMzk4MSA4Mi42ODUzIDYyLjM5IDgyLjY4NTNINDQuMDA4Nkw1MS43MjkgOTAuNDA1N0w2Mi4wNDEgODIuNjgzOEw2Ni4xMzM2IDc4LjU5MTMgNzIuNTg0NiA3OC41OTEzIDc2LjY3NzEgODIuNjgzOEwxMTIuMDQxIDExOC4wNDhDMTIzLjMyNSAxMjkuMzMyIDEyMy4zMjUgMTQ3LjQ0MyAxMTIuMDQxIDE1Mzg3MjdDMTExLjE0NCAxNTkuNjIzIDEwOS45MTkgMTYwLjMxMiAxMDguNjU0IDE2MC44MzdINzguMTkxN0w4Ni40MzM4IDE1Mi41NzVDOTMuMDkzNiAxNDUuODU0IDkzLjA5MzYgMTM1LjEyNyA4Ni40MzM4IDEyOC40MDZMNzYuNTEwNCAxMTguMjc2QzcyLjQxNzkgMTE0LjE4NCA2NS45NjY5IDExNC4xODQgNjEuODc0NCAxMTguMjc2TDQzLjgwMSA3OS44OTNDNDAuOTkzNSA4Mi43MTI2IDM3LjIzNzUgODQuMTk0NSAzMy4zNjcxIDg0LjE5NDVIMTUuNDEzN0wxMS4wMDYxIDg4LjYwMjFIMzMuMzY3MUMzOC42MzQ4IDg4LjYwMjEgNDMuNTUzIDg2LjQ1MjIgNDcuMjE2MyA4Mi43ODg5TDY1LjY5NDIgNjQuMzA5NUM2OC40NTQxIDYxLjU0OTUgNjYuODg2MyA1Ny4wMzAxIDYzLjA2NjYgNjEuMDAzOVoiIGZpbGw9IiNGRTU0MTIiLz4KPHBhdGggZD0iTTMwLjY2MSA3OS44Mjk3TDQxLjY0MjQgNjguODM4NEwzMC42NjEgNTcuODQ3MUw0MS42NDI0IDQ2Ljg1NTdMNTIuNjIzOCANTcuODQ3MUw0MS42NDI0IDY4LjgzODRMNzYuODYyOCA4Mi42ODUzQzgyLjA5NzUgODMuNzgyNSA4My4wMzMgODkuNTgxNSA3OC42NjU3IDkzLjEzMTlMNjEuODc0NCAxMTAuMzczTDQzLjgwMSA5MS42OTg2TDYxLjg3NDQgNzMuNjI0M0w3OC42NjU3IDU2Ljg1MzlMODQuMzkzNiA2Mi42MTE5TDYxLjg3NDQgODUuMTMxNkw0My44MDEgMTAzLjE2NUw2MS44NzQ0IDEyMS4yMzlMODkuMjExNyA5My44NTE5QzExMS4zMDQgNzEuNzU4NSAxMTIuOTQxIDM2LjczODIgOTMuNjM2NyAxNy40MzM5TDg0LjM5MzYgOC4xOTAyNkM3My41NTU0IC0yLjY0Nzk0IDU2LjczOTMgLTIuNjQ3OTQgNDUuODU5NyA4LjE5MDI2TDguMTkwMjUgNDUuODk5OEMtMi42MDMgNTYuNjAwNyAtMi43MjYxNyA3My44NjI4IDcuOTQ5MDQgODQuNTM4TDQzLjgwMSAxMjAuNjkzQzQ3LjQ2NDMgMTI0LjM1NiA1Mi4zNTAzIDEyNi4yMzQgNTcuMjU3NyAxMjYuMjM0SDExMC43MDdMMTM3LjQ4NiA5OS40NTYxSDU3LjI1NzdDNTEuMTIxNyA5OS40NTYxIDQ1LjU0ODQgOTcuMjQxNiA0MS4xNTU3IDkyLjg0ODlMMzAuNjYxIDc5LjgyOTdaIiBmaWxsPSIjRkU1NDEyIi8+CjxwYXRoIGQ9Ik0xODUuMjcxIDEyMS40MDZIMTY2Ljc4N1Y1MC4xMDc0SDE4NS4yNzFWMjMuNDE3OUgxNDIuMTU3VjE0OC4xMDJIMTg1LjI3MVYxMjEuNDA2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTI0MC4zNDQgNTAuMTA3NEgyNTguODNWMTE4LjAyNkgyNDQuNTM0QzIyMS4zOTcgMTE4LjAyNiAyMDcuNDEgMTA3LjE4OCAyMDcuNDEgODYuNDMzOUMyMDcuNDEgNjUuNjc5OCAyMjEuMzk3IDUwLjEwNzQgMjQ0LjUzNCA1MC4xMDc0Wk0yNDUuMDk3IDU5LjgwMjVDMjI4LjMwOCA1OS44MDI3IDIyMC43MDcgNjkuNjcyMiAyMjAuNzA3IDg2LjQzMzlDMjIwLjcwNyAxMDQuMTE1IDIyOC4zMDggMTA4LjkzNCAyNDUuMDk3IDEwOC45MzRIMjU4LjgzVjU5LjgwMjRIMjQ1LjA5N1oiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00MjEuNjEgMTQ4LjEwMlY1MC4xMDc0SDQ0MC4xVjEyMy4yMDNINDgwLjg4N1Y1MC4xMDc0SDQ5OS4zN1YxNDguMTAySDQ4MC44ODdWMTM5LjU4M0g0NDAuMVYxNDguMTAySDQyMS42MVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNzIuMzk5IDIzLjQxNzlMMzA2LjIzNyAxMDAuODgxTDM0MC4wNzQgMjMuNDE3OUgyNjguMjA5SDI3Mi4zOTlaTTM1Mi45MTMgMjMuNDE3OUwyOTQuMzU0IDEzMS4zNDdMMjkxLjQ4OCAxMzEuMzQ3TDI4OC45NzEgMTIxLjQ0N0gyNzguMjMxTDI3NS45NTUgMTMxLjM0N0wyNzMuMDggMTMxLjM0N0wyMTUuMjQ2IDIzLjQxNzlIMjM1LjY4OUwyODQuMzIyIDEwMC44ODFMNDE3LjU1NCAyMy40MTc5SDM1Mi45MTNaIiBmaWxsPSJ3aGl0ZSIvLz4KPHBhdGggZD0iTTQxNy4zMzEgMTQ4LjEwMlY1MC4xMDc0SDQzNS44MTZWMTE4LjAyNkM0NDIuMjQxIDEyMi4zMjcgNDQ4Ljk0MyAxMjYuNTQ0IDQ1NS42ODQgMTI4LjgwN0w0NTkuNTY4IDExMC44MjFDNDUzLjc4NSAxMDguNTgyIDQ0OC4wMDMgMTA0LjM4MSA0NDEuNjE3IDEwMS40NzdINDQwLjFWNTAuMTA3NEg0NTguNTg0Vjg2LjgwMTlINDc0LjIzN1Y1MC4xMDc0SDQ5Mi43MjFWMTE2Ljc5NEM0OTcuODQzIDExNS41NDMgNTAyLjI5MiAxMTQuMTQ4IDUwNi4zOTggMTEyLjU1N0w1MDcuNjU3IDEyNi4xMjNDNDk4LjQxNCAxMjkuOTA3IDQ4OC40OTcgMTMyLjgwOCA0NzkuMjU0IDEzNC4wMjFMNzUuNjM1MyAxNzIuNjA1QzM4LjkwNTcgMTc5LjU3MSAwIDE1OC4zNDUgMCAxMjAuODc0VjE0Ljg5OTlDNS4wNjEyMiAxMC40NjAyIDExLjgxMDggMTIuNTk3MiAxMi4zMzE4IDE4LjQzOTVMMTIuNDkxNCAxMjAuODc0QzEyLjQ5MTQgMTQ5LjQyNyA0My45Njc1IDE2MS4zMjggNjcuODQxNSAxNTYuNDc1TDQ3OS4yNTQgMTM0LjAyMUM0ODIuOTMgMTMzLjM0NiA0ODYuNDggMTMyLjUxMSA0ODkuODgyIDEzMS41MDlMNjgxLjQwNiAyMi43NTAzQzY4Ny44MzEgMTYuMzI1NSA2NzguNTg4IDYuNDIyMzYgNjcxLjE2IDExLjIxMzJMNjU5LjA2MyAxOS40MzQ4QzY0OC4xODUgMjYuODIzNyA2NDUuMDYgNDAuODMwMSA2NTMuMjgyIDUwLjM1NTNMNzUuNjM1MyAxNzIuNjA1WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTM1Ny4wMDggODUuOTgzM1Y1MC4xMDc0SDM3NS40OTNWMTAyLjMyMUgzOTIuOTcyVjUwLjEwNzRINDExLjQ1N1YxNDguMTAySDM5Mi45NzJWMTIuNTgyMUgzNTcuMDA4Vjg1Ljk4MzNaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxkZWZzPgo8Y2xpcGF0aCBpZD0iY2xpcDAiPgo8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgZmlsbD0id2hpdGUiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K";
+const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiPgo8cGF0aCBkPSJNNjMuMDY2NiA2MS4wMDM5QzYwLjA1ODUgNjEuMDAzOSA1Ny40NDkzIDU5Ljk0MzUgNTUuNjU0IDU4LjE0ODJDNTEuODYzNyA1NC4zNTc5IDUxLjg2MzcgNDcuODQwMiA1NS42NTQgNDQuMDQ5OUw3Ni44NjI4IDIzLjQ1MDJDODAuNjUzMSAxOS42NTk5IDg3LjIyMjggMTkuNjU5OSA5MS4wMTMxIDIzLjQ1MDJDMTAwLjU1NyAzMi45OTQ2IDEwMC41NTcgNDguNDk0NiA5MS4wMTMxIDU4LjAzOTFMNjkuODAzNSA3OS44Mjk3QzY4LjAwODMgODELjYyNDkgNjUuMzk4MSA4Mi42ODUzIDYyLjM5IDgyLjY4NTNINDQuMDA4Nkw1MS43MjkgOTAuNDA1N0w2Mi4wNDEgODIuNjgzOEw2Ni4xMzM2IDc4LjU5MTMgNzIuNTg0NiA3OC41OTEzIDc2LjY3NzEgODIuNjgzOEwxMTIuMDQxIDExOC4wNDhDMTIzLjMyNSAxMjkuMzMyIDEyMy4zMjUgMTQ3LjQ0MyAxMTIuMDQxIDE1Mzg3MjdDMTExLjE0NCAxNTkuNjIzIDEwOS45MTkgMTYwLjMxMiAxMDguNjU0IDE2MC44MzdINzguMTkxN0w4Ni40MzM4IDE1Mi41NzVDOTMuMDkzNiAxNDUuODU0IDkzLjA5MzYgMTM1LjEyNyA4Ni40MzM4IDEyOC40MDZMNzYuNTEwNCAxMTguMjc2QzcyLjQxNzkgMTE0LjE4NCA2NS45NjY5IDExNC4xODQgNjEuODc0NCAxMTguMjc2TDQzLjgwMSA3OS44OTNDNDAuOTkzNSA4Mi43MTI2IDM3LjIzNzUgODQuMTk0NSAzMy4zNjcxIDg0LjE5NDVIMTUuNDEzN0wxMS4wMDYxIDg4LjYwMjFIMzMuMzY3MUMzOC42MzQ4IDg4LjYwMjEgNDMuNTUzIDg2LjQ1MjIgNDcuMjE2MyA4Mi43ODg5TDY1LjY5NDIgNjQuMzA5NUM2OC40NTQxIDYxLjU0OTUgNjYuODg2MyA1Ny4wMzAxIDYzLjA2NjYgNjEuMDAzOVoiIGZpbGw9IiNGRTU0MTIiLz4KPHBhdGggZD0iTTMwLjY2MSA3OS44Mjk3TDQxLjY0MjQgNjguODM4NEwzMC42NjEgNTcuODQ3MUw0MS42NDI0IDQ2Ljg1NTdMNTIuNjIzOCANTcuODQ3MUw0MS42NDI0IDY4LjgzODRMNzYuODYyOCA4Mi42ODUzQzgyLjA5NzUgODMuNzgyNSA4My4wMzMgODkuNTgxNSA3OC42NjU3IDkzLjEzMTlMNjEuODc0NCAxMTAuMzczTDQzLjgwMSA5MS42OTg2TDYxLjg3NDQgNzMuNjI0M0w3OC42NjU3IDU2Ljg1MzlMODQuMzkzNiA2Mi42MTE5TDYxLjg3NDQgODUuMTMxNkw0My44MDEgMTAzLjE2NUw2MS44NzQ0IDEyMS4yMzlMODkuMjExNyA5My44NTE5QzExMS4zMDQgNzEuNzU4NSAxMTIuOTQxIDM2LjczODIgOTMuNjM2NyAxNy40MzM5TDg0LjM5MzYgOC4xOTAyNkM3My41NTU0IC0yLjY0Nzk0IDU2LjczOTMgLTIuNjQ3OTQgNDUuODU5NyA4LjE5MDI2TDguMTkwMjUgNDUuODk5OEMtMi42MDMgNTYuNjAwNyAtMi47MjYxNyA3My44NjI4IDcuOTQ5MDQgODQuNTM4TDQzLjgwMSAxMjAuNjkzQzQ3LjQ2NDMgMTI0LjM1NiA1Mi4zNTAzIDEyNi4yMzQgNTcuMjU3NyAxMjYuMjM0SDExMC43MDdMMTM3LjQ4NiA5OS40NTYxSDU3LjI1NzdDNTEuMTIxNyA5OS40NTYxIDQ1LjU0ODQgOTcuMjQxNiA0MS4xNTU3IDkyLjg0ODlMMzAuNjYxIDc5LjgyOTdaIiBmaWxsPSIjRkU1NDEyIi8+CjxwYXRoIGQ9Ik0xODUuMjcxIDEyMS40MDZIMTY2Ljc4N1Y1MC4xMDc0SDE4NS4yNzFWMjMuNDE3OUgxNDIuMTU3VjE0OC4xMDJIMTg1LjI3MVYxMjEuNDA2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTI0MC4zNDQgNTAuMTA3NEgyNTguODNWMTE4LjAyNkgyNDQuNTM0QzIyMS4zOTcgMTE4LjAyNiAyMDcuNDEgMTA3LjE4OCAyMDcuNDEgODYuNDMzOUMyMDcuNDEgNjUuNjc5OCAyMjEuMzk3IDUwLjEwNzQgMjQ0LjUzNCA1MC4xMDc0Wk0yNDUuMDk3IDU5LjgwMjVDMjI4LjMwOCA1OS44MDI3IDIyMC43MDcgNjkuNjcyMiAyMjAuNzA3IDg2LjQzMzlDMjIwLjcwNyAxMDQuMTE1IDIyOC4zMDggMTA4LjkzNCAyNDUuMDk3IDEwOC45MzRIMjU4LjgzVjU5LjgwMjRIMjQ1LjA5N1oiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00MjEuNjEgMTQ4LjEwMlY1MC4xMDc0SDQ0MC4xVjEyMy4yMDNINDgwLjg4N1Y1MC4xMDc0SDQ5OS4zN1YxNDguMTAySDQ4MC44ODdWMTM5LjU4M0g0NDAuMVYxNDguMTAySDQyMS42MVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNzIuMzk5IDIzLjQxNzlMMzA2LjIzNyAxMDAuODgxTDM0MC4wNzQgMjMuNDE3OUgyNjguMjA5SDI3Mi4zOTlaTTM1Mi45MTMgMjMuNDE3OUwyOTQuMzU0IDEzMS4zNDdMMjkxLjQ4OCAxMzEuMzQ3TDI4OC45NzEgMTIxLjQ0N0gyNzguMjMxTDI3NS45NTUgMTMxLjM0N0wyNzMuMDggMTMxLjM0N0wyMTUuMjQ2IDIzLjQxNzlIMjM1LjY4OUwyODQuMzIyIDEwMC44ODFMNDE3LjU1NCAyMy40MTc5SDM1Mi45MTNaIiBmaWxsPSJ3aGl0ZSIvLz4KPHBhdGggZD0iTTQxNy4zMzEgMTQ4LjEwMlY1MC4xMDc0SDQzNS44MTZWMTE4LjAyNkM0NDIuMjQxIDEyMi4zMjcgNDQ4Ljk0MyAxMjYuNTQ0IDQ1NS42ODQgMTI4LjgwN0w0NTkuNTY4IDExMC44MjFDNDUzLjc4NSAxMDguNTgyIDQ0OC4wMDMgMTA0LjM4MSA0NDEuNjE3IDEwMS40NzdINDQwLjFWNTAuMTA3NEg0NTguNTg0Vjg2LjgwMTlINDc0LjIzN1Y1MC4xMDc0SDQ5Mi43MjFWMTE2Ljc5NEM0OTcuODQzIDExNS41NDMgNTAyLjI5MiAxMTQuMTQ4IDUwNi4zOTggMTEyLjU1N0w1MDcuNjU3IDEyNi4xMjNDNDk4LjQxNCAxMjkuOTA3IDQ4OC40OTcgMTMyLjgwOCA0NzkuMjU0IDEzNC4wMjFMNzUuNjM1MyAxNzIuNjA1QzM4LjkwNTcgMTc5LjU3MSAwIDE1OC4zNDUgMCAxMjAuODc0VjE0Ljg5OTlDNS4wNjEyMiAxMC40NjAyIDExLjgxMDggMTIuNTk3MiAxMi4zMzE4IDE4LjQzOTVMMTIuNDkxNCAxMjAuODc0QzEyLjQ5MTQgMTQ5LjQyNyA0My45Njc1IDE2MS4zMjggNjcuODQxNSAxNTYuNDc1TDQ3OS4yNTQgMTM0LjAyMUM0ODIuOTMgMTMzLjM0NiA0ODYuNDggMTMyLjUxMSA0ODkuODgyIDEzMS41MDlMNjgxLjQwNiAyMi43NTAzQzY4Ny44MzEgMTYuMzI1NSA2NzguNTg4IDYuNDIyMzYgNjcxLjE2IDExLjIxMzJMNjU5LjA2MyAxOS40MzQ4QzY0OC4xODUgMjYuODIzNyA2NDUuMDYgNDAuODMwMSA2NTMuMjgyIDUwLjM1NTNMNzUuNjM1MyAxNzIuNjA1WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTM1Ny4wMDggODUuOTgzM1Y1MC4xMDc0SDM3NS40OTNWMTAyLjMyMUgzOTIuOTcyVjUwLjEwNzRINDExLjQ1N1YxNDguMTAySDM5Mi45NzJWMTIuNTgyMUgzNTcuMDA4Vjg1Ljk4MzNaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxkZWZzPgo8Y2xpcGF0aCBpZD0iY2xpcDAiPgo8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgZmlsbD0id2hpdGUiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K";
 
 const Page = React.forwardRef<HTMLDivElement, {children: React.ReactNode, className?: string, style?: React.CSSProperties}>(({ children, className, style }, ref) => (
   <div
@@ -126,21 +126,23 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                   <p className="text-3xl font-light text-gray-200 mt-6">Aceleração de Performance em Marketing Digital</p>
               </div>
         </Page>
-        <Page className="items-start">
+        <Page className="items-start justify-center">
             <div className="absolute top-1/2 -translate-y-1/2 right-24 w-1/2 h-1/2 opacity-5">
                  <Image crossOrigin="anonymous" src={logoHorizontalBase64} alt="CP Marketing Logo" layout="fill" objectFit="contain" />
             </div>
             <div className="w-full max-w-6xl relative z-10">
-                <h2 className="text-7xl font-bold uppercase mb-12 text-left">Sobre a Parceria</h2>
+                <h2 className="text-7xl font-bold uppercase mb-4 text-left">SOBRE A PARCERIA</h2>
+                <p className="text-2xl text-gray-400 font-light mb-8 max-w-4xl">Uma extensão do seu negócio, focada em uma única missão: crescimento.</p>
                 <div className="flex items-start gap-8">
                     <div className="w-2 bg-[#FE5412] self-stretch"></div>
-                    <p className="text-4xl font-light text-gray-200 text-left">{partnershipDescription}</p>
+                    <p className="text-3xl font-light text-gray-200 text-left">{partnershipDescription}</p>
                 </div>
             </div>
         </Page>
-        <Page>
+        <Page className="justify-center items-start">
             <div className="w-full max-w-6xl">
-                <h2 className="text-7xl font-bold uppercase mb-12">Objetivos de Performance</h2>
+                <h2 className="text-7xl font-bold uppercase mb-4">OBJETIVOS DE PERFORMANCE</h2>
+                <p className="text-2xl text-gray-400 font-light mb-12 max-w-4xl">Metas claras que guiarão nossas ações e medirão nosso sucesso conjunto.</p>
                 <ul className="space-y-6 text-3xl font-light">
                     {objectiveItems.map((item, i) => (
                         <li key={i} className="flex items-center gap-6"><Goal className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item}</span></li>
@@ -148,9 +150,10 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 </ul>
             </div>
         </Page>
-        <Page>
+        <Page className="justify-center items-start">
              <div className="w-full max-w-6xl">
-                <h2 className="text-7xl font-bold uppercase mb-12">Nossos Diferenciais</h2>
+                <h2 className="text-7xl font-bold uppercase mb-4">NOSSOS DIFERENCIAIS</h2>
+                 <p className="text-2xl text-gray-400 font-light mb-12 max-w-4xl">O que nos torna o parceiro ideal para escalar seus resultados.</p>
                 <ul className="space-y-6 text-3xl font-light columns-2 gap-x-16">
                     {differentialItems.map((item, i) => (
                         <li key={i} className="flex items-center gap-6 mb-6 break-inside-avoid"><Sparkles className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item}</span></li>
@@ -159,14 +162,43 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
              </div>
         </Page>
         <Page className="p-16 items-start justify-start">
-            <div className="w-full">
-                <h2 className="text-7xl font-bold uppercase mb-12 text-center">Escopo dos Serviços</h2>
-                {renderPackageServices()}
+            <div className="w-full text-center">
+                <h2 className="text-7xl font-bold uppercase mb-12">ESCOPO DOS SERVIÇOS</h2>
+                <div className="flex flex-wrap justify-center gap-8 text-left max-w-7xl mx-auto">
+                     {packages?.map(pkgKey => {
+                        const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+                        if (!pkg) return null;
+                        const Icon = pkg.icon;
+                        return (
+                            <div key={pkgKey} className="bg-gray-900/70 p-8 rounded-lg border border-gray-700 flex flex-col w-full max-w-lg">
+                                <div className="flex-grow">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <Icon className="h-10 w-10 text-[#FE5412]" />
+                                        <h3 className="font-bold text-2xl">{pkg.name}</h3>
+                                    </div>
+                                    <ul className="space-y-2 mt-4">
+                                        {pkg.description.split('\n').map((line, index) => (
+                                            <li key={index} className="flex items-start gap-3 text-sm text-gray-300">
+                                                <Check className="h-4 w-4 mt-1 text-green-500 flex-shrink-0" />
+                                                <span>{line}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <div className="pt-4 mt-auto text-right">
+                                    <span className="text-2xl font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                                    <span className="text-sm text-gray-400">/mês</span>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
             </div>
         </Page>
         <Page>
              <div className="w-full max-w-6xl text-center">
-                <h2 className="text-7xl font-bold uppercase mb-12">Por que este plano é <span className="text-[#FE5412]">a decisão certa</span>?</h2>
+                <h2 className="text-7xl font-bold uppercase mb-4">POR QUE ESTE PLANO É <span className="text-[#FE5412]">A DECISÃO CERTA?</span></h2>
+                 <p className="text-2xl text-gray-400 font-light mb-12 max-w-4xl mx-auto">Este não é apenas um conjunto de serviços, mas uma estratégia integrada para um crescimento robusto e sustentável.</p>
                  <ul className="space-y-6 text-3xl font-light text-left max-w-4xl mx-auto">
                     {idealPlanItems.map((item, i) => (
                         <li key={i} className="flex items-center gap-6"><Check className="h-10 w-10 text-green-400 flex-shrink-0" /><span>{item}</span></li>
@@ -184,7 +216,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
         </Page>
         <Page>
             <div className="w-full max-w-6xl text-center">
-                <h2 className="text-7xl font-bold uppercase mb-12">Próximos Passos</h2>
+                <h2 className="text-7xl font-bold uppercase mb-12">PRÓXIMOS PASSOS</h2>
                 <div className="flex justify-center items-stretch gap-10 text-left">
                     <div className="bg-gray-900/50 border-gray-800 border-2 rounded-lg w-1/3 p-10 flex flex-col">
                         <div className="text-8xl font-extrabold text-[#FE5412] mb-6">1</div>
