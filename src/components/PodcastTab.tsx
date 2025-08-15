@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen, Trash2 } from "lucide-react";
+import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen, Trash2, Palette } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo } from "react";
 import { Button } from "./ui/button";
@@ -60,6 +60,19 @@ const generateWeeks = (baseDate: Date): Date[] => {
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
 
+const sdrColors: Record<string, string> = {
+    'Van Diego': 'border-blue-400/80',
+    'Heloysa': 'border-pink-400/80',
+    'Débora': 'border-green-400/80',
+    'default': 'border-muted'
+};
+
+const sdrColorsMap: Record<string, { bg: string, text: string }> = {
+    'Van Diego': { bg: 'bg-blue-400/20', text: 'text-blue-300' },
+    'Heloysa':   { bg: 'bg-pink-400/20', text: 'text-pink-300' },
+    'Débora':    { bg: 'bg-green-400/20', text: 'text-green-300' },
+};
+
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
   const { user } = useAuth();
@@ -73,14 +86,13 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
   useEffect(() => {
     const timer = setInterval(() => {
-        // Use a fixed date to prevent automatic updates for now, as requested.
         const baseDate = new Date('2025-08-18T12:00:00Z');
         const newWeeks = generateWeeks(baseDate);
         setWeeks(newWeeks);
         if (!newWeeks.some(week => isSameDay(week, selectedWeekStart))) {
             setSelectedWeekStart(newWeeks[0]);
         }
-    }, 60000 * 60); // Check every hour
+    }, 60000 * 60);
 
     return () => clearInterval(timer);
   }, [selectedWeekStart]);
@@ -131,13 +143,12 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
           ...currentEpisode,
           guests: newGuests,
           isFilled: isFilled,
-          sdrId: currentEpisode.sdrId || user.uid, // Persist original SDR
+          sdrId: currentEpisode.sdrId || user.uid,
           sdrName: currentEpisode.sdrName || (user.displayName || user.email || 'SDR'),
       };
       
       setSchedule(prevSchedule => ({ ...prevSchedule, [episodeId]: updatedEpisode }));
       
-      // Auto-save to Firestore
       try {
           const docRef = doc(db, 'podcast_schedule', episodeId);
           await writeBatch(db).set(docRef, updatedEpisode).commit();
@@ -165,6 +176,15 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                     Agenda da Semana
                 </CardTitle>
                 <CardDescription>Preencha os convidados para os episódios da semana. O agendamento é colaborativo.</CardDescription>
+                <div className="flex items-center gap-4 pt-2">
+                    <Label className="flex items-center gap-2 text-sm"><Palette className="h-4 w-4" /> Legenda:</Label>
+                    {Object.entries(sdrColorsMap).map(([name, {bg, text}]) => (
+                        <div key={name} className={cn("px-3 py-1 rounded-full text-xs font-medium flex items-center", bg, text)}>
+                            <User className="mr-2 h-3 w-3" />
+                            {name}
+                        </div>
+                    ))}
+                </div>
                 <div className="flex items-center gap-2 pt-2">
                     {weeks.map((weekStart, index) => (
                         <Button
@@ -192,8 +212,10 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                         isFilled: false,
                     };
                     
+                    const borderColor = episodeData.sdrName ? sdrColors[episodeData.sdrName] || sdrColors.default : sdrColors.default;
+
                     return (
-                        <Card key={episodeId} className="bg-card/50">
+                        <Card key={episodeId} className={cn("bg-card/50 border-2", borderColor)}>
                             <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <CardTitle className="font-headline flex items-center text-primary text-base">
@@ -212,7 +234,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                         </Label>
                                     </div>
                                 </div>
-                                {schedule[episodeId] && <CardDescription className="text-xs">Agendado por: {episodeData.sdrName}</CardDescription>}
                             </CardHeader>
                             <CardContent className="space-y-4">
                             {episodeData.guests.map((guest, index) => (
@@ -249,3 +270,4 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
+
