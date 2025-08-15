@@ -116,11 +116,13 @@ const CounterTaskInput = ({
   value,
   onSave,
   goal,
+  cumulativeValue,
   ...props
 }: {
   value: string;
   onSave: (newValue: string) => void;
   goal?: number;
+  cumulativeValue?: number;
 } & Omit<React.ComponentProps<typeof Input>, 'value' | 'onChange' | 'onBlur'>) => {
   const [localValue, setLocalValue] = useState(value);
 
@@ -142,7 +144,7 @@ const CounterTaskInput = ({
         />
         {goal !== undefined && (
              <span className="text-sm font-semibold text-muted-foreground w-12 text-right">
-                / {goal}
+                {cumulativeValue !== undefined ? `${cumulativeValue} /` : ''} {goal}
              </span>
         )}
       </div>
@@ -860,6 +862,15 @@ export default function RotinaSDRPage() {
     const checkboxTasks = allTasks.filter(task => task.type === 'checkbox' && task.id !== 'a-7');
     
     const extraTasksForToday = weekData?.extraTasks?.[activeDay] || [];
+
+    const weeklyPodcastConfirmations = useMemo(() => {
+        const weeklyData = yearData[currentMonth]?.[activeWeekKey];
+        if (!weeklyData) return 0;
+        
+        return ptDays.slice(0, 5).reduce((acc, day) => {
+            return acc + Number(weeklyData.counterTasks?.[day]?.['podcasts'] || '0');
+        }, 0);
+    }, [yearData, currentMonth, activeWeekKey]);
     
     const dailyScore = useMemo(() => {
         const weeklyData = yearData[currentMonth]?.[activeWeekKey];
@@ -972,7 +983,8 @@ export default function RotinaSDRPage() {
                                         onSave={(value) => handleCounterChange(task.id, value)}
                                         className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
                                         placeholder="0"
-                                        goal={task.goal}
+                                        goal={task.id === 'podcasts' ? weeklyGoals.podcasts.goal : task.goal}
+                                        cumulativeValue={task.id === 'podcasts' ? weeklyPodcastConfirmations : undefined}
                                     />
                                 </div>
                             </div>
