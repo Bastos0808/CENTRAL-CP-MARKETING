@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen, Trash2, Palette } from "lucide-react";
+import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen, Trash2, Palette, Users } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { Button } from "./ui/button";
@@ -48,11 +48,12 @@ const generateWeeks = (baseDate: Date): Date[] => {
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
 
-const sdrColors: Record<string, string> = {
-    'Van Diego': 'text-orange-500',
-    'Heloysa': 'text-blue-500',
-    'Débora': 'text-purple-500',
-};
+const sdrList = [
+    { name: "Van Diego" },
+    { name: "Débora" },
+    { name: "Heloysa" },
+];
+
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
   const { user } = useAuth();
@@ -128,8 +129,15 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
             if (!episode.guests[guestIndex]) {
                  episode.guests[guestIndex] = { guestName: '', instagram: '' };
             }
-
+            
             const guest = episode.guests[guestIndex];
+            
+            const canEdit = !guest.sdrId || guest.sdrId === sdrId;
+            if (!canEdit) {
+                 toast({ title: "Acesso Negado", description: "Você só pode editar os convidados que você mesmo agendou.", variant: "destructive" });
+                 return;
+            }
+
             guest[field] = value;
             
             if (value.trim() !== '' || (field === 'guestName' && guest.instagram.trim() !== '') || (field === 'instagram' && guest.guestName.trim() !== '')) {
@@ -164,6 +172,31 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     });
   }, [user, toast, selectedWeekStart]);
 
+  const weeklySdrCount = useMemo(() => {
+    const counts: Record<string, number> = {
+        "Van Diego": 0,
+        "Débora": 0,
+        "Heloysa": 0,
+    };
+
+    weeklyEpisodeConfig.forEach(config => {
+        const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
+        const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
+        const episodeData = schedule[episodeId];
+
+        if (episodeData) {
+            episodeData.guests.forEach(guest => {
+                if (guest.sdrName && counts.hasOwnProperty(guest.sdrName)) {
+                    counts[guest.sdrName]++;
+                }
+            });
+        }
+    });
+
+    return counts;
+  }, [schedule, selectedWeekStart]);
+
+
   if (isLoading) {
     return (
         <div className="flex justify-center items-center h-64">
@@ -174,19 +207,21 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Legenda de Cores</CardTitle>
-          <div className="flex items-center gap-6 pt-2">
-            {Object.entries(sdrColors).map(([name, colorClass]) => (
-              <div key={name} className="flex items-center gap-2">
-                <div className={cn("w-4 h-4 rounded-full", colorClass.replace('text-', 'bg-'))}></div>
-                <span className="text-sm font-medium">{name}</span>
-              </div>
-            ))}
-          </div>
-        </CardHeader>
-      </Card>
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5 text-primary" />Agendamentos da Semana</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+                {sdrList.map((sdr, index) => (
+                   <div key={sdr.name} className="flex justify-between items-center text-lg p-2 rounded-md bg-muted/50">
+                       <span className="font-semibold">{index + 1}- {sdr.name}</span>
+                       <span className="font-bold text-xl text-primary bg-background border px-3 py-1 rounded-md">
+                         {weeklySdrCount[sdr.name] || 0}
+                       </span>
+                   </div>
+                ))}
+            </CardContent>
+        </Card>
       <Card>
           <CardHeader>
               <CardTitle>
@@ -214,7 +249,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                       date: format(dateForDay, 'yyyy-MM-dd'),
                       episodeType: config.type,
                       episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
-                      guests: Array(config.guestCount).fill({ guestName: '', instagram: '' }),
+                      guests: Array.from({ length: config.guestCount }, () => ({ guestName: '', instagram: '' })),
                       isFilled: false,
                   };
                   
@@ -246,12 +281,12 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const isGuestFilled = guest && guest.guestName.trim() !== '';
 
                               return (
-                              <div key={index} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
+                              <div key={`${episodeId}-guest-${index}`} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
                                   <div className="flex justify-between items-center">
-                                      <Label className={cn("text-sm", isGuestFilled ? "text-green-400" : "text-muted-foreground")}>
+                                      <Label htmlFor={`${episodeId}-guest-${index}-name`} className={cn("text-sm", isGuestFilled ? "text-green-400" : "text-muted-foreground")}>
                                           Convidado {index + 1}
-                                          {guestSdrName && (
-                                            <span className={cn('font-semibold ml-2', sdrColors[guestSdrName] || 'text-muted-foreground')}>
+                                           {guestSdrName && (
+                                            <span className="font-semibold ml-2 text-muted-foreground">
                                                 (Agendado por: {guestSdrName})
                                             </span>
                                           )}
@@ -262,10 +297,12 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                           <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                           <Input 
                                               key={`${episodeId}-guest-${index}-name`}
+                                              id={`${episodeId}-guest-${index}-name`}
                                               value={guest?.guestName || ''} 
                                               onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value, config)} 
                                               placeholder="Nome do convidado" 
                                               className="pl-10"
+                                              disabled={guest.sdrId && guest.sdrId !== user?.uid}
                                           />
                                       </div>
                                       <div className="relative">
@@ -276,6 +313,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                               onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value, config)} 
                                               placeholder="@instagram" 
                                               className="pl-10"
+                                              disabled={guest.sdrId && guest.sdrId !== user?.uid}
                                           />
                                       </div>
                                   </div>
