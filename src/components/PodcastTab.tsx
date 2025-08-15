@@ -99,13 +99,19 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     setSchedule(prevSchedule => {
         const newSchedule = produce(prevSchedule, draft => {
             if (!draft[episodeId]) {
-                 const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
-                 draft[episodeId] = {
+                const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
+                
+                const newGuests: GuestInfo[] = [];
+                for(let i = 0; i < config.guestCount; i++) {
+                    newGuests.push({ guestName: '', instagram: '' });
+                }
+
+                draft[episodeId] = {
                     id: episodeId,
                     date: format(dateForDay, 'yyyy-MM-dd'),
                     episodeType: config.type,
                     episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
-                    guests: Array(config.guestCount).fill({ guestName: '', instagram: '' }),
+                    guests: newGuests,
                     isFilled: false,
                 };
             }
