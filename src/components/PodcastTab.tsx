@@ -114,7 +114,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
               date: episodeId.split('-')[0], 
               episodeType: 'geral', // This default might need to be smarter
               episodeTitle: '', // This default might need to be smarter
-              guests: [],
+              guests: Array(weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.guestCount || 1).fill({ guestName: '', instagram: '' }),
               sdrId: user.uid,
               sdrName: user.displayName || user.email || 'SDR',
               isFilled: false,
@@ -289,27 +289,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                 </div>
                                 </div>
                             ))}
-                            {schedule[episodeId] && !isScheduledByOther && (
-                                    <div className="flex justify-end pt-2">
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button variant="destructive" size="sm" disabled={isSubmitting}>Excluir</Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Esta ação removerá o agendamento deste episódio, liberando o horário.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => handleDeleteEpisode(episodeId)} className="bg-destructive hover:bg-destructive/90">Sim, excluir</AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </div>
-                            )}
                             </CardContent>
                         </Card>
                     )
