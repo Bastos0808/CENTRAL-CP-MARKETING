@@ -1101,7 +1101,6 @@ export default function RotinaSDRPage() {
                     </CardContent>
                 </Card>
               )}
-              <TeamRanking />
               {!isSaturday && (
                 <div className="flex justify-end items-center gap-4 pt-4">
                   <Label htmlFor="holiday-switch">Marcar dia como feriado?</Label>

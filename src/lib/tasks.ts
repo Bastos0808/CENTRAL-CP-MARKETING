@@ -41,6 +41,9 @@ export const allTasks: AnyTask[] = [
     { id: "a-5", label: "Priorizar agendamento de convidados para o podcast (de acordo com a área).", type: 'checkbox' },
     { id: "m-2", label: "Revisar leads no CRM (RD Station) que precisam de follow-up prioritário.", type: 'checkbox' },
     { id: "a-7", label: "Organizar as tarefas para o dia seguinte.", type: 'checkbox' },
+    { id: "b-1", label: "Realizar consultorias agendadas do dia", type: 'checkbox' },
+    { id: "b-2", label: "Enviar propostas comerciais e fazer follow-up de decisão", type: 'checkbox' },
+
 ];
 
 
