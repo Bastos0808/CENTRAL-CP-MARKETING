@@ -229,6 +229,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input 
+                                                key={`${episodeId}-guest-${index}-name`}
                                                 value={guest?.guestName || ''} 
                                                 onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value, config)} 
                                                 placeholder="Nome do convidado" 
@@ -238,6 +239,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                         <div className="relative">
                                             <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input 
+                                                key={`${episodeId}-guest-${index}-instagram`}
                                                 value={guest?.instagram || ''} 
                                                 onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value, config)} 
                                                 placeholder="@instagram" 
