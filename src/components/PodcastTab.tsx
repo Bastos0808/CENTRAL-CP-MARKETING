@@ -57,15 +57,15 @@ const generateWeeks = (baseDate: Date): Date[] => {
 
 
 const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
-    "Vandiego": { name: "Van Diego", color: "text-orange-400" },
+    "vandiego": { name: "Van Diego", color: "text-orange-400" },
     "debora.moura": { name: "Débora", color: "text-purple-400" },
-    "Heloysa": { name: "Heloysa", color: "text-blue-400" },
+    "heloysa.santos": { name: "Heloysa", color: "text-blue-400" },
     "comercial01@cpmarketing.com.br": { name: "Van Diego", color: "text-orange-400" },
     "comercial02@cpmarketing.com.br": { name: "Heloysa", color: "text-blue-400" },
     "comercial03@cpmarketing.com.br": { name: "Débora", color: "text-purple-400" },
 };
 
-const sdrOrder = ["Van Diego", "Débora", "Heloysa"];
+const sdrOrder = ["Van Diego", "Heloysa", "Débora"];
 
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
@@ -186,13 +186,13 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     await handleUpdateEpisode(episodeId, updatedEpisode);
 
   }, [user, toast, schedule, handleUpdateEpisode]);
-
+  
   const weeklyBookingCount = useMemo(() => {
-    const counts: Record<string, number> = {
-        "Van Diego": 0,
-        "Débora": 0,
-        "Heloysa": 0,
-    };
+    const counts: Record<string, number> = {};
+
+    sdrOrder.forEach(name => {
+        counts[name] = 0;
+    });
 
     if (!selectedWeekStart) return counts;
 
@@ -202,18 +202,22 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     Object.values(schedule).forEach(episode => {
         if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
             episode.guests.forEach(guest => {
-                if(guest.sdrName){
-                     const sdrInfo = sdrUserDisplayMap[guest.sdrName];
-                     if(sdrInfo && counts.hasOwnProperty(sdrInfo.name)) {
-                        counts[sdrInfo.name]++;
-                     }
+                if (guest.sdrName) {
+                    const sdrInfo = sdrUserDisplayMap[guest.sdrName.toLowerCase()];
+                    if (sdrInfo) {
+                        const sdrDisplayName = sdrInfo.name;
+                        if (counts.hasOwnProperty(sdrDisplayName)) {
+                           counts[sdrDisplayName]++;
+                        }
+                    } else if (counts.hasOwnProperty(guest.sdrName)) {
+                        // Fallback for direct name match
+                        counts[guest.sdrName]++;
+                    }
                 }
-            })
+            });
         }
-    })
-
+    });
     return counts;
-
   }, [schedule, selectedWeekStart]);
 
 
@@ -299,7 +303,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                              return (
                                 <div key={sdrName} className="p-4 border rounded-lg bg-muted/50 flex flex-col items-center justify-center">
                                     <Label className={cn("text-lg font-bold", sdrInfo.color)}>{sdrName}</Label>
-                                    <p className="text-3xl font-bold">{weeklyBookingCount[sdrName]}</p>
+                                    <p className="text-3xl font-bold">{weeklyBookingCount[sdrName] || 0}</p>
                                 </div>
                              )
                         })}
@@ -349,7 +353,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const isBookedByCurrentUser = guest.sdrId === user?.uid;
                               const isBooked = !!guest.sdrId;
 
-                              const sdrInfo = sdrUserDisplayMap[guestSdrName || ''] || {};
+                              const sdrInfo = sdrUserDisplayMap[guestSdrName?.toLowerCase() || ''] || {};
                               const sdrColorClass = sdrInfo.color || 'text-muted-foreground';
                               const displayName = sdrInfo.name || guestSdrName;
 
@@ -413,3 +417,5 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
+
+    
