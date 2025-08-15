@@ -204,10 +204,11 @@ const ExtraTasksTextarea = ({
 
 
 const createInitialPodcastData = (): PodcastData => ({
-  podcast1: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
-  podcast2: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
-  podcast3: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
-  podcast4: { guests: Array(6).fill({ guestName: '', instagram: '' }), done: false },
+  podcast1: { guests: Array(2).fill({ guestName: '', instagram: '' }), done: false },
+  podcast2: { guests: Array(1).fill({ guestName: '', instagram: '' }), done: false },
+  podcast3: { guests: Array(3).fill({ guestName: '', instagram: '' }), done: false },
+  podcast4: { guests: Array(3).fill({ guestName: '', instagram: '' }), done: false },
+  podcast5: { guests: Array(3).fill({ guestName: '', instagram: '' }), done: false },
 });
 
 const createInitialWeeklyData = (): WeeklyData => ({
@@ -983,7 +984,7 @@ export default function RotinaSDRPage() {
                                         onSave={(value) => handleCounterChange(task.id, value)}
                                         className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
                                         placeholder="0"
-                                        goal={task.id === 'podcasts' ? weeklyGoals.podcasts.goal : task.goal}
+                                        goal={task.id === 'podcasts' ? weeklyGoals.podcasts.goal : undefined}
                                         cumulativeValue={task.id === 'podcasts' ? weeklyPodcastConfirmations : undefined}
                                     />
                                 </div>

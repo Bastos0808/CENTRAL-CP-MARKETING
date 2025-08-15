@@ -14,6 +14,7 @@ export type PodcastData = {
   podcast2: PodcastEpisode;
   podcast3: PodcastEpisode;
   podcast4: PodcastEpisode;
+  podcast5: PodcastEpisode;
 };
 
 export type ExtraTask = {

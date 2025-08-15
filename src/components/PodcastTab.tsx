@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -26,61 +27,69 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     )
   }
   
-  const renderPodcastCard = (podcastId: keyof PodcastData, title: string) => {
-    const data = podcastData[podcastId];
+  const podcastConfigs = [
+      { id: 'podcast1', title: 'Episódio 1 - SAÚDE E ESTÉTICA', guestCount: 2 },
+      { id: 'podcast2', title: 'EPISÓDIO 2 - EMPRESÁRIO', guestCount: 1 },
+      { id: 'podcast3', title: 'EPISÓDIO 3 - GERAL', guestCount: 3 },
+      { id: 'podcast4', title: 'EPISÓDIO 4 - GERAL', guestCount: 3 },
+      { id: 'podcast5', title: 'EPISÓDIO 5 - GERAL', guestCount: 3 },
+  ] as const;
+
+  const renderPodcastCard = (config: typeof podcastConfigs[number]) => {
+    const data = podcastData[config.id];
     if (!data) return null;
 
     return (
-      <Card key={podcastId} className="bg-card/50">
+      <Card key={config.id} className="bg-card/50">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="font-headline flex items-center text-primary">
               <Mic className="mr-3 h-6 w-6" />
-              {title}
+              {config.title}
             </CardTitle>
             <div className="flex items-center space-x-2">
               <Checkbox
-                id={`${podcastId}-done`}
+                id={`${config.id}-done`}
                 checked={data.done}
-                onCheckedChange={(checked) => onPodcastCheck(podcastId, !!checked)}
+                onCheckedChange={(checked) => onPodcastCheck(config.id, !!checked)}
                 className="h-6 w-6 rounded-md border-2 border-primary"
               />
-              <Label htmlFor={`${podcastId}-done`} className="text-base font-normal cursor-pointer">
+              <Label htmlFor={`${config.id}-done`} className="text-base font-normal cursor-pointer">
                 Feito
               </Label>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {data.guests.map((guest, index) => (
+          {Array.from({ length: config.guestCount }).map((_, index) => (
             <div key={index}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor={`${podcastId}-guest-${index}`} className="text-base font-medium">
+                  <Label htmlFor={`${config.id}-guest-${index}`} className="text-base font-medium">
                     Convidado {index + 1}
                   </Label>
                   <Input
-                    id={`${podcastId}-guest-${index}`}
-                    value={guest.guestName}
-                    onChange={(e) => onPodcastChange(podcastId, index, 'guestName', e.target.value)}
+                    id={`${config.id}-guest-${index}`}
+                    value={data.guests[index]?.guestName || ''}
+                    onChange={(e) => onPodcastChange(config.id, index, 'guestName', e.target.value)}
                     className="mt-2 h-12 text-lg bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
                     placeholder="Nome..."
                   />
                 </div>
                 <div>
-                  <Label htmlFor={`${podcastId}-insta-${index}`} className="text-base font-medium">
+                  <Label htmlFor={`${config.id}-insta-${index}`} className="text-base font-medium">
                     Instagram
                   </Label>
                   <Input
-                    id={`${podcastId}-insta-${index}`}
-                    value={guest.instagram}
-                    onChange={(e) => onPodcastChange(podcastId, index, 'instagram', e.target.value)}
+                    id={`${config.id}-insta-${index}`}
+                    value={data.guests[index]?.instagram || ''}
+                    onChange={(e) => onPodcastChange(config.id, index, 'instagram', e.target.value)}
                     className="mt-2 h-12 text-lg bg-input border-2 border-primary/50 focus:border-primary focus:ring-primary"
                     placeholder="@usuario"
                   />
                 </div>
               </div>
-              {index < data.guests.length - 1 && <Separator className="mt-4 bg-border/50" />}
+              {index < config.guestCount - 1 && <Separator className="mt-4 bg-border/50" />}
             </div>
           ))}
         </CardContent>
@@ -90,10 +99,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {renderPodcastCard("podcast1", "Episódio de Podcast 1")}
-      {renderPodcastCard("podcast2", "Episódio de Podcast 2")}
-      {renderPodcastCard("podcast3", "Episódio de Podcast 3")}
-      {renderPodcastCard("podcast4", "Episódio de Podcast 4")}
+      {podcastConfigs.map(config => renderPodcastCard(config))}
     </div>
   );
 }
