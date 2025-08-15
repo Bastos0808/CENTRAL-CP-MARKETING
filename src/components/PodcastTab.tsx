@@ -105,28 +105,40 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     return () => unsubscribe();
   }, [toast]);
   
-  const handleGuestChange = async (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
-      const scheduledEpisode = schedule[episodeId];
-      if (!scheduledEpisode || !user?.uid) return;
-      
-      const newGuests = [...scheduledEpisode.guests];
-      newGuests[guestIndex] = { ...newGuests[guestIndex], [field]: value };
-      
-      const isFilled = newGuests.every(g => g.guestName.trim() !== '');
-
-      const updatedSchedule: ScheduledEpisode = {
-          ...scheduledEpisode,
-          guests: newGuests,
-          isFilled: isFilled,
-      };
-
-      // If the episode doesn't exist yet in the schedule (i.e., it's a new booking)
-      if (!schedule[episodeId]) {
-          updatedSchedule.sdrId = user.uid;
-          updatedSchedule.sdrName = user.displayName || user.email || 'SDR';
-      }
-
-      setSchedule(prev => ({ ...prev, [episodeId]: updatedSchedule }));
+  const handleGuestChange = (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
+      if (!user?.uid) return;
+  
+      setSchedule(prevSchedule => {
+          const currentEpisode = prevSchedule[episodeId] || {
+              id: episodeId,
+              date: episodeId.split('-')[0], 
+              episodeType: 'geral', // This default might need to be smarter
+              episodeTitle: '', // This default might need to be smarter
+              guests: [],
+              sdrId: user.uid,
+              sdrName: user.displayName || user.email || 'SDR',
+              isFilled: false,
+          };
+  
+          const newGuests = [...currentEpisode.guests];
+          // Ensure guest object exists
+          if (!newGuests[guestIndex]) {
+             newGuests[guestIndex] = { guestName: '', instagram: '' };
+          }
+          newGuests[guestIndex] = { ...newGuests[guestIndex], [field]: value };
+          
+          const isFilled = newGuests.every(g => g && g.guestName.trim() !== '');
+  
+          const updatedEpisode: ScheduledEpisode = {
+              ...currentEpisode,
+              guests: newGuests,
+              isFilled: isFilled,
+              sdrId: currentEpisode.sdrId || user.uid,
+              sdrName: currentEpisode.sdrName || (user.displayName || user.email || 'SDR'),
+          };
+          
+          return { ...prevSchedule, [episodeId]: updatedEpisode };
+      });
   };
   
   const handleSaveWeek = async () => {
@@ -221,10 +233,10 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                         id: episodeId,
                         date: format(dateForDay, 'yyyy-MM-dd'),
                         episodeType: config.type,
-                        episodeTitle: config.title,
+                        episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
                         guests: Array(config.guestCount).fill({ guestName: '', instagram: '' }),
-                        sdrId: user?.uid || '',
-                        sdrName: user?.displayName || user?.email || 'SDR',
+                        sdrId: '',
+                        sdrName: '',
                         isFilled: false,
                     };
                     const isScheduledByOther = schedule[episodeId] && schedule[episodeId].sdrId !== user?.uid;
@@ -235,13 +247,13 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                 <div className="flex items-center justify-between">
                                     <CardTitle className="font-headline flex items-center text-primary text-base">
                                     <Mic className="mr-3 h-5 w-5" />
-                                    {`${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`}
+                                    {episodeData.episodeTitle}
                                     </CardTitle>
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             id={`${episodeId}-filled`}
                                             checked={episodeData.isFilled}
-                                            disabled // This is now read-only
+                                            disabled
                                             className={cn("h-5 w-5 rounded-md border-2", episodeData.isFilled ? "border-green-500 data-[state=checked]:bg-green-500" : "border-primary")}
                                         />
                                         <Label htmlFor={`${episodeId}-filled`} className="font-normal cursor-pointer">
@@ -259,21 +271,19 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                     <div className="relative">
                                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                         <Input 
-                                            value={guest.guestName} 
+                                            value={guest?.guestName || ''} 
                                             onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value)} 
                                             placeholder="Nome do convidado" 
                                             className="pl-10"
-                                            disabled={isScheduledByOther}
                                         />
                                     </div>
                                     <div className="relative">
                                         <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                         <Input 
-                                            value={guest.instagram} 
+                                            value={guest?.instagram || ''} 
                                             onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value)} 
                                             placeholder="@instagram" 
                                             className="pl-10"
-                                            disabled={isScheduledByOther}
                                         />
                                     </div>
                                 </div>
@@ -316,5 +326,3 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
-
-    
