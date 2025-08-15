@@ -1,22 +1,35 @@
-rules_version = '2';
 
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // Regra geral: Apenas usuários autenticados podem ler/escrever.
-    // Ajuste esta regra para ser mais granular conforme necessário.
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
-    
-    // Regra específica para a coleção de usuários
+
+    // Allow authenticated users to read/write their own user data
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Regra específica para a coleção de agendamentos de podcast
-    match /podcast_schedule/{scheduleId} {
+    // Allow authenticated users to read/write their own performance data
+    match /sdr_performance/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Allow admins to read all sdr_performance data
+    match /sdr_performance/{userId} {
+        allow read: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Allow authenticated users to read/write their own client data.
+    match /clients/{clientId} {
       allow read, write: if request.auth != null;
+    }
+    
+    // Allow authenticated users to read and write to the shared podcast schedule.
+    // 'list' is crucial for querying the collection.
+    match /podcast_schedule/{scheduleId} {
+      allow get, list, create, update, delete: if request.auth != null;
     }
   }
 }
