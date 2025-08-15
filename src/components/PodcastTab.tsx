@@ -189,7 +189,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
         if (episodeData) {
             episodeData.guests.forEach(guest => {
-                if (guest.sdrName) {
+                if (guest && guest.sdrName) {
                     const displayName = sdrUserDisplayMap[guest.sdrName];
                     if (displayName) {
                         counts[displayName]++;
@@ -202,14 +202,29 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     return counts;
   }, [schedule, selectedWeekStart]);
   
-  const checkWeekIsFilled = useCallback((weekStartDate: Date) => {
-    return weeklyEpisodeConfig.every(config => {
+  const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
+    const totalSlots = 12;
+    let filledSlots = 0;
+
+    weeklyEpisodeConfig.forEach(config => {
         const dateForDay = addDays(weekStartDate, config.dayOfWeek - 1);
         const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
         const episodeData = schedule[episodeId];
-        return episodeData?.isFilled ?? false;
+
+        if (episodeData) {
+            episodeData.guests.forEach(guest => {
+                if (guest && guest.sdrName) {
+                    filledSlots++;
+                }
+            });
+        }
     });
+    return totalSlots - filledSlots;
   }, [schedule]);
+  
+  const checkWeekIsFilled = useCallback((weekStartDate: Date) => {
+    return calculateVacanciesForWeek(weekStartDate) === 0;
+  }, [calculateVacanciesForWeek]);
 
 
   if (isLoading) {
@@ -227,7 +242,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                 <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5 text-primary" />Agendamentos da Semana</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-                {Object.values(sdrUserDisplayMap).map((displayName, index) => (
+                {Object.entries(sdrUserDisplayMap).map(([sdrKey, displayName], index) => (
                    <div key={displayName} className="flex justify-between items-center text-lg p-2 rounded-md bg-muted/50">
                        <span className="font-semibold">{index + 1}- {displayName}</span>
                        <span className="font-bold text-xl text-primary bg-background border px-3 py-1 rounded-md">
@@ -247,19 +262,25 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                   {weeks.map((weekStart, index) => {
                       const isFilled = checkWeekIsFilled(weekStart);
                       const isSelected = isSameDay(selectedWeekStart, weekStart);
+                      const vacancies = calculateVacanciesForWeek(weekStart);
 
                       return (
                       <Button
                           key={weekStart.toISOString()}
-                          variant={isFilled ? "secondary" : (isSelected ? 'default' : 'outline')}
+                          variant={isSelected ? 'default' : 'outline'}
                           onClick={() => setSelectedWeekStart(weekStart)}
-                          className={cn({
-                              'bg-green-600/80 border-green-500 text-white hover:bg-green-600': isFilled,
+                          className={cn("h-auto flex-col p-3", {
+                              'bg-green-600 border-green-500 text-white hover:bg-green-600': isFilled,
                               'bg-primary text-primary-foreground': isSelected && !isFilled,
                           })}
                       >
-                         {isFilled && <Check className="mr-2 h-4 w-4" />}
-                          {`Semana ${index + 1} (${format(weekStart, 'dd/MM')} - ${format(endOfWeek(weekStart, {weekStartsOn: 1}), 'dd/MM')})`}
+                         <div className="flex items-center gap-2">
+                            {isFilled && <Check className="h-4 w-4" />}
+                            {`Semana ${index + 1} (${format(weekStart, 'dd/MM')} - ${format(endOfWeek(weekStart, {weekStartsOn: 1}), 'dd/MM')})`}
+                         </div>
+                         <span className="text-xs font-normal mt-1 opacity-80">
+                            {vacancies} vagas disponíveis
+                         </span>
                       </Button>
                   )})}
               </div>
@@ -306,7 +327,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const sdrColorClass = guestSdrName ? sdrUserColorMap[guestSdrName] || 'text-muted-foreground' : 'text-muted-foreground';
 
                               return (
-                              <div key={`${episodeId}-guest-${index}-name`} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
+                              <div key={`${episodeId}-guest-${index}`} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
                                   <div className="flex justify-between items-center">
                                       <Label htmlFor={`${episodeId}-guest-${index}-name`} className={cn("text-sm", isGuestFilled ? "text-green-400" : "text-muted-foreground")}>
                                           Convidado {index + 1}
