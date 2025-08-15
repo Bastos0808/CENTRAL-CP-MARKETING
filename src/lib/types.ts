@@ -1,4 +1,5 @@
 
+
 export type GuestInfo = {
   guestName: string;
   instagram: string;
@@ -69,3 +70,19 @@ export interface ReportData {
   reportPeriod: string;
   categories: CategoryReportData[];
 }
+
+// New types for Shared Podcast Schedule
+export type EpisodeType = 'saude_estetica' | 'empresario' | 'geral';
+
+export interface ScheduledEpisode {
+    id: string; // YYYY-MM-DD-episodeType
+    date: string; // YYYY-MM-DD
+    episodeType: EpisodeType;
+    episodeTitle: string;
+    guests: GuestInfo[];
+    sdrId: string;
+    sdrName: string;
+    isFilled: boolean;
+}
+
+export type PodcastSchedule = Record<string, ScheduledEpisode>;
