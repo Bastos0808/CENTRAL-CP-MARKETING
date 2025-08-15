@@ -65,7 +65,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   const { user } = useAuth();
   const { toast } = useToast();
   
-  const [weeks, setWeeks] = useState(generateWeeks(new Date()));
+  const [weeks, setWeeks] = useState(generateWeeks(new Date('2025-08-18T12:00:00Z')));
   const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(weeks[0]);
   const [schedule, setSchedule] = useState<Record<string, ScheduledEpisode>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -73,13 +73,14 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
   useEffect(() => {
     const timer = setInterval(() => {
-        const newWeeks = generateWeeks(new Date());
+        // Use a fixed date to prevent automatic updates for now, as requested.
+        const baseDate = new Date(); // Or a fixed date for development: new Date('2025-08-18T12:00:00Z')
+        const newWeeks = generateWeeks(baseDate);
         setWeeks(newWeeks);
-        // If the selected week is no longer in the list, default to the first one
         if (!newWeeks.some(week => isSameDay(week, selectedWeekStart))) {
             setSelectedWeekStart(newWeeks[0]);
         }
-    }, 60000); // Check every minute for week changes
+    }, 60000 * 60); // Check every hour
 
     return () => clearInterval(timer);
   }, [selectedWeekStart]);
