@@ -60,6 +60,7 @@ const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
     "Vandiego": { name: "Van Diego", color: "text-orange-400" },
     "debora.moura": { name: "Débora", color: "text-purple-400" },
     "Heloysa": { name: "Heloysa", color: "text-blue-400" },
+    "comercial01@cpmarketing.com.br": { name: "Van Diego", color: "text-orange-400" },
     "comercial02@cpmarketing.com.br": { name: "Heloysa", color: "text-blue-400" },
     "comercial03@cpmarketing.com.br": { name: "Débora", color: "text-purple-400" },
 };
