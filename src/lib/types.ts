@@ -3,6 +3,8 @@
 export type GuestInfo = {
   guestName: string;
   instagram: string;
+  sdrId?: string;
+  sdrName?: string;
 };
 
 export type PodcastEpisode = {
@@ -80,9 +82,10 @@ export interface ScheduledEpisode {
     episodeType: EpisodeType;
     episodeTitle: string;
     guests: GuestInfo[];
-    sdrId: string;
-    sdrName: string;
     isFilled: boolean;
+    // Top-level SDR info can be used to track who initiated or last touched the episode card
+    sdrId?: string;
+    sdrName?: string;
 }
 
 export type PodcastSchedule = Record<string, ScheduledEpisode>;
