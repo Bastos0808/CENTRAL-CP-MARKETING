@@ -190,40 +190,41 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   const weeklyBookingCount = useMemo(() => {
     const counts: Record<string, number> = {};
     sdrOrder.forEach(name => {
-        counts[name] = 0;
+      counts[name] = 0;
     });
 
-    if (!selectedWeekStart) return counts;
+    if (!selectedWeekStart) {
+      return counts;
+    }
 
     const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
     const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
 
     Object.values(schedule).forEach(episode => {
-        if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
-            episode.guests.forEach(guest => {
-                const sdrName = guest.sdrName?.toLowerCase();
-                if (sdrName) {
-                    // Robust matching logic
-                    for (const key in sdrUserDisplayMap) {
-                        if (sdrName.includes(key.split('@')[0].split('.')[0])) {
-                            const displayName = sdrUserDisplayMap[key].name;
-                            if (counts.hasOwnProperty(displayName)) {
-                                counts[displayName]++;
-                            }
-                            break; // Exit loop once matched
-                        }
-                    }
-                }
-            });
-        }
+      if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
+        episode.guests.forEach(guest => {
+          if (guest?.sdrName) {
+            const sdrName = guest.sdrName;
+            const displayName = Object.values(sdrUserDisplayMap).find(
+              (v) => v.name === sdrName
+            );
+            if (displayName && counts.hasOwnProperty(displayName.name)) {
+              counts[displayName.name]++;
+            } else if (counts.hasOwnProperty(sdrName)) {
+                // Fallback for names not in map
+                counts[sdrName]++;
+            }
+          }
+        });
+      }
     });
 
     return counts;
-}, [schedule, selectedWeekStart]);
+  }, [schedule, selectedWeekStart]);
 
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
-    const totalSlots = 14; // Corrected total slots
+    const totalSlots = 14;
     let filledSlots = 0;
 
     weeklyEpisodeConfig.forEach(config => {
