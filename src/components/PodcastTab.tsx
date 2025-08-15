@@ -49,12 +49,6 @@ const generateWeeks = (baseDate: Date): Date[] => {
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
 
-const sdrColorsMap: Record<string, { bg: string, text: string, border: string }> = {
-    'Van Diego': { bg: 'bg-blue-900/30', text: 'text-blue-300', border: 'border-blue-400/50' },
-    'Heloysa':   { bg: 'bg-pink-900/30', text: 'text-pink-300', border: 'border-pink-400/50' },
-    'Débora':    { bg: 'bg-green-900/30', text: 'text-green-300', border: 'border-green-400/50' },
-};
-
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
   const { user } = useAuth();
@@ -168,15 +162,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                     Agenda da Semana
                 </CardTitle>
                 <CardDescription>Preencha os convidados para os episódios da semana. O agendamento é colaborativo e salvo automaticamente.</CardDescription>
-                <div className="flex items-center gap-4 pt-2">
-                    <Label className="flex items-center gap-2 text-sm"><Palette className="h-4 w-4" /> Legenda:</Label>
-                    {Object.entries(sdrColorsMap).map(([name, {bg, text, border}]) => (
-                        <div key={name} className={cn("px-3 py-1 rounded-full text-xs font-medium flex items-center border", bg, text, border)}>
-                            <User className="mr-2 h-3 w-3" />
-                            {name}
-                        </div>
-                    ))}
-                </div>
                 <div className="flex items-center gap-2 pt-2">
                     {weeks.map((weekStart, index) => (
                         <Button
@@ -226,11 +211,13 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                             <CardContent className="space-y-4">
                             {episodeData.guests.map((guest, index) => {
                                 const guestSdrName = guest?.sdrName;
-                                const sdrStyle = guestSdrName ? sdrColorsMap[guestSdrName] : null;
 
                                 return (
-                                <div key={index} className={cn("space-y-2 p-3 rounded-lg border transition-colors", sdrStyle ? `${sdrStyle.border} ${sdrStyle.bg}` : 'border-muted/30 bg-muted/30')}>
-                                    <Label className={cn("text-sm", sdrStyle ? sdrStyle.text : 'text-muted-foreground')}>Convidado {index + 1}</Label>
+                                <div key={index} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
+                                    <Label className="text-sm text-muted-foreground">
+                                        Convidado {index + 1}
+                                        {guestSdrName && <span className="font-semibold text-primary"> (Agendado por: {guestSdrName})</span>}
+                                    </Label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="relative">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
