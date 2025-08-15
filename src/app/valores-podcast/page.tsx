@@ -1,61 +1,35 @@
 
+
 import { BackButton } from '@/components/ui/back-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check } from 'lucide-react';
 
 const dayPrices = [
-    { name: "1 Episódio de 1h", value: "R$ 249,00" },
-    { name: "1 Episódio de 2h", value: "R$ 440,00" },
-    { name: "Pacote (4 episódios de 1h)", value: "R$ 840,00" },
-    { name: "Pacote (4 episódios de 2h)", value: "R$ 1.600,00" }
-];
-
-const nightPrices = [
-    { name: "1 Episódio de 1h", value: "R$ 399,00" },
-    { name: "1 Episódio de 2h", value: "R$ 740,00" },
-    { name: "Pacote (4 episódios de 1h)", value: "R$ 1.440,00" },
-    { name: "Pacote (4 episódios de 2h)", value: "R$ 2.800,00" }
+    { name: "Gravação Avulsa (1h) | Seg a Sex (8h-17h)", value: "R$ 249,00" },
+    { name: "Gravação Avulsa (1h) | Seg a Sex (17h-22h)", value: "R$ 399,00" },
 ];
 
 const specialPrices = [
-    { name: "Sábado | 1 Episódio de 1h", value: "R$ 349,00" },
-    { name: "Feriados | 1 Episódio de 1h", value: "R$ 399,00" },
-    { name: "Domingo | 1 Episódio de 1h", value: "R$ 499,00" }
-];
-
-const specialAfternoonPrices = [
-    { name: "Sábado | 1 Episódio de 1h", value: "R$ 399,00" },
-    { name: "Feriados | 1 Episódio de 1h", value: "R$ 549,00" },
-    { name: "Domingo | 1 Episódio de 1h", value: "R$ 549,00" }
-];
-
-const specialNightPrices = [
-    { name: "Sábado | 1 Episódio de 1h", value: "R$ 499,00" },
-    { name: "Feriados | 1 Episódio de 1h", value: "R$ 599,00" },
-    { name: "Domingo | 1 Episódio de 1h", value: "R$ 599,00" }
+    { name: "Sábado (8h-12h) | 1h de gravação", value: "R$ 349,00" },
+    { name: "Sábado (12h-22h) | 1h de gravação", value: "R$ 449,00" },
+    { name: "Domingo e Feriados | 1h de gravação", value: "R$ 599,00" }
 ];
 
 const cutsPrices = [
-    { name: "2 Cortes", value: "R$ 80,00" },
-    { name: "4 Cortes", value: "R$ 140,00" },
-    { name: "6 Cortes", value: "R$ 200,00" },
-    { name: "8 Cortes", value: "R$ 240,00" },
-    { name: "10 Cortes", value: "R$ 300,00" },
-    { name: "12 Cortes", value: "R$ 340,00" },
+    { name: "1 Corte", value: "R$ 50,00" },
+    { name: "5 Cortes", value: "R$ 200,00" },
+    { name: "10 Cortes", value: "R$ 350,00" },
+    { name: "Edição de Episódio (Avulso)", value: "R$ 299,00" },
 ];
 
 const interviewOffer = {
     items: [
         "Entrevista Profissional em Estúdio Completo",
-        "4 Cortes Profissionais editados da Entrevista",
-        "Divulgação do Podcast no YouTube e Spotify",
-        "Título Chamativo e SEO Otimizado",
-        "Direitos de Uso dos Conteúdos",
-        "Experiência de Branding Pessoal",
-        "Seja entrevistado por nossa equipe"
+        "Entrevistador experiente da nossa equipe",
+        "Roteiro de perguntas enviado pelo cliente",
+        "Gravação com qualidade de áudio e vídeo profissional",
     ],
-    price: "R$ 499,00",
-    originalPrice: "R$ 999,00"
+    price: "R$ 599,00",
 };
 
 
@@ -88,15 +62,14 @@ export default function ValoresPodcastPage() {
                        ))}
                     </ul>
                     <div className="text-center pt-4 mt-4 border-t">
-                        <span className="text-lg text-muted-foreground line-through">DE {interviewOffer.originalPrice}</span>
-                        <p className="text-4xl font-bold text-primary">POR {interviewOffer.price}</p>
+                        <p className="text-4xl font-bold text-primary">{interviewOffer.price}</p>
                     </div>
                 </CardContent>
             </Card>
 
              <Card>
                 <CardHeader>
-                    <CardTitle>Segunda a Sexta (Manhã e Tarde)</CardTitle>
+                    <CardTitle>Gravação Avulsa por Hora (Segunda a Sexta)</CardTitle>
                     <CardDescription>Valores para gravação em nosso estúdio profissional.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -116,27 +89,7 @@ export default function ValoresPodcastPage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Segunda a Sexta (Período Noturno)</CardTitle>
-                    <CardDescription>Valores para gravação em nosso estúdio profissional.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ul className="space-y-4">
-                       {nightPrices.map((price) => (
-                         <li key={price.name} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                            <span className="flex items-center gap-3 font-medium">
-                                <Check className="h-5 w-5 text-primary"/>
-                                {price.name}
-                            </span>
-                            <span className="font-bold text-lg text-primary">{price.value}</span>
-                         </li>
-                       ))}
-                    </ul>
-                </CardContent>
-            </Card>
-
-             <Card>
-                <CardHeader>
-                    <CardTitle>Especial (Sábados, Domingos e Feriados) - Manhã</CardTitle>
+                    <CardTitle>Gravação Avulsa por Hora (Fim de Semana e Feriados)</CardTitle>
                     <CardDescription>Valores para gravação em nosso estúdio profissional.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -154,50 +107,10 @@ export default function ValoresPodcastPage() {
                 </CardContent>
             </Card>
 
-             <Card>
-                <CardHeader>
-                    <CardTitle>Especial (Sábados, Domingos e Feriados) - Tarde</CardTitle>
-                    <CardDescription>Valores para gravação em nosso estúdio profissional.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ul className="space-y-4">
-                       {specialAfternoonPrices.map((price) => (
-                         <li key={price.name} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                            <span className="flex items-center gap-3 font-medium">
-                                <Check className="h-5 w-5 text-primary"/>
-                                {price.name}
-                            </span>
-                            <span className="font-bold text-lg text-primary">{price.value}</span>
-                         </li>
-                       ))}
-                    </ul>
-                </CardContent>
-            </Card>
-
             <Card>
                 <CardHeader>
-                    <CardTitle>Especial (Sábados, Domingos e Feriados) - Noite</CardTitle>
-                    <CardDescription>Valores para gravação em nosso estúdio profissional.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ul className="space-y-4">
-                       {specialNightPrices.map((price) => (
-                         <li key={price.name} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                            <span className="flex items-center gap-3 font-medium">
-                                <Check className="h-5 w-5 text-primary"/>
-                                {price.name}
-                            </span>
-                            <span className="font-bold text-lg text-primary">{price.value}</span>
-                         </li>
-                       ))}
-                    </ul>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Valores para Cortes</CardTitle>
-                    <CardDescription>Pacotes de cortes simples e valor para cortes magnéticos.</CardDescription>
+                    <CardTitle>Serviços de Edição</CardTitle>
+                    <CardDescription>Pacotes de cortes e valor para edição completa de episódio.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-4">
@@ -210,13 +123,6 @@ export default function ValoresPodcastPage() {
                             <span className="font-bold text-lg text-primary">{price.value}</span>
                          </li>
                        ))}
-                       <li className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                            <span className="flex items-center gap-3 font-medium">
-                                <Check className="h-5 w-5 text-primary"/>
-                                Cortes Magnéticos (cada)
-                            </span>
-                            <span className="font-bold text-lg text-primary">R$ 50,00</span>
-                         </li>
                     </ul>
                 </CardContent>
             </Card>
