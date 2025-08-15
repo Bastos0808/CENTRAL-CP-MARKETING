@@ -94,7 +94,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
         snapshot.forEach(doc => {
             newSchedule[doc.id] = doc.data() as ScheduledEpisode;
         });
-        setSchedule(newSchedule);
+        setSchedule(prev => ({...prev, ...newSchedule}));
         setIsLoading(false);
     }, (error) => {
         console.error("Error fetching schedule:", error);
@@ -267,11 +267,11 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                       return (
                       <Button
                           key={weekStart.toISOString()}
-                          variant={isSelected ? 'default' : 'outline'}
+                          variant={'outline'}
                           onClick={() => setSelectedWeekStart(weekStart)}
                           className={cn("h-auto flex-col p-3", {
-                              'bg-green-600 border-green-500 text-white hover:bg-green-600': isFilled,
-                              'bg-primary text-primary-foreground': isSelected && !isFilled,
+                              'bg-green-600 border-green-500 text-white hover:bg-green-700': isFilled,
+                              'bg-primary text-primary-foreground hover:bg-primary/90': isSelected && !isFilled,
                           })}
                       >
                          <div className="flex items-center gap-2">
