@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen } from "lucide-react";
+import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen, Trash2 } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo } from "react";
 import { Button } from "./ui/button";
@@ -74,7 +74,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   useEffect(() => {
     const timer = setInterval(() => {
         // Use a fixed date to prevent automatic updates for now, as requested.
-        const baseDate = new Date(); // Or a fixed date for development: new Date('2025-08-18T12:00:00Z')
+        const baseDate = new Date('2025-08-18T12:00:00Z');
         const newWeeks = generateWeeks(baseDate);
         setWeeks(newWeeks);
         if (!newWeeks.some(week => isSameDay(week, selectedWeekStart))) {
@@ -316,3 +316,5 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
+
+    
