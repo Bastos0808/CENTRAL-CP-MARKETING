@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, Loader2, Check, Trash2 } from "lucide-react";
+import { Mic, Loader2, Check, Trash2, User, Instagram } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button } from "./ui/button";
@@ -15,7 +15,6 @@ import { db } from "@/lib/firebase";
 import { collection, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { User, Instagram } from "lucide-react";
 
 export type { PodcastData };
 
@@ -62,10 +61,8 @@ const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
     "debora.moura": { name: "Débora", color: "text-purple-400" },
     "Heloysa": { name: "Heloysa", color: "text-blue-400" },
     "comercial02@cpmarketing.com.br": { name: "Heloysa", color: "text-blue-400" },
+    "comercial03@cpmarketing.com.br": { name: "Débora", color: "text-purple-400" },
 };
-
-// Define the exact order for the scoreboard
-const scoreboardSdrOrder = ["Vandiego", "debora.moura", "Heloysa"];
 
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
@@ -304,7 +301,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const isBooked = !!guest.sdrId;
 
                               const sdrInfo = sdrUserDisplayMap[guestSdrName || ''] || {};
-                              const sdrColorClass = sdrInfo.name === 'Heloysa' ? 'text-blue-400' : sdrInfo.color || 'text-muted-foreground';
+                              const sdrColorClass = sdrInfo.color || 'text-muted-foreground';
                               const displayName = sdrInfo.name || guestSdrName;
 
 
