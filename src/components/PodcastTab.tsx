@@ -5,14 +5,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, Loader2, Check } from "lucide-react";
+import { Mic, Loader2, Check, Trash2 } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button } from "./ui/button";
 import { addDays, format, startOfWeek, isSameDay, getDay } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { User, Instagram } from "lucide-react";
@@ -59,12 +59,12 @@ const generateWeeks = (baseDate: Date): Date[] => {
 
 const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
     "Vandiego": { name: "Van Diego", color: "text-orange-400" },
-    "Debora": { name: "Débora", color: "text-purple-400" },
-    "Heloysa": { name: "Heloysa", color: "text-blue-400" },
+    "debora.moura": { name: "Débora", color: "text-purple-400" },
+    "heloysa.santos": { name: "Heloysa", color: "text-blue-400" },
 };
 
 // Define the exact order for the scoreboard
-const scoreboardSdrOrder: (keyof typeof sdrUserDisplayMap)[] = ["Vandiego", "Debora", "Heloysa"];
+const scoreboardSdrOrder = ["Vandiego", "debora.moura", "heloysa.santos"];
 
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
@@ -95,11 +95,20 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     return () => unsubscribe();
   }, [toast]);
   
- const handleGuestChange = useCallback(async (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
-    if (!user?.uid || !user.username) return;
+  const handleUpdateEpisode = useCallback(async (episodeId: string, updatedEpisode: ScheduledEpisode) => {
+    try {
+        const docRef = doc(db, 'podcast_schedule', episodeId);
+        await setDoc(docRef, updatedEpisode, { merge: true });
+    } catch (error) {
+        console.error("Error saving schedule:", error);
+        toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
+    }
+  }, [toast]);
 
-    // Use username from auth context, which should be the unique key like 'Heloysa'
-    const sdrName = user.username;
+ const handleGuestChange = useCallback(async (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
+    if (!user?.uid || !user.displayName) return;
+
+    const sdrName = user.displayName;
     const sdrId = user.uid;
 
     const episodeToUpdate = schedule[episodeId] || {
@@ -112,31 +121,26 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     };
     
     const guestToUpdate = episodeToUpdate.guests[guestIndex];
-    // A user can only edit a slot if it's empty or if they were the one who booked it.
     if (guestToUpdate && guestToUpdate.sdrId && guestToUpdate.sdrId !== sdrId) {
         toast({ title: "Acesso Negado", description: "Você só pode editar os convidados que você mesmo agendou.", variant: "destructive" });
         return;
     }
 
     const updatedGuests = [...episodeToUpdate.guests];
-    // Ensure the guest array is long enough
     while (updatedGuests.length <= guestIndex) {
         updatedGuests.push({ guestName: '', instagram: '' });
     }
     
     const updatedGuest: GuestInfo = { ...updatedGuests[guestIndex] };
 
-    // Update the specific field
     updatedGuest[field] = value;
     
-    // Check if the slot is now considered "booked"
-    const hasName = field === 'guestName' ? value.trim() !== '' : (updatedGuest.guestName || '').trim() !== '';
-    const hasInsta = field === 'instagram' ? value.trim() !== '' : (updatedGuest.instagram || '').trim() !== '';
+    const hasName = (field === 'guestName' ? value.trim() !== '' : (updatedGuest.guestName || '').trim() !== '');
+    const hasInsta = (field === 'instagram' ? value.trim() !== '' : (updatedGuest.instagram || '').trim() !== '');
 
-    // If either field has content, assign the SDR. If both are empty, clear the SDR.
     if (hasName || hasInsta) {
         updatedGuest.sdrId = sdrId;
-        updatedGuest.sdrName = sdrName; // This should be the unique key
+        updatedGuest.sdrName = sdrName;
     } else {
         delete updatedGuest.sdrId;
         delete updatedGuest.sdrName;
@@ -151,16 +155,36 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
         isFilled: isNowFilled,
     };
     
-    try {
-        const docRef = doc(db, 'podcast_schedule', episodeId);
-        // Using setDoc with merge will create or update the document
-        await setDoc(docRef, updatedEpisode, { merge: true });
-    } catch (error) {
-        console.error("Error saving schedule:", error);
-        toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
-    }
+    await handleUpdateEpisode(episodeId, updatedEpisode);
 
-  }, [user, toast, schedule]);
+  }, [user, toast, schedule, handleUpdateEpisode]);
+
+  const handleDeleteGuest = useCallback(async (episodeId: string, guestIndex: number) => {
+    if (!user?.uid) return;
+    
+    const episodeToUpdate = schedule[episodeId];
+    if (!episodeToUpdate) return;
+    
+    const guestToDelete = episodeToUpdate.guests[guestIndex];
+    if (!guestToDelete || (guestToDelete.sdrId && guestToDelete.sdrId !== user.uid)) {
+        toast({ title: "Ação não permitida", description: "Você não pode apagar o agendamento de outro SDR.", variant: "destructive" });
+        return;
+    }
+    
+    const updatedGuests = [...episodeToUpdate.guests];
+    updatedGuests[guestIndex] = { guestName: '', instagram: '' }; // Clear the slot
+
+    const isNowFilled = updatedGuests.every(g => g && g.sdrName);
+    
+    const updatedEpisode: ScheduledEpisode = {
+        ...episodeToUpdate,
+        guests: updatedGuests,
+        isFilled: isNowFilled
+    };
+
+    await handleUpdateEpisode(episodeId, updatedEpisode);
+
+  }, [user, toast, schedule, handleUpdateEpisode]);
 
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
@@ -275,7 +299,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           {Array.from({ length: config.guestCount }).map((_, index) => {
                               const guest = episodeData.guests[index] || { guestName: '', instagram: '' };
                               const guestSdrName = guest.sdrName;
-                              const isGuestFilled = guest && (guest.guestName && guest.guestName.trim() !== '');
+                              const isBookedByCurrentUser = guest.sdrId === user?.uid;
+                              const isBooked = !!guest.sdrId;
+
                               const sdrColorClass = guestSdrName ? sdrUserDisplayMap[guestSdrName]?.color || 'text-muted-foreground' : 'text-muted-foreground';
                               const displayName = (guestSdrName && sdrUserDisplayMap[guestSdrName]?.name) || guestSdrName;
 
@@ -283,7 +309,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               return (
                               <div key={`${episodeId}-guest-${index}`} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
                                   <div className="flex justify-between items-center">
-                                      <Label htmlFor={`${episodeId}-guest-${index}-name`} className={cn("text-sm", isGuestFilled ? "text-green-400" : "text-muted-foreground")}>
+                                      <Label htmlFor={`${episodeId}-guest-${index}-name`} className={cn("text-sm", isBooked ? "text-green-400" : "text-muted-foreground")}>
                                           Convidado {index + 1}
                                            {displayName && (
                                             <span className={cn("font-semibold ml-2", sdrColorClass)}>
@@ -293,27 +319,38 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                       </Label>
                                   </div>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                      <div className="relative">
+                                      <div className="relative flex items-center">
                                           <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                           <Input 
                                               id={`${episodeId}-guest-${index}-name`}
                                               value={guest?.guestName || ''} 
                                               onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value)} 
                                               placeholder="Nome do convidado" 
-                                              className="pl-10"
-                                              disabled={guest.sdrId && guest.sdrId !== user?.uid}
+                                              className="pl-10 flex-1"
+                                              disabled={isBooked && !isBookedByCurrentUser}
                                           />
                                       </div>
-                                      <div className="relative">
+                                      <div className="relative flex items-center">
                                           <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                           <Input 
                                               id={`${episodeId}-guest-${index}-instagram`}
                                               value={guest?.instagram || ''} 
                                               onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value)} 
                                               placeholder="@instagram" 
-                                              className="pl-10"
-                                              disabled={guest.sdrId && guest.sdrId !== user?.uid}
+                                              className="pl-10 flex-1"
+                                              disabled={isBooked && !isBookedByCurrentUser}
                                           />
+                                           {isBookedByCurrentUser && (
+                                                <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    className="ml-2 h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                    onClick={() => handleDeleteGuest(episodeId, index)}
+                                                    aria-label="Apagar convidado"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            )}
                                       </div>
                                   </div>
                               </div>
@@ -328,3 +365,4 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
+
