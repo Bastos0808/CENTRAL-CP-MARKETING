@@ -59,12 +59,12 @@ const generateWeeks = (baseDate: Date): Date[] => {
 
 const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
     "Vandiego": { name: "Van Diego", color: "text-orange-400" },
-    "debora.moura": { name: "Débora", color: "text-purple-400" },
-    "heloysa.santos": { name: "Heloysa", color: "text-blue-400" },
+    "Debora": { name: "Débora", color: "text-purple-400" },
+    "Heloysa": { name: "Heloysa", color: "text-blue-400" },
 };
 
 // Define the exact order for the scoreboard
-const scoreboardSdrOrder: (keyof typeof sdrUserDisplayMap)[] = ["Vandiego", "debora.moura", "heloysa.santos"];
+const scoreboardSdrOrder: (keyof typeof sdrUserDisplayMap)[] = ["Vandiego", "Debora", "Heloysa"];
 
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
@@ -96,10 +96,10 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [toast]);
   
  const handleGuestChange = useCallback(async (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
-    if (!user?.uid || !user.displayName) return;
+    if (!user?.uid || !user.username) return;
 
-    // Use displayName from auth context, which should be the unique key like 'heloysa.santos'
-    const sdrName = user.displayName;
+    // Use username from auth context, which should be the unique key like 'Heloysa'
+    const sdrName = user.username;
     const sdrId = user.uid;
 
     const episodeToUpdate = schedule[episodeId] || {
@@ -163,32 +163,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [user, toast, schedule]);
 
 
-  const weeklySdrCount = useMemo(() => {
-    const counts: Record<string, number> = {};
-    
-    // Initialize counts for all possible SDRs based on the display map keys
-    Object.keys(sdrUserDisplayMap).forEach(sdrKey => {
-        counts[sdrKey] = 0;
-    });
-
-    weeklyEpisodeConfig.forEach(config => {
-        const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
-        const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
-        const episodeData = schedule[episodeId];
-
-        if (episodeData) {
-            episodeData.guests.forEach(guest => {
-                // Count if there is an sdrName (meaning it's a booked slot) and it exists in our map
-                if (guest && guest.sdrName && counts.hasOwnProperty(guest.sdrName)) {
-                    counts[guest.sdrName]++;
-                }
-            });
-        }
-    });
-
-    return counts;
-  }, [schedule, selectedWeekStart]);
-  
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
     const totalSlots = 12;
     let filledSlots = 0;
@@ -224,25 +198,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   
   return (
     <div className="space-y-6">
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">Agendamentos da Semana</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-                {scoreboardSdrOrder.map((sdrKey, index) => {
-                    const displayName = sdrUserDisplayMap[sdrKey]?.name || sdrKey;
-                    const count = weeklySdrCount[sdrKey] || 0;
-                    return (
-                       <div key={sdrKey} className="flex justify-between items-center text-lg p-2 rounded-md bg-muted/50">
-                           <span className="font-semibold">{index + 1}- {displayName}</span>
-                           <span className="font-bold text-xl text-primary bg-background border px-3 py-1 rounded-md">
-                             {count}
-                           </span>
-                       </div>
-                    );
-                })}
-            </CardContent>
-        </Card>
       <Card>
           <CardHeader>
               <CardTitle>
@@ -373,5 +328,3 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
-
-    
