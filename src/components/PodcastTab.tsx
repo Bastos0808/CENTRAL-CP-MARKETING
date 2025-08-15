@@ -46,14 +46,12 @@ const generateWeeks = (baseDate: Date): Date[] => {
     // getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday
     const today = getDay(baseDate); 
     
-    // If today is Saturday (6) or Sunday (0), start the calendar from next Monday.
+    // Always start from the current week's Monday.
     let startOfCurrentWeek = startOfWeek(baseDate, { weekStartsOn: 1 });
-    if (today === 6 || today === 0) {
-        startOfCurrentWeek = addDays(startOfCurrentWeek, 7);
-    }
     
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
+
 
 const sdrUserDisplayMap: Record<string, string> = {
     "Vandiego": "Van Diego",
@@ -254,10 +252,10 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           key={weekStart.toISOString()}
                           variant={'outline'}
                           onClick={() => setSelectedWeekStart(weekStart)}
-                          className={cn("h-auto flex-col p-3", {
-                              'bg-green-600 border-green-500 text-white hover:bg-green-700': isFilled && !isSelected,
-                              'bg-green-700 border-green-600 text-white ring-2 ring-white ring-offset-2 ring-offset-background': isFilled && isSelected,
+                           className={cn("h-auto flex-col p-3 transition-all", {
+                              'bg-green-600 border-green-500 text-white hover:bg-green-600 hover:text-white ring-green-500': isFilled,
                               'bg-primary text-primary-foreground hover:bg-primary/90': isSelected && !isFilled,
+                              'ring-2 ring-primary ring-offset-2 ring-offset-background': isSelected,
                           })}
                       >
                          <div className="flex items-center gap-2">
@@ -285,20 +283,22 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                       isFilled: false,
                   };
                   
+                  const isEpisodeFilled = episodeData.guests.every(g => g && g.sdrName);
+
                   return (
                       <Card key={episodeId} className="bg-card/50">
                           <CardHeader>
                               <div className="flex items-center justify-between">
-                                  <CardTitle className={cn("font-headline flex items-center text-base", episodeData.isFilled && "text-green-400")}>
+                                  <CardTitle className={cn("font-headline flex items-center text-base", isEpisodeFilled && "text-green-400")}>
                                       <Mic className="mr-3 h-5 w-5" />
                                       {episodeData.episodeTitle}
                                   </CardTitle>
                                   <div className="flex items-center space-x-2">
                                       <Checkbox
                                           id={`${episodeId}-filled`}
-                                          checked={episodeData.isFilled}
+                                          checked={isEpisodeFilled}
                                           disabled
-                                          className={cn("h-6 w-6 rounded-md border-2", episodeData.isFilled ? "border-green-400 data-[state=checked]:bg-green-400" : "border-primary")}
+                                          className={cn("h-6 w-6 rounded-md border-2", isEpisodeFilled ? "border-green-400 data-[state=checked]:bg-green-400" : "border-primary")}
                                       />
                                       <Label htmlFor={`${episodeId}-filled`} className="font-normal cursor-pointer text-base">
                                           Preenchido
