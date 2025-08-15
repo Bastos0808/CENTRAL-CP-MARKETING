@@ -60,11 +60,12 @@ const generateWeeks = (baseDate: Date): Date[] => {
 const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
     "Vandiego": { name: "Van Diego", color: "text-orange-400" },
     "debora.moura": { name: "Débora", color: "text-purple-400" },
-    "heloysa.santos": { name: "Heloysa", color: "text-blue-400" },
+    "Heloysa": { name: "Heloysa", color: "text-blue-400" },
+    "comercial02@cpmarketing.com.br": { name: "Heloysa", color: "text-blue-400" },
 };
 
 // Define the exact order for the scoreboard
-const scoreboardSdrOrder = ["Vandiego", "debora.moura", "heloysa.santos"];
+const scoreboardSdrOrder = ["Vandiego", "debora.moura", "Heloysa"];
 
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
@@ -302,8 +303,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const isBookedByCurrentUser = guest.sdrId === user?.uid;
                               const isBooked = !!guest.sdrId;
 
-                              const sdrColorClass = guestSdrName ? sdrUserDisplayMap[guestSdrName]?.color || 'text-muted-foreground' : 'text-muted-foreground';
-                              const displayName = (guestSdrName && sdrUserDisplayMap[guestSdrName]?.name) || guestSdrName;
+                              const sdrInfo = sdrUserDisplayMap[guestSdrName || ''] || {};
+                              const sdrColorClass = sdrInfo.name === 'Heloysa' ? 'text-blue-400' : sdrInfo.color || 'text-muted-foreground';
+                              const displayName = sdrInfo.name || guestSdrName;
 
 
                               return (
@@ -365,4 +367,3 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
-
