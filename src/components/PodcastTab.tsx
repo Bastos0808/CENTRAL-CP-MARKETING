@@ -202,16 +202,17 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     Object.values(schedule).forEach(episode => {
         if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
             episode.guests.forEach(guest => {
-                if (guest.sdrName) {
-                    const sdrInfo = Object.values(sdrUserDisplayMap).find(info => info.name === guest.sdrName);
-                    if (sdrInfo) {
-                        const sdrDisplayName = sdrInfo.name;
-                        if (counts.hasOwnProperty(sdrDisplayName)) {
+                const sdrName = guest.sdrName;
+                if (sdrName) {
+                    const matchedSdr = Object.values(sdrUserDisplayMap).find(info => info.name.toLowerCase() === sdrName.toLowerCase());
+                    if (matchedSdr) {
+                         const sdrDisplayName = matchedSdr.name;
+                         if (counts.hasOwnProperty(sdrDisplayName)) {
                            counts[sdrDisplayName]++;
                         }
-                    } else if (counts.hasOwnProperty(guest.sdrName)) {
-                        // Fallback for direct name match
-                        counts[guest.sdrName]++;
+                    } else if (counts.hasOwnProperty(sdrName)) {
+                        // Fallback for direct name match if not in map
+                        counts[sdrName]++;
                     }
                 }
             });
@@ -314,13 +315,14 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                   const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
                   const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
                   
-                  const episodeData = schedule[episodeId] || {
-                      id: episodeId,
-                      date: format(dateForDay, 'yyyy-MM-dd'),
-                      episodeType: config.type,
-                      episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
-                      guests: Array.from({ length: config.guestCount }, () => ({ guestName: '', instagram: '' })),
-                      isFilled: false,
+                  const existingData = schedule[episodeId];
+                  const episodeData: ScheduledEpisode = {
+                        id: episodeId,
+                        date: format(dateForDay, 'yyyy-MM-dd'),
+                        episodeType: config.type,
+                        episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
+                        guests: existingData?.guests || Array.from({ length: config.guestCount }, () => ({ guestName: '', instagram: '' })),
+                        isFilled: existingData?.isFilled || false,
                   };
                   
                   const isEpisodeFilled = episodeData.guests.every(g => g && g.sdrName);
@@ -353,7 +355,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const isBookedByCurrentUser = guest.sdrId === user?.uid;
                               const isBooked = !!guest.sdrId;
 
-                              const sdrInfo = sdrUserDisplayMap[guestSdrName?.toLowerCase() || ''] || {};
+                              const sdrInfo = Object.values(sdrUserDisplayMap).find(info => info.name.toLowerCase() === guestSdrName?.toLowerCase()) || {};
                               const sdrColorClass = sdrInfo.color || 'text-muted-foreground';
                               const displayName = sdrInfo.name || guestSdrName;
 
@@ -417,3 +419,5 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
+
+    
