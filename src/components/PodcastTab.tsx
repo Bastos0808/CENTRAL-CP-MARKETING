@@ -188,36 +188,33 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [user, toast, schedule, handleUpdateEpisode]);
   
   const weeklyBookingCount = useMemo(() => {
-    const counts: Record<string, number> = {};
+    const counts: { [sdrName: string]: number } = {};
 
+    sdrOrder.forEach(name => {
+      counts[name] = 0;
+    });
+    
     if (!selectedWeekStart || !schedule) {
-      return sdrOrder.reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
+      return counts;
     }
 
     const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
     const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
 
-    // Initialize counts for all SDRs in the order
-    sdrOrder.forEach(name => {
-        counts[name] = 0;
-    });
-
     Object.values(schedule).forEach(episode => {
-      // Check if the episode is in the selected week
       if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
         episode.guests.forEach(guest => {
           if (guest?.sdrName) {
             const guestSdrName = guest.sdrName;
-            
-            // Find the display name from the map (e.g., "heloysa.santos" -> "Heloysa")
-            const sdrInfo = Object.values(sdrUserDisplayMap).find(info =>
+            const mappedSdr = Object.values(sdrUserDisplayMap).find(info => 
               guestSdrName.toLowerCase().includes(info.name.toLowerCase())
             );
+            const displayName = mappedSdr ? mappedSdr.name : guestSdrName;
             
-            const displayName = sdrInfo ? sdrInfo.name : guestSdrName;
-
             if (counts.hasOwnProperty(displayName)) {
-              counts[displayName]++;
+               counts[displayName]++;
+            } else {
+               counts[displayName] = 1;
             }
           }
         });
@@ -225,7 +222,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     });
 
     return counts;
-  }, [schedule, selectedWeekStart]);
+}, [schedule, selectedWeekStart]);
 
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
@@ -305,12 +302,12 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                       <CardTitle className="text-base font-semibold flex items-center gap-2"><Users className="h-5 w-5 text-primary"/> Agendamentos da Semana</CardTitle>
                   </CardHeader>
                   <CardContent className="grid grid-cols-3 gap-4">
-                        {sdrOrder.map(sdrName => {
+                        {Object.entries(weeklyBookingCount).map(([sdrName, count]) => {
                              const sdrInfo = Object.values(sdrUserDisplayMap).find(info => info.name === sdrName) || { color: 'text-foreground' };
                              return (
                                 <div key={sdrName} className="p-4 border rounded-lg bg-muted/50 flex flex-col items-center justify-center">
                                     <Label className={cn("text-lg font-bold", sdrInfo.color)}>{sdrName}</Label>
-                                    <p className="text-3xl font-bold">{weeklyBookingCount[sdrName] || 0}</p>
+                                    <p className="text-3xl font-bold">{count}</p>
                                 </div>
                              )
                         })}
