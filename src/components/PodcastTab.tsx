@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -94,38 +93,46 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     return () => unsubscribe();
   }, [toast]);
   
-  const handleGuestChange = useCallback((episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
+  const handleGuestChange = useCallback((episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string, config: EpisodeConfig) => {
     if (!user?.uid || !user.displayName) return;
 
-    // Optimistic UI update using Immer for safety
     setSchedule(prevSchedule => {
         const newSchedule = produce(prevSchedule, draft => {
+            if (!draft[episodeId]) {
+                 const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
+                 draft[episodeId] = {
+                    id: episodeId,
+                    date: format(dateForDay, 'yyyy-MM-dd'),
+                    episodeType: config.type,
+                    episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
+                    guests: Array(config.guestCount).fill({ guestName: '', instagram: '' }),
+                    isFilled: false,
+                };
+            }
+            
             const episode = draft[episodeId];
-            if (!episode) return;
-    
+            if (!episode.guests[guestIndex]) {
+                 episode.guests[guestIndex] = { guestName: '', instagram: '' };
+            }
+
             const guest = episode.guests[guestIndex];
             guest[field] = value;
-    
-            const sdrName = user.displayName || '';
-    
-            // Check if either field has content to assign the SDR
-            if (guest.guestName.trim() !== '' || guest.instagram.trim() !== '') {
+            
+            if (value.trim() !== '') {
                 guest.sdrId = user.uid;
-                guest.sdrName = sdrName;
-            } else {
-                // If both are empty, clear the SDR info
-                delete guest.sdrId;
-                delete guest.sdrName;
+                guest.sdrName = user.displayName || '';
+            } else if (guest.guestName.trim() === '' && guest.instagram.trim() === '') {
+                 delete guest.sdrId;
+                 delete guest.sdrName;
             }
-    
+
             episode.isFilled = episode.guests.every(g => g && g.guestName.trim() !== '');
         });
 
-        // Debounced Firestore Update
         if (debounceTimeoutRef.current) {
             clearTimeout(debounceTimeoutRef.current);
         }
-    
+
         debounceTimeoutRef.current = setTimeout(async () => {
             const episodeToSave = newSchedule[episodeId];
             if (episodeToSave) {
@@ -135,14 +142,14 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                 } catch (error) {
                     console.error("Error auto-saving schedule:", error);
                     toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
-                    // Optionally revert state here, though optimistic UI often doesn't
                 }
             }
-        }, 1000); // 1-second debounce
+        }, 1000);
 
         return newSchedule;
     });
-}, [user, toast]);
+  }, [user, toast, selectedWeekStart]);
+
 
 
   if (isLoading) {
@@ -223,7 +230,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input 
                                                 value={guest?.guestName || ''} 
-                                                onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value)} 
+                                                onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value, config)} 
                                                 placeholder="Nome do convidado" 
                                                 className="pl-10"
                                             />
@@ -232,7 +239,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                             <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                             <Input 
                                                 value={guest?.instagram || ''} 
-                                                onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value)} 
+                                                onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value, config)} 
                                                 placeholder="@instagram" 
                                                 className="pl-10"
                                             />
