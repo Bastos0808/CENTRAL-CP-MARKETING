@@ -914,10 +914,6 @@ export default function RotinaSDRPage() {
                           <CalendarDays className="mr-3 h-6 w-6" />
                           {activeDay}
                       </h3>
-                      <div className="flex items-center gap-2">
-                          <Label htmlFor="holiday-switch">É feriado?</Label>
-                          <Switch id="holiday-switch" checked={isHoliday} onCheckedChange={handleHolidayToggle} />
-                      </div>
                   </div>
                   
                   {previousDayTasks && Array.isArray(previousDayTasks) && previousDayTasks.length > 0 && !isSaturday && !isHoliday && (
@@ -1009,6 +1005,10 @@ export default function RotinaSDRPage() {
                                 onSave={handleExtraTasksChange}
                              />
                         </div>
+                        <div className="flex justify-end items-center gap-4 pt-4">
+                          <Label htmlFor="holiday-switch">Marcar dia como feriado?</Label>
+                          <Switch id="holiday-switch" checked={isHoliday} onCheckedChange={handleHolidayToggle} />
+                      </div>
                     </div>
                   )}
               </CardContent>
