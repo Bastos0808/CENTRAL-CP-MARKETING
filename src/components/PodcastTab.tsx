@@ -60,9 +60,9 @@ const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
     "vandiego": { name: "Van Diego", color: "text-orange-400" },
     "debora.moura": { name: "Débora", color: "text-purple-400" },
     "heloysa.santos": { name: "Heloysa", color: "text-blue-400" },
-    "comercial01@cpmarketing.com.br": { name: "Van Diego", color: "text-orange-400" },
-    "comercial02@cpmarketing.com.br": { name: "Heloysa", color: "text-blue-400" },
-    "comercial03@cpmarketing.com.br": { name: "Débora", color: "text-purple-400" },
+    "comercial01": { name: "Van Diego", color: "text-orange-400" },
+    "comercial02": { name: "Heloysa", color: "text-blue-400" },
+    "comercial03": { name: "Débora", color: "text-purple-400" },
 };
 
 const sdrOrder = ["Van Diego", "Heloysa", "Débora"];
@@ -188,14 +188,10 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [user, toast, schedule, handleUpdateEpisode]);
   
   const weeklyBookingCount = useMemo(() => {
-    const counts: { [sdrName: string]: number } = {};
+    const rawCounts: { [sdrName: string]: number } = {};
 
-    sdrOrder.forEach(name => {
-      counts[name] = 0;
-    });
-    
     if (!selectedWeekStart || !schedule) {
-      return counts;
+      return sdrOrder.reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
     }
 
     const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
@@ -206,23 +202,35 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
         episode.guests.forEach(guest => {
           if (guest?.sdrName) {
             const guestSdrName = guest.sdrName;
-            const mappedSdr = Object.values(sdrUserDisplayMap).find(info => 
-              guestSdrName.toLowerCase().includes(info.name.toLowerCase())
-            );
-            const displayName = mappedSdr ? mappedSdr.name : guestSdrName;
-            
-            if (counts.hasOwnProperty(displayName)) {
-               counts[displayName]++;
+            if (rawCounts[guestSdrName]) {
+              rawCounts[guestSdrName]++;
             } else {
-               counts[displayName] = 1;
+              rawCounts[guestSdrName] = 1;
             }
           }
         });
       }
     });
 
-    return counts;
-}, [schedule, selectedWeekStart]);
+    const finalCounts = sdrOrder.reduce((acc, name) => ({ ...acc, [name]: 0 }), {} as Record<string, number>);
+
+    Object.entries(rawCounts).forEach(([sdrName, count]) => {
+        const normalizedSdrName = sdrName.toLowerCase().replace(/\s+/g, '').replace('@cpmarketing.com.br', '');
+        let matched = false;
+        for (const [key, value] of Object.entries(sdrUserDisplayMap)) {
+            if (normalizedSdrName.includes(key)) {
+                finalCounts[value.name] = (finalCounts[value.name] || 0) + count;
+                matched = true;
+                break;
+            }
+        }
+        if (!matched && finalCounts.hasOwnProperty(sdrName)) {
+             finalCounts[sdrName] = (finalCounts[sdrName] || 0) + count;
+        }
+    });
+
+    return finalCounts;
+  }, [schedule, selectedWeekStart]);
 
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
