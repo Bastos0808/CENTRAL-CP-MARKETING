@@ -44,11 +44,14 @@ const weeklyEpisodeConfig: EpisodeConfig[] = [
 
 const generateWeeks = (baseDate: Date): Date[] => {
     // getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday
-    const today = getDay(baseDate); 
+    const today = getDay(baseDate);
     
     // If it's Saturday (6) or Sunday (0), start from next Monday.
     // Otherwise, start from the current week's Monday.
     let startOfCurrentWeek = startOfWeek(baseDate, { weekStartsOn: 1 });
+    if (today === 6 || today === 0) {
+      startOfCurrentWeek = addDays(startOfCurrentWeek, 7);
+    }
     
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
@@ -177,7 +180,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
             episodeData.guests.forEach(guest => {
                 // Count if there is an sdrName (meaning it's a booked slot)
                 if (guest && guest.sdrName && counts.hasOwnProperty(guest.sdrName)) {
-                    // Use the sdrName key directly for counting
                     counts[guest.sdrName]++;
                 }
             });
