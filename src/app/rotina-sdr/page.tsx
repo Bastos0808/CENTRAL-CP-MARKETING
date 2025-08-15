@@ -1005,10 +1005,6 @@ export default function RotinaSDRPage() {
                                 onSave={handleExtraTasksChange}
                              />
                         </div>
-                        <div className="flex justify-end items-center gap-4 pt-4">
-                          <Label htmlFor="holiday-switch">Marcar dia como feriado?</Label>
-                          <Switch id="holiday-switch" checked={isHoliday} onCheckedChange={handleHolidayToggle} />
-                      </div>
                     </div>
                   )}
               </CardContent>
@@ -1038,7 +1034,13 @@ export default function RotinaSDRPage() {
               )}
               <TeamRanking />
           </div>
-
+          
+          {!isSaturday && (
+            <div className="flex justify-end items-center gap-4 pt-4">
+              <Label htmlFor="holiday-switch">Marcar dia como feriado?</Label>
+              <Switch id="holiday-switch" checked={isHoliday} onCheckedChange={handleHolidayToggle} />
+            </div>
+          )}
       </div>
     );
   }

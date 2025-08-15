@@ -31,7 +31,7 @@ export const allTasks: AnyTask[] = [
     { id: "m-5", label: "Leads (Automação)", type: 'counter', goal: 100 },
     { id: "a-3", label: "Ligações", type: 'counter', goal: 12 },
     { id: "daily_meetings", label: "Consultorias", type: 'counter', goal: 2 },
-    { id: "podcasts", label: "Confirmado para o Podcast", type: 'counter', goal: 4 },
+    { id: "podcasts", label: "Confirmado para o Podcast", type: 'counter' },
     
     // Checkbox Tasks (ordem pode ser mantida ou ajustada se necessário)
     { id: "a-1", label: "Responder a todas as mensagens e e-mails recebidos.", type: 'checkbox' },
