@@ -21,7 +21,7 @@ export const packageOptions = {
     "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
 };
 
-const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik02My4wNjY2IDYxLjAwMzlDNjAuMDU4NSA2MS4wMDM5IDU3LjQ0OTMgNTkuOTQzNSA1NS42NTQgNTguMTQ4MkM1MS44NjM3IDU0LjM1NzkgNTEuODYzNyA0Ny44NDAyIDU1LjY1NCA0NC4wNDk5TDc2Ljg2MjggMjMuNDUwMkM4MC42NTMxIDE5LjY1OTkgODcuMjIyOCAxOS42NTk5IDkxLjAxMzEgMjMuNDUwMkMxMDAuNTU3IDMyLjk5NDYgMTAwLjU1NyA0OC40OTQ2IDkxLjAxMzEgNTguMDM5MUw2OS44MDM1IDc5LjgyOTdDNDcuMjE2MyA4Mi43ODg5IDQzLjgwMSA3OS44OTMgNDAuOTkzNSA4Mi43MTI2QzM3LjIzNzUgODQuMTk0NSAzMy4zNjcxIDg0LjE5NDVIMTEuMDA2MUwzMC42NjEgNjEuMDAzOUw0MS42NDI0IDUwLjg0NzFMNTIuNjIzOCA2MS44Mzg0TDQxLjY0MjQgNzIuODI5N0wzMC42NjEgNjEuMDAzOVoiIGZpbGw9IiMwMzBCNjAiLz4KPHBhdGggZD0iTTYzLjA2NjYgNjEuMDAzOUM2MC4wNTg1IDYxLjAwMzkgNTcuNDQ5MyA1OS45NDM1IDU1LjY1NCA1OC4xNDgyQzUxLjg2MzcgNTQuMzU3OSA1MS44NjM3IDQ3Ljg0MDIgNTUuNjU0IDQ0LjA0OTlMNzYuODYyOCAyMy40NTAyQzgwLjY1MzEgMTkuNjU5OSA4Ny4yMjI4IDE5LjY1OTkgOTEuMDEzMSAyMy40NTAyQzEwMC41NTcgMzIuOTk0NiAxMDAuNTU3IDQ4LjQ5NDYgOTEuMDEzMSA1OC4wMzkxTDY5LjgwMzUgNzkuODI5N0M2OC4wMDgzIDgxLjYyNDkgNjUuMzk4MSA4Mi42ODUzIDYyLjM5IDgyLjY4NTNINDQuMDA4Nkw1MS43MjkgOTAuNDA1N0w2Mi4wNDEgODIuNjgzOEw2Ni4xMzM2IDc4LjU5MTMgNzIuNTg0NiA3OC41OTEzIDc2LjY3NzEgODIuNjgzOEwxMTIuMDQxIDExOC4wNDhDMTIzLjMyNSAxMjkuMzMyIDEyMy4zMjUgMTQ3LjQ0MyAxMTIuMDQxIDE1OC43MjdDMTExLjE0NCAxNTkuNjIzIDEwOS45MTkgMTYwLjMxMiAxMDguNjU0IDE2MC44MzdINzguMTkxN0w4Ni40MzM4IDE1Mi41NzVDOTMuMDkzNiAxNDUuODU0IDkzLjA5MzYgMTM1LjEyNyA4Ni40MzM4IDEyOC40MDZMNzYuNTEwNCAxMTguMjc2QzcyLjQxNzkgMTE0LjE4NCA2NS45NjY5IDExNC4xODQgNjEuODc0NCAxMTguMjc2TDQzLjgwMSA5OS44OTNDNDAuOTkzNSA4Mi43MTI2IDM3LjIzNzUgODQuMTk0NSAzMy4zNjcxIDg0LjE5NDVIMTUuNDEzN0wxMS4wMDYxIDg4LjYwMjFIMzMuMzY3MUMzOC42MzQ4IDg4LjYwMjEgNDMuNTUzIDg2LjQ1MjIgNDcuMjE2MyA4Mi43ODg5TDY1LjY5NDIgNjQuMzA5NUM2OC40NTQxIDYxLjU0OTUgNjYuODg2MyA1Ny4wMzAxIDYzLjA2NjYgNjEuMDAzOVoiIGZpbGw9IiNGRTU0MTIiLz4KPC9zdmc+";
+const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiPgo8cGF0aCBkPSJNNjMuMDY2NiA2MS4wMDM5QzYwLjA1ODUgNjEuMDAzOSA1Ny40NDkzIDU5Ljk0MzUgNTUuNjU0IDU4LjE0ODJDNTEuODYzNyA1NC4zNTc5IDUxLjg2MzcgNDcuODQwMiA1NS42NTQgNDQuMDQ5OUw3Ni44NjI4IDIzLjQ1MDJDODAuNjUzMSAxOS42NTk5IDg3LjIyMjggMTkuNjU5OSA5MS4wMTMxIDIzLjQ1MDJDMTAwLjU1NyAzMi45OTQ2IDEwMC41NTcgNDguNDk0NiA5MS4wMTMxIDU4LjAzOTFMNjkuODAzNSA3OS44Mjk3QzY4LjAwODMgODEuNjI0OSA2NS4zOTgxIDgyLjY4NTMgNjIuMzkgODIuNjg1M0g0NC4wMDg2TDUxLjcyOSA5MC40MDU3TDYyLjA0MSA4Mi42ODM4TDY2LjEzMzYgNzguNTkxMyA3Mi41ODQ2IDc4LjU5MTMgNzYuNjc3MSA4Mi42ODM4TDExMi4wNDEgMTE4LjA0OEMxMjMuMzI1IDEyOS4zMzIgMTIzLjMyNSAxNDcuNDQzIDExMi4wNDEgMTU4LjcyN0MxMTEuMTQ0IDE1OS42MjMgMTA5LjkxOSAxNjAuMzEyIDEwOC42NTQgMTYwLjgzN0g3OC4xOTE3TDg2LjQzMzggMTUyLjU3NUM5My4wOTM2IDE0NS44NTQgOTMuMDkzNiAxMzUuMTI3IDg2LjQzMzggMTI4LjQwNkw3Ni41MTA0IDExOC4yNzZDNzIuNDE3OSAxMTQuMTg0IDY1Ljk2NjkgMTE0LjE4NCA2MS44NzQ0IDExOC4yNzZMNDMuODAxIDk5Ljg5M0M0MC45OTM1IDgyLjcxMjYgMzcuMjM3NSA4NC4xOTQ1IDMzLjM2NzEgODQuMTk0NUgxNS40MTM3TDExLjAwNjEgODguNjAyMUgzMy4zNjcxQzM4LjYzNDggODguNjAyMSA0My41NTMgODYuNDUyMiA0Ny4yMTYzIDgyLjc4ODlMNjUuNjk0MiA2NC4zMDk1QzY4LjQ1NDEgNjEuNTQ5NSA2Ni44ODYzIDU3LjAzMDEgNjMuMDY2NiA2MS4wMDM5WiIgZmlsbD0iI0ZFNTQxMiIvPgo8cGF0aCBkPSJNMzAuNjYxIDc5LjgyOTdMNDEuNjQyNCA2OC44Mzg0TDMwLjY2MSA1OC44NDcxTDQxLjY0MjQgNDYuODU1N0w1Mi42MjM4IDU3Ljg0NzFMNDEuNjQyNCA2OC44Mzg0TDc2Ljg2MjggODIuNjg1M0M4Mi4wOTc1IDgzLjc4MjUgODMuMDMzIDg5LjU4MTUgNzguNjY1NyA5My4xMzE5TDYxLjg3NDQgMTEwLjM3M0w0My44MDEgOTEuNjk4Nkw2MS44NzQ0IDczLjYyNDNMNzguNjY1NyA1Ni44NTM5TDg0LjM5MzYgNjIuNjExOUw2MS44NzQ0IDg1LjEzMTZMNDMuODAxIDEwMy4xNjVMNjEuODc0NCAxMjEuMjM5TDg5LjIxMTcgOTMuODUxOUMxMTIuODk0IDcxLjQ3OTYgODQuMzkzNiA0My4wOTU2IDYwLjcwNzYgNjUuNDY3OUwzMC42NjEgOTAuNDEyOEwzMC42NjEgNzkuODI5N1oiIGZpbGw9IiMwMzBCNjAiLz4KPC9nPgogIDxkZWZzPgogICAgPGNsaXBQYXRoIGlkPSJjbGlwMCI+CiAgICAgICAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSIxNzMiIGZpbGw9IndoaXRlIi8+CiAgICA8L2NsaXBQYXRoPgogIDwvZGVmcz4KPC9zdmc+Cg==";
 
 interface GeneratedProposalProps extends ProposalFormValues {
   investmentValue: string;
@@ -58,7 +58,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 <div className="max-w-7xl">
                     <p className="text-2xl font-normal text-primary mb-4">SOBRE A PARCERIA</p>
                     <h2 className="text-7xl font-bold mb-8 tracking-tighter">Nós não somos uma agência.<br/>Somos seu motor de crescimento.</h2>
-                    <div className="grid grid-cols-2 gap-x-12 gap-y-6 text-2xl font-normal text-gray-300">
+                    <div className="grid grid-cols-2 gap-x-12 gap-y-6 text-3xl font-normal text-gray-300">
                         <p>Nosso trabalho é transformar potencial em performance, e performance em lucro. Não entregamos posts, entregamos um sistema. Não gerenciamos redes, construímos ativos que geram valor para o seu negócio 24/7.</p>
                         <p>Enquanto outras agências se concentram em métricas de vaidade, nossa obsessão é o resultado que impacta sua última linha: o faturamento. Esta proposta é o primeiro passo para profissionalizar sua presença digital e construir uma máquina de vendas previsível.</p>
                     </div>
@@ -70,7 +70,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 <div className="max-w-7xl">
                     <p className="text-2xl font-normal text-primary mb-4">NOSSOS OBJETIVOS</p>
                     <h2 className="text-7xl font-bold mb-8 tracking-tighter">O plano é claro: dominar, não competir.</h2>
-                    <p className="text-2xl font-normal text-gray-300 max-w-5xl mb-12">Para isso, focaremos em três pilares que, juntos, criam uma base sólida para o crescimento acelerado e sustentável da sua marca no ambiente digital.</p>
+                    <p className="text-3xl font-normal text-gray-300 max-w-5xl mb-12">Para isso, focaremos em três pilares que, juntos, criam uma base sólida para o crescimento acelerado e sustentável da sua marca no ambiente digital.</p>
                     <div className="grid grid-cols-3 gap-8 text-xl font-normal">
                         <div className="border-t-2 border-primary pt-4"><strong className="text-white text-2xl">Posicionamento de Autoridade:</strong><br/>Transformar sua marca na primeira e única opção na mente do seu cliente ideal.</div>
                         <div className="border-t-2 border-primary pt-4"><strong className="text-white text-2xl">Aquisição de Clientes:</strong><br/>Implementar um sistema de aquisição de clientes que funcione de forma previsível e escalável.</div>
@@ -85,7 +85,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                     <div className="max-w-2xl">
                         <p className="text-2xl font-normal text-primary mb-4">NOSSOS DIFERENCIAIS</p>
                         <h2 className="text-7xl font-bold mb-8 tracking-tighter">Por que a CP é a escolha certa?</h2>
-                        <p className="text-2xl font-normal text-gray-300">Em um mercado comoditizado, nosso processo e nossa cultura são nosso maior ativo. É isso que nos permite entregar resultados onde outros entregam apenas relatórios.</p>
+                        <p className="text-3xl font-normal text-gray-300">Em um mercado comoditizado, nosso processo e nossa cultura são nosso maior ativo. É isso que nos permite entregar resultados onde outros entregam apenas relatórios.</p>
                     </div>
                      <div className="text-2xl font-normal text-gray-300 space-y-8">
                         <div className="border-l-2 border-primary pl-6 py-2">
@@ -132,7 +132,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 <div className="max-w-6xl">
                     <p className="text-2xl font-normal text-primary mb-4">PLANO DE AÇÃO</p>
                     <h2 className="text-7xl font-bold mb-8 tracking-tighter">Por que este plano é ideal para você?</h2>
-                    <div className="text-2xl font-normal text-gray-300 space-y-6 max-w-5xl">
+                    <div className="text-3xl font-normal text-gray-300 space-y-6 max-w-5xl">
                         <p>Analisamos seu cenário atual e seus objetivos de crescimento. Com base nisso, montamos uma proposta que não é apenas um "pacote de serviços", mas um plano estratégico desenhado para atacar suas maiores alavancas de crescimento agora.</p>
                         {(showMarketing || showTraffic) && <p><strong className="text-white">A base de Marketing e Tráfego Pago</strong> garante que sua marca seja vista pelo público certo, enquanto construímos uma base sólida de autoridade e conteúdo.</p>}
                         {showPodcast && <p><strong className="text-white">A inclusão do Podcast</strong> é o seu acelerador de autoridade. É a ferramenta que vai te posicionar como a referência do seu mercado, criando uma conexão profunda com a audiência.</p>}
@@ -146,7 +146,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20 text-center">
                  <p className="text-2xl font-normal text-primary mb-4">INVESTIMENTO</p>
                  <h2 className="text-7xl font-bold tracking-tighter">Proposta Financeira</h2>
-                 <p className="text-2xl font-normal text-gray-300 mt-4 mb-12">Um investimento claro para um retorno exponencial.</p>
+                 <p className="text-3xl font-normal text-gray-300 mt-4 mb-12">Um investimento claro para um retorno exponencial.</p>
                  <div className="bg-gray-900/50 p-12 rounded-lg border border-gray-800">
                     <p className="text-2xl text-gray-300">Valor do investimento mensal</p>
                     <p className="text-8xl font-bold text-primary my-4 tracking-tighter">{investmentValue}</p>
