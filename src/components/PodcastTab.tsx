@@ -48,11 +48,11 @@ const generateWeeks = (baseDate: Date): Date[] => {
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
 
-const sdrList = [
-    { name: "Van Diego" },
-    { name: "Débora" },
-    { name: "Heloysa" },
-];
+const sdrUserDisplayMap: Record<string, string> = {
+    "Vandiego": "Van Diego",
+    "heloysa.santos": "Heloysa",
+    "debora.moura": "Débora",
+};
 
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
@@ -169,12 +169,8 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [user, toast, selectedWeekStart]);
 
 
- const weeklySdrCount = useMemo(() => {
-    const counts: Record<string, number> = {
-        "Van Diego": 0,
-        "Débora": 0,
-        "Heloysa": 0,
-    };
+  const weeklySdrCount = useMemo(() => {
+    const counts: Record<string, number> = Object.values(sdrUserDisplayMap).reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
 
     weeklyEpisodeConfig.forEach(config => {
         const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
@@ -183,8 +179,11 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
         if (episodeData) {
             episodeData.guests.forEach(guest => {
-                if (guest.sdrName && counts.hasOwnProperty(guest.sdrName)) {
-                    counts[guest.sdrName]++;
+                if (guest.sdrName) {
+                    const displayName = sdrUserDisplayMap[guest.sdrName];
+                    if (displayName && counts.hasOwnProperty(displayName)) {
+                        counts[displayName]++;
+                    }
                 }
             });
         }
@@ -209,11 +208,11 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                 <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5 text-primary" />Agendamentos da Semana</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-                {sdrList.map((sdr, index) => (
-                   <div key={sdr.name} className="flex justify-between items-center text-lg p-2 rounded-md bg-muted/50">
-                       <span className="font-semibold">{index + 1}- {sdr.name}</span>
+                {Object.entries(sdrUserDisplayMap).map(([sdrSystemName, sdrDisplayName], index) => (
+                   <div key={sdrSystemName} className="flex justify-between items-center text-lg p-2 rounded-md bg-muted/50">
+                       <span className="font-semibold">{index + 1}- {sdrDisplayName}</span>
                        <span className="font-bold text-xl text-primary bg-background border px-3 py-1 rounded-md">
-                         {weeklySdrCount[sdr.name] || 0}
+                         {weeklySdrCount[sdrDisplayName] || 0}
                        </span>
                    </div>
                 ))}
@@ -284,7 +283,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                           Convidado {index + 1}
                                            {guestSdrName && (
                                             <span className="font-semibold ml-2 text-muted-foreground">
-                                                (Agendado por: {guestSdrName})
+                                                (Agendado por: {sdrUserDisplayMap[guestSdrName] || guestSdrName})
                                             </span>
                                           )}
                                       </Label>
