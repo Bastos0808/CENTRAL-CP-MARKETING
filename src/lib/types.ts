@@ -83,9 +83,6 @@ export interface ScheduledEpisode {
     episodeTitle: string;
     guests: GuestInfo[];
     isFilled: boolean;
-    // Top-level SDR info can be used to track who initiated or last touched the episode card
-    sdrId?: string;
-    sdrName?: string;
 }
 
 export type PodcastSchedule = Record<string, ScheduledEpisode>;

@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
@@ -48,12 +49,17 @@ const generateWeeks = (baseDate: Date): Date[] => {
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
 
+const sdrColors: Record<string, string> = {
+    'Van Diego': 'text-blue-500', // Royal Blue
+    'Heloysa': 'text-emerald-500', // Emerald Green
+    'Débora': 'text-purple-500', // Strong Purple
+};
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   
-  const [weeks, setWeeks] = useState(generateWeeks(new Date('2025-08-18T12:00:00Z')));
+  const [weeks, setWeeks] = useState(generateWeeks(new Date()));
   const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(weeks[0]);
   const [schedule, setSchedule] = useState<Record<string, ScheduledEpisode>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -63,7 +69,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   useEffect(() => {
     const timer = setInterval(() => {
         const baseDate = new Date();
-        const currentWeeks = generateWeeks(new Date('2025-08-18T12:00:00Z'));
+        const currentWeeks = generateWeeks(baseDate);
         setWeeks(currentWeeks);
         if (!currentWeeks.some(week => isSameDay(week, selectedWeekStart))) {
             setSelectedWeekStart(currentWeeks[0]);
@@ -96,6 +102,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   const handleGuestChange = useCallback((episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string, config: EpisodeConfig) => {
     if (!user?.uid || !user.displayName) return;
 
+    const sdrName = user.displayName;
+    const sdrId = user.uid;
+
     setSchedule(prevSchedule => {
         const newSchedule = produce(prevSchedule, draft => {
             if (!draft[episodeId]) {
@@ -124,9 +133,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
             const guest = episode.guests[guestIndex];
             guest[field] = value;
             
-            if (value.trim() !== '') {
-                guest.sdrId = user.uid;
-                guest.sdrName = user.displayName || '';
+            if (value.trim() !== '' || (field === 'guestName' && guest.instagram.trim() !== '') || (field === 'instagram' && guest.guestName.trim() !== '')) {
+                guest.sdrId = sdrId;
+                guest.sdrName = sdrName;
             } else if (guest.guestName.trim() === '' && guest.instagram.trim() === '') {
                  delete guest.sdrId;
                  delete guest.sdrName;
@@ -156,6 +165,40 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     });
   }, [user, toast, selectedWeekStart]);
 
+  const handleGuestDelete = useCallback((episodeId: string, guestIndex: number) => {
+    if (!user?.uid) return;
+
+    setSchedule(prevSchedule => {
+      const newSchedule = produce(prevSchedule, draft => {
+        const episode = draft[episodeId];
+        if (episode && episode.guests[guestIndex]) {
+          // Reset guest info instead of deleting the object to maintain array length
+          episode.guests[guestIndex] = { guestName: '', instagram: '' };
+          episode.isFilled = episode.guests.every(g => g && g.guestName.trim() !== '');
+        }
+      });
+
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+
+      debounceTimeoutRef.current = setTimeout(async () => {
+        const episodeToSave = newSchedule[episodeId];
+        if (episodeToSave) {
+          try {
+            const docRef = doc(db, 'podcast_schedule', episodeId);
+            await setDoc(docRef, episodeToSave, { merge: true });
+            toast({ title: "Convidado Removido", description: "O agendamento foi liberado." });
+          } catch (error) {
+            console.error("Error deleting guest:", error);
+            toast({ title: "Erro ao Remover", variant: "destructive" });
+          }
+        }
+      }, 500);
+
+      return newSchedule;
+    });
+  }, [user, toast]);
 
 
   if (isLoading) {
@@ -166,103 +209,128 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     )
   }
   
-
   return (
     <div className="space-y-6">
-        <Card>
-            <CardHeader>
-                <CardTitle>
-                    Agenda da Semana
-                </CardTitle>
-                <CardDescription>Preencha os convidados para os episódios da semana. O agendamento é colaborativo e salvo automaticamente.</CardDescription>
-                <div className="flex items-center gap-2 pt-2">
-                    {weeks.map((weekStart, index) => (
-                        <Button
-                            key={weekStart.toISOString()}
-                            variant={isSameDay(selectedWeekStart, weekStart) ? 'default' : 'outline'}
-                            onClick={() => setSelectedWeekStart(weekStart)}
-                        >
-                            {`Semana ${index + 1} (${format(weekStart, 'dd/MM')} - ${format(endOfWeek(weekStart, {weekStartsOn: 1}), 'dd/MM')})`}
-                        </Button>
-                    ))}
-                </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {weeklyEpisodeConfig.map(config => {
-                    const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
-                    const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
-                    const episodeData = schedule[episodeId] || {
-                        id: episodeId,
-                        date: format(dateForDay, 'yyyy-MM-dd'),
-                        episodeType: config.type,
-                        episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
-                        guests: Array(config.guestCount).fill({ guestName: '', instagram: '' }),
-                        isFilled: false,
-                    };
-                    
-                    return (
-                        <Card key={episodeId} className="bg-card/50">
-                            <CardHeader>
-                                <div className="flex items-center justify-between">
-                                    <CardTitle className={cn("font-headline flex items-center text-base", episodeData.isFilled ? "text-green-400" : "text-primary")}>
-                                        <Mic className="mr-3 h-5 w-5" />
-                                        {episodeData.episodeTitle}
-                                    </CardTitle>
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={`${episodeId}-filled`}
-                                            checked={episodeData.isFilled}
-                                            disabled
-                                            className={cn("h-6 w-6 rounded-md border-2", episodeData.isFilled ? "border-green-400 data-[state=checked]:bg-green-400" : "border-primary")}
-                                        />
-                                        <Label htmlFor={`${episodeId}-filled`} className="font-normal cursor-pointer text-base">
-                                            Preenchido
-                                        </Label>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                            {episodeData.guests.map((guest, index) => {
-                                const guestSdrName = guest?.sdrName;
-                                const isGuestFilled = guest && guest.guestName.trim() !== '';
+      <Card>
+        <CardHeader>
+          <CardTitle>Legenda de Cores</CardTitle>
+          <div className="flex items-center gap-6 pt-2">
+            {Object.entries(sdrColors).map(([name, colorClass]) => (
+              <div key={name} className="flex items-center gap-2">
+                <div className={cn("w-4 h-4 rounded-full", colorClass.replace('text-', 'bg-'))}></div>
+                <span className="text-sm font-medium">{name}</span>
+              </div>
+            ))}
+          </div>
+        </CardHeader>
+      </Card>
+      <Card>
+          <CardHeader>
+              <CardTitle>
+                  Agenda da Semana
+              </CardTitle>
+              <CardDescription>Preencha os convidados para os episódios da semana. O agendamento é colaborativo e salvo automaticamente.</CardDescription>
+              <div className="flex items-center gap-2 pt-2">
+                  {weeks.map((weekStart, index) => (
+                      <Button
+                          key={weekStart.toISOString()}
+                          variant={isSameDay(selectedWeekStart, weekStart) ? 'default' : 'outline'}
+                          onClick={() => setSelectedWeekStart(weekStart)}
+                      >
+                          {`Semana ${index + 1} (${format(weekStart, 'dd/MM')} - ${format(endOfWeek(weekStart, {weekStartsOn: 1}), 'dd/MM')})`}
+                      </Button>
+                  ))}
+              </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+              {weeklyEpisodeConfig.map(config => {
+                  const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
+                  const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
+                  const episodeData = schedule[episodeId] || {
+                      id: episodeId,
+                      date: format(dateForDay, 'yyyy-MM-dd'),
+                      episodeType: config.type,
+                      episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
+                      guests: Array(config.guestCount).fill({ guestName: '', instagram: '' }),
+                      isFilled: false,
+                  };
+                  
+                  return (
+                      <Card key={episodeId} className="bg-card/50">
+                          <CardHeader>
+                              <div className="flex items-center justify-between">
+                                  <CardTitle className={cn("font-headline flex items-center text-base", episodeData.isFilled && "text-green-400")}>
+                                      <Mic className="mr-3 h-5 w-5" />
+                                      {episodeData.episodeTitle}
+                                  </CardTitle>
+                                  <div className="flex items-center space-x-2">
+                                      <Checkbox
+                                          id={`${episodeId}-filled`}
+                                          checked={episodeData.isFilled}
+                                          disabled
+                                          className={cn("h-6 w-6 rounded-md border-2", episodeData.isFilled ? "border-green-400 data-[state=checked]:bg-green-400" : "border-primary")}
+                                      />
+                                      <Label htmlFor={`${episodeId}-filled`} className="font-normal cursor-pointer text-base">
+                                          Preenchido
+                                      </Label>
+                                  </div>
+                              </div>
+                          </CardHeader>
+                          <CardContent className="space-y-4">
+                          {Array.from({ length: config.guestCount }).map((_, index) => {
+                              const guest = episodeData.guests[index] || { guestName: '', instagram: '' };
+                              const guestSdrName = guest.sdrName;
+                              const isGuestFilled = guest && guest.guestName.trim() !== '';
+                              const canDelete = user?.displayName === guestSdrName;
 
-                                return (
-                                <div key={index} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
-                                    <Label className={cn("text-sm text-muted-foreground", isGuestFilled && "text-green-400")}>
-                                        Convidado {index + 1}
-                                        {guestSdrName && <span className="font-semibold text-primary"> (Agendado por: {guestSdrName})</span>}
-                                    </Label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                        <div className="relative">
-                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                            <Input 
-                                                key={`${episodeId}-guest-${index}-name`}
-                                                value={guest?.guestName || ''} 
-                                                onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value, config)} 
-                                                placeholder="Nome do convidado" 
-                                                className="pl-10"
-                                            />
-                                        </div>
-                                        <div className="relative">
-                                            <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                            <Input 
-                                                key={`${episodeId}-guest-${index}-instagram`}
-                                                value={guest?.instagram || ''} 
-                                                onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value, config)} 
-                                                placeholder="@instagram" 
-                                                className="pl-10"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                )
-                            })}
-                            </CardContent>
-                        </Card>
-                    )
-                })}
-            </CardContent>
-        </Card>
+                              return (
+                              <div key={index} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
+                                  <div className="flex justify-between items-center">
+                                      <Label className={cn("text-sm text-muted-foreground", isGuestFilled && "text-green-400")}>
+                                          Convidado {index + 1}
+                                          {guestSdrName && (
+                                            <span className={cn('font-semibold ml-2', sdrColors[guestSdrName] || 'text-muted-foreground')}>
+                                                (Agendado por: {guestSdrName})
+                                            </span>
+                                          )}
+                                      </Label>
+                                      {isGuestFilled && canDelete && (
+                                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleGuestDelete(episodeId, index)}>
+                                            <Trash2 className="h-4 w-4 text-destructive"/>
+                                        </Button>
+                                      )}
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                      <div className="relative">
+                                          <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                          <Input 
+                                              key={`${episodeId}-guest-${index}-name`}
+                                              value={guest?.guestName || ''} 
+                                              onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value, config)} 
+                                              placeholder="Nome do convidado" 
+                                              className="pl-10"
+                                          />
+                                      </div>
+                                      <div className="relative">
+                                          <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                          <Input 
+                                              key={`${episodeId}-guest-${index}-instagram`}
+                                              value={guest?.instagram || ''} 
+                                              onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value, config)} 
+                                              placeholder="@instagram" 
+                                              className="pl-10"
+                                          />
+                                      </div>
+                                  </div>
+                              </div>
+                              )
+                          })}
+                          </CardContent>
+                      </Card>
+                  )
+              })}
+          </CardContent>
+      </Card>
     </div>
   );
 }
