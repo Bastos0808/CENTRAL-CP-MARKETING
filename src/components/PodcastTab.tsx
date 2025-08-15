@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen, Trash2, Palette, Users } from "lucide-react";
+import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen, Trash2, Palette, Users, MinusCircle, PlusCircle } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { Button } from "./ui/button";
@@ -13,7 +13,7 @@ import { addDays, format, startOfWeek, endOfWeek, isSameDay } from "date-fns";
 import { ptBR } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc, deleteDoc } from "firebase/firestore";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { produce } from "immer";
@@ -99,7 +99,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     return () => unsubscribe();
   }, [toast]);
   
-  const handleGuestChange = useCallback((episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string, config: EpisodeConfig) => {
+ const handleGuestChange = useCallback((episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string, config: EpisodeConfig) => {
     if (!user?.uid || !user.displayName) return;
 
     const sdrName = user.displayName;
@@ -109,7 +109,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
         const newSchedule = produce(prevSchedule, draft => {
             if (!draft[episodeId]) {
                 const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
-                
                 const newGuests: GuestInfo[] = [];
                 for (let i = 0; i < config.guestCount; i++) {
                     newGuests.push({ guestName: '', instagram: '' });
@@ -126,9 +125,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
             }
             
             const episode = draft[episodeId];
-            if (!episode.guests[guestIndex]) {
-                 episode.guests[guestIndex] = { guestName: '', instagram: '' };
-            }
             
             const guest = episode.guests[guestIndex];
             
@@ -140,15 +136,15 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
             guest[field] = value;
             
-            if (value.trim() !== '' || (field === 'guestName' && guest.instagram.trim() !== '') || (field === 'instagram' && guest.guestName.trim() !== '')) {
+            if (value.trim() !== '' || (field === 'guestName' && (guest.instagram || '').trim() !== '') || (field === 'instagram' && (guest.guestName || '').trim() !== '')) {
                 guest.sdrId = sdrId;
                 guest.sdrName = sdrName;
-            } else if (guest.guestName.trim() === '' && guest.instagram.trim() === '') {
+            } else if ((guest.guestName || '').trim() === '' && (guest.instagram || '').trim() === '') {
                  delete guest.sdrId;
                  delete guest.sdrName;
             }
 
-            episode.isFilled = episode.guests.every(g => g && g.guestName.trim() !== '');
+            episode.isFilled = episode.guests.every(g => g && (g.guestName || '').trim() !== '');
         });
 
         if (debounceTimeoutRef.current) {
@@ -172,7 +168,8 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     });
   }, [user, toast, selectedWeekStart]);
 
-  const weeklySdrCount = useMemo(() => {
+
+ const weeklySdrCount = useMemo(() => {
     const counts: Record<string, number> = {
         "Van Diego": 0,
         "Débora": 0,
@@ -278,7 +275,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           {Array.from({ length: config.guestCount }).map((_, index) => {
                               const guest = episodeData.guests[index] || { guestName: '', instagram: '' };
                               const guestSdrName = guest.sdrName;
-                              const isGuestFilled = guest && guest.guestName.trim() !== '';
+                              const isGuestFilled = guest && (guest.guestName || '').trim() !== '';
 
                               return (
                               <div key={`${episodeId}-guest-${index}`} className="space-y-2 p-3 rounded-lg border border-muted/30 bg-muted/30">
