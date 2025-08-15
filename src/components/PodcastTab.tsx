@@ -5,18 +5,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, Loader2, Calendar as CalendarIcon, AlertTriangle, Info, User, Instagram, BookOpen, Trash2, Palette, Users, MinusCircle, PlusCircle, Check } from "lucide-react";
+import { Mic, Loader2, Check } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
-import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button } from "./ui/button";
 import { addDays, format, startOfWeek, endOfWeek, isSameDay } from "date-fns";
-import { ptBR } from 'date-fns/locale';
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, doc, onSnapshot, setDoc, deleteDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { produce } from "immer";
+import { User, Instagram } from "lucide-react";
 
 export type { PodcastData };
 
@@ -70,22 +69,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   const [schedule, setSchedule] = useState<Record<string, ScheduledEpisode>>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-        const baseDate = new Date();
-        const currentWeeks = generateWeeks(baseDate);
-        setWeeks(currentWeeks);
-        if (!currentWeeks.some(week => isSameDay(week, selectedWeekStart))) {
-            setSelectedWeekStart(currentWeeks[0]);
-        }
-    }, 60000 * 60);
-
-    return () => clearInterval(timer);
-  }, [selectedWeekStart]);
-
-
   // Listen to schedule changes in real-time
   useEffect(() => {
     const scheduleColRef = collection(db, 'podcast_schedule');
@@ -94,7 +77,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
         snapshot.forEach(doc => {
             newSchedule[doc.id] = doc.data() as ScheduledEpisode;
         });
-        setSchedule(prev => ({...prev, ...newSchedule}));
+        setSchedule(newSchedule);
         setIsLoading(false);
     }, (error) => {
         console.error("Error fetching schedule:", error);
@@ -105,74 +88,60 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     return () => unsubscribe();
   }, [toast]);
   
- const handleGuestChange = useCallback((episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string, config: EpisodeConfig) => {
+ const handleGuestChange = useCallback(async (episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
     if (!user?.uid || !user.displayName) return;
 
     const sdrName = user.displayName;
     const sdrId = user.uid;
 
-    setSchedule(prevSchedule => {
-        const newSchedule = produce(prevSchedule, draft => {
-            if (!draft[episodeId]) {
-                const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
-                const newGuests: GuestInfo[] = [];
-                for (let i = 0; i < config.guestCount; i++) {
-                    newGuests.push({ guestName: '', instagram: '' });
-                }
+    const episodeToUpdate = schedule[episodeId];
+    if (!episodeToUpdate) return;
+    
+    const guestToUpdate = episodeToUpdate.guests[guestIndex];
+    if (guestToUpdate && guestToUpdate.sdrId && guestToUpdate.sdrId !== sdrId) {
+        toast({ title: "Acesso Negado", description: "Você só pode editar os convidados que você mesmo agendou.", variant: "destructive" });
+        return;
+    }
 
-                draft[episodeId] = {
-                    id: episodeId,
-                    date: format(dateForDay, 'yyyy-MM-dd'),
-                    episodeType: config.type,
-                    episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
-                    guests: newGuests,
-                    isFilled: false,
-                };
-            }
-            
-            const episode = draft[episodeId];
-            
-            const guest = episode.guests[guestIndex];
-            
-            const canEdit = !guest.sdrId || guest.sdrId === sdrId;
-            if (!canEdit) {
-                 toast({ title: "Acesso Negado", description: "Você só pode editar os convidados que você mesmo agendou.", variant: "destructive" });
-                 return;
-            }
+    const updatedGuests = [...episodeToUpdate.guests];
+    const updatedGuest: GuestInfo = { ...updatedGuests[guestIndex] };
 
-            guest[field] = value;
-            
-            if (value.trim() !== '' || (field === 'guestName' && (guest.instagram || '').trim() !== '') || (field === 'instagram' && (guest.guestName || '').trim() !== '')) {
-                guest.sdrId = sdrId;
-                guest.sdrName = sdrName;
-            } else if ((guest.guestName || '').trim() === '' && (guest.instagram || '').trim() === '') {
-                 delete guest.sdrId;
-                 delete guest.sdrName;
-            }
+    updatedGuest[field] = value;
+    
+    const hasName = field === 'guestName' ? value.trim() !== '' : (updatedGuest.guestName || '').trim() !== '';
+    const hasInsta = field === 'instagram' ? value.trim() !== '' : (updatedGuest.instagram || '').trim() !== '';
 
-            episode.isFilled = episode.guests.every(g => g && g.sdrName);
-        });
+    if (hasName || hasInsta) {
+        updatedGuest.sdrId = sdrId;
+        updatedGuest.sdrName = sdrName;
+    } else {
+        delete updatedGuest.sdrId;
+        delete updatedGuest.sdrName;
+    }
+    updatedGuests[guestIndex] = updatedGuest;
+    
+    const isNowFilled = updatedGuests.every(g => g && g.sdrName);
 
-        if (debounceTimeoutRef.current) {
-            clearTimeout(debounceTimeoutRef.current);
-        }
+    const updatedEpisode: ScheduledEpisode = {
+        ...episodeToUpdate,
+        guests: updatedGuests,
+        isFilled: isNowFilled,
+    };
+    
+    // Optimistic UI update
+    setSchedule(prev => ({ ...prev, [episodeId]: updatedEpisode }));
+    
+    try {
+        const docRef = doc(db, 'podcast_schedule', episodeId);
+        await setDoc(docRef, updatedEpisode, { merge: true });
+    } catch (error) {
+        console.error("Error saving schedule:", error);
+        toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
+        // Revert optimistic update on error
+        setSchedule(prev => ({ ...prev, [episodeId]: episodeToUpdate }));
+    }
 
-        debounceTimeoutRef.current = setTimeout(async () => {
-            const episodeToSave = newSchedule[episodeId];
-            if (episodeToSave) {
-                try {
-                    const docRef = doc(db, 'podcast_schedule', episodeId);
-                    await setDoc(docRef, episodeToSave, { merge: true });
-                } catch (error) {
-                    console.error("Error auto-saving schedule:", error);
-                    toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
-                }
-            }
-        }, 1000);
-
-        return newSchedule;
-    });
-  }, [user, toast, selectedWeekStart]);
+  }, [user, toast, schedule]);
 
 
   const weeklySdrCount = useMemo(() => {
@@ -239,10 +208,12 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     <div className="space-y-6">
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><Users className="h-5 w-5 text-primary" />Agendamentos da Semana</CardTitle>
+                <CardTitle className="flex items-center gap-2">Agendamentos da Semana</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-                {Object.entries(sdrUserDisplayMap).map(([sdrKey, displayName], index) => (
+                {Object.entries(sdrUserDisplayMap)
+                    .sort(([keyA, nameA], [keyB, nameB]) => nameA.localeCompare(nameB))
+                    .map(([sdrKey, displayName], index) => (
                    <div key={displayName} className="flex justify-between items-center text-lg p-2 rounded-md bg-muted/50">
                        <span className="font-semibold">{index + 1}- {displayName}</span>
                        <span className="font-bold text-xl text-primary bg-background border px-3 py-1 rounded-md">
@@ -270,7 +241,8 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           variant={'outline'}
                           onClick={() => setSelectedWeekStart(weekStart)}
                           className={cn("h-auto flex-col p-3", {
-                              'bg-green-600 border-green-500 text-white hover:bg-green-700': isFilled,
+                              'bg-green-600 border-green-500 text-white hover:bg-green-700': isFilled && !isSelected,
+                              'bg-green-700 border-green-600 text-white ring-2 ring-white ring-offset-2 ring-offset-background': isFilled && isSelected,
                               'bg-primary text-primary-foreground hover:bg-primary/90': isSelected && !isFilled,
                           })}
                       >
@@ -289,6 +261,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
               {weeklyEpisodeConfig.map(config => {
                   const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
                   const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
+                  
                   const episodeData = schedule[episodeId] || {
                       id: episodeId,
                       date: format(dateForDay, 'yyyy-MM-dd'),
@@ -323,7 +296,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           {Array.from({ length: config.guestCount }).map((_, index) => {
                               const guest = episodeData.guests[index] || { guestName: '', instagram: '' };
                               const guestSdrName = guest.sdrName;
-                              const isGuestFilled = guest && (guest.guestName || guest.instagram);
+                              const isGuestFilled = guest && (guest.guestName && guest.guestName.trim() !== '');
                               const sdrColorClass = guestSdrName ? sdrUserColorMap[guestSdrName] || 'text-muted-foreground' : 'text-muted-foreground';
 
                               return (
@@ -342,10 +315,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                       <div className="relative">
                                           <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                           <Input 
-                                              key={`${episodeId}-guest-${index}-name`}
                                               id={`${episodeId}-guest-${index}-name`}
                                               value={guest?.guestName || ''} 
-                                              onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value, config)} 
+                                              onChange={(e) => handleGuestChange(episodeId, index, 'guestName', e.target.value)} 
                                               placeholder="Nome do convidado" 
                                               className="pl-10"
                                               disabled={guest.sdrId && guest.sdrId !== user?.uid}
@@ -354,9 +326,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                       <div className="relative">
                                           <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                           <Input 
-                                              key={`${episodeId}-guest-${index}-instagram`}
+                                              id={`${episodeId}-guest-${index}-instagram`}
                                               value={guest?.instagram || ''} 
-                                              onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value, config)} 
+                                              onChange={(e) => handleGuestChange(episodeId, index, 'instagram', e.target.value)} 
                                               placeholder="@instagram" 
                                               className="pl-10"
                                               disabled={guest.sdrId && guest.sdrId !== user?.uid}
