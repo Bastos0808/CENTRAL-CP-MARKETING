@@ -110,7 +110,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                 const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
                 
                 const newGuests: GuestInfo[] = [];
-                for(let i = 0; i < config.guestCount; i++) {
+                for (let i = 0; i < config.guestCount; i++) {
                     newGuests.push({ guestName: '', instagram: '' });
                 }
 
