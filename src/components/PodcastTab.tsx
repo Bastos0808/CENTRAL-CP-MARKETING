@@ -69,10 +69,10 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   useEffect(() => {
     const timer = setInterval(() => {
         const baseDate = new Date();
-        const newWeeks = generateWeeks(baseDate);
-        setWeeks(newWeeks);
-        if (!newWeeks.some(week => isSameDay(week, selectedWeekStart))) {
-            setSelectedWeekStart(newWeeks[0]);
+        const currentWeeks = generateWeeks(new Date('2025-08-18T12:00:00Z'));
+        setWeeks(currentWeeks);
+        if (!currentWeeks.some(week => isSameDay(week, selectedWeekStart))) {
+            setSelectedWeekStart(currentWeeks[0]);
         }
     }, 60000 * 60);
 
@@ -101,62 +101,49 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   
   const handleGuestChange = useCallback((episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
     if (!user?.uid) return;
-  
+
     // Optimistic UI Update
     const updatedSchedule = produce(schedule, draft => {
-      if (!draft[episodeId]) {
-        const dateForDay = new Date(episodeId.split('T')[0]);
-        const config = weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop());
-        if (!config) return;
+        const episode = draft[episodeId];
+        if (!episode) return;
+        
+        const guest = episode.guests[guestIndex];
+        guest[field] = value;
 
-        draft[episodeId] = {
-          id: episodeId,
-          date: format(dateForDay, 'yyyy-MM-dd'),
-          episodeType: config.type,
-          episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
-          guests: Array(config.guestCount).fill({ guestName: '', instagram: '' }),
-          isFilled: false,
-        };
-      }
-      
-      const guest = draft[episodeId].guests[guestIndex];
-      guest[field] = value;
-      
-      if (value.trim() !== '' && !guest.sdrId) {
-        guest.sdrId = user.uid;
-        guest.sdrName = user.displayName || user.email || 'SDR';
-      } else if (
-        (guest.guestName || '').trim() === '' &&
-        (guest.instagram || '').trim() === ''
-      ) {
-        delete guest.sdrId;
-        delete guest.sdrName;
-      }
+        if (value.trim() !== '' && !guest.sdrId) {
+            guest.sdrId = user.uid;
+            guest.sdrName = user.displayName || user.email?.split('@')[0] || 'SDR';
+        } else if (
+            (guest.guestName || '').trim() === '' &&
+            (guest.instagram || '').trim() === ''
+        ) {
+            delete guest.sdrId;
+            delete guest.sdrName;
+        }
 
-      draft[episodeId].isFilled = draft[episodeId].guests.every(g => g && g.guestName.trim() !== '');
+        episode.isFilled = episode.guests.every(g => g && g.guestName.trim() !== '');
     });
     setSchedule(updatedSchedule);
-  
+
     // Debounced Firestore Update
     if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
+        clearTimeout(debounceTimeoutRef.current);
     }
-  
+
     debounceTimeoutRef.current = setTimeout(async () => {
-      try {
         const episodeToSave = updatedSchedule[episodeId];
         if (episodeToSave) {
-          const docRef = doc(db, 'podcast_schedule', episodeId);
-          await setDoc(docRef, episodeToSave, { merge: true });
+            try {
+                const docRef = doc(db, 'podcast_schedule', episodeId);
+                await setDoc(docRef, episodeToSave, { merge: true });
+            } catch (error) {
+                console.error("Error auto-saving schedule:", error);
+                toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
+                setSchedule(schedule); // Revert to previous state on error
+            }
         }
-      } catch (error) {
-        console.error("Error auto-saving schedule:", error);
-        toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
-        // Optional: Implement revert logic here if needed
-        setSchedule(schedule); // Revert to previous state
-      }
     }, 1000); // 1-second debounce
-  }, [schedule, user, toast]);
+}, [schedule, user, toast]);
 
 
   if (isLoading) {
@@ -237,7 +224,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                                 const sdrStyle = guestSdrName ? sdrColorsMap[guestSdrName] : null;
 
                                 return (
-                                <div key={index} className={cn("space-y-2 p-3 rounded-lg border-2 transition-colors", sdrStyle ? sdrStyle.border : 'border-transparent', sdrStyle ? sdrStyle.bg : 'bg-muted/30')}>
+                                <div key={index} className={cn("space-y-2 p-3 rounded-lg border transition-colors", sdrStyle ? sdrStyle.border : 'border-muted/30', sdrStyle ? sdrStyle.bg : 'bg-muted/30')}>
                                     <Label className={cn("text-sm", sdrStyle ? sdrStyle.text : 'text-muted-foreground')}>Convidado {index + 1}</Label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         <div className="relative">
