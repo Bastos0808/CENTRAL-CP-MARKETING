@@ -22,7 +22,7 @@ export const packageOptions = {
     "landing_page": { name: "Landing Page de Alta Conversão", price: 1800, description: "Foco total em resultado. Uma página 100% otimizada para campanhas específicas, com formulário integrado para captura de leads.", icon: Sparkles }
 };
 
-const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiPgo8cGF0aCBkPSJNNjMuMDY2NiA2MS4wMDM5QzYwLjA1ODUgNjEuMDAzOSA1Ny40NDkzIDU5Ljk0MzUgNTUuNjU0IDU4LjE0ODJDNTEuODYzNyA1NC4zNTc5IDUxLjg2MzcgNDcuODQwMiA1NS42NTQgNDQuMDQ5OUw3Ni44NjI4IDIzLjQ1MDJDODAuNjUzMSAxOS42NTk5IDg3LjIyMjggMTkuNjU5OSA5MS4wMTMxIDIzLjQ1MDJDMTAwLjU1NyAzMi45OTQ2IDEwMC41NTcgNDguNDk0NiA5MS4wMTMxIDU4LjAzOTFMNjkuODAzNSA3OS44Mjk3QzY4LjAwODMgODELjYyNDkgNjUuMzk4MSA4Mi42ODUzIDYyLjM5IDgyLjY4NTNINDQuMDA4Nkw1MS43MjkgOTAuNDA1N0w2Mi4wNDEgODIuNjgzOEw2Ni4xMzM2IDc4LjU5MTMgNzIuNTg0NiA3OC41OTEzIDc2LjY3NzEgODIuNjgzOEwxMTIuMDQxIDExOC4wNDhDMTIzLjMyNSAxMjkuMzMyIDEyMy4zMjUgMTQ3LjQ0MyAxMTIuMDQxIDE1Mzg3MjdDMTExLjE0NCAxNTkuNjIzIDEwOS45MTkgMTYwLjMxMiAxMDguNjU0IDE2MC44MzdINzguMTkxN0w4Ni40MzM4IDE1Mi41NzVDOTMuMDkzNiAxNDUuODU0IDkzLjA5MzYgMTM1LjEyNyA4Ni40MzM4IDEyOC40MDZMNzYuNTEwNCAxMTguMjc2QzcyLjQxNzkgMTE0LjE4NCA2NS45NjY5IDExNC4xODQgNjEuODc0NCAxMTguMjc2TDQzLjgwMSA3OS44OTNDNDAuOTkzNSA4Mi43MTI2IDM3LjIzNzUgODQuMTk0NSAzMy4zNjcxIDg0LjE5NDVIMTUuNDEzN0wxMS4wMDYxIDg4LjYwMjFIMzMuMzY3MUMzOC42MzQ4IDg4LjYwMjEgNDMuNTUzIDg2LjQ1MjIgNDcuMjE2MyA4Mi43ODg5TDY1LjY5NDIgNjQuMzA5NUM2OC40NTQxIDYxLjU0OTUgNjYuODg2MyA1Ny4wMzAxIDYzLjA2NjYgNjEuMDAzOVoiIGZpbGw9IiNGRTU0MTIiLz4KPHBhdGggZD0iTTMwLjY2MSA3OS44Mjk3TDQxLjY0MjQgNjguODM4NEwzMC42NjEgNTcuODQ3MUw0MS42NDI0IDQ2Ljg1NTdMNTIuNjIzOCANTcuODQ3MUw0MS42NDI0IDY4LjgzODRMNzYuODYyOCA4Mi42ODUzQzgyLjA5NzUgODMuNzgyNSA4My4wMzMgODkuNTgxNSA3OC42NjU3IDkzLjEzMTlMNjEuODc0NCAxMTAuMzczTDQzLjgwMSA5MS42OTg2TDYxLjg3NDQgNzMuNjI0M0w3OC42NjU3IDU2Ljg1MzlMODQuMzkzNiA2Mi42MTE5TDYxLjg3NDQgODUuMTMxNkw0My44MDEgMTAzLjE2NUw2MS44NzQ0IDEyMS4yMzlMODkuMjExNyA5My44NTE5QzExMS4zMDQgNzEuNzU4NSAxMTIuOTQxIDM2LjczODIgOTMuNjM2NyAxNy40MzM5TDg0LjM5MzYgOC4xOTAyNkM3My41NTU0IC0yLjY0Nzk0IDU2LjczOTMgLTIuNjQ3OTQgNDUuODU5NyA4LjE5MDI2TDguMTkwMjUgNDUuODk5OEMtMi42MDMgNTYuNjAwNyAtMi47MjYxNyA3My44NjI4IDcuOTQ5MDQgODQuNTM4TDQzLjgwMSAxMjAuNjkzQzQ3LjQ2NDMgMTI0LjM1NiA1Mi4zNTAzIDEyNi4yMzQgNTcuMjU3NyAxMjYuMjM0SDExMC43MDdMMTM3LjQ4NiA5OS40NTYxSDU3LjI1NzdDNTEuMTIxNyA5OS40NTYxIDQ1LjU0ODQgOTcuMjQxNiA0MS4xNTU3IDkyLjg0ODlMMzAuNjYxIDc5LjgyOTdaIiBmaWxsPSIjRkU1NDEyIi8+CjxwYXRoIGQ9Ik0xODUuMjcxIDEyMS40MDZIMTY2Ljc4N1Y1MC4xMDc0SDE4NS4yNzFWMjMuNDE3OUgxNDIuMTU3VjE0OC4xMDJIMTg1LjI3MVYxMjEuNDA2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTI0MC4zNDQgNTAuMTA3NEgyNTguODNWMTE4LjAyNkgyNDQuNTM0QzIyMS4zOTcgMTE4LjAyNiAyMDcuNDEgMTA3LjE4OCAyMDcuNDEgODYuNDMzOUMyMDcuNDEgNjUuNjc5OCAyMjEuMzk3IDUwLjEwNzQgMjQ0LjUzNCA1MC4xMDc0Wk0yNDUuMDk3IDU5LjgwMjVDMjI4LjMwOCA1OS44MDI3IDIyMC43MDcgNjkuNjcyMiAyMjAuNzA3IDg2LjQzMzlDMjIwLjcwNyAxMDQuMTE1IDIyOC4zMDggMTA4LjkzNCAyNDUuMDk3IDEwOC45MzRIMjU4LjgzVjU5LjgwMjRIMjQ1LjA5N1oiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00MjEuNjEgMTQ4LjEwMlY1MC4xMDc0SDQ0MC4xVjEyMy4yMDNINDgwLjg4N1Y1MC4xMDc0SDQ5OS4zN1YxNDguMTAySDQ4MC44ODdWMTM5LjU4M0g0NDAuMVYxNDguMTAySDQyMS42MVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNzIuMzk5IDIzLjQxNzlMMzA2LjIzNyAxMDAuODgxTDM0MC4wNzQgMjMuNDE3OUgyNjguMjA5SDI3Mi4zOTlaTTM1Mi45MTMgMjMuNDE3OUwyOTQuMzU0IDEzMS4zNDdMMjkxLjQ4OCAxMzEuMzQ3TDI4OC45NzEgMTIxLjQ0N0gyNzguMjMxTDI3NS45NTUgMTMxLjM0N0wyNzMuMDggMTMxLjM0N0wyMTUuMjQ2IDIzLjQxNzlIMjM1LjY4OUwyODQuMzIyIDEwMC44ODFMNDE3LjU1NCAyMy40MTc5SDM1Mi45MTNaIiBmaWxsPSJ3aGl0ZSIvLz4KPHBhdGggZD0iTTQxNy4zMzEgMTQ4LjEwMlY1MC4xMDc0SDQzNS44MTZWMTE4LjAyNkM0NDIuMjQxIDEyMi4zMjcgNDQ4Ljk0MyAxMjYuNTQ0IDQ1NS42ODQgMTI4LjgwN0w0NTkuNTY4IDExMC44MjFDNDUzLjc4NSAxMDguNTgyIDQ0OC4wMDMgMTA0LjM4MSA0NDEuNjE3IDEwMS40NzdINDQwLjFWNTAuMTA3NEg0NTguNTg0Vjg2LjgwMTlINDc0LjIzN1Y1MC4xMDc0SDQ5Mi43MjFWMTE2Ljc5NEM0OTcuODQzIDExNS41NDMgNTAyLjI5MiAxMTQuMTQ4IDUwNi4zOTggMTEyLjU1N0w1MDcuNjU3IDEyNi4xMjNDNDk4LjQxNCAxMjkuOTA3IDQ4OC40OTcgMTMyLjgwOCA0NzkuMjU0IDEzNC4wMjFMNzUuNjM1MyAxNzIuNjA1QzM4LjkwNTcgMTc5LjU3MSAwIDE1OC4zNDUgMCAxMjAuODc0VjE0Ljg5OTlDNS4wNjEyMiAxMC40NjAyIDExLjgxMDggMTIuNTk3MiAxMi4zMzE4IDE4LjQzOTVMMTIuNDkxNCAxMjAuODc0QzEyLjQ5MTQgMTQ5LjQyNyA0My45Njc1IDE2MS4zMjggNjcuODQxNSAxNTYuNDc1TDQ3OS4yNTQgMTM0LjAyMUM0ODIuOTMgMTMzLjM0NiA0ODYuNDggMTMyLjUxMSA0ODkuODgyIDEzMS41MDlMNjgxLjQwNiAyMi43NTAzQzY4Ny44MzEgMTYuMzI1NSA2NzguNTg4IDYuNDIyMzYgNjcxLjE2IDExLjIxMzJMNjU5LjA2MyAxOS40MzQ4QzY0OC4xODUgMjYuODIzNyA2NDUuMDYgNDAuODMwMSA2NTMuMjgyIDUwLjM1NTNMNzUuNjM1MyAxNzIuNjA1WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTM1Ny4wMDggODUuOTgzM1Y1MC4xMDc0SDM3NS40OTNWMTAyLjMyMUgzOTIuOTcyVjUwLjEwNzRINDExLjQ1N1YxNDguMTAySDM5Mi45NzJWMTIuNTgyMUgzNTcuMDA4Vjg1Ljk4MzNaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxkZWZzPgo8Y2xpcGF0aCBpZD0iY2xpcDAiPgo8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgZmlsbD0id2hpdGUiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K";
+const logoHorizontalBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgdmlld0JveD0iMCAwIDUxMiAxNzMiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiPgo8cGF0aCBkPSJNNjMuMDY2NiA2MS4wMDM5QzYwLjA1ODUgNjEuMDAzOSA1Ny40NDkzIDU5Ljk0MzUgNTUuNjU0IDU4LjE0ODJDNTEuODYzNyA1NC4zNTc5IDUxLjg2MzcgNDcuODQwMiA1NS42NTQgNDQuMDQ5OUw3Ni44NjI4IDIzLjQ1MDJDODAuNjUzMSAxOS42NTk5IDg3LjIyMjggMTkuNjU5OSA5MS4wMTMxIDIzLjQ1MDJDMTAwLjU1NyAzMi45OTQ2IDEwMC41NTcgNDguNDk0NiA5MS4wMTMxIDU4LjAzOTFMNjkuODAzNSA3OS44Mjk3QzY4LjAwODMgODELjYyNDkgNjUuMzk4MSA4Mi42ODUzIDYyLjM5IDgyLjY4NTNINDQuMDA4Nkw1MS43MjkgOTAuNDA1N0w2Mi4wNDEgODIuNjgzOEw2Ni4xMzM2IDc4LjU5MTMgNzIuNTg0NiA3OC41OTEzIDc2LjY3NzEgODIuNjgzOEwxMTIuMDQxIDExOC4wNDhDMTIzLjMyNSAxMjkuMzMyIDEyMy4zMjUgMTQ3LjQ0MyAxMTIuMDQxIDE1Mzg3MjdDMTExLjE0NCAxNTkuNjIzIDEwOS45MTkgMTYwLjMxMiAxMDguNjU0IDE2MC44MzdINzguMTkxN0w4Ni40MzM4IDE1Mi41NzVDOTMuMDkzNiAxNDUuODU0IDkzLjA5MzYgMTM1LjEyNyA4Ni40MzM4IDEyOC40MDZMNzYuNTEwNCAxMTguMjc2QzcyLjQxNzkgMTE0LjE4NCA2NS45NjY5IDExNC4xODQgNjEuODc0NCAxMTguMjc2TDQzLjgwMSA3OS44OTNDNDAuOTkzNSA4Mi43MTI2IDM3LjIzNzUgODQuMTk0NSAzMy4zNjcxIDg0LjE5NDVIMTUuNDEzN0wxMS4wMDYxIDg4LjYwMjFIMzMuMzY3MUMzOC42MzQ4IDg4LjYwMjEgNDMuNTUzIDg2LjQ1MjIgNDcuMjE2MyA4Mi43ODg5TDY1LjY5NDIgNjQuMzA5NUM2OC40NTQxIDYxLjU0OTUgNjYuODg2MyA1Ny4wMzAxIDYzLjA2NjYgNjEuMDAzOVoiIGZpbGw9IiNGRTU0MTIiLz4KPHBhdGggZD0iTTMwLjY2MSA3OS44Mjk3TDQxLjY0MjQgNjguODM4NEwzMC42NjEgNTcuODQ3MUw0MS42NDI0IDQ2Ljg1NTdMNTIuNjIzOCANTcuODQ3MUw0MS42NDI0IDY4LjgzODRMNzYuODYyOCA4Mi42ODUzQzgyLjA5NzUgODMuNzgyNSA4My4wMzMgODkuNTgxNSA3OC42NjU3IDkzLjEzMTlMNjEuODc0NCAxMTAuMzczTDQzLjgwMSA5MS42OTg2TDYxLjg3NDQgNzMuNjI0M0w3OC42NjU3IDU2Ljg1MzlMODQuMzkzNiA2Mi42MTE5TDYxLjg3NDQgODUuMTMxNkw0My44MDEgMTAzLjE2NUw2MS44NzQ0IDEyMS4yMzlMODkuMjExNyA5My44NTE5QzExMS4zMDQgNzEuNzU4NSAxMTIuOTQxIDM2LjczODIgOTMuNjM2NyAxNy40MzM5TDg0LjM5MzYgOC4xOTAyNkM3My41NTU0IC0yLjY0Nzk0IDU2LjczOTMgLTIuNjQ3OTQgNDUuODU5NyA4LjE5MDI2TDguMTkwMjUgNDUuODk5OEMtMi42MDMgNTYuNjAwNyAtMi43MjYxNyA3My44NjI4IDcuOTQ5MDQgODQuNTM4TDQzLjgwMSAxMjAuNjkzQzQ3LjQ2NDMgMTI0LjM1NiA1Mi4zNTAzIDEyNi4yMzQgNTcuMjU3NyAxMjYuMjM0SDExMC43MDdMMTM3LjQ4NiA5OS40NTYxSDU3LjI1NzdDNTEuMTIxNyA5OS40NTYxIDQ1LjU0ODQgOTcuMjQxNiA0MS4xNTU3IDkyLjg0ODlMMzAuNjYxIDc5LjgyOTdaIiBmaWxsPSIjRkU1NDEyIi8+CjxwYXRoIGQ9Ik0xODUuMjcxIDEyMS40MDZIMTY2Ljc4N1Y1MC4xMDc0SDE4NS4yNzFWMjMuNDE3OUgxNDIuMTU3VjE0OC4xMDJIMTg1LjI3MVYxMjEuNDA2WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTI0MC4zNDQgNTAuMTA3NEgyNTguODNWMTE4LjAyNkgyNDQuNTM0QzIyMS4zOTcgMTE4LjAyNiAyMDcuNDEgMTA3LjE4OCAyMDcuNDEgODYuNDMzOUMyMDcuNDEgNjUuNjc5OCAyMjEuMzk3IDUwLjEwNzQgMjQ0LjUzNCA1MC4xMDc0Wk0yNDUuMDk3IDU5LjgwMjVDMjI4LjMwOCA1OS44MDI3IDIyMC43MDcgNjkuNjcyMiAyMjAuNzA3IDg2LjQzMzlDMjIwLjcwNyAxMDQuMTE1IDIyOC4zMDggMTA4LjkzNCAyNDUuMDk3IDEwOC45MzRIMjU4LjgzVjU5LjgwMjRIMjQ1LjA5N1oiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik00MjEuNjEgMTQ4LjEwMlY1MC4xMDc0SDQ0MC4xVjEyMy4yMDNINDgwLjg4N1Y1MC4xMDc0SDQ5OS4zN1YxNDguMTAySDQ4MC44ODdWMTM5LjU4M0g0NDAuMVYxNDguMTAySDQyMS42MVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yNzIuMzk5IDIzLjQxNzlMMzA2LjIzNyAxMDAuODgxTDM0MC4wNzQgMjMuNDE3OUgyNjguMjA5SDI3Mi4zOTlaTTM1Mi45MTMgMjMuNDE3OUwyOTQuMzU0IDEzMS4zNDdMMjkxLjQ4OCAxMzEuMzQ3TDI4OC45NzEgMTIxLjQ0N0gyNzguMjMxTDI3NS45NTUgMTMxLjM0N0wyNzMuMDggMTMxLjM0N0wyMTUuMjQ2IDIzLjQxNzlIMjM1LjY4OUwyODQuMzIyIDEwMC44ODFMNDE3LjU1NCAyMy40MTc5SDM1Mi45MTNaIiBmaWxsPSJ3aGl0ZSIvLz4KPHBhdGggZD0iTTQxNy4zMzEgMTQ4LjEwMlY1MC4xMDc0SDQzNS44MTZWMTE4LjAyNkM0NDIuMjQxIDEyMi4zMjcgNDQ4Ljk0MyAxMjYuNTQ0IDQ1NS42ODQgMTI4LjgwN0w0NTkuNTY4IDExMC44MjFDNDUzLjc4NSAxMDguNTgyIDQ0OC4wMDMgMTA0LjM4MSA0NDEuNjE3IDEwMS40NzdINDQwLjFWNTAuMTA3NEg0NTguNTg0Vjg2LjgwMTlINDc0LjIzN1Y1MC4xMDc0SDQ5Mi43MjFWMTE2Ljc5NEM0OTcuODQzIDExNS41NDMgNTAyLjI5MiAxMTQuMTQ4IDUwNi4zOTggMTEyLjU1N0w1MDcuNjU3IDEyNi4xMjNDNDk4LjQxNCAxMjkuOTA3IDQ4OC40OTcgMTMyLjgwOCA0NzkuMjU0IDEzNC4wMjFMNzUuNjM1MyAxNzIuNjA1QzM4LjkwNTcgMTc5LjU3MSAwIDE1OC4zNDUgMCAxMjAuODc0VjE0Ljg5OTlDNS4wNjEyMiAxMC40NjAyIDExLjgxMDggMTIuNTk3MiAxMi4zMzE4IDE4LjQzOTVMMTIuNDkxNCAxMjAuODc0QzEyLjQ5MTQgMTQ5LjQyNyA0My45Njc1IDE2MS4zMjggNjcuODQxNSAxNTYuNDc1TDQ3OS4yNTQgMTM0LjAyMUM0ODIuOTMgMTMzLjM0NiA0ODYuNDggMTMyLjUxMSA0ODkuODgyIDEzMS41MDlMNjgxLjQwNiAyMi43NTAzQzY4Ny44MzEgMTYuMzI1NSA2NzguNTg4IDYuNDIyMzYgNjcxLjE2IDExLjIxMzJMNjU5LjA2MyAxOS40MzQ4QzY0OC4xODUgMjYuODIzNyA2NDUuMDYgNDAuODMwMSA2NTMuMjgyIDUwLjM1NTNMNzUuNjM1MyAxNzIuNjA1WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTM1Ny4wMDggODUuOTgzM1Y1MC4xMDc0SDM3NS40OTNWMTAyLjMyMUgzOTIuOTcyVjUwLjEwNzRINDExLjQ1N1YxNDguMTAySDM5Mi45NzJWMTIuNTgyMUgzNTcuMDA4Vjg1Ljk4MzNaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjxkZWZzPgo8Y2xpcGF0aCBpZD0iY2xpcDAiPgo8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjE3MyIgZmlsbD0id2hpdGUiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K";
 
 const Page = React.forwardRef<HTMLDivElement, {children: React.ReactNode, className?: string, style?: React.CSSProperties}>(({ children, className, style }, ref) => (
   <div
@@ -56,12 +56,11 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
         investmentValue,
     } = props;
 
-    const hasMarketingPackage = packages?.some(p => p.startsWith('marketing'));
-    const hasPodcastPackage = packages?.some(p => p.startsWith('podcast'));
     const hasTrafficPackage = packages?.includes('trafego_pago');
+    const hasPodcastPackage = packages?.some(p => p.startsWith('podcast'));
 
     // Partnership Description
-    const partnershipDescription = `Para a ${clientName}, estar online não é o bastante. O objetivo é dominar. Nossa parceria é a união da sua expertise de negócio com a nossa capacidade comprovada de transformar presença digital em performance de vendas. Nós não apenas criamos conteúdo; nós construímos sistemas de aquisição de clientes e posicionamos marcas como líderes de seus mercados.`;
+    const partnershipDescription = `Para a ${clientName || '[Nome do Cliente]'}, estar online não é o bastante. O objetivo é dominar. Nossa parceria é a união da sua expertise de negócio com a nossa capacidade comprovada de transformar presença digital em performance de vendas. Nós não apenas criamos conteúdo; nós construímos sistemas de aquisição de clientes e posicionamos marcas como líderes de seus mercados.`;
 
     // Objectives
     const objectiveItems = [
@@ -75,11 +74,11 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
 
     // Differentials
     const differentialItems = [
-      "Obsessão pelo Resultado: Sua meta de faturamento se torna nossa métrica de sucesso.",
-      "Inteligência Estratégica: Não vendemos posts. Vendemos planos de crescimento baseados em dados.",
-      "Criatividade que Converte: Nossas ideias são desenhadas para gerar ação, não apenas aplausos.",
-      "Transparência Radical: Relatórios focados em ROI que provam o valor de cada real investido.",
-      "Time de Elite: Uma equipe multidisciplinar que vive e respira a vanguarda do marketing digital."
+      { title: "Obsessão pelo Resultado", text: "Sua meta de faturamento se torna nossa métrica de sucesso." },
+      { title: "Inteligência Estratégica", text: "Não vendemos posts. Vendemos planos de crescimento baseados em dados." },
+      { title: "Criatividade que Converte", text: "Nossas ideias são desenhadas para gerar ação, não apenas aplausos." },
+      { title: "Transparência Radical", text: "Relatórios focados em ROI que provam o valor de cada real investido." },
+      { title: "Time de Elite", text: "Uma equipe multidisciplinar que vive e respira a vanguarda do marketing digital." },
     ];
 
     // Ideal Plan
@@ -89,33 +88,6 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
       "Este plano não é uma despesa. É a construção de ativos de marketing que valorizam o seu negócio a cada dia.",
       "É a decisão lógica para uma marca que não se contenta em competir, mas que nasceu para liderar."
     ];
-
-    const renderPackageServices = () => (
-        <div className="flex flex-wrap justify-center gap-8 text-left">
-            {packages?.map(pkgKey => {
-                const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
-                if (!pkg) return null;
-                const Icon = pkg.icon;
-                return (
-                    <div key={pkgKey} className="bg-gray-900/70 p-8 rounded-lg border border-gray-700 flex flex-col w-full max-w-lg">
-                        <div className="flex-grow">
-                            <div className="flex items-center gap-4 mb-4">
-                                <Icon className="h-10 w-10 text-[#FE5412]" />
-                                <h3 className="font-bold text-2xl">{pkg.name}</h3>
-                            </div>
-                            <p
-                                className="text-sm text-gray-300 mt-2 whitespace-pre-wrap leading-relaxed"
-                                dangerouslySetInnerHTML={{ __html: pkg.description.replace(/\n/g, '<br />') }}
-                            />
-                        </div>
-                        <div className="pt-4 mt-auto text-right">
-                            <span className="text-2xl font-bold text-[#FE5412]">{pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                        </div>
-                    </div>
-                )
-            })}
-        </div>
-    );
 
   return (
     <div ref={ref}>
@@ -127,9 +99,6 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
               </div>
         </Page>
         <Page className="items-start justify-center">
-            <div className="absolute top-1/2 -translate-y-1/2 right-24 w-1/2 h-1/2 opacity-5">
-                 <Image crossOrigin="anonymous" src={logoHorizontalBase64} alt="CP Marketing Logo" layout="fill" objectFit="contain" />
-            </div>
             <div className="w-full max-w-6xl relative z-10">
                 <h2 className="text-7xl font-bold uppercase mb-4 text-left">SOBRE A PARCERIA</h2>
                 <p className="text-2xl text-gray-400 font-light mb-8 max-w-4xl">Uma extensão do seu negócio, focada em uma única missão: crescimento.</p>
@@ -150,15 +119,25 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 </ul>
             </div>
         </Page>
-        <Page className="justify-center items-start">
-             <div className="w-full max-w-6xl">
-                <h2 className="text-7xl font-bold uppercase mb-4">NOSSOS DIFERENCIAIS</h2>
-                 <p className="text-2xl text-gray-400 font-light mb-12 max-w-4xl">O que nos torna o parceiro ideal para escalar seus resultados.</p>
-                <ul className="space-y-6 text-3xl font-light columns-2 gap-x-16">
-                    {differentialItems.map((item, i) => (
-                        <li key={i} className="flex items-center gap-6 mb-6 break-inside-avoid"><Sparkles className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item}</span></li>
-                    ))}
-                </ul>
+        <Page className="justify-center items-center">
+             <div className="w-full max-w-7xl grid grid-cols-2 gap-x-24 items-center">
+                <div className='text-left'>
+                    <h2 className="text-7xl font-bold uppercase mb-4">NOSSOS DIFERENCIAIS</h2>
+                    <p className="text-2xl text-gray-400 font-light max-w-lg">O que nos torna o parceiro ideal para escalar seus resultados.</p>
+                </div>
+                <div>
+                    <ul className="space-y-8 text-2xl font-light">
+                        {differentialItems.map((item, i) => (
+                            <li key={i} className="flex items-start gap-6">
+                                <Sparkles className="h-8 w-8 text-[#FE5412] flex-shrink-0 mt-1" />
+                                <div>
+                                    <span className="font-semibold">{item.title}:</span>
+                                    <span className="text-gray-300"> {item.text}</span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
              </div>
         </Page>
         <Page className="p-16 items-start justify-start">
@@ -246,3 +225,4 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
   );
 });
 GeneratedProposal.displayName = "GeneratedProposal";
+
