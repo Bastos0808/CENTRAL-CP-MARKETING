@@ -49,16 +49,16 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             {/* Slide 1: Capa */}
             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20">
                 <Image src={logoHorizontalBase64} alt="Logo CP Marketing" width={600} height={200} />
-                <h1 className="text-8xl font-bold mt-8 tracking-tighter">PROPOSTA DE MARKETING</h1>
+                <h1 className="text-7xl font-bold mt-8 tracking-tighter">PROPOSTA DE MARKETING</h1>
                 <p className="text-4xl font-normal mt-4 text-primary">{clientName}</p>
             </div>
 
             {/* Slide 2: Sobre a Parceria */}
              <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
                 <div className="max-w-7xl">
-                    <p className="text-3xl font-normal text-primary mb-4">SOBRE A PARCERIA</p>
-                    <h2 className="text-8xl font-bold mb-8 tracking-tighter">Nós não somos uma agência.<br/>Somos seu motor de crescimento.</h2>
-                    <div className="grid grid-cols-2 gap-x-12 gap-y-6 text-3xl font-normal text-gray-300">
+                    <p className="text-2xl font-normal text-primary mb-4">SOBRE A PARCERIA</p>
+                    <h2 className="text-7xl font-bold mb-8 tracking-tighter">Nós não somos uma agência.<br/>Somos seu motor de crescimento.</h2>
+                    <div className="grid grid-cols-2 gap-x-12 gap-y-6 text-2xl font-normal text-gray-300">
                         <p>Nosso trabalho é transformar potencial em performance, e performance em lucro. Não entregamos posts, entregamos um sistema. Não gerenciamos redes, construímos ativos que geram valor para o seu negócio 24/7.</p>
                         <p>Enquanto outras agências se concentram em métricas de vaidade, nossa obsessão é o resultado que impacta sua última linha: o faturamento. Esta proposta é o primeiro passo para profissionalizar sua presença digital e construir uma máquina de vendas previsível.</p>
                     </div>
@@ -68,13 +68,13 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             {/* Slide 3: Objetivos */}
              <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
                 <div className="max-w-7xl">
-                    <p className="text-3xl font-normal text-primary mb-4">NOSSOS OBJETIVOS</p>
-                    <h2 className="text-8xl font-bold mb-8 tracking-tighter">O plano é claro: dominar, não competir.</h2>
-                    <p className="text-3xl font-normal text-gray-300 max-w-5xl mb-12">Para isso, focaremos em três pilares que, juntos, criam uma base sólida para o crescimento acelerado e sustentável da sua marca no ambiente digital.</p>
-                    <div className="grid grid-cols-3 gap-8 text-2xl font-normal">
-                        <div className="border-t-2 border-primary pt-4"><strong className="text-white text-3xl">Posicionamento de Autoridade:</strong><br/>Transformar sua marca na primeira e única opção na mente do seu cliente ideal.</div>
-                        <div className="border-t-2 border-primary pt-4"><strong className="text-white text-3xl">Aquisição de Clientes:</strong><br/>Implementar um sistema de aquisição de clientes que funcione de forma previsível e escalável.</div>
-                        <div className="border-t-2 border-primary pt-4"><strong className="text-white text-3xl">Maximização de Lucro:</strong><br/>Otimizar cada ponto de contato para aumentar o retorno sobre o investimento e o valor do ciclo de vida do cliente.</div>
+                    <p className="text-2xl font-normal text-primary mb-4">NOSSOS OBJETIVOS</p>
+                    <h2 className="text-7xl font-bold mb-8 tracking-tighter">O plano é claro: dominar, não competir.</h2>
+                    <p className="text-2xl font-normal text-gray-300 max-w-5xl mb-12">Para isso, focaremos em três pilares que, juntos, criam uma base sólida para o crescimento acelerado e sustentável da sua marca no ambiente digital.</p>
+                    <div className="grid grid-cols-3 gap-8 text-xl font-normal">
+                        <div className="border-t-2 border-primary pt-4"><strong className="text-white text-2xl">Posicionamento de Autoridade:</strong><br/>Transformar sua marca na primeira e única opção na mente do seu cliente ideal.</div>
+                        <div className="border-t-2 border-primary pt-4"><strong className="text-white text-2xl">Aquisição de Clientes:</strong><br/>Implementar um sistema de aquisição de clientes que funcione de forma previsível e escalável.</div>
+                        <div className="border-t-2 border-primary pt-4"><strong className="text-white text-2xl">Maximização de Lucro:</strong><br/>Otimizar cada ponto de contato para aumentar o retorno sobre o investimento e o valor do ciclo de vida do cliente.</div>
                     </div>
                 </div>
             </div>
@@ -83,21 +83,21 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
              <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
                 <div className="grid grid-cols-2 gap-16 items-center">
                     <div className="max-w-2xl">
-                        <p className="text-3xl font-normal text-primary mb-4">NOSSOS DIFERENCIAIS</p>
-                        <h2 className="text-8xl font-bold mb-8 tracking-tighter">Por que a CP é a escolha certa?</h2>
-                        <p className="text-3xl font-normal text-gray-300">Em um mercado comoditizado, nosso processo e nossa cultura são nosso maior ativo. É isso que nos permite entregar resultados onde outros entregam apenas relatórios.</p>
+                        <p className="text-2xl font-normal text-primary mb-4">NOSSOS DIFERENCIAIS</p>
+                        <h2 className="text-7xl font-bold mb-8 tracking-tighter">Por que a CP é a escolha certa?</h2>
+                        <p className="text-2xl font-normal text-gray-300">Em um mercado comoditizado, nosso processo e nossa cultura são nosso maior ativo. É isso que nos permite entregar resultados onde outros entregam apenas relatórios.</p>
                     </div>
-                     <div className="text-3xl font-normal text-gray-300 space-y-8">
+                     <div className="text-2xl font-normal text-gray-300 space-y-8">
                         <div className="border-l-2 border-primary pl-6 py-2">
-                            <h3 className="font-bold text-white text-4xl mb-2">Obsessão pelo Resultado</h3>
+                            <h3 className="font-bold text-white text-3xl mb-2">Obsessão pelo Resultado</h3>
                             <p>Nossa remuneração e nosso sucesso estão diretamente atrelados ao seu. Se você não cresce, nós falhamos.</p>
                         </div>
                          <div className="border-l-2 border-primary pl-6 py-2">
-                            <h3 className="font-bold text-white text-4xl mb-2">Processo Próprio (CP MÖDUS)</h3>
+                            <h3 className="font-bold text-white text-3xl mb-2">Processo Próprio (CP MÖDUS)</h3>
                             <p>Não usamos "fórmulas prontas". Aplicamos uma metodologia testada e validada para diagnosticar e executar com precisão.</p>
                         </div>
                          <div className="border-l-2 border-primary pl-6 py-2">
-                            <h3 className="font-bold text-white text-4xl mb-2">Transparência Radical</h3>
+                            <h3 className="font-bold text-white text-3xl mb-2">Transparência Radical</h3>
                             <p>Você terá acesso total ao que está sendo feito, por que está sendo feito e aos resultados em tempo real. Sem desculpas, sem rodeios.</p>
                         </div>
                     </div>
@@ -107,17 +107,17 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             {/* Slide 5: Escopo do Projeto */}
             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
                 <div className="max-w-7xl w-full">
-                    <p className="text-3xl font-normal text-primary mb-4">ESCOPO DO PROJETO</p>
-                    <h2 className="text-8xl font-bold mb-12 tracking-tighter">O que faremos juntos.</h2>
+                    <p className="text-2xl font-normal text-primary mb-4">ESCOPO DO PROJETO</p>
+                    <h2 className="text-7xl font-bold mb-12 tracking-tighter">O que faremos juntos.</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {selectedPackages.map(pkg => (
                             <div key={pkg.name} className="bg-gray-900/50 p-8 rounded-lg border border-gray-800 flex flex-col">
                                 <div className="flex-grow">
                                     <div className="flex items-center gap-3 mb-4">
                                         <pkg.icon className="h-8 w-8 text-primary" />
-                                        <h3 className="text-3xl font-bold">{pkg.name}</h3>
+                                        <h3 className="text-2xl font-bold">{pkg.name}</h3>
                                     </div>
-                                    <ul className="text-lg text-gray-300 space-y-2 font-normal">
+                                    <ul className="text-base text-gray-300 space-y-2 font-normal">
                                         {renderPackageServices(pkg.description)}
                                     </ul>
                                 </div>
@@ -130,9 +130,9 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             {/* Slide 6: Por que este plano? */}
             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center p-20">
                 <div className="max-w-6xl">
-                    <p className="text-3xl font-normal text-primary mb-4">PLANO DE AÇÃO</p>
-                    <h2 className="text-8xl font-bold mb-8 tracking-tighter">Por que este plano é ideal para você?</h2>
-                    <div className="text-3xl font-normal text-gray-300 space-y-6 max-w-5xl">
+                    <p className="text-2xl font-normal text-primary mb-4">PLANO DE AÇÃO</p>
+                    <h2 className="text-7xl font-bold mb-8 tracking-tighter">Por que este plano é ideal para você?</h2>
+                    <div className="text-2xl font-normal text-gray-300 space-y-6 max-w-5xl">
                         <p>Analisamos seu cenário atual e seus objetivos de crescimento. Com base nisso, montamos uma proposta que não é apenas um "pacote de serviços", mas um plano estratégico desenhado para atacar suas maiores alavancas de crescimento agora.</p>
                         {(showMarketing || showTraffic) && <p><strong className="text-white">A base de Marketing e Tráfego Pago</strong> garante que sua marca seja vista pelo público certo, enquanto construímos uma base sólida de autoridade e conteúdo.</p>}
                         {showPodcast && <p><strong className="text-white">A inclusão do Podcast</strong> é o seu acelerador de autoridade. É a ferramenta que vai te posicionar como a referência do seu mercado, criando uma conexão profunda com a audiência.</p>}
@@ -144,12 +144,12 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
 
             {/* Slide 7: Investimento */}
             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20 text-center">
-                 <p className="text-3xl font-normal text-primary mb-4">INVESTIMENTO</p>
-                 <h2 className="text-8xl font-bold tracking-tighter">Proposta Financeira</h2>
-                 <p className="text-3xl font-normal text-gray-300 mt-4 mb-12">Um investimento claro para um retorno exponencial.</p>
+                 <p className="text-2xl font-normal text-primary mb-4">INVESTIMENTO</p>
+                 <h2 className="text-7xl font-bold tracking-tighter">Proposta Financeira</h2>
+                 <p className="text-2xl font-normal text-gray-300 mt-4 mb-12">Um investimento claro para um retorno exponencial.</p>
                  <div className="bg-gray-900/50 p-12 rounded-lg border border-gray-800">
-                    <p className="text-3xl text-gray-300">Valor do investimento mensal</p>
-                    <p className="text-9xl font-bold text-primary my-4 tracking-tighter">{investmentValue}</p>
+                    <p className="text-2xl text-gray-300">Valor do investimento mensal</p>
+                    <p className="text-8xl font-bold text-primary my-4 tracking-tighter">{investmentValue}</p>
                     <p className="text-lg text-gray-400">Contrato de 6 meses | Pix ou Boleto</p>
                  </div>
             </div>
@@ -157,12 +157,12 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
              {/* Slide 8: Próximos Passos */}
             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20 text-center">
                 <Goal className="h-24 w-24 text-primary mb-8"/>
-                 <h2 className="text-8xl font-bold tracking-tighter">Vamos construir juntos?</h2>
-                 <p className="text-4xl font-normal text-gray-300 mt-6 mb-12 max-w-5xl">Estamos prontos para aplicar nossa metodologia e nossa paixão para transformar os resultados do seu negócio. Este é o início de uma parceria de sucesso.</p>
-                 <div className="text-3xl font-normal space-y-6 text-left border-t border-b border-primary/20 py-8">
-                    <p className="flex items-center gap-4"><strong className="text-primary text-4xl">1.</strong> Alinhamento e assinatura da proposta.</p>
-                    <p className="flex items-center gap-4"><strong className="text-primary text-4xl">2.</strong> Reunião de Onboarding e Kick-off estratégico.</p>
-                    <p className="flex items-center gap-4"><strong className="text-primary text-4xl">3.</strong> Início da execução e busca pelos primeiros resultados.</p>
+                 <h2 className="text-7xl font-bold tracking-tighter">Vamos construir juntos?</h2>
+                 <p className="text-3xl font-normal text-gray-300 mt-6 mb-12 max-w-5xl">Estamos prontos para aplicar nossa metodologia e nossa paixão para transformar os resultados do seu negócio. Este é o início de uma parceria de sucesso.</p>
+                 <div className="text-2xl font-normal space-y-6 text-left border-t border-b border-primary/20 py-8">
+                    <p className="flex items-center gap-4"><strong className="text-primary text-3xl">1.</strong> Alinhamento e assinatura da proposta.</p>
+                    <p className="flex items-center gap-4"><strong className="text-primary text-3xl">2.</strong> Reunião de Onboarding e Kick-off estratégico.</p>
+                    <p className="flex items-center gap-4"><strong className="text-primary text-3xl">3.</strong> Início da execução e busca pelos primeiros resultados.</p>
                  </div>
             </div>
 
