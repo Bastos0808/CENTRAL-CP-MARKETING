@@ -115,14 +115,10 @@ interface SdrUser {
 const CounterTaskInput = ({
   value,
   onSave,
-  goal,
-  cumulativeValue,
   ...props
 }: {
   value: string;
   onSave: (newValue: string) => void;
-  goal?: number;
-  cumulativeValue?: number;
 } & Omit<React.ComponentProps<typeof Input>, 'value' | 'onChange' | 'onBlur'>) => {
   const [localValue, setLocalValue] = useState(value);
 
@@ -135,19 +131,12 @@ const CounterTaskInput = ({
   };
 
   return (
-      <div className="flex items-center gap-3">
-        <Input 
-            value={localValue} 
-            onChange={(e) => setLocalValue(e.target.value)} 
-            onBlur={handleBlur} 
-            {...props} 
-        />
-        {goal !== undefined && (
-             <span className="text-sm font-semibold text-muted-foreground w-12 text-right">
-                {cumulativeValue !== undefined ? `${cumulativeValue} /` : ''} {goal}
-             </span>
-        )}
-      </div>
+    <Input 
+        value={localValue} 
+        onChange={(e) => setLocalValue(e.target.value)} 
+        onBlur={handleBlur} 
+        {...props} 
+    />
   );
 };
 
@@ -1002,28 +991,46 @@ export default function RotinaSDRPage() {
                       <WeeklyProgress sdrId={effectiveUserId!} yearData={yearData} week={currentWeek} month={currentMonth} />
                    </>
                   ) : (
-                    <div className="space-y-4">
-                        {counterTasks.map((task) => (
-                             <div key={task.id} className="flex items-center justify-between gap-4 p-4 rounded-lg bg-card/50">
-                                <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
-                                <div className="flex items-center gap-3">
-                                    <CounterTaskInput
-                                        type="text"
-                                        pattern="[0-9]*"
-                                        inputMode="numeric"
-                                        id={`${activeDay}-${task.id}`}
-                                        value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
-                                        onSave={(value) => handleCounterChange(task.id, value)}
-                                        className="w-24 h-11 text-base text-center font-bold bg-input border-2 border-primary/50"
-                                        placeholder="0"
-                                        goal={task.id === 'podcasts' ? weeklyGoals.podcasts.goal : undefined}
-                                        cumulativeValue={task.id === 'podcasts' ? weeklyPodcastConfirmations : undefined}
-                                    />
+                    <div className="space-y-2">
+                        {counterTasks.map((task, index) => {
+                             const goal = weeklyGoals[task.id as keyof typeof weeklyGoals]?.goal || (task.id === 'daily_meetings' ? WEEKLY_MEETING_GOAL : undefined);
+                             let cumulativeValue: number | undefined;
+
+                             if (goal !== undefined) {
+                                if (task.id === 'daily_meetings') {
+                                    cumulativeValue = weekData.meetingsBooked || 0;
+                                } else {
+                                     cumulativeValue = ptDays.reduce((acc, day) => {
+                                        const count = Number(weekData.counterTasks?.[day]?.[task.id] || 0);
+                                        return acc + count;
+                                    }, 0);
+                                }
+                             }
+
+                            return (
+                                <div key={task.id} className={cn("flex items-center justify-between gap-4 p-4 rounded-lg", index % 2 === 0 ? 'bg-card/50' : 'bg-primary/5')}>
+                                    <Label htmlFor={`${activeDay}-${task.id}`} className="text-base font-medium flex-1">{task.label}</Label>
+                                    <div className="flex items-center gap-3">
+                                        <CounterTaskInput
+                                            type="text"
+                                            pattern="[0-9]*"
+                                            inputMode="numeric"
+                                            id={`${activeDay}-${task.id}`}
+                                            value={weekData?.counterTasks?.[activeDay]?.[task.id] || ''}
+                                            onSave={(value) => handleCounterChange(task.id, value)}
+                                            className="w-20 h-10 text-base text-center font-bold bg-input border-2 border-primary/50"
+                                            placeholder="0"
+                                        />
+                                        {goal !== undefined && (
+                                            <span className="text-sm font-semibold text-muted-foreground w-16 text-right">
+                                                {cumulativeValue !== undefined ? `${cumulativeValue} / ${goal}` : ''}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        })}
                             
-                          {/* Checkbox Tasks */}
                         <div className="space-y-4 pt-4">
                             {checkboxTasks.map(task => {
                                 const isChecked = weekData.checkedTasks?.[activeDay]?.[task.id] || false;
