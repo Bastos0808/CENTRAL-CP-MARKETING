@@ -61,33 +61,33 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
     const hasTrafficPackage = packages?.includes('trafego_pago');
 
     // Partnership Description
-    const partnershipDescription = `Em um mercado onde a atenção é o ativo mais valioso, a parceria com a CP Marketing Digital para ${clientName} é a união da sua expertise de negócio com a nossa especialidade em criar conexões digitais que geram resultados. Entendemos que seu desafio não é apenas estar online, mas sim transformar presença em performance, e é exatamente aí que nossa colaboração se inicia.`;
+    const partnershipDescription = `Para a ${clientName}, estar online não é o bastante. O objetivo é dominar. Nossa parceria é a união da sua expertise de negócio com a nossa capacidade comprovada de transformar presença digital em performance de vendas. Nós não apenas criamos conteúdo; nós construímos sistemas de aquisição de clientes e posicionamos marcas como líderes de seus mercados.`;
 
     // Objectives
     const objectiveItems = [
-      "Posicionar a marca como autoridade e referência em seu nicho de atuação.",
-      "Construir uma comunidade engajada e fiel, que não apenas consome, mas defende a marca.",
-      "Gerar um fluxo consistente e previsível de oportunidades de negócio e vendas.",
-      "Aumentar a percepção de valor dos seus produtos/serviços, justificando um posicionamento premium."
+      "Transformar a marca em uma autoridade inquestionável no seu nicho.",
+      "Implementar um sistema de aquisição de clientes previsível e escalável.",
+      "Converter seguidores em uma comunidade de defensores da marca.",
+      "Maximizar a percepção de valor, sustentando um posicionamento de alto padrão."
     ];
-    if(hasTrafficPackage) objectiveItems.push("Estruturar um sistema de aquisição de clientes através de anúncios de alta performance.");
-    if(hasPodcastPackage) objectiveItems.push("Transformar conhecimento em um ativo de conteúdo de longa duração através de um podcast profissional.");
+    if(hasTrafficPackage) objectiveItems.push("Estruturar e otimizar campanhas de tráfego pago que geram ROI real e mensurável.");
+    if(hasPodcastPackage) objectiveItems.push("Estabelecer um canal de conteúdo de longa duração (podcast) para aprofundar a conexão com o público mais qualificado.");
 
     // Differentials
     const differentialItems = [
-      "Somos obcecados pelo resultado do cliente. Sua meta é a nossa meta.",
-      "Planejamento estratégico focado em resolver problemas reais do negócio, não apenas em postar.",
-      "Criatividade com propósito: cada ideia é desenhada para atingir um objetivo claro.",
-      "Transparência total nos relatórios, focados em ROI e métricas que importam.",
-      "Equipe multidisciplinar e antenada com as últimas tendências do mercado digital."
+      "Obsessão pelo Resultado: Sua meta de faturamento se torna nossa métrica de sucesso.",
+      "Inteligência Estratégica: Não vendemos posts. Vendemos planos de crescimento baseados em dados.",
+      "Criatividade que Converte: Nossas ideias são desenhadas para gerar ação, não apenas aplausos.",
+      "Transparência Radical: Relatórios focados em ROI que provam o valor de cada real investido.",
+      "Time de Elite: Uma equipe multidisciplinar que vive e respira a vanguarda do marketing digital."
     ];
 
     // Ideal Plan
     const idealPlanItems = [
-      "A combinação dos serviços selecionados ataca o crescimento em múltiplas frentes, do alcance imediato à construção de autoridade a longo prazo.",
-      "Foca em criar ativos para a marca (como conteúdo de qualidade e autoridade), que geram valor contínuo.",
-      "O plano é desenhado para não apenas atrair, mas para construir um relacionamento sólido e de confiança com o público-alvo.",
-      "Permite a flexibilidade de adaptar a estratégia com base nos dados e no desempenho, otimizando o investimento continuamente."
+      "A sinergia entre os serviços selecionados cria um ecossistema de marketing completo, onde cada frente potencializa a outra.",
+      "Atacamos o crescimento em todas as frentes: da aquisição imediata com tráfego pago à construção de autoridade a longo prazo com conteúdo.",
+      "Este plano não é uma despesa. É a construção de ativos de marketing que valorizam o seu negócio a cada dia.",
+      "É a decisão lógica para uma marca que não se contenta em competir, mas que nasceu para liderar."
     ];
 
     const renderPackageServices = () => (
@@ -121,9 +121,9 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
     <div ref={ref}>
         <Page className="bg-cover bg-center" style={{backgroundImage: "url('https://images.unsplash.com/photo-1749680287741-243118ed6b2c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"}}>
               <div className="z-10 text-center flex flex-col items-center" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.5)' }}>
-                  <p className="text-[#FE5412] font-semibold tracking-widest mb-4 text-2xl">PROPOSTA COMERCIAL</p>
+                  <p className="text-[#FE5412] font-semibold tracking-widest mb-4 text-2xl">PROPOSTA DE PARCERIA ESTRATÉGICA</p>
                   <h1 className="text-[160px] font-extrabold max-w-5xl leading-snug">{clientName || '[Nome do Cliente]'}</h1>
-                  <p className="text-3xl font-light text-gray-200 mt-6">Gestão Estratégica de Marketing Digital</p>
+                  <p className="text-3xl font-light text-gray-200 mt-6">Aceleração de Performance em Marketing Digital</p>
               </div>
         </Page>
         <Page className="items-start">
@@ -140,7 +140,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
         </Page>
         <Page>
             <div className="w-full max-w-6xl">
-                <h2 className="text-7xl font-bold uppercase mb-12">Nossos Objetivos</h2>
+                <h2 className="text-7xl font-bold uppercase mb-12">Objetivos de Performance</h2>
                 <ul className="space-y-6 text-3xl font-light">
                     {objectiveItems.map((item, i) => (
                         <li key={i} className="flex items-center gap-6"><Goal className="h-10 w-10 text-[#FE5412] flex-shrink-0" /><span>{item}</span></li>
@@ -166,7 +166,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
         </Page>
         <Page>
              <div className="w-full max-w-6xl text-center">
-                <h2 className="text-7xl font-bold uppercase mb-12">Por que este plano é <span className="text-[#FE5412]">ideal</span>?</h2>
+                <h2 className="text-7xl font-bold uppercase mb-12">Por que este plano é <span className="text-[#FE5412]">a decisão certa</span>?</h2>
                  <ul className="space-y-6 text-3xl font-light text-left max-w-4xl mx-auto">
                     {idealPlanItems.map((item, i) => (
                         <li key={i} className="flex items-center gap-6"><Check className="h-10 w-10 text-green-400 flex-shrink-0" /><span>{item}</span></li>
@@ -207,7 +207,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
         <Page>
             <div className="text-center">
                 <h2 className="text-9xl font-bold uppercase">E <span className="text-[#FE5412]">agora?</span></h2>
-                <p className="text-4xl mt-6 text-gray-300 max-w-4xl mx-auto">O próximo passo é simples: basta responder a esta proposta para agendarmos nossa conversa inicial.</p>
+                <p className="text-4xl mt-6 text-gray-300 max-w-4xl mx-auto">Esta proposta representa o primeiro passo para o próximo nível do seu negócio. O próximo passo é simples: responda a este e-mail para agendarmos a conversa de alinhamento e darmos início à parceria.</p>
             </div>
         </Page>
     </div>
