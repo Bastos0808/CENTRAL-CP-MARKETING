@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Mic, Loader2, Check, Trash2, User, Instagram } from "lucide-react";
+import { Mic, Loader2, Check, Trash2, User, Instagram, Users } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button } from "./ui/button";
@@ -64,6 +64,8 @@ const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
     "comercial02@cpmarketing.com.br": { name: "Heloysa", color: "text-blue-400" },
     "comercial03@cpmarketing.com.br": { name: "Débora", color: "text-purple-400" },
 };
+
+const sdrOrder = ["Van Diego", "Débora", "Heloysa"];
 
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
@@ -185,6 +187,35 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
   }, [user, toast, schedule, handleUpdateEpisode]);
 
+  const weeklyBookingCount = useMemo(() => {
+    const counts: Record<string, number> = {
+        "Van Diego": 0,
+        "Débora": 0,
+        "Heloysa": 0,
+    };
+
+    if (!selectedWeekStart) return counts;
+
+    const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
+    const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
+
+    Object.values(schedule).forEach(episode => {
+        if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
+            episode.guests.forEach(guest => {
+                if(guest.sdrName){
+                     const sdrInfo = sdrUserDisplayMap[guest.sdrName];
+                     if(sdrInfo && counts.hasOwnProperty(sdrInfo.name)) {
+                        counts[sdrInfo.name]++;
+                     }
+                }
+            })
+        }
+    })
+
+    return counts;
+
+  }, [schedule, selectedWeekStart]);
+
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
     const totalSlots = 12;
@@ -258,6 +289,23 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
               </div>
           </CardHeader>
           <CardContent className="space-y-4">
+              <Card>
+                  <CardHeader>
+                      <CardTitle className="text-base font-semibold flex items-center gap-2"><Users className="h-5 w-5 text-primary"/> Agendamentos da Semana</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-3 gap-4">
+                        {sdrOrder.map(sdrName => {
+                             const sdrInfo = Object.values(sdrUserDisplayMap).find(info => info.name === sdrName) || { color: 'text-foreground' };
+                             return (
+                                <div key={sdrName} className="p-4 border rounded-lg bg-muted/50 flex flex-col items-center justify-center">
+                                    <Label className={cn("text-lg font-bold", sdrInfo.color)}>{sdrName}</Label>
+                                    <p className="text-3xl font-bold">{weeklyBookingCount[sdrName]}</p>
+                                </div>
+                             )
+                        })}
+                  </CardContent>
+              </Card>
+
               {weeklyEpisodeConfig.map(config => {
                   const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
                   const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
