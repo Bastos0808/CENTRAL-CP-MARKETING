@@ -41,11 +41,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();
                     role = userData.role || 'comercial';
-                    displayName = userData.displayName || displayName;
-                }
-
-                // If displayName is still empty, derive it from the email
-                if (!displayName && fbUser.email) {
+                    // Firestore 'displayName' is the unique identifier like 'heloysa.santos'
+                    displayName = userData.displayName || fbUser.email?.split('@')[0] || ''; 
+                } else if (fbUser.email) {
+                    // Fallback for users not in Firestore document for some reason
                     displayName = fbUser.email.split('@')[0];
                 }
 

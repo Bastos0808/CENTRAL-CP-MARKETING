@@ -163,7 +163,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   const weeklySdrCount = useMemo(() => {
     const counts: Record<string, number> = {};
     
-    // Initialize counts for all possible SDRs
+    // Initialize counts for all possible SDRs based on the display map keys
     Object.keys(sdrUserDisplayMap).forEach(sdrKey => {
         counts[sdrKey] = 0;
     });
@@ -176,7 +176,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
         if (episodeData) {
             episodeData.guests.forEach(guest => {
                 // Count if there is an sdrName (meaning it's a booked slot)
-                if (guest && guest.sdrName) {
+                if (guest && guest.sdrName && counts.hasOwnProperty(guest.sdrName)) {
                     // Use the sdrName key directly for counting
                     counts[guest.sdrName]++;
                 }
@@ -260,10 +260,10 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           variant={'outline'}
                           onClick={() => setSelectedWeekStart(weekStart)}
                            className={cn("h-auto flex-col p-3 transition-all", {
-                              'bg-green-600 border-green-500 text-white hover:bg-green-700 hover:text-white ring-green-500': isFilled,
+                              'bg-green-600 border-green-500 text-white hover:bg-green-700 hover:text-white': isFilled,
                               'bg-primary text-primary-foreground hover:bg-primary/90': isSelected && !isFilled,
                               'ring-2 ring-primary ring-offset-2 ring-offset-background': isSelected && !isFilled,
-                              'hover:bg-green-600/90': isFilled,
+                              'hover:!bg-green-600/90': isFilled,
                           })}
                       >
                          <div className="flex items-center gap-2">
