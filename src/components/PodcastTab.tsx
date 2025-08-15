@@ -187,54 +187,50 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
   }, [user, toast, schedule, handleUpdateEpisode]);
   
-  const weeklyBookingCount = useMemo(() => {
-    const rawCounts: { [sdrName: string]: number } = {};
-
+    const weeklyBookingCount = useMemo(() => {
     if (!selectedWeekStart || !schedule) {
-      return sdrOrder.reduce((acc, name) => ({ ...acc, [name]: 0 }), {});
+      return {};
     }
 
     const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
     const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
+    
+    const counts: Record<string, number> = {};
+
+    sdrOrder.forEach(name => {
+      counts[name] = 0;
+    });
 
     Object.values(schedule).forEach(episode => {
       if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
         episode.guests.forEach(guest => {
           if (guest?.sdrName) {
-            const guestSdrName = guest.sdrName;
-            if (rawCounts[guestSdrName]) {
-              rawCounts[guestSdrName]++;
-            } else {
-              rawCounts[guestSdrName] = 1;
+            let normalizedSdrName = guest.sdrName.toLowerCase().replace(/\s+/g, '').replace('@cpmarketing.com.br', '');
+            let displayName: string | null = null;
+            
+            for (const [key, value] of Object.entries(sdrUserDisplayMap)) {
+                if (normalizedSdrName.includes(key)) {
+                    displayName = value.name;
+                    break;
+                }
+            }
+
+            if(displayName && counts.hasOwnProperty(displayName)) {
+                 counts[displayName]++;
+            } else if (counts.hasOwnProperty(guest.sdrName)) {
+                counts[guest.sdrName]++;
             }
           }
         });
       }
     });
 
-    const finalCounts = sdrOrder.reduce((acc, name) => ({ ...acc, [name]: 0 }), {} as Record<string, number>);
-
-    Object.entries(rawCounts).forEach(([sdrName, count]) => {
-        const normalizedSdrName = sdrName.toLowerCase().replace(/\s+/g, '').replace('@cpmarketing.com.br', '');
-        let matched = false;
-        for (const [key, value] of Object.entries(sdrUserDisplayMap)) {
-            if (normalizedSdrName.includes(key)) {
-                finalCounts[value.name] = (finalCounts[value.name] || 0) + count;
-                matched = true;
-                break;
-            }
-        }
-        if (!matched && finalCounts.hasOwnProperty(sdrName)) {
-             finalCounts[sdrName] = (finalCounts[sdrName] || 0) + count;
-        }
-    });
-
-    return finalCounts;
+    return counts;
   }, [schedule, selectedWeekStart]);
 
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
-    const totalSlots = 14;
+    const totalSlots = weeklyEpisodeConfig.reduce((acc, curr) => acc + curr.guestCount, 0);
     let filledSlots = 0;
 
     weeklyEpisodeConfig.forEach(config => {
@@ -244,7 +240,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
         if (episodeData) {
             episodeData.guests.forEach(guest => {
-                if (guest && guest.sdrName) {
+                if (guest && (guest.guestName.trim() || guest.instagram.trim())) {
                     filledSlots++;
                 }
             });
@@ -254,7 +250,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [schedule]);
   
   const checkWeekIsFilled = useCallback((weekStartDate: Date) => {
-    return calculateVacanciesForWeek(weekStartDate) === 0;
+    return calculateVacanciesForWeek(weekStartDate) <= 0;
   }, [calculateVacanciesForWeek]);
 
 
@@ -298,7 +294,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                             {`Semana ${index + 1} (${format(weekStart, 'dd/MM')} - ${format(weekEnd, 'dd/MM')})`}
                          </div>
                          <span className="text-xs font-normal mt-1 opacity-80">
-                            {vacancies} vagas disponíveis
+                            {vacancies > 0 ? `${vacancies} vagas disponíveis` : `Semana Cheia`}
                          </span>
                       </Button>
                   )})}
@@ -310,8 +306,9 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                       <CardTitle className="text-base font-semibold flex items-center gap-2"><Users className="h-5 w-5 text-primary"/> Agendamentos da Semana</CardTitle>
                   </CardHeader>
                   <CardContent className="grid grid-cols-3 gap-4">
-                        {Object.entries(weeklyBookingCount).map(([sdrName, count]) => {
+                        {sdrOrder.map((sdrName) => {
                              const sdrInfo = Object.values(sdrUserDisplayMap).find(info => info.name === sdrName) || { color: 'text-foreground' };
+                             const count = weeklyBookingCount[sdrName] || 0;
                              return (
                                 <div key={sdrName} className="p-4 border rounded-lg bg-muted/50 flex flex-col items-center justify-center">
                                     <Label className={cn("text-lg font-bold", sdrInfo.color)}>{sdrName}</Label>
@@ -327,16 +324,17 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                   const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
                   
                   const existingData = schedule[episodeId];
+                  const episodeTitle = `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`;
                   const episodeData: ScheduledEpisode = {
                         id: episodeId,
                         date: format(dateForDay, 'yyyy-MM-dd'),
                         episodeType: config.type,
-                        episodeTitle: `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`,
+                        episodeTitle: episodeTitle,
                         guests: existingData?.guests || Array.from({ length: config.guestCount }, () => ({ guestName: '', instagram: '' })),
                         isFilled: existingData?.isFilled || false,
                   };
                   
-                  const isEpisodeFilled = episodeData.guests.every(g => g && g.sdrName);
+                  const isEpisodeFilled = episodeData.guests.every(g => g && (g.guestName.trim() || g.instagram.trim()));
 
                   return (
                       <Card key={episodeId} className="bg-card/50">
@@ -366,7 +364,11 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               const isBookedByCurrentUser = guest.sdrId === user?.uid;
                               const isBooked = !!guest.sdrId;
 
-                              const sdrInfo = Object.values(sdrUserDisplayMap).find(info => guestSdrName && info.name.toLowerCase() === guestSdrName.toLowerCase()) || {};
+                              const sdrInfo = Object.values(sdrUserDisplayMap).find(info => {
+                                  const normalizedSdrName = guestSdrName?.toLowerCase().replace(/\s+/g, '').replace('@cpmarketing.com.br', '');
+                                  return normalizedSdrName ? Object.keys(sdrUserDisplayMap).some(key => normalizedSdrName.includes(key) && sdrUserDisplayMap[key].name === info.name) : false;
+                              }) || {};
+
                               const sdrColorClass = sdrInfo.color || 'text-muted-foreground';
                               const displayName = sdrInfo.name || guestSdrName;
 
