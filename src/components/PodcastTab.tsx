@@ -9,7 +9,7 @@ import { Mic, Loader2, Check } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button } from "./ui/button";
-import { addDays, format, startOfWeek, endOfWeek, isSameDay } from "date-fns";
+import { addDays, format, startOfWeek, endOfWeek, isSameDay, getDay, endOfDay } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
@@ -43,7 +43,15 @@ const weeklyEpisodeConfig: EpisodeConfig[] = [
 ];
 
 const generateWeeks = (baseDate: Date): Date[] => {
-    const startOfCurrentWeek = startOfWeek(baseDate, { weekStartsOn: 1 });
+    // getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday
+    const today = getDay(baseDate); 
+    
+    // If today is Saturday (6) or Sunday (0), start the calendar from next Monday.
+    let startOfCurrentWeek = startOfWeek(baseDate, { weekStartsOn: 1 });
+    if (today === 6 || today === 0) {
+        startOfCurrentWeek = addDays(startOfCurrentWeek, 7);
+    }
+    
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
 
@@ -94,8 +102,14 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     const sdrName = user.displayName;
     const sdrId = user.uid;
 
-    const episodeToUpdate = schedule[episodeId];
-    if (!episodeToUpdate) return;
+    const episodeToUpdate = schedule[episodeId] || {
+        id: episodeId,
+        date: episodeId.split('-')[0],
+        episodeType: weeklyEpisodeConfig.find(c => c.id === episodeId.split('-').pop())?.type || 'geral',
+        episodeTitle: '',
+        guests: [],
+        isFilled: false,
+    };
     
     const guestToUpdate = episodeToUpdate.guests[guestIndex];
     if (guestToUpdate && guestToUpdate.sdrId && guestToUpdate.sdrId !== sdrId) {
@@ -104,6 +118,10 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     }
 
     const updatedGuests = [...episodeToUpdate.guests];
+    while (updatedGuests.length <= guestIndex) {
+        updatedGuests.push({ guestName: '', instagram: '' });
+    }
+    
     const updatedGuest: GuestInfo = { ...updatedGuests[guestIndex] };
 
     updatedGuest[field] = value;
@@ -128,17 +146,12 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
         isFilled: isNowFilled,
     };
     
-    // Optimistic UI update
-    setSchedule(prev => ({ ...prev, [episodeId]: updatedEpisode }));
-    
     try {
         const docRef = doc(db, 'podcast_schedule', episodeId);
         await setDoc(docRef, updatedEpisode, { merge: true });
     } catch (error) {
         console.error("Error saving schedule:", error);
         toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
-        // Revert optimistic update on error
-        setSchedule(prev => ({ ...prev, [episodeId]: episodeToUpdate }));
     }
 
   }, [user, toast, schedule]);
@@ -231,6 +244,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
               <CardDescription>Preencha os convidados para os episódios da semana. O agendamento é colaborativo e salvo automaticamente.</CardDescription>
               <div className="flex items-center gap-2 pt-2">
                   {weeks.map((weekStart, index) => {
+                      const weekEnd = addDays(weekStart, 4); // Monday to Friday
                       const isFilled = checkWeekIsFilled(weekStart);
                       const isSelected = isSameDay(selectedWeekStart, weekStart);
                       const vacancies = calculateVacanciesForWeek(weekStart);
@@ -248,7 +262,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                       >
                          <div className="flex items-center gap-2">
                             {isFilled && <Check className="h-4 w-4" />}
-                            {`Semana ${index + 1} (${format(weekStart, 'dd/MM')} - ${format(endOfWeek(weekStart, {weekStartsOn: 1}), 'dd/MM')})`}
+                            {`Semana ${index + 1} (${format(weekStart, 'dd/MM')} - ${format(weekEnd, 'dd/MM')})`}
                          </div>
                          <span className="text-xs font-normal mt-1 opacity-80">
                             {vacancies} vagas disponíveis
