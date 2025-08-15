@@ -51,7 +51,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
             {/* Slide 1: Capa */}
             <div data-slide className="w-[1920px] h-[1080px] bg-black text-white flex flex-col justify-center items-center p-20">
                 <Image src={logoUrl} alt="Logo CP Marketing" width={600} height={200} />
-                <h1 className="text-7xl font-bold mt-8 tracking-tighter">PROPOSTA DE MARKETING</h1>
+                <h1 className="text-7xl font-bold mt-4 tracking-tighter">PROPOSTA DE MARKETING</h1>
                 <p className="text-4xl font-normal mt-4 text-primary">{clientName}</p>
             </div>
 
@@ -152,7 +152,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                  <div className="bg-gray-900/50 p-12 rounded-lg border border-gray-800">
                     <p className="text-2xl text-gray-300">Valor do investimento mensal</p>
                     {originalInvestmentValue && (
-                         <p className="text-5xl font-semibold text-red-500 my-2 tracking-tighter line-through decoration-red-500">{originalInvestmentValue}</p>
+                        <p className="text-5xl font-semibold text-red-500 my-2 tracking-tighter line-through decoration-red-500/80">DE {originalInvestmentValue}</p>
                     )}
                     <p className="text-8xl font-bold text-primary my-4 tracking-tighter">{investmentValue}</p>
                  </div>
