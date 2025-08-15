@@ -262,5 +262,3 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
-
-    
