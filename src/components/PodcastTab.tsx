@@ -111,12 +111,14 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
             const guest = episode.guests[guestIndex];
             guest[field] = value;
     
-            const sdrName = user.displayName;
+            const sdrName = user.displayName || '';
     
-            if (value.trim() !== '') {
+            const otherField = field === 'guestName' ? guest.instagram : guest.guestName;
+
+            if (value.trim() !== '' || (otherField || '').trim() !== '') {
                 guest.sdrId = user.uid;
                 guest.sdrName = sdrName;
-            } else if ((guest.guestName || '').trim() === '' && (guest.instagram || '').trim() === '') {
+            } else {
                 delete guest.sdrId;
                 delete guest.sdrName;
             }
