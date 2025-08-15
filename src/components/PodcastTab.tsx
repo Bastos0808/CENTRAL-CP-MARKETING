@@ -100,50 +100,53 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [toast]);
   
   const handleGuestChange = useCallback((episodeId: string, guestIndex: number, field: 'guestName' | 'instagram', value: string) => {
-    if (!user?.uid) return;
-
-    // Optimistic UI Update
-    const updatedSchedule = produce(schedule, draft => {
-        const episode = draft[episodeId];
-        if (!episode) return;
-        
-        const guest = episode.guests[guestIndex];
-        guest[field] = value;
-
-        if (value.trim() !== '' && !guest.sdrId) {
-            guest.sdrId = user.uid;
-            guest.sdrName = user.displayName || user.email?.split('@')[0] || 'SDR';
-        } else if (
-            (guest.guestName || '').trim() === '' &&
-            (guest.instagram || '').trim() === ''
-        ) {
-            delete guest.sdrId;
-            delete guest.sdrName;
-        }
-
-        episode.isFilled = episode.guests.every(g => g && g.guestName.trim() !== '');
-    });
-    setSchedule(updatedSchedule);
-
-    // Debounced Firestore Update
-    if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-    }
-
-    debounceTimeoutRef.current = setTimeout(async () => {
-        const episodeToSave = updatedSchedule[episodeId];
-        if (episodeToSave) {
-            try {
-                const docRef = doc(db, 'podcast_schedule', episodeId);
-                await setDoc(docRef, episodeToSave, { merge: true });
-            } catch (error) {
-                console.error("Error auto-saving schedule:", error);
-                toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
-                setSchedule(schedule); // Revert to previous state on error
+    if (!user?.uid || !user.displayName) return;
+    
+    // Optimistic UI update
+    setSchedule(prevSchedule => {
+        const newSchedule = produce(prevSchedule, draft => {
+            const episode = draft[episodeId];
+            if (!episode) return;
+    
+            const guest = episode.guests[guestIndex];
+            guest[field] = value;
+    
+            const sdrName = user.displayName;
+    
+            if (value.trim() !== '') {
+                guest.sdrId = user.uid;
+                guest.sdrName = sdrName;
+            } else if ((guest.guestName || '').trim() === '' && (guest.instagram || '').trim() === '') {
+                delete guest.sdrId;
+                delete guest.sdrName;
             }
+    
+            episode.isFilled = episode.guests.every(g => g && g.guestName.trim() !== '');
+        });
+
+        // Debounced Firestore Update after optimistic update
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
         }
-    }, 1000); // 1-second debounce
-}, [schedule, user, toast]);
+    
+        debounceTimeoutRef.current = setTimeout(async () => {
+            const episodeToSave = newSchedule[episodeId];
+            if (episodeToSave) {
+                try {
+                    const docRef = doc(db, 'podcast_schedule', episodeId);
+                    await setDoc(docRef, episodeToSave, { merge: true });
+                } catch (error) {
+                    console.error("Error auto-saving schedule:", error);
+                    toast({ title: "Erro de Sincronização", description: "Não foi possível salvar a alteração.", variant: "destructive" });
+                    setSchedule(prevSchedule); // Revert to previous state on error
+                }
+            }
+        }, 1000); // 1-second debounce
+
+        return newSchedule;
+    });
+
+}, [user, toast]);
 
 
   if (isLoading) {
