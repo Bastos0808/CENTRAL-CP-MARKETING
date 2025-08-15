@@ -10,6 +10,8 @@ import {
     GenerateDifferentialsOutput,
     GenerateDifferentialsOutputSchema
 } from '@/ai/schemas/proposal-v2-schemas';
+import { z } from 'zod';
+
 
 export async function generateDifferentialsContent(
   input: z.infer<typeof GenerateProposalSubFlowInputSchema>
@@ -50,7 +52,12 @@ const differentialsFlow = ai.defineFlow(
     outputSchema: GenerateDifferentialsOutputSchema,
   },
   async (input) => {
-    const { output } = await differentialsPrompt(input);
-    return output || { differentialItems: [] };
+    try {
+        const { output } = await differentialsPrompt(input);
+        return output || { differentialItems: [] };
+    } catch(error) {
+        console.error(`Error in differentialsFlow for client ${input.clientName}:`, error);
+        return { differentialItems: ['Erro ao gerar diferenciais.'] };
+    }
   }
 );

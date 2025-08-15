@@ -10,6 +10,7 @@ import {
     GenerateIdealPlanOutput,
     GenerateIdealPlanOutputSchema
 } from '@/ai/schemas/proposal-v2-schemas';
+import { z } from 'zod';
 
 export async function generateIdealPlanContent(
   input: z.infer<typeof GenerateProposalSubFlowInputSchema>
@@ -54,7 +55,12 @@ const idealPlanFlow = ai.defineFlow(
     outputSchema: GenerateIdealPlanOutputSchema,
   },
   async (input) => {
-    const { output } = await idealPlanPrompt(input);
-    return output || { idealPlanItems: [] };
+    try {
+        const { output } = await idealPlanPrompt(input);
+        return output || { idealPlanItems: [] };
+    } catch(error) {
+        console.error(`Error in idealPlanFlow for client ${input.clientName}:`, error);
+        return { idealPlanItems: ['Erro ao gerar argumentos do plano.'] };
+    }
   }
 );

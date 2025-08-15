@@ -10,6 +10,7 @@ import {
     GenerateObjectivesOutput,
     GenerateObjectivesOutputSchema
 } from '@/ai/schemas/proposal-v2-schemas';
+import { z } from 'zod';
 
 export async function generateObjectivesContent(
   input: z.infer<typeof GenerateProposalSubFlowInputSchema>
@@ -54,7 +55,12 @@ const objectivesFlow = ai.defineFlow(
     outputSchema: GenerateObjectivesOutputSchema,
   },
   async (input) => {
-    const { output } = await objectivesPrompt(input);
-    return output || { objectiveItems: [] };
+    try {
+        const { output } = await objectivesPrompt(input);
+        return output || { objectiveItems: [] };
+    } catch(error) {
+        console.error(`Error in objectivesFlow for client ${input.clientName}:`, error);
+        return { objectiveItems: ['Erro ao gerar objetivos.'] };
+    }
   }
 );

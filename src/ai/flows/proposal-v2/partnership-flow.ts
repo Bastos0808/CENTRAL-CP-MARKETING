@@ -10,6 +10,7 @@ import {
     GeneratePartnershipOutput,
     GeneratePartnershipOutputSchema
 } from '@/ai/schemas/proposal-v2-schemas';
+import { z } from 'zod';
 
 export async function generatePartnershipContent(
   input: z.infer<typeof GenerateProposalSubFlowInputSchema>
@@ -48,7 +49,12 @@ const partnershipFlow = ai.defineFlow(
     outputSchema: GeneratePartnershipOutputSchema,
   },
   async (input) => {
-    const { output } = await partnershipPrompt(input);
-    return output || { partnershipDescription: '' };
+    try {
+        const { output } = await partnershipPrompt(input);
+        return output || { partnershipDescription: '' };
+    } catch(error) {
+        console.error(`Error in partnershipFlow for client ${input.clientName}:`, error);
+        return { partnershipDescription: 'Erro ao gerar descrição da parceria.' };
+    }
   }
 );
