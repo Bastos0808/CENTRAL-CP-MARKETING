@@ -189,7 +189,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   
   const weeklyBookingCount = useMemo(() => {
     const counts: Record<string, number> = {};
-
     sdrOrder.forEach(name => {
         counts[name] = 0;
     });
@@ -202,27 +201,25 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     Object.values(schedule).forEach(episode => {
         if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
             episode.guests.forEach(guest => {
-                const sdrName = guest.sdrName;
+                const sdrName = guest.sdrName?.toLowerCase();
                 if (sdrName) {
-                    // Find the canonical name (e.g., "Van Diego") by checking the map
-                    const sdrKey = Object.keys(sdrUserDisplayMap).find(key => sdrName.toLowerCase() === key.toLowerCase());
-                    const matchedSdr = sdrKey ? sdrUserDisplayMap[sdrKey] : null;
-
-                    if (matchedSdr) {
-                        const sdrDisplayName = matchedSdr.name;
-                        if (counts.hasOwnProperty(sdrDisplayName)) {
-                           counts[sdrDisplayName]++;
+                    // Robust matching logic
+                    for (const key in sdrUserDisplayMap) {
+                        if (sdrName.includes(key.split('@')[0].split('.')[0])) {
+                            const displayName = sdrUserDisplayMap[key].name;
+                            if (counts.hasOwnProperty(displayName)) {
+                                counts[displayName]++;
+                            }
+                            break; // Exit loop once matched
                         }
-                    } else if (counts.hasOwnProperty(sdrName)) {
-                        // Fallback for direct name match if not in map
-                        counts[sdrName]++;
                     }
                 }
             });
         }
     });
+
     return counts;
-  }, [schedule, selectedWeekStart]);
+}, [schedule, selectedWeekStart]);
 
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
@@ -422,5 +419,3 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     </div>
   );
 }
-
-    
