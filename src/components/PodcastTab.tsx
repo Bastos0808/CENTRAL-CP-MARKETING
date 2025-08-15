@@ -9,7 +9,7 @@ import { Mic, Loader2, Check } from "lucide-react";
 import type { GuestInfo, PodcastData, ScheduledEpisode } from "@/lib/types";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Button } from "./ui/button";
-import { addDays, format, startOfWeek, endOfWeek, isSameDay, getDay } from "date-fns";
+import { addDays, format, startOfWeek, isSameDay, getDay } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
@@ -178,7 +178,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
         if (episodeData) {
             episodeData.guests.forEach(guest => {
-                // Count if there is an sdrName (meaning it's a booked slot)
+                // Count if there is an sdrName (meaning it's a booked slot) and it exists in our map
                 if (guest && guest.sdrName && counts.hasOwnProperty(guest.sdrName)) {
                     counts[guest.sdrName]++;
                 }
