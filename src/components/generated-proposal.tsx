@@ -73,8 +73,10 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
         <div ref={ref} className="font-body">
             {/* Slide 1: Capa */}
             <div data-slide style={slideStyles.capa} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-20">
-                <Image src={logoUrl} alt="Logo CP Marketing" width={600} height={200} />
-                <h1 className="text-7xl font-bold mt-4 tracking-tighter">PROPOSTA DE MARKETING</h1>
+                <div className="relative w-[600px] h-[200px]">
+                    <Image src={logoUrl} alt="Logo CP Marketing" layout="fill" objectFit="contain" priority />
+                </div>
+                <h1 className="text-7xl font-bold mt-8 tracking-tighter">PROPOSTA DE MARKETING</h1>
                 <p className="text-4xl font-normal mt-4 text-primary">{clientName}</p>
             </div>
 
