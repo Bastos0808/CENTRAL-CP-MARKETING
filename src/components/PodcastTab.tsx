@@ -214,34 +214,35 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
 
   }, [user, toast, schedule, handleUpdateEpisode]);
   
-    const weeklyBookingCount = useMemo(() => {
-        if (!selectedWeekStart || !schedule || sdrList.length === 0) {
-            return {};
-        }
+   const weeklyBookingCount = useMemo(() => {
+    if (!selectedWeekStart || !schedule || sdrList.length === 0) {
+        return {};
+    }
 
-        const counts: Record<string, number> = {};
-        sdrList.forEach(sdr => {
-            counts[sdr.name] = 0;
-        });
-        
-        const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
-        const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
+    // Initialize counts for all SDRs to ensure they always appear
+    const counts: Record<string, number> = {};
+    sdrList.forEach(sdr => {
+        counts[sdr.name] = 0;
+    });
 
-        Object.values(schedule).forEach(episode => {
-            if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
-                episode.guests.forEach(guest => {
-                    if (guest?.sdrId) {
-                        const sdr = sdrList.find(s => s.id === guest.sdrId);
-                        if (sdr && sdr.name) {
-                            counts[sdr.name] = (counts[sdr.name] || 0) + 1;
-                        }
+    const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
+    const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
+
+    Object.values(schedule).forEach(episode => {
+        if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
+            episode.guests.forEach(guest => {
+                if (guest?.sdrId) {
+                    const sdr = sdrList.find(s => s.id === guest.sdrId);
+                    if (sdr && sdr.name) {
+                        counts[sdr.name] = (counts[sdr.name] || 0) + 1;
                     }
-                });
-            }
-        });
-        
-        return counts;
-    }, [schedule, selectedWeekStart, sdrList]);
+                }
+            });
+        }
+    });
+
+    return counts;
+}, [schedule, selectedWeekStart, sdrList]);
 
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
@@ -338,18 +339,11 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                   const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
                   const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
                   
-                  const existingData = schedule[episodeId];
+                  const episodeData = schedule[episodeId];
                   const episodeTitle = `${config.title} - ${config.dayName} - ${format(dateForDay, 'dd/MM/yyyy')}`;
-                  const episodeData: ScheduledEpisode = {
-                        id: episodeId,
-                        date: format(dateForDay, 'yyyy-MM-dd'),
-                        episodeType: config.type,
-                        episodeTitle: episodeTitle,
-                        guests: existingData?.guests || Array.from({ length: config.guestCount }, () => ({ guestName: '', instagram: '' })),
-                        isFilled: existingData?.isFilled || false,
-                  };
+                  const guests = episodeData?.guests || Array.from({ length: config.guestCount }, () => ({ guestName: '', instagram: '' }));
                   
-                  const isEpisodeFilled = episodeData.guests.every(g => g && (g.guestName.trim() || g.instagram.trim()));
+                  const isEpisodeFilled = guests.every(g => g && (g.guestName.trim() || g.instagram.trim()));
 
                   return (
                       <Card key={episodeId} className="bg-card/50">
@@ -357,7 +351,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                               <div className="flex items-center justify-between">
                                   <CardTitle className={cn("font-headline flex items-center text-base", isEpisodeFilled && "text-green-400")}>
                                       <Mic className="mr-3 h-5 w-5" />
-                                      {episodeData.episodeTitle}
+                                      {episodeTitle}
                                   </CardTitle>
                                   <div className="flex items-center space-x-2">
                                       <Checkbox
@@ -374,7 +368,7 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           </CardHeader>
                           <CardContent className="space-y-4">
                           {Array.from({ length: config.guestCount }).map((_, index) => {
-                              const guest = episodeData.guests[index] || { guestName: '', instagram: '' };
+                              const guest = guests[index] || { guestName: '', instagram: '' };
                               const guestSdrId = guest.sdrId;
                               const isBookedByCurrentUser = guestSdrId === user?.uid;
                               const isBooked = !!guestSdrId;
