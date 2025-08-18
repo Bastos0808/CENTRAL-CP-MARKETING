@@ -213,37 +213,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
     await handleUpdateEpisode(episodeId, updatedEpisode);
 
   }, [user, toast, schedule, handleUpdateEpisode]);
-  
-   const weeklyBookingCount = useMemo(() => {
-    if (!selectedWeekStart || !schedule || sdrList.length === 0) {
-        return {};
-    }
-
-    // Initialize counts for all SDRs to ensure they always appear
-    const counts: Record<string, number> = {};
-    sdrList.forEach(sdr => {
-        counts[sdr.name] = 0;
-    });
-
-    const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
-    const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
-
-    Object.values(schedule).forEach(episode => {
-        if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
-            episode.guests.forEach(guest => {
-                if (guest?.sdrId) {
-                    const sdr = sdrList.find(s => s.id === guest.sdrId);
-                    if (sdr && sdr.name) {
-                        counts[sdr.name] = (counts[sdr.name] || 0) + 1;
-                    }
-                }
-            });
-        }
-    });
-
-    return counts;
-}, [schedule, selectedWeekStart, sdrList]);
-
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
     const totalSlots = weeklyEpisodeConfig.reduce((acc, curr) => acc + curr.guestCount, 0);
@@ -317,24 +286,6 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
               </div>
           </CardHeader>
           <CardContent className="space-y-4">
-              <Card>
-                  <CardHeader>
-                      <CardTitle className="text-base font-semibold flex items-center gap-2"><Users className="h-5 w-5 text-primary"/> Agendamentos da Semana</CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid grid-cols-3 gap-4">
-                        {Object.entries(weeklyBookingCount).map(([name, count]) => {
-                             const sdr = sdrList.find(s => s.name === name);
-                             const colorClass = sdr ? sdr.color : 'text-foreground';
-                             return (
-                                <div key={name} className="p-4 border rounded-lg bg-muted/50 flex flex-col items-center justify-center">
-                                    <Label className={cn("text-lg font-bold", colorClass)}>{name}</Label>
-                                    <p className="text-3xl font-bold">{count}</p>
-                                </div>
-                             )
-                        })}
-                  </CardContent>
-              </Card>
-
               {weeklyEpisodeConfig.map(config => {
                   const dateForDay = addDays(selectedWeekStart, config.dayOfWeek - 1);
                   const episodeId = `${format(dateForDay, 'yyyy-MM-dd')}-${config.id}`;
