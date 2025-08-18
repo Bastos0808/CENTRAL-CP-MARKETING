@@ -216,11 +216,12 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   
     const weeklyBookingCount = useMemo(() => {
         const counts: Record<string, number> = {};
+        // Initialize counts for all known SDRs to ensure they appear on the board
         sdrList.forEach(sdr => {
             counts[sdr.name] = 0;
         });
 
-        if (!selectedWeekStart || !schedule) {
+        if (!selectedWeekStart || !schedule || sdrList.length === 0) {
             return counts;
         }
 
@@ -228,11 +229,16 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
         const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
 
         Object.values(schedule).forEach(episode => {
+            // Check if the episode is within the selected week
             if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
                 episode.guests.forEach(guest => {
                     if (guest?.sdrId) {
+                        // Find the SDR display name from the authoritative sdrList
                         const sdr = sdrList.find(s => s.id === guest.sdrId);
-                        if (sdr && counts.hasOwnProperty(sdr.name)) {
+                        if (sdr) {
+                            if (!counts.hasOwnProperty(sdr.name)) {
+                                counts[sdr.name] = 0;
+                            }
                             counts[sdr.name]++;
                         }
                     }
@@ -321,11 +327,12 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                       <CardTitle className="text-base font-semibold flex items-center gap-2"><Users className="h-5 w-5 text-primary"/> Agendamentos da Semana</CardTitle>
                   </CardHeader>
                   <CardContent className="grid grid-cols-3 gap-4">
-                        {sdrList.map((sdr) => {
-                             const count = weeklyBookingCount[sdr.name] || 0;
+                        {Object.entries(weeklyBookingCount).map(([name, count]) => {
+                             const sdr = sdrList.find(s => s.name === name);
+                             const colorClass = sdr ? sdr.color : 'text-foreground';
                              return (
-                                <div key={sdr.id} className="p-4 border rounded-lg bg-muted/50 flex flex-col items-center justify-center">
-                                    <Label className={cn("text-lg font-bold", sdr.color)}>{sdr.name}</Label>
+                                <div key={name} className="p-4 border rounded-lg bg-muted/50 flex flex-col items-center justify-center">
+                                    <Label className={cn("text-lg font-bold", colorClass)}>{name}</Label>
                                     <p className="text-3xl font-bold">{count}</p>
                                 </div>
                              )
