@@ -12,7 +12,7 @@ import { Button } from "./ui/button";
 import { addDays, format, startOfWeek, isSameDay, getDay } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
-import { collection, doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc, updateDoc, getDocs, query, where } from "firebase/firestore";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +55,11 @@ const generateWeeks = (baseDate: Date): Date[] => {
     return Array.from({ length: 4 }).map((_, i) => addDays(startOfCurrentWeek, i * 7));
 };
 
+interface SdrUser {
+    id: string;
+    name: string;
+    color: string;
+}
 
 const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
     "vandiego": { name: "Van Diego", color: "text-orange-400" },
@@ -65,17 +70,39 @@ const sdrUserDisplayMap: Record<string, { name: string; color: string }> = {
     "comercial03": { name: "Débora", color: "text-purple-400" },
 };
 
-const sdrOrder = ["Van Diego", "Heloysa", "Débora"];
-
 
 export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: PodcastTabProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   
+  const [sdrList, setSdrList] = useState<SdrUser[]>([]);
   const [weeks, setWeeks] = useState(generateWeeks(new Date()));
   const [selectedWeekStart, setSelectedWeekStart] = useState<Date>(weeks[0]);
   const [schedule, setSchedule] = useState<Record<string, ScheduledEpisode>>({});
   const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch SDR list on mount
+  useEffect(() => {
+    const fetchSdrUsers = async () => {
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('role', '==', 'comercial'));
+        const usersSnapshot = await getDocs(q);
+        const fetchedSdrList: SdrUser[] = [];
+        usersSnapshot.forEach(userDoc => {
+            const userData = userDoc.data();
+            if(userData.email === 'comercial04@cpmarketing.com.br') return;
+            let displayName = userData.username || userData.displayName || '';
+            if (!displayName && userData.email) {
+                displayName = userData.email.split('@')[0];
+            }
+            const displayInfo = sdrUserDisplayMap[displayName] || { name: displayName, color: 'text-foreground' };
+
+            fetchedSdrList.push({ id: userDoc.id, name: displayInfo.name, color: displayInfo.color });
+        });
+        setSdrList(fetchedSdrList);
+    };
+    fetchSdrUsers();
+  }, []);
 
   // Listen to schedule changes in real-time
   useEffect(() => {
@@ -188,43 +215,33 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [user, toast, schedule, handleUpdateEpisode]);
   
     const weeklyBookingCount = useMemo(() => {
-    const counts: Record<string, number> = {};
-    sdrOrder.forEach(name => {
-      counts[name] = 0;
-    });
-
-    if (!selectedWeekStart || !schedule) {
-      return counts;
-    }
-
-    const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
-    const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
-
-    Object.values(schedule).forEach(episode => {
-      if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
-        episode.guests.forEach(guest => {
-          if (guest?.sdrName) {
-            const sdrNameLower = guest.sdrName.toLowerCase();
-            let matchedSdr: string | null = null;
-            
-            // Check against the display map to normalize names
-            for (const key in sdrUserDisplayMap) {
-                if (sdrNameLower.includes(key)) {
-                    matchedSdr = sdrUserDisplayMap[key].name;
-                    break;
-                }
-            }
-
-            if (matchedSdr && counts.hasOwnProperty(matchedSdr)) {
-              counts[matchedSdr]++;
-            }
-          }
+        const counts: Record<string, number> = {};
+        sdrList.forEach(sdr => {
+            counts[sdr.name] = 0;
         });
-      }
-    });
 
-    return counts;
-  }, [schedule, selectedWeekStart]);
+        if (!selectedWeekStart || !schedule) {
+            return counts;
+        }
+
+        const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
+        const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
+
+        Object.values(schedule).forEach(episode => {
+            if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
+                episode.guests.forEach(guest => {
+                    if (guest?.sdrId) {
+                        const sdr = sdrList.find(s => s.id === guest.sdrId);
+                        if (sdr && counts.hasOwnProperty(sdr.name)) {
+                            counts[sdr.name]++;
+                        }
+                    }
+                });
+            }
+        });
+
+        return counts;
+    }, [schedule, selectedWeekStart, sdrList]);
 
 
   const calculateVacanciesForWeek = useCallback((weekStartDate: Date): number => {
@@ -304,12 +321,11 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                       <CardTitle className="text-base font-semibold flex items-center gap-2"><Users className="h-5 w-5 text-primary"/> Agendamentos da Semana</CardTitle>
                   </CardHeader>
                   <CardContent className="grid grid-cols-3 gap-4">
-                        {sdrOrder.map((sdrName) => {
-                             const sdrInfo = Object.values(sdrUserDisplayMap).find(info => info.name === sdrName) || { color: 'text-foreground' };
-                             const count = weeklyBookingCount[sdrName] || 0;
+                        {sdrList.map((sdr) => {
+                             const count = weeklyBookingCount[sdr.name] || 0;
                              return (
-                                <div key={sdrName} className="p-4 border rounded-lg bg-muted/50 flex flex-col items-center justify-center">
-                                    <Label className={cn("text-lg font-bold", sdrInfo.color)}>{sdrName}</Label>
+                                <div key={sdr.id} className="p-4 border rounded-lg bg-muted/50 flex flex-col items-center justify-center">
+                                    <Label className={cn("text-lg font-bold", sdr.color)}>{sdr.name}</Label>
                                     <p className="text-3xl font-bold">{count}</p>
                                 </div>
                              )
@@ -358,17 +374,13 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
                           <CardContent className="space-y-4">
                           {Array.from({ length: config.guestCount }).map((_, index) => {
                               const guest = episodeData.guests[index] || { guestName: '', instagram: '' };
-                              const guestSdrName = guest.sdrName;
-                              const isBookedByCurrentUser = guest.sdrId === user?.uid;
-                              const isBooked = !!guest.sdrId;
+                              const guestSdrId = guest.sdrId;
+                              const isBookedByCurrentUser = guestSdrId === user?.uid;
+                              const isBooked = !!guestSdrId;
 
-                              const sdrInfo = Object.values(sdrUserDisplayMap).find(info => {
-                                  const normalizedSdrName = guestSdrName?.toLowerCase().replace(/\s+/g, '').replace('@cpmarketing.com.br', '');
-                                  return normalizedSdrName ? Object.keys(sdrUserDisplayMap).some(key => normalizedSdrName.includes(key) && sdrUserDisplayMap[key].name === info.name) : false;
-                              }) || {};
-
-                              const sdrColorClass = sdrInfo.color || 'text-muted-foreground';
-                              const displayName = sdrInfo.name || guestSdrName;
+                              const sdrInfo = sdrList.find(sdr => sdr.id === guestSdrId);
+                              const displayName = sdrInfo?.name;
+                              const sdrColorClass = sdrInfo?.color || 'text-muted-foreground';
 
 
                               return (
