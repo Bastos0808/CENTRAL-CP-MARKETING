@@ -36,7 +36,7 @@ type EpisodeConfig = {
 const weeklyEpisodeConfig: EpisodeConfig[] = [
     { id: 'podcast1', title: 'EPISÓDIO 1 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 1, dayName: 'SEGUNDA' },
     { id: 'podcast2', title: 'EPISÓDIO 2 - SAÚDE E ESTÉTICA', type: 'saude_estetica', guestCount: 2, dayOfWeek: 2, dayName: 'TERÇA' },
-    { id: 'podcast3', title: 'EPISÓDIO 3 - EMPRESÁRIO', type: 'empresario', guestCount: 3, dayOfWeek: 3, dayName: 'QUARTA' },
+    { id: 'podcast3', title: 'EPISÓDIO 3 - EMPRESÁRIO', type: 'empresario', guestCount: 1, dayOfWeek: 3, dayName: 'QUARTA' },
     { id: 'podcast4', title: 'EPISÓDIO 4 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 4, dayName: 'QUINTA' },
     { id: 'podcast5', title: 'EPISÓDIO 5 - GERAL', type: 'geral', guestCount: 3, dayOfWeek: 5, dayName: 'SEXTA' },
 ];
@@ -188,37 +188,35 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [user, toast, schedule, handleUpdateEpisode]);
   
     const weeklyBookingCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    sdrOrder.forEach(name => {
+      counts[name] = 0;
+    });
+
     if (!selectedWeekStart || !schedule) {
-      return {};
+      return counts;
     }
 
     const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
     const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
-    
-    const counts: Record<string, number> = {};
-
-    sdrOrder.forEach(name => {
-      counts[name] = 0;
-    });
 
     Object.values(schedule).forEach(episode => {
       if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
         episode.guests.forEach(guest => {
           if (guest?.sdrName) {
-            let normalizedSdrName = guest.sdrName.toLowerCase().replace(/\s+/g, '').replace('@cpmarketing.com.br', '');
-            let displayName: string | null = null;
+            const sdrNameLower = guest.sdrName.toLowerCase();
+            let matchedSdr: string | null = null;
             
-            for (const [key, value] of Object.entries(sdrUserDisplayMap)) {
-                if (normalizedSdrName.includes(key)) {
-                    displayName = value.name;
+            // Check against the display map to normalize names
+            for (const key in sdrUserDisplayMap) {
+                if (sdrNameLower.includes(key)) {
+                    matchedSdr = sdrUserDisplayMap[key].name;
                     break;
                 }
             }
 
-            if(displayName && counts.hasOwnProperty(displayName)) {
-                 counts[displayName]++;
-            } else if (counts.hasOwnProperty(guest.sdrName)) {
-                counts[guest.sdrName]++;
+            if (matchedSdr && counts.hasOwnProperty(matchedSdr)) {
+              counts[matchedSdr]++;
             }
           }
         });
