@@ -215,37 +215,31 @@ export function PodcastTab({ podcastData, onPodcastChange, onPodcastCheck }: Pod
   }, [user, toast, schedule, handleUpdateEpisode]);
   
     const weeklyBookingCount = useMemo(() => {
+        if (!selectedWeekStart || !schedule || sdrList.length === 0) {
+            return {};
+        }
+
         const counts: Record<string, number> = {};
-        // Initialize counts for all known SDRs to ensure they appear on the board
         sdrList.forEach(sdr => {
             counts[sdr.name] = 0;
         });
-
-        if (!selectedWeekStart || !schedule || sdrList.length === 0) {
-            return counts;
-        }
-
+        
         const weekStartStr = format(selectedWeekStart, 'yyyy-MM-dd');
         const weekEndStr = format(addDays(selectedWeekStart, 6), 'yyyy-MM-dd');
 
         Object.values(schedule).forEach(episode => {
-            // Check if the episode is within the selected week
             if (episode.date >= weekStartStr && episode.date <= weekEndStr) {
                 episode.guests.forEach(guest => {
                     if (guest?.sdrId) {
-                        // Find the SDR display name from the authoritative sdrList
                         const sdr = sdrList.find(s => s.id === guest.sdrId);
-                        if (sdr) {
-                            if (!counts.hasOwnProperty(sdr.name)) {
-                                counts[sdr.name] = 0;
-                            }
-                            counts[sdr.name]++;
+                        if (sdr && sdr.name) {
+                            counts[sdr.name] = (counts[sdr.name] || 0) + 1;
                         }
                     }
                 });
             }
         });
-
+        
         return counts;
     }, [schedule, selectedWeekStart, sdrList]);
 
