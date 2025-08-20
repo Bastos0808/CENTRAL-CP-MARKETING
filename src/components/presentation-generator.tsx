@@ -1,6 +1,7 @@
 
 "use client";
 
+import * as React from "react";
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +26,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
     if (!content) return null;
 
     const allSlides = [
-        { type: 'cover', title: content.presentationTitle, clientName: content.clientName },
+        { type: 'cover', title: content.presentationTitle, clientName: form.getValues('clientName') },
         { type: 'default', title: 'Diagnóstico', content: content.diagnosticSlide.content },
         { type: 'default', title: 'Plano de Ação (180 Dias)', content: content.actionPlanSlide.content },
         { type: 'default', title: 'Cronograma', content: content.timelineSlide.content },
@@ -51,7 +52,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                              <div>
                                  <h2 className="text-4xl font-bold text-primary mb-6">{slide.title}</h2>
                                  <ul className="space-y-4 text-xl">
-                                     {slide.content.map((point, i) => <li key={i} dangerouslySetInnerHTML={{ __html: point.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}/>)}
+                                     {slide.content.map((point: string, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: point.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}/>)}
                                  </ul>
                              </div>
                         )}
@@ -213,7 +214,7 @@ export default function PresentationGenerator() {
                   <AccordionContent className="pt-4 space-y-6">
                     <FormField control={form.control} name="envolvidosDecisao" render={({ field }) => (<FormItem><FormLabel>Além de você, quem mais precisa estar envolvido para aprovar um projeto como este?</FormLabel><FormControl><Input placeholder="Sócio, esposa, etc." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="orcamentoPrevisto" render={({ field }) => (<FormItem><FormLabel>Qual a faixa de investimento confortável para marketing e crescimento?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="prazoDecisao" render={({ field }) => (<FormItem><FormLabel>Se encontrarmos o plano ideal, qual o seu prazo para tomar uma decisão?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="prazoDecisao" render={({ field }) => (<FormItem><FormLabel>Se encontrarmos o plano ideal, qual o seu prazo para tomar uma decisão e iniciar o projeto?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -283,5 +284,3 @@ export default function PresentationGenerator() {
     </div>
   );
 }
-
-    
