@@ -5,6 +5,17 @@ import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/ui/back-button";
 import { Download } from "lucide-react";
 
+const slideStyles = {
+    capa: { background: "radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
+    parceria: { background: "radial-gradient(ellipse at top left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
+    objetivos: { background: "radial-gradient(ellipse at bottom right, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
+    diferenciais: { background: "radial-gradient(ellipse at top right, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
+    escopo: { background: "radial-gradient(ellipse at bottom left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
+    plano: { background: "radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
+    investimento: { background: "radial-gradient(ellipse at top center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
+    proximos: { background: "radial-gradient(ellipse at bottom center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" }
+};
+
 export default function ProposalTemplatePage() {
   return (
     <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
@@ -27,7 +38,7 @@ export default function ProposalTemplatePage() {
 
         {/* PDF Template Wrapper */}
         {/* Slide 1: Capa */}
-        <div className="w-[1280px] h-[720px] mx-auto bg-gray-800 text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideStyles.capa} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
                 <h1 className="text-6xl font-extrabold my-4"><u>Plano de Crescimento para Clínica OdontoPrime</u></h1>
@@ -36,7 +47,7 @@ export default function ProposalTemplatePage() {
         </div>
         
         {/* Slide 2: Diagnóstico */}
-        <div className="w-[1280px] h-[720px] mx-auto bg-gray-800 text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideStyles.objetivos} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">O Ponto de Partida</h2>
                 <h1 className="text-6xl font-extrabold my-4">Meta vs. Realidade</h1>
@@ -49,7 +60,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 3: Plano de Ação */}
-        <div className="w-[1280px] h-[720px] mx-auto bg-gray-800 text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideStyles.parceria} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</h2>
                 <h1 className="text-6xl font-extrabold my-4">Os 3 Pilares do Crescimento (180 Dias)</h1>
@@ -71,7 +82,7 @@ export default function ProposalTemplatePage() {
         </div>
         
         {/* Slide 4: Justificativa Estratégica */}
-        <div className="w-[1280px] h-[720px] mx-auto bg-gray-800 text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideStyles.plano} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</h2>
                 <h1 className="text-6xl font-extrabold my-4">Por que este plano é ideal para você?</h1>
@@ -82,7 +93,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 5: Cronograma */}
-        <div className="w-[1280px] h-[720px] mx-auto bg-gray-800 text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideStyles.escopo} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Roadmap de Execução</h2>
                 <h1 className="text-6xl font-extrabold my-4">Fases do Projeto</h1>
@@ -95,7 +106,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 6: KPIs */}
-        <div className="w-[1280px] h-[720px] mx-auto bg-gray-800 text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideStyles.diferenciais} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</h2>
                 <h1 className="text-6xl font-extrabold my-4">Como Mediremos o Sucesso</h1>
@@ -110,7 +121,7 @@ export default function ProposalTemplatePage() {
         </div>
         
         {/* Slide 7: Diferenciais */}
-        <div className="w-[1280px] h-[720px] mx-auto bg-gray-800 text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideStyles.parceria} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</h2>
                 <h1 className="text-6xl font-extrabold my-4">Nossos Diferenciais</h1>
@@ -122,7 +133,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 8: Investimento */}
-        <div className="w-[1280px] h-[720px] mx-auto bg-gray-800 text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideStyles.investimento} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Investimento</h2>
                 <div className="mt-8 bg-gray-900/50 rounded-lg p-12 text-center">
@@ -138,7 +149,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 9: Próximos Passos */}
-        <div className="w-[1280px] h-[720px] mx-auto bg-gray-800 text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideStyles.proximos} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Próximos Passos</h2>
                 <h1 className="text-6xl font-extrabold my-4">Vamos Começar?</h1>
