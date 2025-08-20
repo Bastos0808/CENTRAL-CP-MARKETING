@@ -103,9 +103,7 @@ export default function Home() {
       title: "Gerador de Relatórios de Tráfego",
       description: "Crie relatórios de performance de campanhas com IA.",
       href: "/relatorios-trafego",
-      icon: Wand2,
-      disabled: true,
-      disabledMessage: "Ferramenta em desenvolvimento. Em breve!"
+      icon: Wand2
     }
   ];
 

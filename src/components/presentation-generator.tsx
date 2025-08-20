@@ -4,7 +4,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
@@ -14,36 +13,18 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./
 import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
+import { GeneratePresentationOutput, DiagnosticFormSchema } from "@/ai/schemas/presentation-generator-schemas";
 
-const diagnosticSchema = z.object({
-  clientName: z.string().min(1, "O nome do cliente é obrigatório."),
-  // Bloco 1
-  faturamentoMedio: z.string().min(1, "O faturamento médio é obrigatório."),
-  metaFaturamento: z.string().min(1, "A meta de faturamento é obrigatória."),
-  ticketMedio: z.string().optional(),
-  origemClientes: z.string().optional(),
-  tempoEmpresa: z.string().optional(),
-  // Bloco 2
-  motivacaoMarketing: z.string().min(1, "A motivação é obrigatória."),
-  investimentoAnterior: z.string().optional(),
-  tentativasAnteriores: z.string().optional(),
-  principalGargalo: z.string().min(1, "O principal gargalo é obrigatório."),
-  custoProblema: z.string().optional(),
-  // Bloco 3
-  envolvidosDecisao: z.string().optional(),
-  orcamentoPrevisto: z.string().optional(),
-  prazoDecisao: z.string().optional(),
-});
-
-type DiagnosticFormValues = z.infer<typeof diagnosticSchema>;
+type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
 
 export default function PresentationGenerator() {
   const [isLoading, setIsLoading] = useState(false);
-  const [presentationContent, setPresentationContent] = useState<any | null>(null);
+  const [presentationContent, setPresentationContent] = useState<GeneratePresentationOutput | null>(null);
   const { toast } = useToast();
 
   const form = useForm<DiagnosticFormValues>({
-    resolver: zodResolver(diagnosticSchema),
+    resolver: zodResolver(DiagnosticFormSchema),
     defaultValues: {
       clientName: "",
       faturamentoMedio: "",
@@ -67,23 +48,29 @@ export default function PresentationGenerator() {
     setPresentationContent(null);
     toast({ title: "Gerando Apresentação...", description: "Aguarde enquanto a IA cria os slides." });
     
-    // Simulating AI call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Mocked response
-    setPresentationContent({
-      title: `Plano de Ação Estratégico: ${values.clientName}`,
-      slides: [
-        { title: "Diagnóstico Atual", content: `Análise do principal gargalo: ${values.principalGargalo}.` },
-        { title: "Objetivo Central", content: `Onde queremos chegar: Atingir a meta de faturamento de ${values.metaFaturamento}.` },
-        { title: "Plano de Ação", content: `Estratégias propostas baseadas na motivação para investir em marketing: ${values.motivacaoMarketing}` },
-      ],
-    });
-
-    setIsLoading(false);
-    toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e faça o download." });
+    try {
+      const result = await generatePresentation(values);
+      setPresentationContent(result);
+      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e faça o download." });
+    } catch(error) {
+      console.error("Error generating presentation:", error);
+      toast({ title: "Erro na Geração", description: "Não foi possível gerar a apresentação. Tente novamente.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
+  const allSlides = presentationContent ? [
+    { title: presentationContent.diagnosticSlide.title, content: presentationContent.diagnosticSlide.content },
+    { title: presentationContent.actionPlanSlide.title, content: presentationContent.actionPlanSlide.content },
+    { title: presentationContent.timelineSlide.title, content: presentationContent.timelineSlide.content },
+    { title: presentationContent.kpiSlide.title, content: presentationContent.kpiSlide.content },
+    { title: presentationContent.whyCpSlide.title, content: presentationContent.whyCpSlide.content },
+    { title: presentationContent.essentialPlan.planTitle, content: [presentationContent.essentialPlan.description, `**Investimento:** ${presentationContent.essentialPlan.price}`] },
+    { title: presentationContent.recommendedPlan.planTitle, content: [presentationContent.recommendedPlan.description, `**Investimento:** ${presentationContent.recommendedPlan.price}`] },
+    { title: presentationContent.nextStepsSlide.title, content: presentationContent.nextStepsSlide.content },
+  ] : [];
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       {/* Etapa 1: Diagnóstico */}
@@ -165,16 +152,20 @@ export default function PresentationGenerator() {
           {!isLoading && presentationContent && (
             <div className="space-y-4">
               <Alert>
-                <AlertTitle className="font-bold">{presentationContent.title}</AlertTitle>
+                <AlertTitle className="font-bold">{presentationContent.presentationTitle}</AlertTitle>
                 <AlertDescription>
-                  Apresentação com {presentationContent.slides.length} slides gerada.
+                  Apresentação com {allSlides.length} slides gerada.
                 </AlertDescription>
               </Alert>
               <div className="space-y-3 p-4 border rounded-md max-h-96 overflow-y-auto">
-                {presentationContent.slides.map((slide: any, index: number) => (
+                {allSlides.map((slide: any, index: number) => (
                   <div key={index} className="p-3 bg-muted/50 rounded">
                     <h4 className="font-semibold text-primary">{`Slide ${index + 1}: ${slide.title}`}</h4>
-                    <p className="text-sm text-muted-foreground mt-1">{slide.content}</p>
+                    <ul className="text-sm text-muted-foreground mt-1 list-disc pl-5">
+                       {slide.content.map((point: string, pIndex: number) => (
+                         <li key={pIndex} dangerouslySetInnerHTML={{ __html: point.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                       ))}
+                    </ul>
                   </div>
                 ))}
               </div>

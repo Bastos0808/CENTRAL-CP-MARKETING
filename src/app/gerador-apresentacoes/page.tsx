@@ -19,7 +19,7 @@ export default function GeradorApresentacoesPage() {
               Crie apresentações de projeto com base em um diagnóstico inicial.
             </p>
           </header>
-          <div className="mx-auto w-full max-w-6xl">
+          <div className="mx-auto w-full max-w-7xl">
             <PresentationGenerator />
           </div>
         </div>
