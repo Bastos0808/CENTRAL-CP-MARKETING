@@ -10,18 +10,29 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { Loader2, Wand2, FileText, FileDown, ArrowRight } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
+import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 const diagnosticSchema = z.object({
   clientName: z.string().min(1, "O nome do cliente é obrigatório."),
-  mainPain: z.string().min(1, "A dor principal é obrigatória."),
-  mainGoal: z.string().min(1, "O objetivo principal é obrigatório."),
-  differentials: z.string().optional(),
-  currentActions: z.string().optional(),
-  observations: z.string().optional(),
+  // Bloco 1
+  faturamentoMedio: z.string().min(1, "O faturamento médio é obrigatório."),
+  metaFaturamento: z.string().min(1, "A meta de faturamento é obrigatória."),
+  ticketMedio: z.string().optional(),
+  origemClientes: z.string().optional(),
+  tempoEmpresa: z.string().optional(),
+  // Bloco 2
+  motivacaoMarketing: z.string().min(1, "A motivação é obrigatória."),
+  investimentoAnterior: z.string().optional(),
+  tentativasAnteriores: z.string().optional(),
+  principalGargalo: z.string().min(1, "O principal gargalo é obrigatório."),
+  custoProblema: z.string().optional(),
+  // Bloco 3
+  envolvidosDecisao: z.string().optional(),
+  orcamentoPrevisto: z.string().optional(),
+  prazoDecisao: z.string().optional(),
 });
 
 type DiagnosticFormValues = z.infer<typeof diagnosticSchema>;
@@ -35,11 +46,19 @@ export default function PresentationGenerator() {
     resolver: zodResolver(diagnosticSchema),
     defaultValues: {
       clientName: "",
-      mainPain: "",
-      mainGoal: "",
-      differentials: "",
-      currentActions: "",
-      observations: "",
+      faturamentoMedio: "",
+      metaFaturamento: "",
+      ticketMedio: "",
+      origemClientes: "",
+      tempoEmpresa: "",
+      motivacaoMarketing: "",
+      investimentoAnterior: "",
+      tentativasAnteriores: "",
+      principalGargalo: "",
+      custoProblema: "",
+      envolvidosDecisao: "",
+      orcamentoPrevisto: "",
+      prazoDecisao: "",
     },
   });
 
@@ -55,9 +74,9 @@ export default function PresentationGenerator() {
     setPresentationContent({
       title: `Plano de Ação Estratégico: ${values.clientName}`,
       slides: [
-        { title: "Diagnóstico Atual", content: `Análise da dor principal: ${values.mainPain}.` },
-        { title: "Objetivo Central", content: `Onde queremos chegar: ${values.mainGoal}.` },
-        { title: "Plano de Ação", content: `Estratégias propostas baseadas nas observações: ${values.observations}` },
+        { title: "Diagnóstico Atual", content: `Análise do principal gargalo: ${values.principalGargalo}.` },
+        { title: "Objetivo Central", content: `Onde queremos chegar: Atingir a meta de faturamento de ${values.metaFaturamento}.` },
+        { title: "Plano de Ação", content: `Estratégias propostas baseadas na motivação para investir em marketing: ${values.motivacaoMarketing}` },
       ],
     });
 
@@ -70,13 +89,13 @@ export default function PresentationGenerator() {
       {/* Etapa 1: Diagnóstico */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><FileText /> Etapa 1: Diagnóstico Inicial</CardTitle>
-          <CardDescription>Reúna as informações da primeira reunião com o cliente. Estes dados serão a base para a IA gerar a apresentação.</CardDescription>
+          <CardTitle className="flex items-center gap-2"><FileText /> Etapa 1: Reunião de Diagnóstico (R1)</CardTitle>
+          <CardDescription>Preencha os campos com as informações coletadas na primeira reunião. A IA usará esses dados para montar a apresentação da Reunião de Solução (R2).</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
+               <FormField
                 control={form.control}
                 name="clientName"
                 render={({ field }) => (
@@ -87,61 +106,40 @@ export default function PresentationGenerator() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="mainPain"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Qual a principal dor/problema do cliente hoje?</FormLabel>
-                    <FormControl><Textarea placeholder="Ex: 'Não consigo atrair pacientes qualificados, só chegam curiosos.'" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="mainGoal"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Qual o principal objetivo que ele quer alcançar?</FormLabel>
-                    <FormControl><Textarea placeholder="Ex: 'Aumentar o faturamento em 30% nos próximos 6 meses.'" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="differentials"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Diferenciais da empresa (Opcional)</FormLabel>
-                    <FormControl><Textarea placeholder="Ex: 'Tecnologia de ponta, atendimento humanizado, mais de 10 anos de experiência.'" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="currentActions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>O que ele já faz hoje em marketing? (Opcional)</FormLabel>
-                    <FormControl><Textarea placeholder="Ex: 'Posta no Instagram sem frequência, já tentou impulsionar um post mas não teve resultado.'" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="observations"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Outras observações relevantes (Opcional)</FormLabel>
-                    <FormControl><Textarea placeholder="Qualquer outra informação que possa ser útil para a IA." {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
+              <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
+                <AccordionItem value="item-1">
+                  <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><TrendingUp className="h-6 w-6 text-primary"/>Metas e Cenário Atual</div></AccordionTrigger>
+                  <AccordionContent className="pt-4 space-y-6">
+                    <FormField control={form.control} name="faturamentoMedio" render={({ field }) => (<FormItem><FormLabel>Qual o faturamento médio hoje?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="metaFaturamento" render={({ field }) => (<FormItem><FormLabel>Qual a meta de faturamento para 6 meses?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="ticketMedio" render={({ field }) => (<FormItem><FormLabel>Qual o ticket médio?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="origemClientes" render={({ field }) => (<FormItem><FormLabel>De onde vêm os clientes hoje?</FormLabel><FormControl><Input placeholder="Indicação, orgânico, anúncios..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="tempoEmpresa" render={({ field }) => (<FormItem><FormLabel>Há quanto tempo a empresa existe?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="item-2">
+                  <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><HandCoins className="h-6 w-6 text-primary"/>Dor e Impacto Financeiro</div></AccordionTrigger>
+                  <AccordionContent className="pt-4 space-y-6">
+                    <FormField control={form.control} name="motivacaoMarketing" render={({ field }) => (<FormItem><FormLabel>O que te motivou a investir em marketing?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="investimentoAnterior" render={({ field }) => (<FormItem><FormLabel>Já investiu em marketing antes? Quem fez?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="tentativasAnteriores" render={({ field }) => (<FormItem><FormLabel>O que já tentou fazer que não funcionou?</FormLabel><FormControl><Textarea placeholder="Outras agências, freelancers, time interno..." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="principalGargalo" render={({ field }) => (<FormItem><FormLabel>Qual o maior gargalo hoje (geração, qualificação ou conversão de leads)?</FormLabel><FormControl><Textarea {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="custoProblema" render={({ field }) => (<FormItem><FormLabel>Quanto você estima que esse problema te custa por mês?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="item-3">
+                  <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><UserCheck className="h-6 w-6 text-primary"/>Processo de Decisão</div></AccordionTrigger>
+                  <AccordionContent className="pt-4 space-y-6">
+                    <FormField control={form.control} name="envolvidosDecisao" render={({ field }) => (<FormItem><FormLabel>Além de você, quem mais está envolvido na decisão?</FormLabel><FormControl><Input placeholder="Sócio, esposa, etc." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="orcamentoPrevisto" render={({ field }) => (<FormItem><FormLabel>Qual a faixa de investimento confortável para marketing?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="prazoDecisao" render={({ field }) => (<FormItem><FormLabel>Qual o seu prazo para tomar uma decisão?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
                 Gerar Apresentação com IA
@@ -188,7 +186,9 @@ export default function PresentationGenerator() {
           )}
            {!isLoading && !presentationContent && (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center">
+              <Info className="h-10 w-10 mx-auto mb-4"/>
               <p>A prévia da sua apresentação aparecerá aqui.</p>
+              <p className="text-xs mt-1">Preencha o formulário e clique em "Gerar" para começar.</p>
             </div>
            )}
         </CardContent>
