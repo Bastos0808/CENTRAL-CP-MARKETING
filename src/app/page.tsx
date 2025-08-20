@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Mic, Target, Loader2, Waypoints, FileSignature, DollarSign, Megaphone, Workflow, Lightbulb, Video, Search, ShieldAlert } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Mic, Target, Loader2, Waypoints, FileSignature, DollarSign, Megaphone, Workflow, Lightbulb, Video, Search, ShieldAlert, Presentation } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -89,6 +89,12 @@ export default function Home() {
         description: "Crie propostas comerciais modernas e personalizadas.",
         href: "/gerador-propostas",
         icon: FileSignature
+      },
+      {
+        title: "Gerador de Apresentações",
+        description: "Crie apresentações de projetos com IA a partir de um diagnóstico.",
+        href: "/gerador-apresentacoes",
+        icon: Presentation
       }
   ];
   
