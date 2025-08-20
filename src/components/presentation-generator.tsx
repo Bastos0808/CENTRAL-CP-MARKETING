@@ -266,11 +266,11 @@ export default function PresentationGenerator() {
                                                         : [...(field.value || []), key];
                                                     field.onChange(newValue);
                                                 }}
-                                                className="h-auto justify-start p-2"
+                                                className="h-auto justify-start p-3 flex-col items-start whitespace-normal"
                                             >
                                                 <div className="flex items-center gap-2">
-                                                    {field.value?.includes(key) ? <Check className="h-4 w-4" /> : <div className="h-4 w-4" />}
-                                                    <span className="text-left text-xs">{pkg.name}</span>
+                                                    {field.value?.includes(key) ? <Check className="h-4 w-4 flex-shrink-0" /> : <div className="h-4 w-4 flex-shrink-0" />}
+                                                    <span className="text-left text-xs font-semibold">{pkg.name}</span>
                                                 </div>
                                             </Button>
                                         ))}
