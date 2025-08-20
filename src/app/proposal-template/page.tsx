@@ -11,7 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 
 
 const slideStyle = { 
-    // This style is now for on-screen display only. The PDF will have its own background rendering.
     background: "radial-gradient(ellipse at center, transparent 20%, #0A0A0A 70%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px)",
     backgroundSize: "100% 100%, 40px 40px, 40px 40px",
     backgroundColor: "#0A0A0A"
@@ -29,7 +28,7 @@ export default function ProposalTemplatePage() {
     setIsGenerating(true);
     toast({ title: "Gerando PDF...", description: "Aguarde, isso pode levar um momento." });
 
-    const slides = proposalRef.current.querySelectorAll<HTMLElement>('[data-slide-content]');
+    const slides = proposalRef.current.querySelectorAll<HTMLElement>('[data-slide]');
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'px',
@@ -41,48 +40,21 @@ export default function ProposalTemplatePage() {
 
     try {
         for (let i = 0; i < slides.length; i++) {
-            const slideContent = slides[i];
+            const slide = slides[i];
             
-            // Step 1: Draw the background directly onto the PDF
-            // Black background
-            pdf.setFillColor('#0A0A0A');
-            pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
-
-            // Grid
-            pdf.setDrawColor('#E65100'); // Orange color for grid
-            pdf.setLineDash([1, 39], 0); // Simulate dashed lines for grid effect
-            pdf.setLineWidth(0.5);
-            for (let x = 0; x < pdfWidth; x += 40) {
-                pdf.line(x, 0, x, pdfHeight);
-            }
-            for (let y = 0; y < pdfHeight; y += 40) {
-                pdf.line(0, y, pdfWidth, y);
-            }
-            pdf.setLineDash([], 0); // Reset line dash
-
-            // Black radial gradient overlay
-            const gradient = pdf.context2d.createRadialGradient(pdfWidth/2, pdfHeight/2, 0, pdfWidth/2, pdfHeight/2, pdfWidth/1.5);
-            gradient.addColorStop(0.2, 'rgba(10, 10, 10, 0)');
-            gradient.addColorStop(0.7, 'rgba(10, 10, 10, 1)');
-            pdf.setFillColor(gradient);
-            pdf.rect(0, 0, pdfWidth, pdfHeight, 'F');
-
-
-            // Step 2: Capture only the slide content with a transparent background
-            const canvas = await html2canvas(slideContent, {
+            const canvas = await html2canvas(slide, {
                 scale: 2,
                 useCORS: true,
                 allowTaint: true,
-                backgroundColor: null, // Make background transparent
+                backgroundColor: '#0A0A0A', 
             });
-            const imgData = canvas.toDataURL('image/png'); // Use PNG for transparency
+            const imgData = canvas.toDataURL('image/png');
 
-            // Step 3: Add the content image over the drawn background
+            if (i > 0) {
+              pdf.addPage([pdfWidth, pdfHeight], 'landscape');
+            }
             pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 
-            if (i < slides.length - 1) {
-                pdf.addPage([pdfWidth, pdfHeight], 'landscape');
-            }
         }
 
         pdf.save("Proposta_Teste_CP_Marketing.pdf");
@@ -244,13 +216,13 @@ export default function ProposalTemplatePage() {
 
         {/* Hidden container for PDF generation */}
         <div className="fixed -left-[9999px] top-0">
-             <div ref={proposalRef} className="w-[1920px]">
-                <div data-slide-content className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
+             <div ref={proposalRef} className="w-fit">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
                     <h1 className="text-6xl font-extrabold my-4 text-white"><u>Plano de Crescimento para Clínica OdontoPrime</u></h1>
                     <p className="text-xl text-gray-400">Proposta elaborada por CP Marketing Digital - <u>15 de Agosto de 2024</u></p>
                 </div>
-                <div data-slide-content className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">O Ponto de Partida</h2>
                     <h1 className="text-6xl font-extrabold my-4 text-white">Meta vs. Realidade</h1>
                      <div className="mt-8 grid grid-cols-1 gap-8 text-2xl text-white">
@@ -259,7 +231,7 @@ export default function ProposalTemplatePage() {
                         <p><strong>Impacto:</strong> <u>Este gargalo representa um custo de oportunidade estimado em R$ 15.000 por mês.</u></p>
                     </div>
                 </div>
-                 <div data-slide-content className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
+                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</h2>
                     <h1 className="text-6xl font-extrabold my-4 text-white">Os 3 Pilares do Crescimento (180 Dias)</h1>
                     <div className="mt-8 grid grid-cols-3 gap-8">
@@ -277,14 +249,14 @@ export default function ProposalTemplatePage() {
                         </div>
                     </div>
                 </div>
-                <div data-slide-content className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</h2>
                     <h1 className="text-6xl font-extrabold my-4 text-white">Por que este plano é ideal para você?</h1>
                     <p className="text-xl text-gray-300 leading-relaxed text-white">
                       <u>Analisamos seu cenário e concluímos que o principal gargalo não é a falta de interesse, mas a ausência de um sistema para transformar esse interesse em agendamentos. Nosso plano ataca exatamente isso: as campanhas de **Tráfego Pago** trarão o volume de interessados, a **Landing Page** irá qualificá-los e facilitar o primeiro contato, e os vídeos de **Prova Social** quebrarão a principal objeção de confiança, justificando o investimento do paciente. É um sistema completo para garantir o crescimento.</u>
                     </p>
                 </div>
-                <div data-slide-content className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Roadmap de Execução</h2>
                     <h1 className="text-6xl font-extrabold my-4 text-white">Fases do Projeto</h1>
                     <div className="mt-8 grid grid-cols-1 gap-6 text-2xl text-white">
@@ -293,7 +265,7 @@ export default function ProposalTemplatePage() {
                         <p><strong>Revisões Estratégicas:</strong> <u>Teremos reuniões mensais de alinhamento para apresentar os resultados, discutir os aprendizados e planejar os próximos passos.</u></p>
                     </div>
                 </div>
-                 <div data-slide-content className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
+                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</h2>
                     <h1 className="text-6xl font-extrabold my-4 text-white">Como Mediremos o Sucesso</h1>
                     <div className="mt-8 grid grid-cols-2 lg:grid-cols-3 gap-6 text-3xl font-bold text-center text-white">
@@ -304,7 +276,7 @@ export default function ProposalTemplatePage() {
                         <div className="border border-primary/30 p-8 rounded-lg">Retorno (ROAS)</div>
                     </div>
                 </div>
-                <div data-slide-content className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</h2>
                     <h1 className="text-6xl font-extrabold my-4 text-white">Nossos Diferenciais</h1>
                     <div className="mt-8 grid grid-cols-1 gap-8 text-2xl text-white">
@@ -312,7 +284,7 @@ export default function ProposalTemplatePage() {
                         <p><strong>Produção Própria:</strong> <u>Para produzir conteúdo de alta qualidade sem depender da sua agenda, temos time presencial e estúdios próprios.</u></p>
                     </div>
                 </div>
-                <div data-slide-content className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Investimento</h2>
                     <div className="mt-8 bg-gray-900/50 rounded-lg p-12 text-center">
                         <h3 className="text-2xl text-gray-300">Valor do Investimento Mensal</h3>
@@ -324,7 +296,7 @@ export default function ProposalTemplatePage() {
                         </div>
                     </div>
                 </div>
-                <div data-slide-content className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] flex flex-col justify-center text-white p-16">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Próximos Passos</h2>
                     <h1 className="text-6xl font-extrabold my-4 text-white">Vamos Começar?</h1>
                      <div className="mt-8 grid grid-cols-1 gap-6 text-2xl text-white">
