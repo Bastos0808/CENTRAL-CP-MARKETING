@@ -87,7 +87,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             - **Prazo para Decisão:** {{prazoDecisao}}
             - **Serviços Selecionados:** {{selectedPackages}}
             - **Valor Total:** {{totalValue}}
-            - **Desconto Aplicado:** {{discount}}
+            - **Desconto Aplicado:** {{#if discount}}{{discount}}{{else}}N/A{{/if}}
             - **Valor Final:** {{finalTotal}}
             ---
 
@@ -131,7 +131,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             
             7.  **justificationSlide:**
                 -   **Título:** Por que este plano é ideal para você?
-                -   **Conteúdo:** Crie um texto persuasivo que justifique a escolha dos serviços ({{selectedPackages}}), conectando-os aos gargalos e metas do cliente.
+                -   **Conteúdo:** Crie um texto persuasivo que justifique a escolha dos serviços ({{selectedPackages}}), conectando-os aos gargalos e metas do cliente. Seja específico sobre como cada serviço contribui para a solução.
 
             8.  **investmentSlide:**
                 -   **Título:** Proposta de Investimento
@@ -147,6 +147,7 @@ const presentationGeneratorFlow = ai.defineFlow(
     });
     
     // Manually construct the investment slide data from the original input
+    // to ensure correct formatting and data integrity.
     llmResponse.output!.investmentSlide = {
         title: "Proposta de Investimento",
         items: selectedPackageDetails.map(p => ({ name: p.name, price: formatCurrency(p.price) })),
