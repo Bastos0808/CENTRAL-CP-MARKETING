@@ -13,10 +13,10 @@ export default function GeradorApresentacoesPage() {
           <BackButton />
           <header className="mb-8 text-center">
             <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-              Gerador de Apresentações
+              Gerador de Apresentações e Propostas
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Crie apresentações de projeto com base em um diagnóstico inicial.
+              Crie propostas e apresentações de projeto com base em um diagnóstico inicial.
             </p>
           </header>
           <div className="mx-auto w-full max-w-7xl">

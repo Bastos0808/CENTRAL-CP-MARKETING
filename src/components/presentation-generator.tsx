@@ -2,8 +2,8 @@
 "use client";
 
 import * as React from "react";
-import { useState, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { useState, useRef, useEffect, useMemo } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
@@ -11,11 +11,11 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info } from "lucide-react";
+import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
-import { GeneratePresentationOutput, DiagnosticFormSchema } from "@/ai/schemas/presentation-generator-schemas";
+import { GeneratePresentationOutput, DiagnosticFormSchema, packageOptions } from "@/ai/schemas/presentation-generator-schemas";
 import type { z } from "zod";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -30,11 +30,11 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
         { type: 'cover', title: content.presentationTitle, clientName: clientName },
         { type: 'default', title: 'Diagnóstico', content: content.diagnosticSlide.content },
         { type: 'default', title: 'Plano de Ação (180 Dias)', content: content.actionPlanSlide.content },
+        { type: 'default', title: content.justificationSlide.title, content: content.justificationSlide.content },
         { type: 'default', title: 'Cronograma', content: content.timelineSlide.content },
         { type: 'default', title: 'KPIs (Métricas de Sucesso)', content: content.kpiSlide.content },
         { type: 'default', title: 'Nossos Diferenciais', content: content.whyCpSlide.content },
-        { type: 'investment', title: 'Investimento', plan: content.essentialPlan },
-        { type: 'investment', title: 'Investimento', plan: content.recommendedPlan },
+        { type: 'investment', title: content.investmentSlide.title, plan: content.investmentSlide },
         { type: 'default', title: 'Próximos Passos', content: content.nextStepsSlide.content },
     ];
     
@@ -53,15 +53,26 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                              <div>
                                  <h2 className="text-4xl font-bold text-primary mb-6">{slide.title}</h2>
                                  <ul className="space-y-4 text-xl">
-                                     {slide.content.map((point: string, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: point.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}/>)}
+                                     {Array.isArray(slide.content) && slide.content.map((point: string, i: number) => <li key={i} dangerouslySetInnerHTML={{ __html: point.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}/>)}
                                  </ul>
                              </div>
                         )}
                          {slide.type === 'investment' && slide.plan && (
                              <div>
-                                 <h2 className="text-4xl font-bold text-primary mb-6">{slide.plan.planTitle}</h2>
-                                 <p className="text-xl mb-4">{slide.plan.description}</p>
-                                 <p className="text-3xl font-bold">{slide.plan.price}</p>
+                                 <h2 className="text-4xl font-bold text-primary mb-6">{slide.plan.title}</h2>
+                                 <ul className="space-y-2 mb-6">
+                                    {slide.plan.items.map((item, i) => (
+                                        <li key={i} className="flex justify-between text-lg">
+                                            <span>{item.name}</span>
+                                            <span>{item.price}</span>
+                                        </li>
+                                    ))}
+                                 </ul>
+                                 <div className="border-t pt-4 space-y-2 text-right">
+                                    <p className="text-lg">Subtotal: {slide.plan.total}</p>
+                                    {slide.plan.discount && <p className="text-lg text-red-500">Desconto: {slide.plan.discount}</p>}
+                                    <p className="text-2xl font-bold text-primary">Total: {slide.plan.finalTotal}</p>
+                                 </div>
                              </div>
                         )}
                     </div>
@@ -102,8 +113,22 @@ export default function PresentationGenerator() {
       envolvidosDecisao: "",
       orcamentoPrevisto: "",
       prazoDecisao: "",
+      packages: [],
+      discount: 0,
     },
   });
+
+  const watchedPackages = form.watch('packages') || [];
+  const watchedDiscount = form.watch('discount') || 0;
+
+  const investmentValue = useMemo(() => {
+    const total = watchedPackages.reduce((acc, pkgKey) => {
+      const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
+      return acc + (pkg ? pkg.price : 0);
+    }, 0);
+    return total - watchedDiscount;
+  }, [watchedPackages, watchedDiscount]);
+
 
   const onSubmit = async (values: DiagnosticFormValues) => {
     setIsLoading(true);
@@ -131,7 +156,7 @@ export default function PresentationGenerator() {
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'px',
-      format: 'a4'
+      format: [1280, 720]
     });
 
     for (let i = 0; i < slides.length; i++) {
@@ -154,13 +179,14 @@ export default function PresentationGenerator() {
   };
   
   const allSlides = presentationContent ? [
+    { title: 'Capa', content: [presentationContent.presentationTitle] },
     { title: presentationContent.diagnosticSlide.title, content: presentationContent.diagnosticSlide.content },
     { title: presentationContent.actionPlanSlide.title, content: presentationContent.actionPlanSlide.content },
+    { title: presentationContent.justificationSlide.title, content: presentationContent.justificationSlide.content },
     { title: presentationContent.timelineSlide.title, content: presentationContent.timelineSlide.content },
     { title: presentationContent.kpiSlide.title, content: presentationContent.kpiSlide.content },
     { title: presentationContent.whyCpSlide.title, content: presentationContent.whyCpSlide.content },
-    { title: presentationContent.essentialPlan.planTitle, content: [presentationContent.essentialPlan.description, `**Investimento:** ${presentationContent.essentialPlan.price}`] },
-    { title: presentationContent.recommendedPlan.planTitle, content: [presentationContent.recommendedPlan.description, `**Investimento:** ${presentationContent.recommendedPlan.price}`] },
+    { title: presentationContent.investmentSlide.title, content: [`Valor Total: ${presentationContent.investmentSlide.finalTotal}`] },
     { title: presentationContent.nextStepsSlide.title, content: presentationContent.nextStepsSlide.content },
   ] : [];
 
@@ -218,6 +244,67 @@ export default function PresentationGenerator() {
                     <FormField control={form.control} name="prazoDecisao" render={({ field }) => (<FormItem><FormLabel>Se encontrarmos o plano ideal, qual o seu prazo para tomar uma decisão e iniciar o projeto?</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </AccordionContent>
                 </AccordionItem>
+
+                <AccordionItem value="item-4">
+                  <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><DollarSign className="h-6 w-6 text-primary"/>Serviços e Investimento</div></AccordionTrigger>
+                   <AccordionContent className="pt-4 space-y-6">
+                        <Controller
+                            control={form.control}
+                            name="packages"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Pacotes de Serviços</FormLabel>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        {Object.entries(packageOptions).map(([key, pkg]) => (
+                                            <Button
+                                                key={key}
+                                                type="button"
+                                                variant={field.value?.includes(key) ? "default" : "outline"}
+                                                onClick={() => {
+                                                    const newValue = field.value?.includes(key)
+                                                        ? field.value.filter(v => v !== key)
+                                                        : [...(field.value || []), key];
+                                                    field.onChange(newValue);
+                                                }}
+                                                className="h-auto justify-start p-2"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    {field.value?.includes(key) ? <Check className="h-4 w-4" /> : <div className="h-4 w-4" />}
+                                                    <span className="text-left text-xs">{pkg.name}</span>
+                                                </div>
+                                            </Button>
+                                        ))}
+                                    </div>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                         <FormField
+                            control={form.control}
+                            name="discount"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Desconto (R$)</FormLabel>
+                                    <FormControl>
+                                        <Input 
+                                            type="number" 
+                                            placeholder="0" 
+                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                            value={field.value || ''}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                       <FormItem>
+                        <FormLabel>Valor Final do Investimento</FormLabel>
+                        <FormControl>
+                            <Input value={investmentValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} readOnly className="font-bold text-lg" />
+                        </FormControl>
+                       </FormItem>
+                   </AccordionContent>
+                </AccordionItem>
               </Accordion>
 
               <Button type="submit" disabled={isLoading} className="w-full">
@@ -251,11 +338,11 @@ export default function PresentationGenerator() {
                 </AlertDescription>
               </Alert>
               <div className="space-y-3 p-4 border rounded-md max-h-96 overflow-y-auto">
-                {allSlides.map((slide: any, index: number) => (
+                {allSlides.map((slide, index) => (
                   <div key={index} className="p-3 bg-muted/50 rounded">
                     <h4 className="font-semibold text-primary">{`Slide ${index + 1}: ${slide.title}`}</h4>
                     <ul className="text-sm text-muted-foreground mt-1 list-disc pl-5">
-                       {slide.content.map((point: string, pIndex: number) => (
+                       {Array.isArray(slide.content) && slide.content.map((point: string, pIndex: number) => (
                          <li key={pIndex} dangerouslySetInnerHTML={{ __html: point.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                        ))}
                     </ul>

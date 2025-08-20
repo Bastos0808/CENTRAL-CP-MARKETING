@@ -85,14 +85,8 @@ export default function Home() {
         icon: Search
       },
       {
-        title: "Gerador de Propostas",
-        description: "Crie propostas comerciais modernas e personalizadas.",
-        href: "/gerador-propostas",
-        icon: FileSignature
-      },
-      {
         title: "Gerador de Apresentações",
-        description: "Crie apresentações de projetos com IA a partir de um diagnóstico.",
+        description: "Crie propostas e apresentações de projetos com IA a partir de um diagnóstico.",
         href: "/gerador-apresentacoes",
         icon: Presentation
       }
