@@ -5,19 +5,10 @@ import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/ui/back-button";
 import { Download } from "lucide-react";
 
-const gridPattern = "linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)";
+const gridPattern = "linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px)";
 const gridSize = { backgroundSize: "40px 40px" };
+const slideBackground = { background: `${gridPattern}, #0A0A0A`, ...gridSize };
 
-const slideStyles = {
-    capa: { background: `${gridPattern}, radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
-    parceria: { background: `${gridPattern}, radial-gradient(ellipse at top left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
-    objetivos: { background: `${gridPattern}, radial-gradient(ellipse at bottom right, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
-    diferenciais: { background: `${gridPattern}, radial-gradient(ellipse at top right, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
-    escopo: { background: `${gridPattern}, radial-gradient(ellipse at bottom left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
-    plano: { background: `${gridPattern}, radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
-    investimento: { background: `${gridPattern}, radial-gradient(ellipse at top center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
-    proximos: { background: `${gridPattern}, radial-gradient(ellipse at bottom center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize }
-};
 
 export default function ProposalTemplatePage() {
   return (
@@ -41,7 +32,7 @@ export default function ProposalTemplatePage() {
 
         {/* PDF Template Wrapper */}
         {/* Slide 1: Capa */}
-        <div style={slideStyles.capa} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideBackground} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
                 <h1 className="text-6xl font-extrabold my-4"><u>Plano de Crescimento para Clínica OdontoPrime</u></h1>
@@ -50,7 +41,7 @@ export default function ProposalTemplatePage() {
         </div>
         
         {/* Slide 2: Diagnóstico */}
-        <div style={slideStyles.objetivos} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideBackground} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">O Ponto de Partida</h2>
                 <h1 className="text-6xl font-extrabold my-4">Meta vs. Realidade</h1>
@@ -63,7 +54,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 3: Plano de Ação */}
-        <div style={slideStyles.parceria} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideBackground} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</h2>
                 <h1 className="text-6xl font-extrabold my-4">Os 3 Pilares do Crescimento (180 Dias)</h1>
@@ -85,7 +76,7 @@ export default function ProposalTemplatePage() {
         </div>
         
         {/* Slide 4: Justificativa Estratégica */}
-        <div style={slideStyles.plano} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideBackground} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</h2>
                 <h1 className="text-6xl font-extrabold my-4">Por que este plano é ideal para você?</h1>
@@ -96,7 +87,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 5: Cronograma */}
-        <div style={slideStyles.escopo} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideBackground} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Roadmap de Execução</h2>
                 <h1 className="text-6xl font-extrabold my-4">Fases do Projeto</h1>
@@ -109,7 +100,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 6: KPIs */}
-        <div style={slideStyles.diferenciais} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideBackground} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</h2>
                 <h1 className="text-6xl font-extrabold my-4">Como Mediremos o Sucesso</h1>
@@ -124,7 +115,7 @@ export default function ProposalTemplatePage() {
         </div>
         
         {/* Slide 7: Diferenciais */}
-        <div style={slideStyles.parceria} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideBackground} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</h2>
                 <h1 className="text-6xl font-extrabold my-4">Nossos Diferenciais</h1>
@@ -136,7 +127,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 8: Investimento */}
-        <div style={slideStyles.investimento} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideBackground} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Investimento</h2>
                 <div className="mt-8 bg-gray-900/50 rounded-lg p-12 text-center">
@@ -152,7 +143,7 @@ export default function ProposalTemplatePage() {
         </div>
 
         {/* Slide 9: Próximos Passos */}
-        <div style={slideStyles.proximos} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
+        <div style={slideBackground} className="w-[1280px] h-[720px] mx-auto text-white shadow-2xl scale-[0.6] origin-top-left sm:scale-100 sm:origin-center sm:w-full sm:h-auto sm:aspect-video mt-8">
             <div className="p-16 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Próximos Passos</h2>
                 <h1 className="text-6xl font-extrabold my-4">Vamos Começar?</h1>
@@ -167,4 +158,5 @@ export default function ProposalTemplatePage() {
       </div>
     </main>
   );
-}
+
+    
