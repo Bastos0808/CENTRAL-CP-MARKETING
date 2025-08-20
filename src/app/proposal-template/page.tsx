@@ -6,12 +6,12 @@ import { BackButton } from "@/components/ui/back-button";
 import { Download } from "lucide-react";
 
 const slideStyles = {
-    capa: { background: "radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px" },
-    parceria: { background: "radial-gradient(ellipse at top left, rgba(230, 81, 0, 0.10), transparent 60%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px" },
-    objetivos: { background: "radial-gradient(ellipse at bottom right, rgba(230, 81, 0, 0.10), transparent 60%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px" },
-    diferenciais: { background: "radial-gradient(ellipse at top right, rgba(230, 81, 0, 0.10), transparent 60%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px" },
-    investimento: { background: "radial-gradient(ellipse at top center, rgba(230, 81, 0, 0.10), transparent 60%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px" },
-    proximos: { background: "radial-gradient(ellipse at bottom center, rgba(230, 81, 0, 0.10), transparent 60%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px" },
+    capa: { background: "radial-gradient(ellipse at center, transparent 20%, #0A0A0A 70%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px, 40px 40px, 40px 40px" },
+    parceria: { background: "radial-gradient(ellipse at top left, transparent 20%, #0A0A0A 70%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px, 40px 40px, 40px 40px" },
+    objetivos: { background: "radial-gradient(ellipse at bottom right, transparent 20%, #0A0A0A 70%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px, 40px 40px, 40px 40px" },
+    diferenciais: { background: "radial-gradient(ellipse at top right, transparent 20%, #0A0A0A 70%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px, 40px 40px, 40px 40px" },
+    investimento: { background: "radial-gradient(ellipse at top center, transparent 20%, #0A0A0A 70%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px, 40px 40px, 40px 40px" },
+    proximos: { background: "radial-gradient(ellipse at bottom center, transparent 20%, #0A0A0A 70%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px, 40px 40px, 40px 40px" },
     default: { background: "linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px), #0A0A0A", backgroundSize: "40px 40px" },
 };
 
