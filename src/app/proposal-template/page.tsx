@@ -5,15 +5,18 @@ import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/ui/back-button";
 import { Download } from "lucide-react";
 
+const gridPattern = "linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)";
+const gridSize = { backgroundSize: "40px 40px" };
+
 const slideStyles = {
-    capa: { background: "radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
-    parceria: { background: "radial-gradient(ellipse at top left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
-    objetivos: { background: "radial-gradient(ellipse at bottom right, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
-    diferenciais: { background: "radial-gradient(ellipse at top right, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
-    escopo: { background: "radial-gradient(ellipse at bottom left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
-    plano: { background: "radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
-    investimento: { background: "radial-gradient(ellipse at top center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
-    proximos: { background: "radial-gradient(ellipse at bottom center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" }
+    capa: { background: `${gridPattern}, radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
+    parceria: { background: `${gridPattern}, radial-gradient(ellipse at top left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
+    objetivos: { background: `${gridPattern}, radial-gradient(ellipse at bottom right, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
+    diferenciais: { background: `${gridPattern}, radial-gradient(ellipse at top right, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
+    escopo: { background: `${gridPattern}, radial-gradient(ellipse at bottom left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
+    plano: { background: `${gridPattern}, radial-gradient(ellipse at center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
+    investimento: { background: `${gridPattern}, radial-gradient(ellipse at top center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize },
+    proximos: { background: `${gridPattern}, radial-gradient(ellipse at bottom center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A`, ...gridSize }
 };
 
 export default function ProposalTemplatePage() {
