@@ -16,17 +16,18 @@ import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
 import { GeneratePresentationOutput, DiagnosticFormSchema } from "@/ai/schemas/presentation-generator-schemas";
+import type { z } from "zod";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
 
 // Internal component to render slides for PDF generation
-const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput | null }>(({ content }, ref) => {
+const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput | null; clientName: string; }>(({ content, clientName }, ref) => {
     if (!content) return null;
 
     const allSlides = [
-        { type: 'cover', title: content.presentationTitle, clientName: form.getValues('clientName') },
+        { type: 'cover', title: content.presentationTitle, clientName: clientName },
         { type: 'default', title: 'Diagnóstico', content: content.diagnosticSlide.content },
         { type: 'default', title: 'Plano de Ação (180 Dias)', content: content.actionPlanSlide.content },
         { type: 'default', title: 'Cronograma', content: content.timelineSlide.content },
@@ -279,7 +280,7 @@ export default function PresentationGenerator() {
 
       {/* Hidden component for PDF generation */}
       <div className="fixed -left-[9999px] top-0">
-          <GeneratedPresentation ref={presentationRef} content={presentationContent} />
+          <GeneratedPresentation ref={presentationRef} content={presentationContent} clientName={form.getValues('clientName')} />
       </div>
     </div>
   );
