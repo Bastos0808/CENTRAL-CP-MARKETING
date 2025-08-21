@@ -43,19 +43,22 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
 
           {/* Slide 2: Diagnóstico */}
            <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
-            <h1 className="text-5xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
-            <div className="mt-6 flex items-start gap-4 max-w-5xl">
-              {content.diagnosticSlide.content.map((item, index) => (
-                <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full">
-                    <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/g, '<strong class="text-lg font-bold text-primary mb-2 block">$1</strong>') }}/>
+            <div className="flex flex-col justify-center h-full">
+                <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
+                <h1 className="text-5xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
+                <div className="mt-6 flex items-start gap-4 max-w-5xl">
+                {content.diagnosticSlide.content.map((item, index) => (
+                    <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full">
+                        <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/g, '<strong class="text-lg font-bold text-primary mb-2 block">$1</strong>') }}/>
+                    </div>
+                ))}
                 </div>
-              ))}
             </div>
           </div>
           
           {/* Slide 3: Plano de Ação */}
            <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+            <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
               <h1 className="text-5xl font-extrabold my-2">{content.actionPlanSlide.title}</h1>
               <div className="mt-6 flex items-start gap-4 max-w-5xl">
@@ -65,11 +68,12 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                    </div>
                 ))}
               </div>
+            </div>
           </div>
           
           {/* Slide 4: Justificativa Estratégica */}
            <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-              <div className="max-w-5xl">
+            <div className="flex flex-col justify-center h-full max-w-5xl">
                   <p className="text-md font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
                   <h1 className="text-5xl font-extrabold my-2">{content.justificationSlide.title}</h1>
                   <p className="mt-4 text-md text-gray-300 leading-relaxed break-words max-w-5xl">
@@ -80,6 +84,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
 
           {/* Slide 5: Cronograma */}
            <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+            <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
               <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
               <ul className="mt-6 space-y-3 text-md text-gray-300 max-w-5xl">
@@ -87,6 +92,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                     <li key={index} className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-lg" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-primary">$1:</strong>') }}/>
                 ))}
               </ul>
+            </div>
           </div>
 
           {/* Slide 6: KPIs */}
@@ -108,6 +114,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           
           {/* Slide 7: Diferenciais */}
            <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+            <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
               <h1 className="text-5xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl">
@@ -117,6 +124,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                     </div>
                   ))}
               </div>
+            </div>
           </div>
 
            {/* Slide 8: Investimento */}
@@ -158,7 +166,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Relatórios Mensais</li>
                             </ul>
                         </div>
-                        <div className="bg-white/10 border-2 border-primary rounded-xl p-6 flex flex-col h-full relative">
+                        <div className="bg-white/5 border-2 border-primary rounded-xl p-6 flex flex-col h-full relative">
                             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-bold">RECOMENDADO</div>
                             <h3 className="text-2xl font-bold text-primary mb-2">Plano Avançado</h3>
                             <p className="text-gray-300 mb-4 flex-grow text-sm">A solução completa e estratégica. Ataca todos os pontos do diagnóstico e tem a maior probabilidade de bater sua meta, construindo autoridade e um sistema de vendas robusto.</p>
