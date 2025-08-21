@@ -98,7 +98,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                     {content.kpiSlide.kpis.map((kpi, index) => (
                         <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10">
                             <h4 className="font-bold text-sm text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
-                            <p className="text-gray-300 mt-1 text-xs">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
+                            <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
                             <p className="text-sm text-gray-400 mt-2 break-words">{kpi.importance}</p>
                         </div>
                     ))}
@@ -150,7 +150,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full">
                             <h3 className="text-2xl font-bold text-white mb-2">Plano Inicial</h3>
-                            <p className="text-gray-400 mb-4 flex-grow text-sm">Uma solução inicial para dar o primeiro passo. Este plano resolve parte do problema e te ajuda a chegar em 40% da sua meta, mas não é a solução definitiva.</p>
+                            <p className="text-gray-400 mb-4 flex-grow text-sm">Uma solução inicial para dar o primeiro passo. Este plano ajuda, mas não resolve o problema por completo, te ajudando a alcançar cerca de 40% da sua meta.</p>
                             <p className="text-4xl font-bold text-primary mb-4">R$ 2.999,00</p>
                             <ul className="space-y-2 text-left text-sm">
                                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Gestão de Mídias Sociais</li>
