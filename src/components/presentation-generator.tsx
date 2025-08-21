@@ -109,7 +109,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
 
           {/* Slide 3: Diagnóstico */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="flex flex-col justify-center h-full w-full">
+            <div className="w-full flex flex-col justify-center h-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                 <h1 className="text-5xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
                  <div className="mt-6 flex justify-center items-stretch gap-4 w-full max-w-5xl mx-auto">
@@ -172,7 +172,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                     <div className="mt-12 w-full max-w-6xl mx-auto">
                         <div className="grid grid-cols-3 items-start gap-8 relative">
                             {/* Dotted line */}
-                            <div className="absolute top-5 left-0 w-full h-0.5 bg-repeat-x bg-center" style={{ backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)`, backgroundSize: '10px 2px' }}></div>
+                            <div className="absolute top-5 left-0 w-full h-0.5 bg-center" style={{ backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)`, backgroundSize: '10px 2px' }}></div>
                             
                             {content.timelineSlide.content.map((item, index) => {
                                 const icons = [CheckCircle, Diamond, Goal];
@@ -218,25 +218,42 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
           </div>
           
            {/* Slide 8: Investimento */}
-            <div data-slide style={slideStyles.investimento} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
-            <div className="w-full max-w-5xl">
-                <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
-                <h1 className="text-5xl font-extrabold my-2">{content.investmentSlide.title}</h1>
-                
-                 <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <div className="bg-white/5 border-2 border-primary/50 rounded-xl p-8 flex flex-col h-full text-left">
-                         <h3 className="text-2xl font-bold text-primary mb-2">Plano Inicial</h3>
-                         <p className="text-gray-400 text-sm flex-grow">Foco em construir a base, aumentar o reconhecimento e gerar os primeiros resultados consistentes.</p>
-                         <p className="text-4xl font-bold text-white mt-4">{content.investmentSlide.finalTotal}</p>
-                         <p className="text-sm text-gray-500">/mês</p>
-                     </div>
-                      <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col h-full text-left">
-                         <h3 className="text-xl font-bold text-white mb-2">Plano Avançado</h3>
-                          <p className="text-gray-400 text-sm flex-grow">Acelerar o crescimento com mais canais, maior volume de conteúdo e estratégias de conversão otimizadas.</p>
-                         <p className="text-3xl font-bold text-gray-500 mt-4">Consulte-nos</p>
-                     </div>
-                 </div>
-            </div>
+            <div data-slide style={slideStyles.investimento} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-white rounded-lg overflow-hidden">
+                <div className="w-full max-w-5xl mx-auto grid grid-cols-2 gap-12 items-center">
+                    <div className="text-left">
+                         <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
+                         <h1 className="text-5xl font-extrabold my-2">{content.investmentSlide.title}</h1>
+                         <p className="text-lg text-gray-400 mt-4">Uma proposta transparente para uma parceria de resultados.</p>
+                    </div>
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-8">
+                        <div className="space-y-3">
+                           {content.investmentSlide.items.map(item => (
+                               <div key={item.name} className="flex justify-between items-center text-sm text-gray-300">
+                                   <span>{item.name}</span>
+                                   <span>{item.price}</span>
+                               </div>
+                           ))}
+                        </div>
+                        <div className="my-4 border-t border-dashed border-white/20"></div>
+                        <div className="space-y-2">
+                             <div className="flex justify-between items-center text-sm text-gray-400">
+                               <span>Subtotal</span>
+                               <span>{content.investmentSlide.total}</span>
+                             </div>
+                             {content.investmentSlide.discount && (
+                                <div className="flex justify-between items-center text-sm text-green-400">
+                                    <span>Desconto Especial</span>
+                                    <span>{content.investmentSlide.discount}</span>
+                                </div>
+                             )}
+                        </div>
+                         <div className="my-4 border-t border-solid border-white/50"></div>
+                         <div className="flex justify-between items-center">
+                            <span className="text-xl font-bold text-white">Total do Investimento</span>
+                            <span className="text-3xl font-bold text-primary">{content.investmentSlide.finalTotal}</span>
+                         </div>
+                    </div>
+                </div>
             </div>
 
           {/* Slide 9: Próximos Passos */}
