@@ -89,7 +89,7 @@ export default function ProposalTemplatePage() {
         {/* This div is only for structuring the content and will not be part of the PDF */}
         <div className="space-y-8">
             {/* Slide 1: Capa */}
-            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-10">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
                     <h1 className="text-7xl font-extrabold my-4 text-white"><u>Plano de Crescimento para Clínica OdontoPrime</u></h1>
@@ -98,11 +98,11 @@ export default function ProposalTemplatePage() {
             </div>
             
             {/* Slide 2: Diagnóstico */}
-            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-10">
                 <div className="w-full">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Meta vs. Realidade</h1>
-                     <div className="mt-8 grid grid-cols-3 gap-8">
+                     <div className="mt-8 grid grid-cols-3 gap-6">
                         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
                             <h3 className="text-2xl font-bold text-primary mb-3">Meta</h3>
                             <p className="text-lg text-gray-300"><u>Atingir um faturamento de R$ 70.000, partindo dos R$ 20.000 atuais.</u></p>
@@ -120,11 +120,11 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 3: Plano de Ação */}
-            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-10">
                  <div className="w-full">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Os 3 Pilares do Crescimento</h1>
-                    <div className="mt-8 grid grid-cols-3 gap-8">
+                    <div className="mt-8 grid grid-cols-3 gap-6">
                         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
                             <h3 className="text-2xl font-bold mb-2 text-white">1. Aquisição</h3>
                             <p className="text-lg text-gray-300"><u>Atrair leads qualificados via Google e Instagram Ads, focando em termos de alta intenção como "implante dentário".</u></p>
@@ -142,8 +142,8 @@ export default function ProposalTemplatePage() {
             </div>
             
             {/* Slide 4: Justificativa Estratégica */}
-            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
-                <div className="max-w-5xl">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-10">
+                <div className="max-w-7xl">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Por que este plano é ideal para você?</h1>
                     <p className="mt-6 text-xl text-gray-300 leading-relaxed">
@@ -153,7 +153,7 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 5: Cronograma */}
-            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-10">
                 <div>
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Fases do Projeto</h1>
@@ -175,7 +175,7 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 6: KPIs */}
-            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-10">
                  <div>
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Como Mediremos o Sucesso</h1>
@@ -190,7 +190,7 @@ export default function ProposalTemplatePage() {
             </div>
             
             {/* Slide 7: Diferenciais */}
-            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-10">
                 <div>
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Nossos Diferenciais</h1>
@@ -208,7 +208,7 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 8: Investimento */}
-            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-10">
                 <div className="text-center">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Investimento</p>
                     <div className="mt-8 bg-gray-900/50 rounded-xl p-12 border border-white/10 inline-block">
@@ -224,7 +224,7 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 9: Próximos Passos */}
-            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12 text-center">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-10 text-center">
                 <div className="w-full max-w-7xl mx-auto">
                     <Goal className="h-16 w-16 text-primary mx-auto mb-6" />
                     <h1 className="text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
@@ -251,13 +251,13 @@ export default function ProposalTemplatePage() {
         <div className="fixed -left-[9999px] top-0">
              <div ref={proposalRef} className="w-fit">
                 {/* Slide 1: Capa */}
-                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-12 text-center">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-10 text-center">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
                     <h1 className="text-7xl font-extrabold my-4"><u>Plano de Crescimento para Clínica OdontoPrime</u></h1>
                     <p className="text-xl text-gray-400">Proposta elaborada por CP Marketing Digital - <u>15 de Agosto de 2024</u></p>
                 </div>
                 {/* Slide 2: Diagnóstico */}
-                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                     <h1 className="text-6xl font-extrabold my-2">Meta vs. Realidade</h1>
                      <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
@@ -274,7 +274,7 @@ export default function ProposalTemplatePage() {
                     </div>
                 </div>
                  {/* Slide 3: Plano de Ação */}
-                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
                     <h1 className="text-6xl font-extrabold my-2">Os 3 Pilares do Crescimento</h1>
                     <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
@@ -291,15 +291,15 @@ export default function ProposalTemplatePage() {
                     </div>
                 </div>
                 {/* Slide 4: Justificativa */}
-                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
                     <h1 className="text-6xl font-extrabold my-2">Por que este plano é ideal para você?</h1>
-                    <p className="mt-6 text-xl text-gray-300 leading-relaxed max-w-5xl">
+                    <p className="mt-6 text-xl text-gray-300 leading-relaxed max-w-7xl">
                       <u>Analisamos seu cenário e concluímos que o principal gargalo não é a falta de interesse, mas a ausência de um sistema para transformar esse interesse em agendamentos. Nosso plano ataca exatamente isso: as campanhas de **Tráfego Pago** trarão o volume de interessados, a **Landing Page** irá qualificá-los e facilitar o primeiro contato, e os vídeos de **Prova Social** quebrarão a principal objeção de confiança, justificando o investimento do paciente. É um sistema completo para garantir o crescimento.</u>
                     </p>
                 </div>
                 {/* Slide 5: Cronograma */}
-                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
                     <h1 className="text-6xl font-extrabold my-2">Fases do Projeto</h1>
                     <ul className="mt-8 space-y-4 text-xl text-gray-300" style={{ listStyle: 'none', padding: 0 }}>
@@ -318,7 +318,7 @@ export default function ProposalTemplatePage() {
                     </ul>
                 </div>
                 {/* Slide 6: KPIs */}
-                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
+                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
                     <h1 className="text-6xl font-extrabold my-2">Como Mediremos o Sucesso</h1>
                     <div style={{marginTop: '32px'}}>
@@ -330,7 +330,7 @@ export default function ProposalTemplatePage() {
                     </div>
                 </div>
                 {/* Slide 7: Diferenciais */}
-                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
                     <h1 className="text-6xl font-extrabold my-2">Nossos Diferenciais</h1>
                      <div style={{marginTop: '32px', display: 'table', width: '100%'}}>
@@ -346,7 +346,7 @@ export default function ProposalTemplatePage() {
                     </div>
                 </div>
                 {/* Slide 8: Investimento */}
-                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-12">
+                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Investimento</p>
                     <div style={{marginTop: '32px', backgroundColor: 'rgba(10,10,10,0.5)', borderRadius: '12px', padding: '48px', border: '1px solid rgba(255,255,255,0.1)', textAlign: 'center'}}>
                         <h3 className="text-2xl text-gray-300">Valor do Investimento Mensal</h3>
@@ -359,7 +359,7 @@ export default function ProposalTemplatePage() {
                     </div>
                 </div>
                 {/* Slide 9: Próximos Passos */}
-                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-12 text-center">
+                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-10 text-center">
                     <div style={{ maxWidth: '1152px', margin: '0 auto' }}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 24px auto' }}><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
                         <h1 className="text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
