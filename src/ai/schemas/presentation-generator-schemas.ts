@@ -58,9 +58,10 @@ export const DiagnosticFormSchema = z.object({
   discount: z.number().optional().describe("Valor do desconto a ser aplicado sobre o total."),
 });
 
-const SlideSchema = z.object({
+const DiagnosticSlideSchema = z.object({
   title: z.string().describe("O título do slide."),
-  content: z.array(z.string()).describe("O conteúdo do slide, em formato de bullet points ou parágrafos curtos."),
+  content: z.array(z.string()).describe("O conteúdo do slide, em formato de bullet points."),
+  question: z.string().describe("Uma pergunta provocativa para reflexão baseada no diagnóstico.")
 });
 
 const KpiItemSchema = z.object({
@@ -69,13 +70,18 @@ const KpiItemSchema = z.object({
   importance: z.string().describe("Breve explicação sobre por que esta métrica é importante para o cliente."),
 });
 
+const SlideSchema = z.object({
+  title: z.string().describe("O título do slide."),
+  content: z.array(z.string()).describe("O conteúdo do slide, em formato de bullet points ou parágrafos curtos."),
+});
+
 export const GeneratePresentationInputSchema = DiagnosticFormSchema;
 export type GeneratePresentationInput = z.infer<typeof GeneratePresentationInputSchema>;
 
 export const GeneratePresentationOutputSchema = z.object({
   presentationTitle: z.string().describe("O título geral da apresentação (Ex: Plano de Crescimento para [Nome do Cliente])."),
-  diagnosticSlide: SlideSchema.describe("Conteúdo para o slide de Diagnóstico."),
-  actionPlanSlide: SlideSchema.describe("Conteúdo para o slide do Plano de Ação."),
+  diagnosticSlide: DiagnosticSlideSchema.describe("Conteúdo para o slide de Diagnóstico."),
+  actionPlanSlide: SlideSchema.describe("Conteúdo para o slide do Plano de Ação com insights."),
   timelineSlide: SlideSchema.describe("Conteúdo para o slide de Cronograma."),
   kpiSlide: z.object({
     title: z.string(),
