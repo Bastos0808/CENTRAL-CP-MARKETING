@@ -123,16 +123,21 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
             <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
             {content.investmentSlide.items.length > 0 ? (
                  <div className="flex flex-col items-center">
-                    {content.investmentSlide.discount && (
-                        <p className="text-4xl font-semibold text-red-500 line-through decoration-red-500/80 mb-2">
-                            {content.investmentSlide.total}
+                    <div className="mb-2">
+                        {content.investmentSlide.discount && (
+                            <p className="text-4xl font-semibold text-red-500 line-through decoration-red-500/80">
+                                {content.investmentSlide.total}
+                            </p>
+                        )}
+                    </div>
+                    <div className="mb-4">
+                         <p className="text-7xl font-bold text-primary tracking-tighter">
+                            {content.investmentSlide.finalTotal}
                         </p>
-                    )}
-                    <p className="text-7xl font-bold text-primary tracking-tighter">
-                        {content.investmentSlide.finalTotal}
-                    </p>
-                    <div className="mt-4 text-sm text-white">
-                         <div className="mt-2 text-center">
+                    </div>
+
+                    <div className="text-sm text-white">
+                         <div className="mt-4 text-center">
                             <p className="text-xs"><strong>Incluso:</strong> {content.investmentSlide.items.map(p => p.name).join(' + ')}</p>
                             {content.investmentSlide.discount && <p className="mt-1 text-xs"><strong>Desconto Aplicado:</strong> {content.investmentSlide.discount}</p>}
                         </div>
@@ -144,22 +149,22 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                     <h1 className="text-5xl font-extrabold my-2">Escolha o plano ideal para você</h1>
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full">
-                            <h3 className="text-2xl font-bold text-white mb-2">Plano Essencial</h3>
-                            <p className="text-gray-400 mb-4 flex-grow text-sm">A base para construir sua autoridade e iniciar a geração de resultados.</p>
+                            <h3 className="text-2xl font-bold text-white mb-2">Plano Inicial</h3>
+                            <p className="text-gray-400 mb-4 flex-grow text-sm">Uma solução inicial para dar o primeiro passo. Este plano resolve parte do problema e te ajuda a chegar em 40% da sua meta, mas não é a solução definitiva.</p>
                             <p className="text-4xl font-bold text-primary mb-4">R$ 2.999,00</p>
                             <ul className="space-y-2 text-left text-sm">
                                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Gestão de Mídias Sociais</li>
-                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Tráfego Pago Básico</li>
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Tráfego Pago Essencial</li>
                                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Relatórios Mensais</li>
                             </ul>
                         </div>
                         <div className="bg-white/10 border-2 border-primary rounded-xl p-6 flex flex-col h-full relative">
                             <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-bold">RECOMENDADO</div>
-                            <h3 className="text-2xl font-bold text-primary mb-2">Plano Completo</h3>
-                            <p className="text-gray-300 mb-4 flex-grow text-sm">A solução completa para acelerar seu crescimento e dominar seu mercado.</p>
+                            <h3 className="text-2xl font-bold text-primary mb-2">Plano Avançado</h3>
+                            <p className="text-gray-300 mb-4 flex-grow text-sm">A solução completa e estratégica. Ataca todos os pontos do diagnóstico e tem a maior probabilidade de bater sua meta, construindo autoridade e um sistema de vendas robusto.</p>
                             <p className="text-4xl font-bold text-primary mb-4">R$ 3.999,00</p>
                              <ul className="space-y-2 text-left text-sm">
-                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Tudo do Plano Essencial</li>
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Tudo do Plano Inicial</li>
                                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> 1 Gravação de Podcast/Mês</li>
                                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Captação de Vídeo em Estúdio</li>
                                 <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Mentoria Estratégica</li>
@@ -290,14 +295,11 @@ export default function PresentationGenerator() {
     const ReactDOM = await import('react-dom/client');
     const root = ReactDOM.createRoot(container);
     
-    // Wrap the presentation in a temporary div for rendering
     const renderContainer = document.createElement('div');
     container.appendChild(renderContainer);
 
-    // Render the component to be captured
     root.render(<GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />);
     
-    // Give it a moment to render fully
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
@@ -465,13 +467,13 @@ export default function PresentationGenerator() {
         </CardContent>
       </Card>
       
-      {presentationContent && (
         <Card className="lg:sticky top-8">
             <CardHeader>
             <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
             <CardDescription>A IA gerou a apresentação. Clique no botão abaixo para fazer o download do PDF.</CardDescription>
             </CardHeader>
             <CardContent>
+            {presentationContent ? (
                 <div className="space-y-4">
                 <Alert>
                     <BrainCircuit className="h-4 w-4" />
@@ -485,10 +487,13 @@ export default function PresentationGenerator() {
                     Baixar Apresentação (PDF)
                 </Button>
                 </div>
+            ): (
+                <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
+                   <p>A apresentação gerada aparecerá aqui.</p>
+                </div>
+            )}
             </CardContent>
         </Card>
-      )}
-
     </div>
   );
 }
