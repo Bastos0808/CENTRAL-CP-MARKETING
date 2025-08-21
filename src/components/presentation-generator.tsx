@@ -3,7 +3,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
@@ -35,70 +35,70 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
     return (
         <div ref={ref} className="proposal-container space-y-4">
           {/* Slide 1: Capa */}
-           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
-            <h2 className="text-xl font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
-            <h1 className="text-7xl font-extrabold my-4 max-w-5xl">{content.presentationTitle}</h1>
-            <p className="text-xl text-gray-400">Proposta elaborada por CP Marketing Digital - {new Date().toLocaleDateString('pt-BR')}</p>
+           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
+            <h2 className="text-lg font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
+            <h1 className="text-6xl font-extrabold my-4 max-w-4xl">{content.presentationTitle}</h1>
+            <p className="text-lg text-gray-400">Proposta elaborada por CP Marketing Digital - {new Date().toLocaleDateString('pt-BR')}</p>
           </div>
 
           {/* Slide 2: Diagnóstico */}
-           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <p className="text-lg font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
-            <h1 className="text-6xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
-            <div className="mt-8 flex items-start gap-6 max-w-7xl">
+           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+            <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
+            <h1 className="text-5xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
+            <div className="mt-6 flex items-start gap-4 max-w-5xl">
               {content.diagnosticSlide.content.map((item, index) => (
-                <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
-                    <p className="text-base text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/g, '<strong class="text-xl font-bold text-primary mb-3 block">$1</strong>') }}/>
+                <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full">
+                    <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/g, '<strong class="text-lg font-bold text-primary mb-2 block">$1</strong>') }}/>
                 </div>
               ))}
             </div>
           </div>
           
           {/* Slide 3: Plano de Ação */}
-           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-              <p className="text-lg font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
-              <h1 className="text-6xl font-extrabold my-2">{content.actionPlanSlide.title}</h1>
-              <div className="mt-8 flex items-start gap-6 max-w-7xl">
+           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+              <p className="text-md font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
+              <h1 className="text-5xl font-extrabold my-2">{content.actionPlanSlide.title}</h1>
+              <div className="mt-6 flex items-start gap-4 max-w-5xl">
                 {content.actionPlanSlide.content.map((item, index) => (
-                   <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
-                       <p className="text-base text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-xl font-bold text-white mb-2 block">$1</strong>') }} />
+                   <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full">
+                       <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-lg font-bold text-white mb-2 block">$1</strong>') }} />
                    </div>
                 ))}
               </div>
           </div>
           
           {/* Slide 4: Justificativa Estratégica */}
-           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-              <div className="max-w-7xl">
-                  <p className="text-lg font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
-                  <h1 className="text-6xl font-extrabold my-2">{content.justificationSlide.title}</h1>
-                  <p className="mt-6 text-lg text-gray-300 leading-relaxed break-words max-w-7xl">
+           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+              <div className="max-w-5xl">
+                  <p className="text-md font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
+                  <h1 className="text-5xl font-extrabold my-2">{content.justificationSlide.title}</h1>
+                  <p className="mt-4 text-md text-gray-300 leading-relaxed break-words max-w-5xl">
                     {content.justificationSlide.content.join(' ')}
                   </p>
               </div>
           </div>
 
           {/* Slide 5: Cronograma */}
-           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-              <p className="text-lg font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
-              <h1 className="text-6xl font-extrabold my-2">{content.timelineSlide.title}</h1>
-              <ul className="mt-8 space-y-4 text-lg text-gray-300 max-w-7xl">
+           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+              <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
+              <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
+              <ul className="mt-6 space-y-3 text-md text-gray-300 max-w-5xl">
                 {content.timelineSlide.content.map((item, index) => (
-                    <li key={index} className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-lg" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-primary">$1:</strong>') }}/>
+                    <li key={index} className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-lg" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-primary">$1:</strong>') }}/>
                 ))}
               </ul>
           </div>
 
           {/* Slide 6: KPIs */}
-           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col items-start p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col items-start p-10 text-white rounded-lg overflow-hidden">
              <div className="w-full flex flex-col justify-center h-full">
-                <p className="text-lg font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
-                <h1 className="text-6xl font-extrabold my-2">{content.kpiSlide.title}</h1>
-                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl">
+                <p className="text-md font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
+                <h1 className="text-5xl font-extrabold my-2">{content.kpiSlide.title}</h1>
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl">
                     {content.kpiSlide.kpis.map((kpi, index) => (
                         <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10">
-                            <h4 className="font-bold text-base text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
-                            <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
+                            <h4 className="font-bold text-sm text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
+                            <p className="text-gray-300 mt-1 text-xs">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
                             <p className="text-xs text-gray-400 mt-2 break-words">{kpi.importance}</p>
                         </div>
                     ))}
@@ -107,62 +107,62 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
           
           {/* Slide 7: Diferenciais */}
-           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-              <p className="text-lg font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
-              <h1 className="text-6xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl">
+           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+              <p className="text-md font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
+              <h1 className="text-5xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl">
                   {content.whyCpSlide.content.map((item, index) => (
-                    <div key={index} className="p-6 bg-white/5 border-t-4 border-primary rounded-lg h-full" >
-                        <p className="text-base text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<h3 class="text-xl font-bold text-white mb-2">$1</h3>') }} />
+                    <div key={index} className="p-4 bg-white/5 border-t-2 border-primary rounded-lg h-full" >
+                        <p className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<h3 class="text-lg font-bold text-white mb-2">$1</h3>') }} />
                     </div>
                   ))}
               </div>
           </div>
 
            {/* Slide 8: Investimento */}
-            <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
+            <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
             {content.investmentSlide.items.length > 0 ? (
                  <div className="flex flex-col items-center">
                     {content.investmentSlide.discount && (
-                        <p className="text-5xl font-semibold text-red-500 line-through decoration-red-500/80 mb-2">
+                        <p className="text-4xl font-semibold text-red-500 line-through decoration-red-500/80 mb-2">
                             {content.investmentSlide.total}
                         </p>
                     )}
-                    <p className="text-8xl font-bold text-primary tracking-tighter">
+                    <p className="text-7xl font-bold text-primary tracking-tighter">
                         {content.investmentSlide.finalTotal}
                     </p>
-                    <div className="mt-6 text-base text-white">
+                    <div className="mt-4 text-sm text-white">
                          <div className="mt-2 text-center">
-                            <p className="text-sm"><strong>Incluso:</strong> {content.investmentSlide.items.map(p => p.name).join(' + ')}</p>
-                            {content.investmentSlide.discount && <p className="mt-1 text-sm"><strong>Desconto Aplicado:</strong> {content.investmentSlide.discount}</p>}
+                            <p className="text-xs"><strong>Incluso:</strong> {content.investmentSlide.items.map(p => p.name).join(' + ')}</p>
+                            {content.investmentSlide.discount && <p className="mt-1 text-xs"><strong>Desconto Aplicado:</strong> {content.investmentSlide.discount}</p>}
                         </div>
                     </div>
                 </div>
             ) : (
-                <div className="w-full max-w-7xl">
-                    <p className="text-lg font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
-                    <h1 className="text-6xl font-extrabold my-2">Escolha o plano ideal para você</h1>
-                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col h-full">
-                            <h3 className="text-3xl font-bold text-white mb-2">Plano Essencial</h3>
-                            <p className="text-gray-400 mb-6 flex-grow">A base para construir sua autoridade e iniciar a geração de resultados.</p>
-                            <p className="text-5xl font-bold text-primary mb-6">R$ 2.999,00</p>
-                            <ul className="space-y-3 text-left">
-                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Gestão de Mídias Sociais</li>
-                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Tráfego Pago Básico</li>
-                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Relatórios Mensais</li>
+                <div className="w-full max-w-5xl">
+                    <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
+                    <h1 className="text-5xl font-extrabold my-2">Escolha o plano ideal para você</h1>
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full">
+                            <h3 className="text-2xl font-bold text-white mb-2">Plano Essencial</h3>
+                            <p className="text-gray-400 mb-4 flex-grow text-sm">A base para construir sua autoridade e iniciar a geração de resultados.</p>
+                            <p className="text-4xl font-bold text-primary mb-4">R$ 2.999,00</p>
+                            <ul className="space-y-2 text-left text-sm">
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Gestão de Mídias Sociais</li>
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Tráfego Pago Básico</li>
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Relatórios Mensais</li>
                             </ul>
                         </div>
-                        <div className="bg-white/10 border-2 border-primary rounded-xl p-8 flex flex-col h-full relative">
-                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">RECOMENDADO</div>
-                            <h3 className="text-3xl font-bold text-primary mb-2">Plano Completo</h3>
-                            <p className="text-gray-300 mb-6 flex-grow">A solução completa para acelerar seu crescimento e dominar seu mercado.</p>
-                            <p className="text-5xl font-bold text-primary mb-6">R$ 3.999,00</p>
-                             <ul className="space-y-3 text-left">
-                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Tudo do Plano Essencial</li>
-                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> 1 Gravação de Podcast/Mês</li>
-                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Captação de Vídeo em Estúdio</li>
-                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Mentoria Estratégica</li>
+                        <div className="bg-white/10 border-2 border-primary rounded-xl p-6 flex flex-col h-full relative">
+                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-bold">RECOMENDADO</div>
+                            <h3 className="text-2xl font-bold text-primary mb-2">Plano Completo</h3>
+                            <p className="text-gray-300 mb-4 flex-grow text-sm">A solução completa para acelerar seu crescimento e dominar seu mercado.</p>
+                            <p className="text-4xl font-bold text-primary mb-4">R$ 3.999,00</p>
+                             <ul className="space-y-2 text-left text-sm">
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Tudo do Plano Essencial</li>
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> 1 Gravação de Podcast/Mês</li>
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Captação de Vídeo em Estúdio</li>
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Mentoria Estratégica</li>
                             </ul>
                         </div>
                     </div>
@@ -171,15 +171,15 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
             </div>
 
           {/* Slide 9: Próximos Passos */}
-           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
-                <Goal className="h-16 w-16 text-primary mx-auto mb-6"/>
-                <h1 className="text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
-                <p className="text-xl text-gray-400 mt-4 max-w-6xl">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
-                <div className="mt-12 flex items-stretch gap-8 w-full max-w-7xl">
+           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
+                <Goal className="h-12 w-12 text-primary mx-auto mb-4"/>
+                <h1 className="text-5xl font-extrabold my-2 text-white">Vamos Começar?</h1>
+                <p className="text-lg text-gray-400 mt-2 max-w-4xl">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
+                <div className="mt-8 flex items-stretch gap-6 w-full max-w-5xl">
                    {content.nextStepsSlide.content.map((step, index) => (
-                     <div key={index} className="bg-white/5 p-6 rounded-lg border border-white/10 text-left flex-1 flex flex-col justify-center">
-                        <span className="text-5xl font-bold text-primary">{index + 1}.</span>
-                        <p className="mt-2 text-xl font-semibold text-white break-words">{step}</p>
+                     <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 text-left flex-1 flex flex-col justify-center">
+                        <span className="text-4xl font-bold text-primary">{index + 1}.</span>
+                        <p className="mt-2 text-lg font-semibold text-white break-words">{step}</p>
                     </div>
                    ))}
                 </div>
@@ -279,7 +279,7 @@ export default function PresentationGenerator() {
     if (!presentationContent) return;
     
     setIsDownloading(true);
-    toast({ title: 'Gerando PDF...', description: 'Aguarde um momento.' });
+    toast({ title: 'Gerando PDF...', description: 'Aguarde um momento. Este processo pode ser lento.' });
 
     const container = document.createElement('div');
     container.style.position = 'fixed';
@@ -290,18 +290,21 @@ export default function PresentationGenerator() {
     const ReactDOM = await import('react-dom/client');
     const root = ReactDOM.createRoot(container);
     
+    // Wrap the presentation in a temporary div for rendering
     const renderContainer = document.createElement('div');
     container.appendChild(renderContainer);
 
+    // Render the component to be captured
     root.render(<GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />);
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Give it a moment to render fully
+    await new Promise(resolve => setTimeout(resolve, 1500));
 
     const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'px',
-      format: [1920, 1080]
+      format: [1280, 720]
     });
 
     try {
@@ -312,15 +315,15 @@ export default function PresentationGenerator() {
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#0A0A0A',
-          width: 1920,
-          height: 1080
+          width: 1280,
+          height: 720
         });
         const imgData = canvas.toDataURL('image/png', 0.95);
         
         if (i > 0) {
-          pdf.addPage([1920, 1080], 'landscape');
+          pdf.addPage([1280, 720], 'landscape');
         }
-        pdf.addImage(imgData, 'PNG', 0, 0, 1920, 1080, undefined, 'FAST');
+        pdf.addImage(imgData, 'PNG', 0, 0, 1280, 720, undefined, 'FAST');
       }
       
       pdf.save(`Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.pdf`);
