@@ -156,28 +156,21 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                     <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
                     <h1 className="text-5xl font-extrabold my-2">Escolha o plano ideal para você</h1>
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full">
-                            <h3 className="text-2xl font-bold text-white mb-2">Plano Inicial</h3>
-                            <p className="text-gray-400 mb-4 flex-grow text-sm">Uma solução inicial para dar o primeiro passo. Este plano ajuda, mas não resolve o problema por completo, te ajudando a alcançar cerca de 40% da sua meta.</p>
-                            <p className="text-4xl font-bold text-primary mb-4">R$ 2.999,00</p>
-                            <ul className="space-y-2 text-left text-sm">
-                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Gestão de Mídias Sociais</li>
-                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Tráfego Pago Essencial</li>
-                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Relatórios Mensais</li>
-                            </ul>
-                        </div>
-                        <div className="bg-white/5 border-2 border-primary rounded-xl p-6 flex flex-col h-full relative">
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-bold">RECOMENDADO</div>
-                            <h3 className="text-2xl font-bold text-primary mb-2">Plano Avançado</h3>
-                            <p className="text-gray-300 mb-4 flex-grow text-sm">A solução completa e estratégica. Ataca todos os pontos do diagnóstico e tem a maior probabilidade de bater sua meta, construindo autoridade e um sistema de vendas robusto.</p>
-                            <p className="text-4xl font-bold text-primary mb-4">R$ 3.999,00</p>
-                             <ul className="space-y-2 text-left text-sm">
-                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Tudo do Plano Inicial</li>
-                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> 1 Gravação de Podcast/Mês</li>
-                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Captação de Vídeo em Estúdio</li>
-                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> Mentoria Estratégica</li>
-                            </ul>
-                        </div>
+                       <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full text-left">
+                          <div className="flex-grow">
+                              <h3 className="text-2xl font-bold text-white mb-2">Plano Inicial</h3>
+                              <p className="text-gray-400 text-sm">Uma solução inicial para dar o primeiro passo. Este plano ajuda, mas não resolve o problema por completo, te ajudando a alcançar cerca de 40% da sua meta.</p>
+                          </div>
+                          <p className="text-4xl font-bold text-primary mt-4">R$ 2.999,00</p>
+                       </div>
+                       <div className="bg-white/5 border-2 border-primary rounded-xl p-6 flex flex-col h-full text-left relative">
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-0.5 rounded-full text-xs font-bold">RECOMENDADO</div>
+                           <div className="flex-grow">
+                              <h3 className="text-2xl font-bold text-primary mb-2">Plano Avançado</h3>
+                              <p className="text-gray-300 text-sm">A solução completa e estratégica. Ataca todos os pontos do diagnóstico e tem a maior probabilidade de bater sua meta, construindo autoridade e um sistema de vendas robusto.</p>
+                          </div>
+                          <p className="text-4xl font-bold text-primary mt-4">R$ 3.999,00</p>
+                       </div>
                     </div>
                 </div>
             )}
@@ -299,8 +292,8 @@ export default function PresentationGenerator() {
     container.style.left = '-9999px';
     container.style.top = '-9999px';
     document.body.appendChild(container);
-
-    const ReactDOM = await import('react-dom/client');
+    
+    const ReactDOM = (await import('react-dom/client')).default;
     const root = ReactDOM.createRoot(container);
     
     const renderContainer = document.createElement('div');
@@ -314,7 +307,7 @@ export default function PresentationGenerator() {
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'px',
-      format: [1280, 720]
+      format: [720, 1280]
     });
 
     try {
@@ -331,7 +324,7 @@ export default function PresentationGenerator() {
         const imgData = canvas.toDataURL('image/png', 0.95);
         
         if (i > 0) {
-          pdf.addPage([1280, 720], 'landscape');
+          pdf.addPage([720, 1280], 'landscape');
         }
         pdf.addImage(imgData, 'PNG', 0, 0, 1280, 720, undefined, 'FAST');
       }
@@ -475,33 +468,33 @@ export default function PresentationGenerator() {
         </CardContent>
       </Card>
       
-        <Card className="lg:sticky top-8">
-            <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
-            <CardDescription>A IA gerou a apresentação. Clique no botão abaixo para fazer o download do PDF.</CardDescription>
-            </CardHeader>
-            <CardContent>
-            {presentationContent ? (
-                <div className="space-y-4">
-                <Alert>
-                    <BrainCircuit className="h-4 w-4" />
-                    <AlertTitle>Apresentação Pronta!</AlertTitle>
-                    <AlertDescription>
-                        Os slides foram gerados com sucesso.
-                    </AlertDescription>
-                </Alert>
-                <Button onClick={handleDownload} disabled={isDownloading} className="w-full">
-                    {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4" />}
-                    Baixar Apresentação (PDF)
-                </Button>
-                </div>
-            ): (
-                <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
-                   <p>A apresentação gerada aparecerá aqui.</p>
-                </div>
-            )}
-            </CardContent>
-        </Card>
+      <Card className="lg:sticky top-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
+          <CardDescription>A IA gerou a apresentação. Clique no botão abaixo para fazer o download do PDF.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {presentationContent ? (
+            <div className="space-y-4">
+              <Alert>
+                <BrainCircuit className="h-4 w-4" />
+                <AlertTitle>Apresentação Pronta!</AlertTitle>
+                <AlertDescription>
+                  Os slides foram gerados com sucesso.
+                </AlertDescription>
+              </Alert>
+              <Button onClick={handleDownload} disabled={isDownloading} className="w-full">
+                {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4" />}
+                Baixar Apresentação (PDF)
+              </Button>
+            </div>
+          ) : (
+            <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
+              <p>A apresentação gerada aparecerá aqui.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
