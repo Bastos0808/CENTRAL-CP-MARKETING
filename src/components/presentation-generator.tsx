@@ -135,9 +135,14 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                                const icons = [CheckCircle, Diamond, Goal];
                                const Icon = icons[index] || Goal;
                                const isCenter = index === 1;
+                               
+                               let leftPosition;
+                                if (index === 0) leftPosition = `5%`;
+                                else if (index === 1) leftPosition = `50%`;
+                                else leftPosition = `calc(95% - 256px)`; // 256px é a largura do card (w-64)
 
                                return (
-                                   <div key={index} className={cn("absolute flex flex-col items-center", { 'top-1/2 -translate-y-1/2': !isCenter, 'top-0': isCenter })} style={{left: `${(index * 45) + 5}%`}}>
+                                   <div key={index} className={cn("absolute flex flex-col items-center", { 'top-1/2 -translate-y-1/2': !isCenter, 'top-0': isCenter })} style={{left: leftPosition, transform: index === 1 ? 'translateX(-50%)' : undefined }}>
                                        <div className="w-8 h-8 bg-primary rounded-full border-4 border-background z-10 flex items-center justify-center">
                                            <Icon className="h-4 w-4 text-white"/>
                                        </div>
