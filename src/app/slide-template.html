@@ -28,8 +28,7 @@
             margin: 0;
         }
 
-        /* 
-         * Este é o container principal do seu slide.
+        /* * Este é o container principal do seu slide.
          * Ele tem um tamanho fixo de 1280x720 pixels, simulando uma apresentação 16:9.
         */
         .slide-container {
@@ -47,10 +46,10 @@
             /* Organiza o conteúdo do slide (o .slide-content) verticalmente. */
             display: flex;
             flex-direction: column;
-            /* Centraliza o conteúdo verticalmente. */
-            justify-content: center;
+            /* Alinha o conteúdo no início (topo) do slide. */
+            justify-content: flex-start;
             /* Adiciona um preenchimento interno para o conteúdo não colar nas bordas. */
-            padding: 80px; /* 80 pixels de respiro em todos os lados */
+            padding: 50px 80px 80px; /* Padding superior reduzido */
             /* Garante que o padding seja calculado para dentro da caixa de 1280x720. */
             box-sizing: border-box;
             /* Adiciona uma sombra sutil para destacar o slide da página. */
@@ -59,8 +58,7 @@
             border-radius: 12px;
         }
 
-        /* 
-         * Container para o conteúdo principal do slide.
+        /* * Container para o conteúdo principal do slide.
          * Isso nos ajuda a limitar a largura do texto para melhor legibilidade.
         */
         .slide-content {
@@ -86,8 +84,8 @@
 
         /* Estilo para o título principal do slide. */
         .slide-title {
-            /* Tamanho da fonte bem grande para impacto. */
-            font-size: 5rem; /* 80 pixels */
+            /* Tamanho da fonte. */
+            font-size: 3.5rem; /* Tamanho reduzido */
             /* Deixa a fonte extra-negrito. */
             font-weight: 900;
             /* Margem inferior para separar do parágrafo. */
@@ -97,18 +95,73 @@
             /* Define uma altura de linha mais apertada para títulos grandes. */
             line-height: 1.1;
         }
-
-        /* Estilo para o parágrafo de texto principal. */
-        .slide-paragraph {
-            /* Cor de texto um pouco mais suave (cinza claro) para não competir com o título. */
-            color: #E0E0E0;
-            /* Tamanho da fonte para boa legibilidade. */
-            font-size: 1.5rem; /* 24 pixels */
-            /* Define uma altura de linha confortável para leitura. */
-            line-height: 1.6;
-            /* Remove margens padrão do parágrafo. */
-            margin: 0;
+        
+        /* Container para as imagens */
+        .image-container {
+            display: flex; /* Alinha os itens lado a lado */
+            gap: 24px; /* Espaço entre os itens */
+            margin-top: 32px; 
+            align-items: flex-end; /* Alinha os itens pela base */
         }
+
+        /* Estilo base para cada imagem */
+        .placeholder-image {
+            background-color: #222; /* Cor de fundo para o placeholder */
+            border-radius: 8px; /* Cantos arredondados */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #555;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        /* Estilo para a imagem vertical */
+        .placeholder-image-vertical {
+            width: 550px; /* Largura aumentada */
+            height: 400px; 
+            object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer */
+            border-radius: 8px;
+        }
+        
+        /* Wrapper para empilhar a caixa de texto e a imagem horizontal */
+        .horizontal-item-wrapper {
+            display: flex;
+            flex-direction: column; /* Empilha os itens verticalmente */
+            gap: 16px; /* Espaço entre a caixa de texto e a imagem */
+            flex-grow: 1; /* Faz o wrapper ocupar o espaço horizontal restante */
+        }
+
+        /* Estilo para a caixa de texto de vidro */
+        .glass-textbox {
+            background: rgba(255, 255, 255, 0.05); /* Fundo semi-transparente */
+            backdrop-filter: blur(10px); /* Efeito de desfoque (mágico!) */
+            -webkit-backdrop-filter: blur(10px); /* Suporte para o navegador Safari */
+            border-radius: 8px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil para definir a forma */
+            color: #E0E0E0;
+            font-size: 1rem;
+            line-height: 1.5;
+            height: 164px; /* Altura aumentada */
+            box-sizing: border-box; /* Garante que o padding não aumente a altura total */
+        }
+
+        /* Grid para as 4 imagens horizontais */
+        .horizontal-image-grid {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+        }
+
+        /* Estilo para as imagens pequenas */
+        .small-placeholder {
+            flex-grow: 1; /* Faz com que dividam o espaço igualmente */
+            height: 220px;
+            object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer */
+            border-radius: 8px;
+        }
+
     </style>
 </head>
 <body>
@@ -122,29 +175,57 @@
             <!-- 
                 SUBTÍTULO
                 Use esta tag <p> para um texto de destaque menor, acima do título principal.
-                Para editar, troque o texto "NOSSO PLANO DE AÇÃO".
             -->
             <p class="slide-subtitle">
-                Nosso Plano de Ação
+                Sobre Nós
             </p>
 
             <!-- 
                 TÍTULO PRINCIPAL
                 Use esta tag <h1> para o título principal e mais impactante do seu slide.
-                Para editar, troque o texto "O plano é claro: dominar, não competir."
             -->
             <h1 class="slide-title">
-                O plano é claro: dominar, não competir.
+                Conheça sua nova agência
             </h1>
 
             <!-- 
-                PARÁGRAFO
-                Use esta tag <p> para o texto de apoio, descrições ou qualquer outro conteúdo principal.
-                Para editar, troque o texto aqui dentro.
+                CONTAINER DE IMAGENS
+                Este container organiza a imagem vertical e o conjunto da imagem horizontal.
             -->
-            <p class="slide-paragraph">
-                Esta proposta é o primeiro passo para profissionalizar sua presença digital e construir uma máquina de vendas previsível que funciona 24 horas por dia para o seu negócio.
-            </p>
+            <div class="image-container">
+                <!-- 
+                    IMAGEM DA ESQUERDA (Vertical)
+                    A div foi substituída por uma tag <img>
+                -->
+                <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png" alt="Foto da equipe da agência" class="placeholder-image-vertical">
+
+                <!-- 
+                    WRAPPER
+                    Este container agrupa a caixa de texto e a imagem horizontal.
+                -->
+                <div class="horizontal-item-wrapper">
+                    <!-- 
+                        CAIXA DE TEXTO DE VIDRO
+                        Edite o texto aqui dentro.
+                    -->
+                    <div class="glass-textbox">
+                        <p style="margin:0;">
+                           Imagine transformar sua presença digital em seu maior vendedor. Atuamos como parceiros estratégicos para construir um ecossistema de vendas robusto e previsível para seu negócio. Nosso foco é claro: gerar um fluxo constante de clientes e impulsionar seu faturamento a novos patamares.
+                        </p>
+                    </div>
+
+                    <!-- 
+                        Grid para as 4 imagens horizontais
+                        As divs foram substituídas por tags <img>
+                    -->
+                    <div class="horizontal-image-grid">
+                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799844/Prancheta_33_jj5hre.png" alt="Imagem de projeto 1" class="small-placeholder">
+                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_32_gxdlmx.png" alt="Imagem de projeto 2" class="small-placeholder">
+                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_31_lyf95d.png" alt="Imagem de projeto 3" class="small-placeholder">
+                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799842/Prancheta_34_hviyd6.png" alt="Imagem de projeto 4" class="small-placeholder">
+                    </div>
+                </div>
+            </div>
 
         </div>
 
