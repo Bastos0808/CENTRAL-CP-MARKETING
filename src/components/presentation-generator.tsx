@@ -99,8 +99,8 @@ const defaultPackages = {
 };
 
 const AboutUsSlide = () => (
-    <div data-slide style={{ ...slideStyles.base, padding: '50px 80px 80px' }} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-start text-white rounded-lg overflow-hidden">
-        <div className="max-w-[1000px]">
+    <div data-slide style={{ ...slideStyles.base, padding: '50px 80px 80px' }} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center text-white rounded-lg overflow-hidden">
+        <div className="w-full">
             <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider mb-4">Sobre Nós</p>
             <h1 className="text-6xl font-black leading-tight mb-6">Conheça sua nova agência</h1>
             <div className="flex gap-6 mt-8 items-end">
