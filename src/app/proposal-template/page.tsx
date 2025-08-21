@@ -215,7 +215,7 @@ export default function ProposalTemplatePage() {
                       <h3 className="text-xl font-bold text-white mb-2">Produção Própria</h3>
                       <p className="text-base text-gray-300 break-words"><u>Não dependemos de freelancers ou terceiros. Com estúdios e equipe de produção próprios, temos controle total sobre a qualidade e agilidade do conteúdo. Isso nos permite criar materiais de alta qualidade (vídeos, fotos, podcasts) sem sobrecarregar sua agenda ou a do seu time.</u></p>
                   </div>
-                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
+                   <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
                       <h3 className="text-xl font-bold text-white mb-2">Foco em Performance de Negócio</h3>
                       <p className="text-base text-gray-300 break-words"><u>Nosso trabalho não termina na entrega de relatórios de curtidas. Somos obcecados por métricas que impactam o seu negócio: Custo por Aquisição (CAC), Retorno sobre Investimento (ROI) e Faturamento. Cada ação é pensada para mover o ponteiro do que realmente importa.</u></p>
                   </div>
@@ -225,19 +225,15 @@ export default function ProposalTemplatePage() {
            {/* Slide 8: Investimento */}
           <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
             {hasSelectedPackages ? (
-              <div className="bg-white/5 border border-white/10 rounded-xl p-8 md:p-12 flex flex-col items-center">
-                  <h3 className="text-xl text-gray-300 mb-2">Valor do Investimento Mensal</h3>
-                  
-                  <div className="text-xl text-red-400 line-through">De R$ 3.998,00</div>
-
-                  <div className="text-8xl font-bold text-primary tracking-tighter my-2">R$ 3.598,00</div>
-                  
-                  <div className="text-base text-white mt-2">
-                    <p><strong>Incluso:</strong> <u>Plano de Marketing Essencial + Captação em Estúdio</u></p>
-                    {watchedDiscount > 0 && <p><strong>Desconto Aplicado:</strong> <u>- R$ 400,00</u></p>}
-                  </div>
-              </div>
-
+                <div className="flex flex-col items-center">
+                    <h3 className="text-xl text-gray-300 mb-2">Valor do Investimento Mensal</h3>
+                    <p className="text-2xl text-red-400 line-through">De R$ 3.998,00</p>
+                    <div className="text-8xl font-bold text-primary tracking-tighter my-2">R$ 3.598,00</div>
+                    <div className="mt-4 text-base text-white">
+                        <p><strong>Incluso:</strong> <u>Plano de Marketing Essencial + Captação em Estúdio</u></p>
+                        {watchedDiscount > 0 && <p className="mt-2"><strong>Desconto Aplicado:</strong> <u>- R$ 400,00</u></p>}
+                    </div>
+                </div>
             ) : (
                 <div className="w-full max-w-7xl">
                     <p className="text-lg font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
