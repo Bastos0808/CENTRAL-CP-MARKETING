@@ -190,5 +190,3 @@ const presentationGeneratorFlow = ai.defineFlow(
     return llmResponse.output!;
   }
 );
-
-    
