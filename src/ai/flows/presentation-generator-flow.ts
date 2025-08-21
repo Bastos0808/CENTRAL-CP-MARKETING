@@ -67,7 +67,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             2.  **Conecte Dor e Solução:** Sua principal tarefa é conectar a dor do cliente (identificada na R1) com o plano de ação que você vai propor. Cada slide deve reforçar essa ponte.
             3.  **Seja Conciso e Impactante:** Use linguagem de negócios. Crie títulos fortes e textos curtos e diretos. Use bullet points para facilitar a leitura.
             4.  **Justificativa Estratégica:** No slide "Por que este plano?", você DEVE criar uma justificativa estratégica convincente, explicando como a combinação dos serviços selecionados ({{selectedPackages}}) ataca diretamente os gargalos e dores do cliente para atingir a meta de faturamento.
-            5.  **KPIs com Estimativas:** Para o slide de KPIs, não apenas liste as métricas. Para cada uma, forneça uma **estimativa de meta** realista (ex: 'Abaixo de R$30,00' para CPL) e explique a **importância** daquela métrica para o cliente, baseando-se nos dados de diagnóstico.
+            5.  **KPIs com Estimativas e Análise Detalhada:** Para o slide de KPIs, não apenas liste as métricas. Para cada uma, forneça uma **estimativa de meta** realista e, no campo 'importance', uma **análise detalhada** explicando como aquela métrica específica contribui para resolver o 'principalGargalo' e alcançar a 'metaFaturamento'. Seja específico e estratégico na sua justificativa.
             6.  **Adapte o Tom:** O tom deve ser de um especialista confiante, apresentando um plano de tratamento. É consultivo, não vendedor.
 
             **Dados do Diagnóstico (R1):**
@@ -125,10 +125,10 @@ const presentationGeneratorFlow = ai.defineFlow(
                 -   **KPIs (gere de 3 a 5 kpis):**
                     -   **metric:** (Ex: "Custo por Lead (CPL)")
                     -   **estimate:** (Ex: "Abaixo de R$25,00")
-                    -   **importance:** (Ex: "Garante que o investimento em anúncios é eficiente e não desperdiça verba com contatos desqualificados.")
+                    -   **importance:** (Ex: "Para alcançar a meta de ${input.metaFaturamento} de forma lucrativa, precisamos garantir que cada lead custe no máximo R$25. Manter o CPL baixo nos permite escalar o investimento em anúncios sem comprometer a margem, atacando diretamente o gargalo de 'geração de leads' de forma sustentável.")
                     -   **metric:** (Ex: "Taxa de Conversão de Lead")
                     -   **estimate:** (Ex: "Acima de 15%")
-                    -   **importance:** (Ex: "Mede a eficácia do nosso processo de qualificação e da oferta, garantindo que os leads gerados se tornem clientes.")
+                    -   **importance:** (Ex: "Com o gargalo na 'conversão', esta métrica é crucial. Uma taxa acima de 15% significa que nosso processo de qualificação e a oferta estão ressoando com o público, transformando o investimento em tráfego em agendamentos reais e, consequentemente, em faturamento.")
 
             6.  **whyCpSlide:**
                 -   **Título:** Por que a CP Marketing?
