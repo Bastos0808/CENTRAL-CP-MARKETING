@@ -23,10 +23,45 @@ import html2canvas from 'html2canvas';
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
 
-const slideStyle = {
-  backgroundColor: "#0A0A0A",
-  backgroundImage: "radial-gradient(ellipse 80% 80% at 50% -20%,rgba(230, 81, 0, 0.20),hsla(0,0%,100%,0))",
+const slideStyles = {
+  base: {
+    backgroundColor: "#0A0A0A",
+    backgroundImage: `
+      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
+      radial-gradient(ellipse 80% 80% at 50% -20%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0))
+    `,
+    backgroundSize: '30px 30px, 30px 30px, 100% 100%',
+  },
+  capa: {
+    backgroundColor: "#0A0A0A",
+    backgroundImage: `
+      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
+      radial-gradient(ellipse 80% 80% at 50% 50%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0))
+    `,
+    backgroundSize: '30px 30px, 30px 30px, 100% 100%',
+  },
+  objetivos: {
+    backgroundColor: "#0A0A0A",
+    backgroundImage: `
+      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
+      radial-gradient(ellipse 80% 80% at 20% 100%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0))
+    `,
+     backgroundSize: '30px 30px, 30px 30px, 100% 100%',
+  },
+  investimento: {
+     backgroundColor: "#0A0A0A",
+    backgroundImage: `
+      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
+      radial-gradient(ellipse 80% 80% at 80% 100%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0))
+    `,
+     backgroundSize: '30px 30px, 30px 30px, 100% 100%',
+  }
 };
+
 
 const glassTextboxStyle = {
     background: 'rgba(255, 255, 255, 0.05)',
@@ -35,7 +70,7 @@ const glassTextboxStyle = {
 };
 
 const AboutUsSlide = () => (
-    <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-start p-[50px_80px_80px] text-white rounded-lg overflow-hidden box-border font-body">
+    <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-start p-[50px_80px_80px] text-white rounded-lg overflow-hidden box-border font-body">
         <div className="max-w-[1000px]">
             <p className="text-[#E65100] font-bold text-[1.2rem] uppercase tracking-[0.1em] mb-4">
                 Sobre Nós
@@ -52,10 +87,10 @@ const AboutUsSlide = () => (
                         </p>
                     </div>
                     <div className="flex gap-4 w-full">
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799844/Prancheta_33_jj5hre.png" alt="Imagem de projeto 1" className="flex-grow h-[220px] object-cover rounded-lg" />
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_32_gxdlmx.png" alt="Imagem de projeto 2" className="flex-grow h-[220px] object-cover rounded-lg" />
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_31_lyf95d.png" alt="Imagem de projeto 3" className="flex-grow h-[220px] object-cover rounded-lg" />
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799842/Prancheta_34_hviyd6.png" alt="Imagem de projeto 4" className="flex-grow h-[220px] object-cover rounded-lg" />
+                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799844/Prancheta_33_jj5hre.png" alt="Imagem de projeto 1" className="w-[130px] h-[220px] object-cover rounded-lg" />
+                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_32_gxdlmx.png" alt="Imagem de projeto 2" className="w-[130px] h-[220px] object-cover rounded-lg" />
+                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_31_lyf95d.png" alt="Imagem de projeto 3" className="w-[130px] h-[220px] object-cover rounded-lg" />
+                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799842/Prancheta_34_hviyd6.png" alt="Imagem de projeto 4" className="w-[130px] h-[220px] object-cover rounded-lg" />
                     </div>
                 </div>
             </div>
@@ -69,7 +104,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
     return (
         <div ref={ref} className="proposal-container space-y-4 font-body">
           {/* Slide 1: Capa */}
-           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyles.capa} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
             <h2 className="text-lg font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
             <h1 className="text-6xl font-extrabold my-4 max-w-4xl">{content.presentationTitle}</h1>
             <p className="text-lg text-gray-400">Proposta elaborada por CP Marketing Digital - {new Date().toLocaleDateString('pt-BR')}</p>
@@ -79,7 +114,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           <AboutUsSlide />
 
           {/* Slide 3: Diagnóstico */}
-           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                 <h1 className="text-5xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
@@ -95,7 +130,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
           
           {/* Slide 4: Plano de Ação */}
-           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
               <h1 className="text-5xl font-extrabold my-2">{content.actionPlanSlide.title}</h1>
@@ -110,7 +145,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
           
           {/* Slide 5: Justificativa Estratégica */}
-           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full max-w-5xl">
                   <p className="text-md font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
                   <h1 className="text-5xl font-extrabold my-2">{content.justificationSlide.title}</h1>
@@ -121,7 +156,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
 
           {/* Slide 6: Cronograma */}
-           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
               <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
@@ -134,13 +169,13 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
 
           {/* Slide 7: KPIs */}
-           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col p-10 text-white rounded-lg overflow-hidden">
              <div className="w-full flex flex-col justify-center h-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
                 <h1 className="text-5xl font-extrabold my-2">{content.kpiSlide.title}</h1>
-                <div className="mt-6 flex items-stretch gap-4 max-w-5xl h-[300px]">
+                <div className="mt-6 flex items-stretch gap-4 max-w-5xl h-auto">
                     {content.kpiSlide.kpis.map((kpi, index) => (
-                        <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 flex-1 flex flex-col">
+                        <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 flex-1 flex flex-col h-full">
                             <div className="flex-grow">
                                 <h4 className="font-bold text-sm text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
                                 <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
@@ -153,7 +188,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
           
           {/* Slide 8: Diferenciais */}
-           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
               <h1 className="text-5xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
@@ -168,58 +203,36 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
 
            {/* Slide 9: Investimento */}
-            <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
-            {content.investmentSlide.items.length > 0 ? (
-                 <div className="flex flex-col items-center">
-                    <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
-                    <div className="my-4">
-                        {content.investmentSlide.discount && (
-                            <p className="text-4xl font-semibold text-red-500 line-through decoration-red-500/80">
-                                {content.investmentSlide.total}
-                            </p>
-                        )}
-                    </div>
-                    <div className="mb-4">
-                         <p className="text-7xl font-bold text-primary tracking-tighter">
-                            {content.investmentSlide.finalTotal}
-                        </p>
-                         <p className="text-lg text-gray-400">/mês</p>
-                    </div>
-
-                    <div className="text-sm text-white">
-                         <div className="mt-4 text-center">
-                            <p className="text-xs"><strong>Incluso:</strong> {content.investmentSlide.items.map(p => p.name).join(' + ')}</p>
-                            {content.investmentSlide.discount && <p className="mt-1 text-xs"><strong>Desconto Aplicado:</strong> {content.investmentSlide.discount}</p>}
-                        </div>
-                    </div>
+            <div data-slide style={slideStyles.investimento} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
+            <div className="w-full max-w-5xl">
+                <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
+                <h1 className="text-5xl font-extrabold my-2">Escolha o plano ideal para você</h1>
+                
+                 <div className="mt-6 relative">
+                    <hr className="absolute top-1/2 left-0 w-full border-white/10" />
+                 </div>
+                
+                <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+                   <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full text-left">
+                      <div className="flex-grow space-y-3">
+                          <h3 className="text-2xl font-bold text-white mb-2">Plano Inicial</h3>
+                          <p className="text-gray-400 text-sm">Uma solução inicial para dar o primeiro passo. Este plano ajuda, mas não resolve o problema por completo, te ajudando a alcançar cerca de 40% da sua meta.</p>
+                      </div>
+                      <p className="text-4xl font-bold text-white mt-4">R$ 2.999,00</p>
+                   </div>
+                   <div className="bg-white/5 border-2 border-primary rounded-xl p-6 flex flex-col h-full text-left relative">
+                       <div className="flex-grow space-y-3">
+                          <h3 className="text-2xl font-bold text-primary mb-2">Plano Avançado</h3>
+                          <p className="text-gray-300 text-sm">A solução completa e estratégica. Ataca todos os pontos do diagnóstico e tem a maior probabilidade de bater sua meta, construindo autoridade e um sistema de vendas robusto.</p>
+                      </div>
+                      <p className="text-4xl font-bold text-primary mt-4">R$ 3.999,00</p>
+                   </div>
                 </div>
-            ) : (
-                <div className="w-full max-w-5xl">
-                    <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
-                    <h1 className="text-5xl font-extrabold my-2">Escolha o plano ideal para você</h1>
-                    
-                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                       <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full text-left">
-                          <div className="flex-grow space-y-3">
-                              <h3 className="text-2xl font-bold text-white mb-2">Plano Inicial</h3>
-                              <p className="text-gray-400 text-sm">Uma solução inicial para dar o primeiro passo. Este plano ajuda, mas não resolve o problema por completo, te ajudando a alcançar cerca de 40% da sua meta.</p>
-                          </div>
-                          <p className="text-4xl font-bold text-white mt-4">R$ 2.999,00</p>
-                       </div>
-                       <div className="bg-white/5 border-2 border-primary rounded-xl p-6 flex flex-col h-full text-left relative">
-                           <div className="flex-grow space-y-3">
-                              <h3 className="text-2xl font-bold text-primary mb-2">Plano Avançado</h3>
-                              <p className="text-gray-300 text-sm">A solução completa e estratégica. Ataca todos os pontos do diagnóstico e tem a maior probabilidade de bater sua meta, construindo autoridade e um sistema de vendas robusto.</p>
-                          </div>
-                          <p className="text-4xl font-bold text-primary mt-4">R$ 3.999,00</p>
-                       </div>
-                    </div>
-                </div>
-            )}
+            </div>
             </div>
 
           {/* Slide 10: Próximos Passos */}
-           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyles.objetivos} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
                 <Goal className="h-12 w-12 text-primary mx-auto mb-4"/>
                 <h1 className="text-5xl font-extrabold my-2 text-white">Vamos Começar?</h1>
                 <p className="text-lg text-gray-400 mt-2 max-w-4xl">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
