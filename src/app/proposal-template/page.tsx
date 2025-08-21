@@ -90,28 +90,28 @@ export default function ProposalTemplatePage() {
           </p>
         </header>
         
-        <div ref={proposalRef}>
+        <div ref={proposalRef} className="proposal-container w-full max-w-7xl mx-auto space-y-4">
           {/* Slide 1: Capa */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white mb-8 rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
             <h2 className="text-xl font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
             <h1 className="text-5xl md:text-7xl font-extrabold my-4 max-w-5xl"><u>Plano de Crescimento para Clínica OdontoPrime</u></h1>
             <p className="text-lg md:text-xl text-gray-400">Proposta elaborada por CP Marketing Digital - <u>15 de Agosto de 2024</u></p>
           </div>
 
           {/* Slide 2: Diagnóstico */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white mb-8 rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
             <p className="text-lg font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
             <h1 className="text-5xl md:text-6xl font-extrabold my-2">Meta vs. Realidade</h1>
-            <div className="mt-8 flex flex-col md:flex-row items-stretch gap-6">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start" style={{flexBasis: '33%'}}>
+            <div className="mt-8 flex flex-col md:flex-row items-start gap-6">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col">
                 <h3 className="text-xl font-bold text-primary mb-3">Meta</h3>
                 <p className="text-base text-gray-300 break-words flex-grow"><u>Atingir um faturamento de R$ 70.000, partindo dos R$ 20.000 atuais.</u></p>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start" style={{flexBasis: '33%'}}>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col">
                 <h3 className="text-xl font-bold text-primary mb-3">Gargalo</h3>
                 <p className="text-base text-gray-300 break-words flex-grow"><u>Baixa geração de leads qualificados e ausência de um processo claro de conversão.</u></p>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start" style={{flexBasis: '33%'}}>
+              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col">
                 <h3 className="text-xl font-bold text-primary mb-3">Impacto Financeiro</h3>
                 <p className="text-base text-gray-300 break-words flex-grow"><u>Custo de oportunidade estimado em R$ 15.000 mensais devido ao gargalo atual.</u></p>
               </div>
@@ -119,19 +119,19 @@ export default function ProposalTemplatePage() {
           </div>
           
           {/* Slide 3: Plano de Ação */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white mb-8 rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
               <h1 className="text-5xl md:text-6xl font-extrabold my-2">Os 3 Pilares do Crescimento</h1>
-              <div className="mt-8 flex flex-col md:flex-row items-stretch gap-6">
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start" style={{flexBasis: '33%'}}>
+              <div className="mt-8 flex flex-col md:flex-row items-start gap-6">
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col">
                       <h3 className="text-xl font-bold mb-2 text-white">1. Aquisição</h3>
                       <p className="text-base text-gray-300 break-words flex-grow"><u>Atrair leads qualificados via Google e Instagram Ads, focando em termos de alta intenção como "implante dentário".</u></p>
                   </div>
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start" style={{flexBasis: '33%'}}>
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col">
                       <h3 className="text-xl font-bold mb-2 text-white">2. Conversão</h3>
                       <p className="text-base text-gray-300 break-words flex-grow"><u>Criar uma Landing Page de alta conversão e roteirizar o atendimento via WhatsApp para transformar leads em agendamentos.</u></p>
                   </div>
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start" style={{flexBasis: '33%'}}>
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col">
                       <h3 className="text-xl font-bold mb-2 text-white">3. Autoridade</h3>
                       <p className="text-base text-gray-300 break-words flex-grow"><u>Produzir vídeos de depoimentos e otimizar o Google Meu Negócio para construir prova social e confiança.</u></p>
                   </div>
@@ -139,7 +139,7 @@ export default function ProposalTemplatePage() {
           </div>
           
           {/* Slide 4: Justificativa Estratégica */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white mb-8 rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
               <div className="max-w-7xl">
                   <p className="text-lg font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
                   <h1 className="text-5xl md:text-6xl font-extrabold my-2">Por que este plano é ideal para você?</h1>
@@ -150,10 +150,10 @@ export default function ProposalTemplatePage() {
           </div>
 
           {/* Slide 5: Cronograma */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white mb-8 rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
               <h1 className="text-5xl md:text-6xl font-extrabold my-2">Fases do Projeto</h1>
-              <ul className="mt-8 space-y-4 text-lg text-gray-300">
+              <ul className="mt-8 space-y-4 text-lg text-gray-300 max-w-7xl">
                   <li className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-lg">
                       <strong className="text-primary">Semanas 1-2:</strong>
                       <span className="break-words flex-1"><u>Setup e Estratégia: Realizaremos a configuração de ferramentas, o planejamento de conteúdo e campanhas, e um briefing aprofundado para alinhar todos os detalhes.</u></span>
@@ -170,27 +170,27 @@ export default function ProposalTemplatePage() {
           </div>
 
           {/* Slide 6: KPIs */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white mb-8 rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
              <p className="text-lg font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
              <h1 className="text-5xl md:text-6xl font-extrabold my-2">Como Mediremos o Sucesso</h1>
-             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl">
                  <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><TrendingUp/> Custo por Lead (CPL)</h4>
+                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><TrendingUp/> <u>Custo por Lead (CPL)</u></h4>
                      <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white"><u>Abaixo de R$30,00</u></strong></p>
                      <p className="text-xs text-gray-400 mt-2"><u>Garante que o investimento em anúncios é eficiente e não desperdiça verba.</u></p>
                  </div>
                  <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><Target/> Taxa de Conversão</h4>
+                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><Target/> <u>Taxa de Conversão</u></h4>
                      <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white"><u>Acima de 15%</u></strong></p>
                      <p className="text-xs text-gray-400 mt-2"><u>Mede a eficácia do nosso processo de qualificação e da oferta.</u></p>
                  </div>
                  <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><Lightbulb/> Retorno sobre Investimento (ROAS)</h4>
+                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><Lightbulb/> <u>Retorno sobre Investimento (ROAS)</u></h4>
                      <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white"><u>Mínimo de 3x</u></strong></p>
                      <p className="text-xs text-gray-400 mt-2"><u>A métrica final que mostra o lucro gerado a partir do investimento em marketing.</u></p>
                  </div>
                  <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><CheckCheck/> Agendamentos Qualificados</h4>
+                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><CheckCheck/> <u>Agendamentos Qualificados</u></h4>
                      <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white"><u>20 por mês</u></strong></p>
                      <p className="text-xs text-gray-400 mt-2"><u>O verdadeiro indicador de que estamos atraindo as pessoas certas para o negócio.</u></p>
                  </div>
@@ -198,15 +198,15 @@ export default function ProposalTemplatePage() {
           </div>
           
           {/* Slide 7: Diferenciais */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white mb-8 rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
               <h1 className="text-5xl md:text-6xl font-extrabold my-2">Nossos Diferenciais</h1>
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl">
+                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg flex-grow">
                       <h3 className="text-2xl font-bold text-white mb-2">Mentoria e Agilidade</h3>
                       <p className="text-base text-gray-300 break-words"><u>Para garantir alinhamento e agilidade, entregamos o projeto estratégico em 10 dias com uma mentoria de apresentação.</u></p>
                   </div>
-                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
+                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg flex-grow">
                       <h3 className="text-2xl font-bold text-white mb-2">Produção Própria</h3>
                       <p className="text-base text-gray-300 break-words"><u>Para produzir conteúdo de alta qualidade sem depender da sua agenda, temos time presencial e estúdios próprios.</u></p>
                   </div>
@@ -214,12 +214,13 @@ export default function ProposalTemplatePage() {
           </div>
 
           {/* Slide 8: Investimento */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white mb-8 rounded-lg overflow-hidden">
-              <p className="text-lg font-bold text-primary uppercase tracking-widest">Investimento</p>
-              <div className="mt-8 bg-gray-900/50 rounded-xl p-8 md:p-12 border border-white/10 inline-block">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
+              <div className="bg-gray-900/50 rounded-xl p-8 md:p-12 border border-white/10 inline-block">
                   <h3 className="text-xl text-gray-300">Valor do Investimento Mensal</h3>
-                  <p className="text-6xl md:text-8xl font-bold text-primary tracking-tighter my-2"><u>R$ 3.598,00</u></p>
-                  <p className="text-base text-red-400 line-through">De <u>R$ 3.998,00</u></p>
+                  <div className="flex flex-col items-center">
+                    <p className="text-6xl md:text-8xl font-bold text-primary tracking-tighter my-2"><u>R$ 3.598,00</u></p>
+                    <p className="text-base text-red-400 line-through -mt-2">De <u>R$ 3.998,00</u></p>
+                  </div>
                   <div className="mt-6 text-left text-base space-y-2 text-white">
                       <p><strong>Incluso:</strong> <u>Plano de Marketing Essencial + Captação em Estúdio</u></p>
                       <p><strong>Desconto Aplicado:</strong> <u>- R$ 400,00</u></p>
@@ -231,7 +232,7 @@ export default function ProposalTemplatePage() {
           <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
                 <Goal className="h-16 w-16 text-primary mx-auto mb-6" />
                 <h1 className="text-5xl md:text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
-                <p className="text-xl text-gray-400 mt-4">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
+                <p className="text-xl text-gray-400 mt-4 max-w-6xl">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
                 <div className="mt-12 flex flex-col md:flex-row items-stretch gap-8 w-full max-w-7xl">
                     <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left flex-1 flex flex-col justify-center">
                         <span className="text-5xl font-bold text-primary">1.</span>
