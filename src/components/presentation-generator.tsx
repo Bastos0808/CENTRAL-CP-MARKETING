@@ -100,7 +100,7 @@ const AboutUsSlide = () => (
 );
 
 
-const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
+export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
     
     return (
         <div ref={ref} className="proposal-container space-y-4 font-body">
