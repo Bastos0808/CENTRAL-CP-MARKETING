@@ -22,6 +22,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { createRoot } from "react-dom/client";
 
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
@@ -436,11 +437,7 @@ export default function PresentationGenerator() {
     container.style.top = '-9999px';
     document.body.appendChild(container);
 
-    const ReactDOM = (await import('react-dom')).default;
-    const root = ReactDOM.createRoot(container);
-
-    const renderContainer = document.createElement('div');
-    container.appendChild(renderContainer);
+    const root = createRoot(container);
 
     // Use a callback with root.render to ensure it's finished before proceeding
     root.render(
