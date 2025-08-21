@@ -22,7 +22,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { createRoot } from "react-dom/client";
+import { createRoot } from 'react-dom/client';
 
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
@@ -440,11 +440,14 @@ export default function PresentationGenerator() {
     const root = createRoot(container);
 
     // Use a callback with root.render to ensure it's finished before proceeding
-    root.render(
-        <React.StrictMode>
-            <GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />
-        </React.StrictMode>
-    );
+    await new Promise<void>((resolve) => {
+        root.render(
+            <React.StrictMode>
+                <GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />
+            </React.StrictMode>,
+            () => resolve()
+        );
+    });
 
     // Give React time to render and browser to fetch assets
     await new Promise(resolve => setTimeout(resolve, 2000));
