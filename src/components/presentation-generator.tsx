@@ -19,7 +19,6 @@ import { GeneratePresentationOutput, DiagnosticFormSchema, packageOptions } from
 import type { z } from "zod";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { cn } from "@/lib/utils";
 
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
@@ -48,7 +47,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
             <div className="mt-8 flex items-start gap-6 max-w-7xl">
               {content.diagnosticSlide.content.map((item, index) => (
                 <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
-                    <p className="text-base text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-xl font-bold text-primary mb-3 block">$1</strong>') }}/>
+                    <p className="text-base text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/g, '<strong class="text-xl font-bold text-primary mb-3 block">$1</strong>') }}/>
                 </div>
               ))}
             </div>
@@ -120,13 +119,13 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
            {/* Slide 8: Investimento */}
             <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
             {content.investmentSlide.items.length > 0 ? (
-                <div className="flex flex-col items-center">
+                 <div className="flex flex-col items-center">
                     {content.investmentSlide.discount && (
                         <p className="text-5xl font-semibold text-red-500 line-through decoration-red-500/80 mb-2">
                             {content.investmentSlide.total}
                         </p>
                     )}
-                    <p className="text-8xl font-bold text-primary tracking-tighter">
+                    <p className="text-8xl font-bold text-primary tracking-tighter mb-2">
                         {content.investmentSlide.finalTotal}
                     </p>
                     <div className="mt-6 text-base text-white">
@@ -233,8 +232,36 @@ export default function PresentationGenerator() {
     setPresentationContent(null);
     toast({ title: "Gerando Apresentação...", description: "Aguarde enquanto a IA cria os slides." });
     
+    let dataToSubmit = values;
+
+    if (!values.clientName) {
+        toast({
+            title: "Usando Dados Fictícios",
+            description: "O nome do cliente não foi preenchido. Gerando apresentação de exemplo.",
+        });
+        dataToSubmit = {
+            clientName: "Clínica Vitalize",
+            faturamentoMedio: "R$ 50.000",
+            metaFaturamento: "R$ 120.000",
+            ticketMedio: "R$ 800",
+            origemClientes: "Indicação e pesquisa no Google.",
+            tempoEmpresa: "5 anos",
+            motivacaoMarketing: "Estagnação no crescimento e desejo de se tornar referência na região.",
+            investimentoAnterior: "Já impulsionaram posts no Instagram, sem estratégia clara e com pouco retorno.",
+            tentativasAnteriores: "Contrataram um sobrinho para cuidar das redes sociais, mas a comunicação era amadora.",
+            principalGargalo: "Geração de leads qualificados. O telefone toca pouco e os contatos que chegam não têm perfil para fechar.",
+            custoProblema: "R$ 20.000 por mês em oportunidades perdidas.",
+            envolvidosDecisao: "Apenas o sócio principal.",
+            orcamentoPrevisto: "Entre R$ 4.000 e R$ 6.000 por mês.",
+            prazoDecisao: "30 dias.",
+            packages: ['marketing_premium', 'captacao_estudio_contrato'],
+            discount: 500,
+        };
+        form.reset(dataToSubmit);
+    }
+    
     try {
-      const result = await generatePresentation(values);
+      const result = await generatePresentation(dataToSubmit);
       setPresentationContent(result);
       toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e faça o download." });
     } catch(error) {
@@ -279,7 +306,7 @@ export default function PresentationGenerator() {
       for (let i = 0; i < slides.length; i++) {
         const slide = slides[i];
         const canvas = await html2canvas(slide, {
-          scale: 1, // Use scale 1 to match PDF dimensions
+          scale: 1, 
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#0A0A0A',
@@ -309,7 +336,7 @@ export default function PresentationGenerator() {
   
 
   return (
-    <div className="space-y-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><FileText /> Etapa 1: Reunião de Diagnóstico (R1)</CardTitle>
