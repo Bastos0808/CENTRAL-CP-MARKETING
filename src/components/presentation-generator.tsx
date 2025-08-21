@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useState, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
@@ -251,47 +251,47 @@ export default function PresentationGenerator() {
     setIsDownloading(true);
     toast({ title: 'Gerando PDF...', description: 'Aguarde um momento.' });
 
-    // Create a hidden container to render the presentation for PDF generation
     const container = document.createElement('div');
     container.style.position = 'fixed';
     container.style.left = '-9999px';
     container.style.top = '-9999px';
     document.body.appendChild(container);
 
-    // Use React.createPortal might be better but this is simpler for now
-    const root = (await import('react-dom/client')).createRoot(container);
-    root.render(<GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />);
+    const ReactDOM = await import('react-dom/client');
+    const root = ReactDOM.createRoot(container);
+    
+    // Create a new element for each render to avoid conflicts
+    const renderContainer = document.createElement('div');
+    container.appendChild(renderContainer);
 
-    // Allow time for rendering
-    await new Promise(resolve => setTimeout(resolve, 500));
+    root.render(<GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />);
+    
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Increased delay
 
     const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'px',
-      format: 'a4'
+      format: [1920, 1080]
     });
-
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
 
     try {
       for (let i = 0; i < slides.length; i++) {
         const slide = slides[i];
         const canvas = await html2canvas(slide, {
-          scale: 2,
+          scale: 1, // Use scale 1 to match PDF dimensions
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#0A0A0A',
           width: 1920,
           height: 1080
         });
-        const imgData = canvas.toDataURL('image/png', 1.0);
+        const imgData = canvas.toDataURL('image/png', 0.95);
         
         if (i > 0) {
-          pdf.addPage([pdfWidth, pdfHeight], 'landscape');
+          pdf.addPage([1920, 1080], 'landscape');
         }
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+        pdf.addImage(imgData, 'PNG', 0, 0, 1920, 1080, undefined, 'FAST');
       }
       
       pdf.save(`Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.pdf`);
@@ -301,7 +301,6 @@ export default function PresentationGenerator() {
         console.error("PDF Generation Error: ", err);
         toast({ title: 'Erro ao gerar PDF', description: 'Houve um problema na captura dos slides.', variant: 'destructive'});
     } finally {
-        // Cleanup
         root.unmount();
         document.body.removeChild(container);
         setIsDownloading(false);
@@ -310,7 +309,7 @@ export default function PresentationGenerator() {
   
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div className="space-y-8">
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><FileText /> Etapa 1: Reunião de Diagnóstico (R1)</CardTitle>
@@ -434,42 +433,30 @@ export default function PresentationGenerator() {
         </CardContent>
       </Card>
       
-      <Card className="lg:sticky top-8">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
-          <CardDescription>A IA gerou uma estrutura de apresentação. Revise o conteúdo e, se estiver tudo certo, faça o download.</CardDescription>
-        </CardHeader>
-        <CardContent className="min-h-[400px]">
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-              <Loader2 className="h-10 w-10 animate-spin mb-4" />
-              <p>Gerando slides...</p>
-            </div>
-          )}
-          {presentationContent && (
-            <div className="space-y-4">
-              <Alert>
-                  <BrainCircuit className="h-4 w-4" />
-                  <AlertTitle>Apresentação Pronta!</AlertTitle>
-                  <AlertDescription>
-                    Os slides foram gerados com sucesso. Clique no botão abaixo para fazer o download do PDF.
-                  </AlertDescription>
-              </Alert>
-              <Button onClick={handleDownload} disabled={isDownloading} className="w-full">
-                {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4" />}
-                Baixar Apresentação (PDF)
-              </Button>
-            </div>
-          )}
-           {!isLoading && !presentationContent && (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center">
-              <Info className="h-10 w-10 mx-auto mb-4"/>
-              <p>A sua apresentação aparecerá aqui.</p>
-              <p className="text-xs mt-1">Preencha o formulário e clique em "Gerar" para começar.</p>
-            </div>
-           )}
-        </CardContent>
-      </Card>
+      {presentationContent && (
+        <Card className="lg:sticky top-8">
+            <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
+            <CardDescription>A IA gerou a apresentação. Clique no botão abaixo para fazer o download do PDF.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                <Alert>
+                    <BrainCircuit className="h-4 w-4" />
+                    <AlertTitle>Apresentação Pronta!</AlertTitle>
+                    <AlertDescription>
+                        Os slides foram gerados com sucesso.
+                    </AlertDescription>
+                </Alert>
+                <Button onClick={handleDownload} disabled={isDownloading} className="w-full">
+                    {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4" />}
+                    Baixar Apresentação (PDF)
+                </Button>
+                </div>
+            </CardContent>
+        </Card>
+      )}
+
     </div>
   );
 }
