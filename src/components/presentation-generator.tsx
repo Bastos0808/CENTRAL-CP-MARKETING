@@ -99,7 +99,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                         <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10">
                             <h4 className="font-bold text-sm text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
                             <p className="text-gray-300 mt-1 text-xs">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
-                            <p className="text-xs text-gray-400 mt-2 break-words">{kpi.importance}</p>
+                            <p className="text-sm text-gray-400 mt-2 break-words">{kpi.importance}</p>
                         </div>
                     ))}
                 </div>
@@ -311,7 +311,7 @@ export default function PresentationGenerator() {
       for (let i = 0; i < slides.length; i++) {
         const slide = slides[i];
         const canvas = await html2canvas(slide, {
-          scale: 1, 
+          scale: 2, 
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#0A0A0A',
