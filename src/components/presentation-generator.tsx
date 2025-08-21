@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from "react";
@@ -67,6 +68,12 @@ const slideStyles = {
 
 export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
     
+    const cpSolutions = {
+        'Pilar 1 - Aquisição': '<strong>Nossa Solução:</strong> Criamos campanhas de tráfego pago focadas em ROI e otimizamos a conversão para não desperdiçar seu investimento.',
+        'Pilar 2 - Conversão': '<strong>Nossa Solução:</strong> Desenvolvemos funis de vendas e automações que nutrem o lead, qualificam o interesse e entregam oportunidades prontas para o fechamento.',
+        'Pilar 3 - Autoridade': '<strong>Nossa Solução:</strong> Com estúdios próprios e uma equipe completa, produzimos conteúdo de alta qualidade em escala para posicionar sua marca como líder de mercado.',
+    };
+
     return (
         <div ref={ref} className="proposal-container space-y-4 font-body">
           {/* Slide 1: Capa */}
@@ -110,19 +117,32 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
           </div>
           
           {/* Slide 4: Plano de Ação */}
-           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="flex flex-col justify-center h-full">
+          <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+            <div className="flex flex-col justify-center h-full text-center">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
               <h1 className="text-5xl font-extrabold my-2">{content.actionPlanSlide.title}</h1>
-              <div className="mt-6 flex items-start gap-4 max-w-5xl">
-                {content.actionPlanSlide.content.map((item, index) => (
-                   <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full">
-                       <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-lg font-bold text-white mb-2 block">$1</strong>') }} />
-                   </div>
-                ))}
+              <div className="mt-8 flex justify-center items-start gap-6 w-full">
+                  {content.actionPlanSlide.content.map((item, index) => {
+                      const pilarTitleMatch = item.match(/\*\*(.*?):\*\*/);
+                      const pilarTitle = pilarTitleMatch ? pilarTitleMatch[1] : `Pilar ${index + 1}`;
+                      // @ts-ignore
+                      const cpSolutionText = cpSolutions[pilarTitle] || '';
+
+                      return (
+                          <div key={index} className="flex flex-col gap-4 flex-1 max-w-sm">
+                              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full text-left">
+                                  <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-lg font-bold text-white mb-2 block">$1</strong>') }} />
+                              </div>
+                              <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex-1 flex flex-col items-start h-full text-left">
+                                  <p className="text-sm text-primary/90 break-words flex-grow" dangerouslySetInnerHTML={{ __html: cpSolutionText }} />
+                              </div>
+                          </div>
+                      );
+                  })}
               </div>
             </div>
           </div>
+
           
           {/* Slide 5: Justificativa Estratégica */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
@@ -147,32 +167,43 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                         
                         <div className="relative flex justify-between items-center h-full">
                            {content.timelineSlide.content.map((item, index) => {
-                               const icons = [CheckCircle, Diamond, Goal];
-                               const Icon = icons[index] || Goal;
-                               
-                               const isTop = index === 1;
-                               const alignmentClass = index === 0 ? 'items-start' : index === 2 ? 'items-end' : 'items-center';
-                               let positionStyle: React.CSSProperties = {};
-                               if(index === 0) positionStyle = { left: `5%` };
-                               if(index === 1) positionStyle = { left: `50%`, transform: 'translateX(-50%)', top: '-20px' };
-                               if(index === 2) positionStyle = { right: `5%` };
+                                const icons = [CheckCircle, Diamond, Goal];
+                                const Icon = icons[index] || Goal;
+                                
+                                const isTop = index === 1;
+
+                                let positionStyle: React.CSSProperties = {};
+                                let alignmentClass: string = 'items-center';
+
+                                if(index === 0) {
+                                  positionStyle = { left: `5%` };
+                                  alignmentClass = 'items-start';
+                                }
+                                if(index === 1) {
+                                  positionStyle = { left: `50%`, transform: 'translateX(-50%)', top: '-40px' };
+                                  alignmentClass = 'items-center';
+                                }
+                                if(index === 2) {
+                                  positionStyle = { right: `5%` };
+                                  alignmentClass = 'items-end text-right';
+                                }
 
 
                                return (
                                    <div key={index} className={cn("absolute flex flex-col", alignmentClass)} style={positionStyle}>
                                        {isTop && (
-                                           <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left h-36">
+                                           <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left h-40">
                                                <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
-                                               <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1:</strong>') }} />
+                                               <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
                                            </div>
                                        )}
                                        <div className="w-8 h-8 bg-primary rounded-full border-4 border-background z-10 flex items-center justify-center my-2">
                                            <Icon className="h-4 w-4 text-white"/>
                                        </div>
                                        {!isTop && (
-                                           <div className="mt-2 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left h-36">
+                                           <div className="mt-2 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left h-40">
                                                <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
-                                               <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1:</strong>') }} />
+                                               <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
                                            </div>
                                        )}
                                    </div>
