@@ -12,7 +12,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle, Diamond, Repeat, Users } from "lucide-react";
+import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle, Diamond, Repeat, Users, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
@@ -48,7 +48,7 @@ const slideStyles = {
   objetivos: {
     backgroundColor: "#0A0A0A",
     backgroundImage: `
-      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,25_5,0.07) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
       radial-gradient(circle at 20% 100%, rgba(230, 81, 0, 0.20) 0%, hsla(0, 0%, 100%, 0) 60%)
     `,
@@ -73,6 +73,29 @@ const kpiIcons = {
     Users,
 };
 
+const defaultPackages = {
+    essencial: {
+        name: 'Plano Essencial',
+        price: 'R$ 2.999,00',
+        features: [
+            'Gestão de Mídias Sociais',
+            'Planejamento de Conteúdo',
+            '3 Posts por Semana',
+            'Relatórios Mensais'
+        ]
+    },
+    premium: {
+        name: 'Plano Premium',
+        price: 'R$ 3.999,00',
+        features: [
+            'Tudo do Essencial',
+            'Gestão de Tráfego Pago',
+            'Gravação de Podcast Mensal',
+            'Captação de Fotos e Vídeos'
+        ]
+    }
+};
+
 export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
     
     const cpSolutions = {
@@ -81,14 +104,9 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
         'Pilar 3 - Autoridade': '<strong>Nossa Solução:</strong> Com estúdios próprios e uma equipe completa, produzimos conteúdo de alta qualidade em escala para posicionar sua marca como líder de mercado.',
     };
     
-    const defaultPackages = [
-        { name: 'Plano Essencial', price: 'R$ 2.999,00' },
-        { name: 'Plano Premium', price: 'R$ 3.999,00' }
-    ];
-
     const investmentItems = content.investmentSlide.items.length > 0 
         ? content.investmentSlide.items
-        : defaultPackages;
+        : [];
 
     return (
         <div ref={ref} className="proposal-container space-y-4 font-body">
@@ -175,33 +193,33 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
 
            {/* Slide 6: Cronograma */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-                <div className="w-full flex flex-col justify-center h-full">
-                    <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
-                    <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
-                    <div className="mt-12 w-full max-w-6xl mx-auto">
-                        <div className="grid grid-cols-3 items-start gap-8 relative">
-                            {/* Dotted line */}
-                            <div className="absolute top-5 left-0 w-full h-0.5 bg-center" style={{ backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)`, backgroundSize: '10px 2px' }}></div>
-                            
-                            {content.timelineSlide.content.map((item, index) => {
-                                const icons = [CheckCircle, Diamond, Goal];
-                                const Icon = icons[index] || Goal;
-                                return (
-                                    <div key={index} className="flex flex-col items-center text-center relative z-10">
-                                        <div className="w-10 h-10 bg-primary rounded-full border-4 border-background flex items-center justify-center mb-4">
-                                            <Icon className="h-5 w-5 text-white" />
-                                        </div>
-                                        <div className="bg-white/5 border border-white/10 rounded-xl p-4 w-full min-h-[12rem]">
-                                            <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
-                                            <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div className="w-full flex flex-col justify-center h-full">
+                 <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
+                 <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
+                 <div className="mt-12 w-full max-w-6xl mx-auto">
+                     <div className="grid grid-cols-3 gap-8 relative">
+                         {/* Linha pontilhada atrás dos cards */}
+                         <div className="absolute top-5 left-0 w-full h-0.5 bg-center" style={{ backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)`, backgroundSize: '10px 2px', zIndex: 0 }}></div>
+
+                         {content.timelineSlide.content.map((item, index) => {
+                            const icons = [CheckCircle, Diamond, Goal];
+                            const Icon = icons[index] || Goal;
+                             return (
+                                 <div key={index} className="flex flex-col items-center text-center relative z-10">
+                                     <div className="w-10 h-10 bg-primary rounded-full border-4 border-[#0A0A0A] flex items-center justify-center mb-4">
+                                         <Icon className="h-5 w-5 text-white" />
+                                     </div>
+                                     <div className="bg-white/5 border border-white/10 rounded-xl p-4 w-full min-h-[12rem] flex flex-col">
+                                         <span className="font-bold text-primary mb-2 block">Fase {index + 1}</span>
+                                         <div className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
+                                     </div>
+                                 </div>
+                             );
+                         })}
+                     </div>
+                 </div>
+             </div>
+          </div>
 
           {/* Slide 7: KPIs */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col p-10 text-white rounded-lg overflow-hidden">
@@ -228,48 +246,60 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
           
            {/* Slide 8: Investimento */}
             <div data-slide style={slideStyles.investimento} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-white rounded-lg overflow-hidden">
-                <div className="w-full max-w-5xl mx-auto grid grid-cols-2 gap-12 items-center">
+                <div className="w-full max-w-6xl mx-auto grid grid-cols-2 gap-12 items-center">
                     <div className="text-left">
                          <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
                          <h1 className="text-5xl font-extrabold my-2">{content.investmentSlide.title}</h1>
                          <p className="text-lg text-gray-400 mt-4">Uma proposta transparente para uma parceria de resultados.</p>
                     </div>
-                    <div className="bg-white/5 border border-white/10 rounded-xl p-8">
+                     <div className="space-y-4">
                       {investmentItems.length > 0 ? (
-                        <>
-                          <div className="space-y-3">
-                            {investmentItems.map(item => (
-                                <div key={item.name} className="flex justify-between items-center text-sm text-gray-300">
-                                    <span>{item.name}</span>
-                                    <span>{item.price}</span>
-                                </div>
-                            ))}
-                          </div>
-                           {content.investmentSlide.items.length > 0 && (
-                            <>
-                                <div className="my-4 border-t border-dashed border-white/20"></div>
-                                <div className="space-y-2">
-                                     <div className="flex justify-between items-center text-sm text-gray-400">
-                                       <span>Subtotal</span>
-                                       <span>{content.investmentSlide.total}</span>
-                                     </div>
-                                     {content.investmentSlide.discount && (
-                                        <div className="flex justify-between items-center text-sm text-green-400">
-                                            <span>Desconto Especial</span>
-                                            <span>{content.investmentSlide.discount}</span>
-                                        </div>
-                                     )}
-                                </div>
-                                <div className="my-4 border-t border-solid border-white/50"></div>
-                                <div className="flex justify-between items-center">
-                                    <span className="text-xl font-bold text-white">Total do Investimento</span>
-                                    <span className="text-3xl font-bold text-primary">{content.investmentSlide.finalTotal}</span>
-                                </div>
-                            </>
-                           )}
-                        </>
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-8">
+                            <div className="space-y-3">
+                                {investmentItems.map(item => (
+                                    <div key={item.name} className="flex justify-between items-center text-sm text-gray-300">
+                                        <span>{item.name}</span>
+                                        <span>{item.price}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="my-4 border-t border-dashed border-white/20"></div>
+                            <div className="space-y-2">
+                                    <div className="flex justify-between items-center text-sm text-gray-400">
+                                    <span>Subtotal</span>
+                                    <span>{content.investmentSlide.total}</span>
+                                    </div>
+                                    {content.investmentSlide.discount && (
+                                    <div className="flex justify-between items-center text-sm text-green-400">
+                                        <span>Desconto Especial</span>
+                                        <span>{content.investmentSlide.discount}</span>
+                                    </div>
+                                    )}
+                            </div>
+                            <div className="my-4 border-t border-solid border-white/50"></div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-xl font-bold text-white">Total do Investimento</span>
+                                <span className="text-3xl font-bold text-primary">{content.investmentSlide.finalTotal}</span>
+                            </div>
+                        </div>
                       ) : (
-                          <p className="text-center text-gray-400">Nenhum pacote selecionado. Consulte os planos disponíveis.</p>
+                          <div className="grid grid-cols-2 gap-4">
+                              <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-left flex flex-col">
+                                  <h3 className="text-xl font-bold text-white mb-2">{defaultPackages.essencial.name}</h3>
+                                  <ul className="space-y-2 text-sm text-gray-300 flex-grow">
+                                      {defaultPackages.essencial.features.map(f => <li key={f} className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />{f}</li>)}
+                                  </ul>
+                                  <p className="text-3xl font-bold text-white mt-6">{defaultPackages.essencial.price}</p>
+                              </div>
+                              <div className="bg-white/10 border-2 border-primary rounded-xl p-6 text-left flex flex-col relative">
+                                  <div className="absolute -top-3 right-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Mais Popular</div>
+                                  <h3 className="text-xl font-bold text-primary mb-2">{defaultPackages.premium.name}</h3>
+                                   <ul className="space-y-2 text-sm text-gray-300 flex-grow">
+                                      {defaultPackages.premium.features.map(f => <li key={f} className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />{f}</li>)}
+                                  </ul>
+                                  <p className="text-3xl font-bold text-primary mt-6">{defaultPackages.premium.price}</p>
+                              </div>
+                          </div>
                       )}
                     </div>
                 </div>
