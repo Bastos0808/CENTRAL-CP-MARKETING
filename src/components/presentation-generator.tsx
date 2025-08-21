@@ -12,7 +12,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle, Diamond } from "lucide-react";
+import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle, Diamond, Repeat, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
@@ -65,6 +65,13 @@ const slideStyles = {
   }
 };
 
+const kpiIcons = {
+    TrendingUp,
+    Target,
+    DollarSign,
+    Repeat,
+    Users,
+};
 
 export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
     
@@ -192,16 +199,20 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
              <div className="w-full flex flex-col justify-center h-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
                 <h1 className="text-5xl font-extrabold my-2">{content.kpiSlide.title}</h1>
-                <div className="mt-6 flex items-stretch gap-4 max-w-5xl h-auto">
-                    {content.kpiSlide.kpis.map((kpi, index) => (
-                        <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 flex-1 flex flex-col h-full">
-                            <div className="flex-grow">
-                                <h4 className="font-bold text-sm text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
-                                <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
-                                <p className="text-sm text-gray-400 mt-2 break-words">{kpi.importance}</p>
+                <div className="mt-6 flex items-stretch justify-center gap-4 max-w-6xl mx-auto">
+                    {content.kpiSlide.kpis.map((kpi, index) => {
+                        const Icon = kpiIcons[kpi.icon] || TrendingUp;
+                        return (
+                            <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 flex-1 flex flex-col h-full">
+                                <div className="flex-grow">
+                                    <Icon className="h-6 w-6 text-primary mb-3" />
+                                    <h4 className="font-bold text-md text-white">{kpi.metric}</h4>
+                                    <p className="text-gray-300 mt-1 text-2xl font-bold">{kpi.estimate}</p>
+                                    <p className="text-sm text-gray-400 mt-4 break-words">{kpi.importance}</p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
              </div>
           </div>
@@ -550,3 +561,5 @@ export default function PresentationGenerator() {
     </div>
   );
 }
+
+    

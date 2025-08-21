@@ -65,10 +65,12 @@ const DiagnosticSlideSchema = z.object({
 });
 
 const KpiItemSchema = z.object({
-  metric: z.string().describe("Nome da métrica (Ex: Custo por Lead (CPL))."),
-  estimate: z.string().describe("Estimativa de meta para a métrica (Ex: 'Abaixo de R$25,00')."),
+  metric: z.string().describe("Nome da métrica (Ex: Custo por Aquisição (CAC))."),
+  estimate: z.string().describe("Estimativa de meta para a métrica (Ex: 'Abaixo de R$150,00')."),
   importance: z.string().describe("Breve explicação sobre por que esta métrica é importante para o cliente."),
+  icon: z.enum(['TrendingUp', 'Target', 'DollarSign', 'Repeat', 'Users']).describe("Ícone para representar a métrica.")
 });
+
 
 const SlideSchema = z.object({
   title: z.string().describe("O título do slide."),
@@ -100,3 +102,5 @@ export const GeneratePresentationOutputSchema = z.object({
 });
 
 export type GeneratePresentationOutput = z.infer<typeof GeneratePresentationOutputSchema>;
+
+    

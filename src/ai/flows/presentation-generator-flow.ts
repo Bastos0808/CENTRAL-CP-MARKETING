@@ -90,7 +90,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             3.  **Conecte Dor e Solução:** Sua principal tarefa é conectar a dor do cliente (identificada na R1) com o plano de ação que você vai propor. Cada slide deve reforçar essa ponte.
             4.  **Seja Conciso e Impactante:** Use linguagem de negócios. Crie títulos fortes e textos curtos e diretos (no máximo 2-3 linhas por tópico). Use bullet points para facilitar a leitura.
             5.  **Justificativa Estratégica:** No slide "Por que este plano?", você DEVE criar uma justificativa convincente, explicando como a combinação dos serviços selecionados ataca diretamente os gargalos e dores do cliente para atingir a meta.
-            6.  **KPIs com Estimativas e Análise Detalhada:** Para o slide de KPIs, não apenas liste as métricas. Para cada uma, forneça uma **estimativa de meta** realista e, no campo 'importance', uma **análise detalhada** explicando como aquela métrica específica contribui para resolver o 'principalGargalo' e alcançar a 'metaFaturamento'.
+            6.  **KPIs com Estimativas e Análise Detalhada:** Para o slide de KPIs, não apenas liste as métricas. Para cada uma, forneça uma **estimativa de meta** realista e, no campo 'importance', uma **análise detalhada** explicando como aquela métrica específica contribui para resolver o 'principalGargalo' e alcançar a 'metaFaturamento'. Para CAC e ROAS, explique por que são as métricas mais importantes para a saúde financeira do negócio.
 
             **Dados do Diagnóstico (R1):**
             ---
@@ -145,10 +145,11 @@ const presentationGeneratorFlow = ai.defineFlow(
 
             5.  **kpiSlide:**
                 -   **title:** "Como vamos medir o sucesso (e o ROI)?"
-                -   **kpis (gere de 3 a 5 kpis):**
+                -   **kpis (gere 5 kpis, incluindo CPL, Taxa de Conversão, CAC, ROAS e uma outra relevante):**
                     -   **metric:** (Ex: "Custo por Lead (CPL)")
                     -   **estimate:** (Ex: "Abaixo de R$25,00")
                     -   **importance:** (Ex: "Essencial para escalar o investimento em anúncios de forma lucrativa, atacando diretamente o gargalo de '${inputForAI.principalGargalo}' e buscando a meta de ${inputForAI.metaFaturamento}.")
+                    -   **icon:** (Escolha um ícone de: 'TrendingUp', 'Target', 'DollarSign', 'Repeat', 'Users')
 
             6.  **whyCpSlide:**
                 -   **title:** "Por que a CP é a escolha certa?"
@@ -190,3 +191,5 @@ const presentationGeneratorFlow = ai.defineFlow(
     return llmResponse.output!;
   }
 );
+
+    
