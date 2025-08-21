@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as React from "react";
@@ -89,17 +90,19 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
 
           {/* Slide 6: KPIs */}
-           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-             <p className="text-lg font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
-             <h1 className="text-6xl font-extrabold my-2">{content.kpiSlide.title}</h1>
-             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl">
-                 {content.kpiSlide.kpis.map((kpi, index) => (
-                    <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10">
-                         <h4 className="font-bold text-base text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
-                         <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
-                         <p className="text-xs text-gray-400 mt-2 break-words">{kpi.importance}</p>
-                    </div>
-                 ))}
+           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col items-start p-10 text-white rounded-lg overflow-hidden">
+             <div className="w-full flex flex-col justify-center h-full">
+                <p className="text-lg font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
+                <h1 className="text-6xl font-extrabold my-2">{content.kpiSlide.title}</h1>
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl">
+                    {content.kpiSlide.kpis.map((kpi, index) => (
+                        <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10">
+                            <h4 className="font-bold text-base text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
+                            <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
+                            <p className="text-xs text-gray-400 mt-2 break-words">{kpi.importance}</p>
+                        </div>
+                    ))}
+                </div>
              </div>
           </div>
           
@@ -125,7 +128,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                             {content.investmentSlide.total}
                         </p>
                     )}
-                    <p className="text-8xl font-bold text-primary tracking-tighter mb-2">
+                    <p className="text-8xl font-bold text-primary tracking-tighter">
                         {content.investmentSlide.finalTotal}
                     </p>
                     <div className="mt-6 text-base text-white">
@@ -287,13 +290,12 @@ export default function PresentationGenerator() {
     const ReactDOM = await import('react-dom/client');
     const root = ReactDOM.createRoot(container);
     
-    // Create a new element for each render to avoid conflicts
     const renderContainer = document.createElement('div');
     container.appendChild(renderContainer);
 
     root.render(<GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />);
     
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Increased delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
     const pdf = new jsPDF({
