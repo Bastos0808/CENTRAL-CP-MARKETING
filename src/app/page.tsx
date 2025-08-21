@@ -89,12 +89,6 @@ export default function Home() {
         description: "Crie propostas e apresentações de projetos com IA a partir de um diagnóstico.",
         href: "/gerador-apresentacoes",
         icon: Presentation
-      },
-      {
-        title: "Template de Proposta",
-        description: "Visualize e refine o modelo de proposta em PDF.",
-        href: "/proposal-template",
-        icon: FileSignature
       }
   ];
   
