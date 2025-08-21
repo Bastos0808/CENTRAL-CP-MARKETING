@@ -102,17 +102,19 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
 
           {/* Slide 3: Diagnóstico */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="flex flex-col justify-center h-full">
+            <div className="flex flex-col justify-center h-full w-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                 <h1 className="text-5xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
-                <div className="mt-6 flex items-start gap-4 max-w-5xl">
-                {content.diagnosticSlide.content.map((item, index) => (
-                    <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full">
-                        <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/g, '<strong class="text-lg font-bold text-primary mb-2 block">$1</strong>') }}/>
-                    </div>
-                ))}
+                 <div className="mt-6 flex justify-center items-start gap-4 w-full max-w-5xl mx-auto">
+                    {content.diagnosticSlide.content.map((item, index) => (
+                        <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full">
+                            <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/g, '<strong class="text-lg font-bold text-primary mb-2 block">$1</strong>') }}/>
+                        </div>
+                    ))}
                 </div>
-                 <p className="mt-8 text-lg text-gray-400 italic max-w-5xl">{content.diagnosticSlide.question}</p>
+                 <div className="mt-8 w-full max-w-5xl mx-auto bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
+                    <p className="text-lg text-gray-300 italic">{content.diagnosticSlide.question}</p>
+                </div>
             </div>
           </div>
           
@@ -161,8 +163,8 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                     <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
                     <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
                     <div className="relative mt-12 w-full max-w-6xl h-64">
-                        <svg width="100%" height="100%" viewBox="0 0 1100 120" preserveAspectRatio="none" className="absolute top-1/2 -translate-y-1/2 left-0">
-                            <path d="M0,60 Q275,0 550,60 T1100,60" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="2" fill="none" />
+                        <svg width="100%" height="100%" viewBox="0 0 1100 150" preserveAspectRatio="none" className="absolute top-1/2 -translate-y-1/2 left-0">
+                            <path d="M0,75 Q275,0 550,75 T1100,75" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="2" fill="none" />
                         </svg>
                         
                         <div className="relative flex justify-between items-center h-full">
@@ -173,18 +175,18 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                                 const isTop = index === 1;
 
                                 let positionStyle: React.CSSProperties = {};
-                                let alignmentClass: string = 'items-center';
+                                let alignmentClass: string = 'items-center text-center';
 
                                 if(index === 0) {
                                   positionStyle = { left: `5%` };
-                                  alignmentClass = 'items-start';
+                                  alignmentClass = 'items-start text-left';
                                 }
                                 if(index === 1) {
-                                  positionStyle = { left: `50%`, transform: 'translateX(-50%)', top: '-40px' };
-                                  alignmentClass = 'items-center';
+                                  positionStyle = { left: `50%`, transform: 'translateX(-50%)', top: '-60px' };
+                                  alignmentClass = 'items-center text-center';
                                 }
                                 if(index === 2) {
-                                  positionStyle = { right: `5%` };
+                                  positionStyle = { right: `calc(5% - 16rem)` };
                                   alignmentClass = 'items-end text-right';
                                 }
 
@@ -192,16 +194,16 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                                return (
                                    <div key={index} className={cn("absolute flex flex-col", alignmentClass)} style={positionStyle}>
                                        {isTop && (
-                                           <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left h-40">
+                                           <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4 w-64 h-48">
                                                <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
                                                <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
                                            </div>
                                        )}
-                                       <div className="w-8 h-8 bg-primary rounded-full border-4 border-background z-10 flex items-center justify-center my-2">
+                                       <div className="w-8 h-8 bg-primary rounded-full border-4 border-background z-10 flex items-center justify-center my-2 self-center">
                                            <Icon className="h-4 w-4 text-white"/>
                                        </div>
                                        {!isTop && (
-                                           <div className="mt-2 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left h-40">
+                                           <div className="mt-2 bg-white/5 border border-white/10 rounded-xl p-4 w-64 h-48">
                                                <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
                                                <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
                                            </div>
