@@ -63,10 +63,10 @@ const SlideSchema = z.object({
   content: z.array(z.string()).describe("O conteúdo do slide, em formato de bullet points ou parágrafos curtos."),
 });
 
-const InvestmentPlanSchema = z.object({
-  planTitle: z.string().describe("O nome do plano de investimento (ex: Plano Essencial)."),
-  description: z.string().describe("A descrição do que está incluído no plano."),
-  price: z.string().describe("O valor do investimento para este plano."),
+const KpiItemSchema = z.object({
+  metric: z.string().describe("Nome da métrica (Ex: Custo por Lead (CPL))."),
+  estimate: z.string().describe("Estimativa de meta para a métrica (Ex: 'Abaixo de R$25,00')."),
+  importance: z.string().describe("Breve explicação sobre por que esta métrica é importante para o cliente."),
 });
 
 export const GeneratePresentationInputSchema = DiagnosticFormSchema;
@@ -77,7 +77,10 @@ export const GeneratePresentationOutputSchema = z.object({
   diagnosticSlide: SlideSchema.describe("Conteúdo para o slide de Diagnóstico."),
   actionPlanSlide: SlideSchema.describe("Conteúdo para o slide do Plano de Ação."),
   timelineSlide: SlideSchema.describe("Conteúdo para o slide de Cronograma."),
-  kpiSlide: SlideSchema.describe("Conteúdo para o slide de KPIs."),
+  kpiSlide: z.object({
+    title: z.string(),
+    kpis: z.array(KpiItemSchema)
+  }).describe("Conteúdo para o slide de KPIs, com estimativas e explicações para cada métrica."),
   whyCpSlide: SlideSchema.describe("Conteúdo para o slide 'Por que a CP Marketing?'."),
   investmentSlide: z.object({
     title: z.string().describe("Título do slide de investimento."),

@@ -67,7 +67,8 @@ const presentationGeneratorFlow = ai.defineFlow(
             2.  **Conecte Dor e Solução:** Sua principal tarefa é conectar a dor do cliente (identificada na R1) com o plano de ação que você vai propor. Cada slide deve reforçar essa ponte.
             3.  **Seja Conciso e Impactante:** Use linguagem de negócios. Crie títulos fortes e textos curtos e diretos. Use bullet points para facilitar a leitura.
             4.  **Justificativa Estratégica:** No slide "Por que este plano?", você DEVE criar uma justificativa estratégica convincente, explicando como a combinação dos serviços selecionados ({{selectedPackages}}) ataca diretamente os gargalos e dores do cliente para atingir a meta de faturamento.
-            5.  **Adapte o Tom:** O tom deve ser de um especialista confiante, apresentando um plano de tratamento. É consultivo, não vendedor.
+            5.  **KPIs com Estimativas:** Para o slide de KPIs, não apenas liste as métricas. Para cada uma, forneça uma **estimativa de meta** realista (ex: 'Abaixo de R$30,00' para CPL) e explique a **importância** daquela métrica para o cliente, baseando-se nos dados de diagnóstico.
+            6.  **Adapte o Tom:** O tom deve ser de um especialista confiante, apresentando um plano de tratamento. É consultivo, não vendedor.
 
             **Dados do Diagnóstico (R1):**
             ---
@@ -121,7 +122,13 @@ const presentationGeneratorFlow = ai.defineFlow(
 
             5.  **kpiSlide:**
                 -   **Título:** Como Mediremos o Sucesso
-                -   **Conteúdo (liste as métricas mais importantes):** "Leads Gerados", "Custo por Lead (CPL)", "Taxa de Conversão", "Custo de Aquisição de Cliente (CAC)", "Retorno sobre o Investimento (ROAS)".
+                -   **KPIs (gere de 3 a 5 kpis):**
+                    -   **metric:** (Ex: "Custo por Lead (CPL)")
+                    -   **estimate:** (Ex: "Abaixo de R$25,00")
+                    -   **importance:** (Ex: "Garante que o investimento em anúncios é eficiente e não desperdiça verba com contatos desqualificados.")
+                    -   **metric:** (Ex: "Taxa de Conversão de Lead")
+                    -   **estimate:** (Ex: "Acima de 15%")
+                    -   **importance:** (Ex: "Mede a eficácia do nosso processo de qualificação e da oferta, garantindo que os leads gerados se tornem clientes.")
 
             6.  **whyCpSlide:**
                 -   **Título:** Por que a CP Marketing?
