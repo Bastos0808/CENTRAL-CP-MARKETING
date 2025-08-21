@@ -20,6 +20,7 @@ import type { z } from "zod";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
@@ -118,32 +119,39 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
               </div>
           </div>
 
-          {/* Slide 5: Cronograma */}
-           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="flex flex-col justify-center h-full w-full">
-              <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
-              <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
-              
-              <div className="relative mt-12 w-full max-w-6xl">
-                 {/* Timeline Line */}
-                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-white/10 -translate-y-1/2" />
-                <div className="flex justify-between items-start">
-                    {content.timelineSlide.content.map((item, index) => (
-                       <div key={index} className="relative flex flex-col items-center text-center w-1/3 px-4">
-                           {/* Circle on the line */}
-                           <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-background z-10" />
-                           {/* Card */}
-                           <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-start text-left h-full w-full">
-                                <span className="font-bold text-primary mb-2">Fase {index + 1}</span>
-                               <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-lg font-bold text-white mb-2 block">$1:</strong>') }} />
-                           </div>
-                       </div>
-                    ))}
-                </div>
-              </div>
+           {/* Slide 5: Cronograma */}
+            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+                <div className="flex flex-col justify-center h-full w-full">
+                    <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
+                    <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
+                    <div className="relative mt-20 w-full max-w-6xl h-48">
+                        {/* A "curva" da timeline em SVG */}
+                        <svg width="100%" height="100%" viewBox="0 0 1100 120" preserveAspectRatio="none" className="absolute top-0 left-0">
+                            <path d="M0,60 Q275,0 550,60 T1100,60" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="2" fill="none" />
+                        </svg>
+                        
+                        <div className="relative flex justify-between items-center h-full">
+                           {content.timelineSlide.content.map((item, index) => {
+                               const icons = [CheckCircle, Diamond, Goal];
+                               const Icon = icons[index] || Goal;
+                               const isCenter = index === 1;
 
+                               return (
+                                   <div key={index} className={cn("absolute flex flex-col items-center", { 'top-1/2 -translate-y-1/2': !isCenter, 'top-0': isCenter })} style={{left: `${(index * 45) + 5}%`}}>
+                                       <div className="w-8 h-8 bg-primary rounded-full border-4 border-background z-10 flex items-center justify-center">
+                                           <Icon className="h-4 w-4 text-white"/>
+                                       </div>
+                                       <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left">
+                                           <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
+                                           <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1:</strong>') }} />
+                                       </div>
+                                   </div>
+                               )
+                           })}
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
 
           {/* Slide 6: KPIs */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col p-10 text-white rounded-lg overflow-hidden">
@@ -529,4 +537,3 @@ export default function PresentationGenerator() {
     </div>
   );
 }
-
