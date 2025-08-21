@@ -4,7 +4,7 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/ui/back-button";
-import { Download, Loader2, Goal, TrendingUp, Target, Lightbulb, CheckCheck } from "lucide-react";
+import { Download, Loader2, Goal, TrendingUp, Target, Lightbulb, CheckCheck, Check } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useToast } from "@/hooks/use-toast";
@@ -70,6 +70,10 @@ export default function ProposalTemplatePage() {
       setIsGenerating(false);
     }
   };
+
+  const selectedPackages = ["marketing_essencial", "captacao_estudio_contrato"];
+  const hasSelectedPackages = selectedPackages.length > 0;
+
 
   return (
     <main className="flex min-h-screen flex-col items-start p-4 sm:p-8 md:p-12">
@@ -176,13 +180,13 @@ export default function ProposalTemplatePage() {
              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl">
                  <div className="bg-white/5 p-4 rounded-lg border border-white/10">
                      <h4 className="font-bold text-base text-primary flex items-center gap-2"><TrendingUp/> <u>Custo por Lead (CPL)</u></h4>
-                     <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white"><u>Abaixo de R$30,00</u></strong></p>
-                     <p className="text-xs text-gray-400 mt-2"><u>Garante que o investimento em anúncios é eficiente e não desperdiça verba.</u></p>
+                     <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white"><u>Abaixo de R$25,00</u></strong></p>
+                     <p className="text-xs text-gray-400 mt-2"><u>Para alcançar a meta de R$ 70.000 de forma lucrativa, precisamos garantir que cada lead custe no máximo R$25. Manter o CPL baixo nos permite escalar o investimento em anúncios sem comprometer a margem, atacando diretamente o gargalo de 'geração de leads' de forma sustentável.</u></p>
                  </div>
                  <div className="bg-white/5 p-4 rounded-lg border border-white/10">
-                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><Target/> <u>Taxa de Conversão</u></h4>
+                     <h4 className="font-bold text-base text-primary flex items-center gap-2"><Target/> <u>Taxa de Conversão de Lead</u></h4>
                      <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white"><u>Acima de 15%</u></strong></p>
-                     <p className="text-xs text-gray-400 mt-2"><u>Mede a eficácia do nosso processo de qualificação e da oferta.</u></p>
+                     <p className="text-xs text-gray-400 mt-2"><u>Com o gargalo na 'conversão', esta métrica é crucial. Uma taxa acima de 15% significa que nosso processo de qualificação e a oferta estão ressoando com o público, transformando o investimento em tráfego em agendamentos reais e, consequentemente, em faturamento.</u></p>
                  </div>
                  <div className="bg-white/5 p-4 rounded-lg border border-white/10">
                      <h4 className="font-bold text-base text-primary flex items-center gap-2"><Lightbulb/> <u>Retorno sobre Investimento (ROAS)</u></h4>
@@ -213,20 +217,54 @@ export default function ProposalTemplatePage() {
               </div>
           </div>
 
-          {/* Slide 8: Investimento */}
+           {/* Slide 8: Investimento */}
           <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
+            {hasSelectedPackages ? (
               <div className="bg-gray-900/50 rounded-xl p-8 md:p-12 border border-white/10 inline-block">
-                  <h3 className="text-xl text-gray-300">Valor do Investimento Mensal</h3>
-                  <div className="flex flex-col items-center">
-                    <p className="text-6xl md:text-8xl font-bold text-primary tracking-tighter my-2"><u>R$ 3.598,00</u></p>
-                    <p className="text-base text-red-400 line-through -mt-2">De <u>R$ 3.998,00</u></p>
-                  </div>
-                  <div className="mt-6 text-left text-base space-y-2 text-white">
-                      <p><strong>Incluso:</strong> <u>Plano de Marketing Essencial + Captação em Estúdio</u></p>
-                      <p><strong>Desconto Aplicado:</strong> <u>- R$ 400,00</u></p>
-                  </div>
+                <h3 className="text-xl text-gray-300">Valor do Investimento Mensal</h3>
+                <div className="my-2 flex flex-col items-center">
+                  <p className="text-xl text-red-400 line-through">De <u>R$ 3.998,00</u></p>
+                  <p className="text-8xl font-bold text-primary tracking-tighter"><u>R$ 3.598,00</u></p>
+                </div>
+                <div className="mt-4 text-left text-base space-y-2 text-white">
+                  <p><strong>Incluso:</strong> <u>Plano de Marketing Essencial + Captação em Estúdio</u></p>
+                  <p><strong>Desconto Aplicado:</strong> <u>- R$ 400,00</u></p>
+                </div>
               </div>
+            ) : (
+                <div className="w-full max-w-7xl">
+                    <p className="text-lg font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
+                    <h1 className="text-5xl md:text-6xl font-extrabold my-2">Escolha o plano ideal para você</h1>
+                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {/* Plano Essencial */}
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col">
+                            <h3 className="text-3xl font-bold text-white mb-2">Plano Essencial</h3>
+                            <p className="text-gray-400 mb-6 flex-grow">A base para construir sua autoridade e iniciar a geração de resultados.</p>
+                            <p className="text-5xl font-bold text-primary mb-6">R$ 2.999,00</p>
+                            <ul className="space-y-3 text-left">
+                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Gestão de Mídias Sociais</li>
+                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Tráfego Pago Básico</li>
+                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Relatórios Mensais</li>
+                            </ul>
+                        </div>
+                        {/* Plano Completo (Recomendado) */}
+                        <div className="bg-white/10 border-2 border-primary rounded-xl p-8 flex flex-col relative">
+                            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold">RECOMENDADO</div>
+                            <h3 className="text-3xl font-bold text-primary mb-2">Plano Completo</h3>
+                            <p className="text-gray-300 mb-6 flex-grow">A solução completa para acelerar seu crescimento e dominar seu mercado.</p>
+                            <p className="text-5xl font-bold text-primary mb-6">R$ 3.999,00</p>
+                             <ul className="space-y-3 text-left">
+                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Tudo do Plano Essencial</li>
+                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> 1 Gravação de Podcast/Mês</li>
+                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Captação de Vídeo em Estúdio</li>
+                                <li className="flex items-center gap-2"><Check className="h-5 w-5 text-green-500" /> Mentoria Estratégica</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            )}
           </div>
+
 
           {/* Slide 9: Próximos Passos */}
           <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
