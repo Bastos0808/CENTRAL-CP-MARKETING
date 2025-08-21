@@ -158,10 +158,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                     <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
                     <h1 className="text-5xl font-extrabold my-2">Escolha o plano ideal para você</h1>
                     
-                    <div className="relative flex items-center justify-center my-6">
-                      <hr className="w-full border-t border-white/10" />
-                      <span className="absolute px-4 font-semibold tracking-wider text-xs uppercase bg-primary text-primary-foreground rounded-full">Recomendado</span>
-                    </div>
+                    <hr className="w-full border-t border-white/10 my-6" />
 
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                        <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full text-left">
