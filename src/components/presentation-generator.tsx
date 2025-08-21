@@ -64,42 +64,6 @@ const slideStyles = {
 };
 
 
-const glassTextboxStyle = {
-    background: 'rgba(255, 255, 255, 0.05)',
-    backdropFilter: 'blur(10px)',
-    WebkitBackdropFilter: 'blur(10px)',
-};
-
-const AboutUsSlide = () => (
-    <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-start p-[50px_80px_80px] text-white rounded-lg overflow-hidden box-border font-body">
-        <div className="max-w-[1100px] mx-auto">
-            <p className="text-[#E65100] font-bold text-[1.2rem] uppercase tracking-[0.1em] mb-4">
-                Sobre Nós
-            </p>
-            <h1 className="text-[3.5rem] font-black mb-6 leading-tight mt-0">
-                Conheça sua nova agência
-            </h1>
-            <div className="flex gap-6 mt-8 items-end">
-                <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png" alt="Foto da equipe da agência" className="w-[550px] h-[400px] object-cover rounded-lg" />
-                <div className="flex flex-col gap-4 flex-grow">
-                    <div style={glassTextboxStyle} className="p-6 rounded-lg border border-[rgba(255,255,255,0.1)] text-[#E0E0E0] text-[1rem] leading-relaxed h-[164px] box-border">
-                        <p style={{ margin: 0 }}>
-                           Imagine transformar sua presença digital em seu maior vendedor. Atuamos como parceiros estratégicos para construir um ecossistema de vendas robusto e previsível para seu negócio. Nosso foco é claro: gerar um fluxo constante de clientes e impulsionar seu faturamento a novos patamares.
-                        </p>
-                    </div>
-                    <div className="flex gap-4 w-full">
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799844/Prancheta_33_jj5hre.png" alt="Imagem de projeto 1" className="w-[130px] h-[220px] object-cover rounded-lg" />
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_32_gxdlmx.png" alt="Imagem de projeto 2" className="w-[130px] h-[220px] object-cover rounded-lg" />
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_31_lyf95d.png" alt="Imagem de projeto 3" className="w-[130px] h-[220px] object-cover rounded-lg" />
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799842/Prancheta_34_hviyd6.png" alt="Imagem de projeto 4" className="w-[130px] h-[220px] object-cover rounded-lg" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-);
-
-
 export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
     
     return (
@@ -112,10 +76,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             <p className="text-md text-gray-500 mt-2 italic">Proposta válida por 7 dias</p>
           </div>
 
-          {/* Slide 2: Sobre Nós (Estático) */}
-          <AboutUsSlide />
-
-          {/* Slide 3: Diagnóstico */}
+          {/* Slide 2: Diagnóstico */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
@@ -131,7 +92,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             </div>
           </div>
           
-          {/* Slide 4: Plano de Ação */}
+          {/* Slide 3: Plano de Ação */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
@@ -146,7 +107,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             </div>
           </div>
           
-          {/* Slide 5: Justificativa Estratégica */}
+          {/* Slide 4: Justificativa Estratégica */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full max-w-5xl">
                   <p className="text-md font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
@@ -157,7 +118,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
               </div>
           </div>
 
-          {/* Slide 6: Cronograma */}
+          {/* Slide 5: Cronograma */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full w-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
@@ -184,7 +145,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             </div>
           </div>
 
-          {/* Slide 7: KPIs */}
+          {/* Slide 6: KPIs */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col p-10 text-white rounded-lg overflow-hidden">
              <div className="w-full flex flex-col justify-center h-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
@@ -203,7 +164,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
              </div>
           </div>
           
-          {/* Slide 8: Diferenciais */}
+          {/* Slide 7: Diferenciais */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
@@ -218,39 +179,38 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             </div>
           </div>
 
-           {/* Slide 9: Investimento */}
+           {/* Slide 8: Investimento */}
             <div data-slide style={slideStyles.investimento} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
             <div className="w-full max-w-5xl">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
-                <h1 className="text-5xl font-extrabold my-2">Escolha o plano ideal para você</h1>
+                <h1 className="text-5xl font-extrabold my-2">{content.investmentSlide.title}</h1>
                 
                  <div className="mt-6 relative">
-                    <hr className="absolute top-1/2 left-0 w-full border-white/10" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {content.investmentSlide.items.map((item, index) => (
+                            <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full text-left">
+                                <h3 className="text-xl font-bold text-white mb-2">{item.name}</h3>
+                                <p className="text-4xl font-bold text-primary mt-auto">{item.price}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-6 text-right">
+                        {content.investmentSlide.discount && (
+                            <p className="text-lg text-gray-400">Subtotal: {content.investmentSlide.total}</p>
+                        )}
+                        {content.investmentSlide.discount && (
+                            <p className="text-lg text-red-400">Desconto: {content.investmentSlide.discount}</p>
+                        )}
+                        <p className="text-3xl font-bold text-white mt-2">Total Mensal: <span className="text-primary">{content.investmentSlide.finalTotal}</span></p>
+                    </div>
                  </div>
-                
-                <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
-                   <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full text-left">
-                      <div className="flex-grow space-y-3">
-                          <h3 className="text-2xl font-bold text-white mb-2">Plano Inicial</h3>
-                          <p className="text-gray-400 text-sm">Uma solução inicial para dar o primeiro passo. Este plano ajuda, mas não resolve o problema por completo, te ajudando a alcançar cerca de 40% da sua meta.</p>
-                      </div>
-                      <p className="text-4xl font-bold text-white mt-4">R$ 2.999,00</p>
-                   </div>
-                   <div className="bg-white/5 border-2 border-primary rounded-xl p-6 flex flex-col h-full text-left relative">
-                       <div className="flex-grow space-y-3">
-                          <h3 className="text-2xl font-bold text-primary mb-2">Plano Avançado</h3>
-                          <p className="text-gray-300 text-sm">A solução completa e estratégica. Ataca todos os pontos do diagnóstico e tem a maior probabilidade de bater sua meta, construindo autoridade e um sistema de vendas robusto.</p>
-                      </div>
-                      <p className="text-4xl font-bold text-primary mt-4">R$ 3.999,00</p>
-                   </div>
-                </div>
             </div>
             </div>
 
-          {/* Slide 10: Próximos Passos */}
+          {/* Slide 9: Próximos Passos */}
            <div data-slide style={slideStyles.objetivos} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
                 <Goal className="h-12 w-12 text-primary mx-auto mb-4"/>
-                <h1 className="text-5xl font-extrabold my-2 text-white">Vamos Começar?</h1>
+                <h1 className="text-5xl font-extrabold my-2 text-white">{content.nextStepsSlide.title}</h1>
                 <p className="text-lg text-gray-400 mt-2 max-w-4xl">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
                 <div className="mt-8 flex items-stretch gap-6 w-full max-w-5xl">
                    {content.nextStepsSlide.content.map((step, index) => (
@@ -569,3 +529,4 @@ export default function PresentationGenerator() {
     </div>
   );
 }
+
