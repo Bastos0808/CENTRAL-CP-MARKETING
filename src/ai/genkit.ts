@@ -1,11 +1,11 @@
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
-import {firebase} from '@genkit-ai/firebase';
+import {firebase} from '@genkit-ai/firebase/v1';
 
 export const ai = genkit({
   plugins: [
-    firebase(), // Adicionado para autenticação automática em produção
-    googleAI(),   // A chave de API não é mais necessária aqui
+    firebase(), // Handles auth and telemetry in production
+    googleAI(),   
   ],
   enableTracingAndMetrics: true,
 });
