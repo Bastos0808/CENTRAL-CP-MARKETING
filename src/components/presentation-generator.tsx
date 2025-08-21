@@ -3,7 +3,7 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
@@ -105,9 +105,9 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             <div className="flex flex-col justify-center h-full w-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                 <h1 className="text-5xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
-                 <div className="mt-6 flex justify-center items-start gap-4 w-full max-w-5xl mx-auto">
+                 <div className="mt-6 flex justify-center items-stretch gap-4 w-full max-w-5xl mx-auto">
                     {content.diagnosticSlide.content.map((item, index) => (
-                        <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full">
+                        <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start min-h-[14rem]">
                             <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/g, '<strong class="text-lg font-bold text-primary mb-2 block">$1</strong>') }}/>
                         </div>
                     ))}
@@ -186,7 +186,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                                   alignmentClass = 'items-center text-center';
                                 }
                                 if(index === 2) {
-                                  positionStyle = { right: `calc(5% - 16rem)` };
+                                  positionStyle = { right: `calc(10% - 16rem)` };
                                   alignmentClass = 'items-end text-right';
                                 }
 
@@ -194,7 +194,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                                return (
                                    <div key={index} className={cn("absolute flex flex-col", alignmentClass)} style={positionStyle}>
                                        {isTop && (
-                                           <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4 w-64 h-48">
+                                           <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4 w-64 min-h-[12rem]">
                                                <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
                                                <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
                                            </div>
@@ -203,7 +203,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                                            <Icon className="h-4 w-4 text-white"/>
                                        </div>
                                        {!isTop && (
-                                           <div className="mt-2 bg-white/5 border border-white/10 rounded-xl p-4 w-64 h-48">
+                                           <div className="mt-2 bg-white/5 border border-white/10 rounded-xl p-4 w-64 min-h-[12rem]">
                                                <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
                                                <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
                                            </div>
