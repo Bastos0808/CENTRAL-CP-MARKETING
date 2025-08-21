@@ -1,15 +1,11 @@
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
-import { enableFirebaseTelemetry } from '@genkit-ai/firebase';
-
-enableFirebaseTelemetry();
+import {firebase} from '@genkit-ai/firebase';
 
 export const ai = genkit({
   plugins: [
-    googleAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    }),
+    firebase(), // Adicionado para autenticação automática em produção
+    googleAI(),   // A chave de API não é mais necessária aqui
   ],
-  logLevel: 'debug',
   enableTracingAndMetrics: true,
 });
