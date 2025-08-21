@@ -159,7 +159,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
 
            {/* Slide 6: Cronograma */}
             <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-                <div className="flex flex-col justify-center h-full w-full">
+                <div className="w-full flex flex-col justify-center h-full">
                     <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
                     <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
                     <div className="relative mt-12 w-full max-w-6xl h-64">
