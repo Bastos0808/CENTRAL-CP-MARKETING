@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/ui/back-button";
-import { Download, Loader2 } from "lucide-react";
+import { Download, Loader2, Goal } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useToast } from "@/hooks/use-toast";
@@ -90,7 +89,7 @@ export default function ProposalTemplatePage() {
         {/* This div is only for structuring the content and will not be part of the PDF */}
         <div className="space-y-8">
             {/* Slide 1: Capa */}
-            <div style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
                     <h1 className="text-7xl font-extrabold my-4 text-white"><u>Plano de Crescimento para Clínica OdontoPrime</u></h1>
@@ -99,7 +98,7 @@ export default function ProposalTemplatePage() {
             </div>
             
             {/* Slide 2: Diagnóstico */}
-            <div style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
                 <div className="w-full">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Meta vs. Realidade</h1>
@@ -121,7 +120,7 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 3: Plano de Ação */}
-            <div style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
                  <div className="w-full">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Os 3 Pilares do Crescimento</h1>
@@ -143,7 +142,7 @@ export default function ProposalTemplatePage() {
             </div>
             
             {/* Slide 4: Justificativa Estratégica */}
-            <div style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
                 <div className="max-w-5xl">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Por que este plano é ideal para você?</h1>
@@ -154,7 +153,7 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 5: Cronograma */}
-            <div style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
                 <div>
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Fases do Projeto</h1>
@@ -176,7 +175,7 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 6: KPIs */}
-            <div style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
                  <div>
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Como Mediremos o Sucesso</h1>
@@ -191,7 +190,7 @@ export default function ProposalTemplatePage() {
             </div>
             
             {/* Slide 7: Diferenciais */}
-            <div style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
                 <div>
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Nossos Diferenciais</h1>
@@ -209,7 +208,7 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 8: Investimento */}
-            <div style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
                 <div className="text-center">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Investimento</p>
                     <div className="mt-8 bg-gray-900/50 rounded-xl p-12 border border-white/10 inline-block">
@@ -225,15 +224,25 @@ export default function ProposalTemplatePage() {
             </div>
 
             {/* Slide 9: Próximos Passos */}
-            <div style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12">
-                <div className="w-full max-w-4xl">
-                    <p className="text-xl font-bold text-primary uppercase tracking-widest">Próximos Passos</p>
+            <div data-slide style={slideStyle} className="w-full h-auto aspect-video shadow-2xl flex flex-col justify-center p-12 text-center">
+                <div className="w-full max-w-7xl mx-auto">
+                    <Goal className="h-16 w-16 text-primary mx-auto mb-6" />
                     <h1 className="text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
-                     <ul className="mt-8 space-y-4 text-2xl text-gray-200">
-                        <li className="flex items-center gap-4"><strong className="text-primary text-4xl">1.</strong> <u>Alinhamento e assinatura da proposta.</u></li>
-                        <li className="flex items-center gap-4"><strong className="text-primary text-4xl">2.</strong> <u>Pagamento da primeira parcela.</u></li>
-                        <li className="flex items-center gap-4"><strong className="text-primary text-4xl">3.</strong> <u>Reunião de Onboarding e Kick-off estratégico.</u></li>
-                    </ul>
+                    <p className="text-2xl text-gray-400 mt-4">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
+                     <div className="mt-12 grid grid-cols-3 gap-8">
+                        <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left">
+                           <span className="text-5xl font-bold text-primary">1.</span>
+                           <p className="mt-2 text-2xl font-semibold text-white"><u>Alinhamento e assinatura da proposta.</u></p>
+                        </div>
+                        <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left">
+                           <span className="text-5xl font-bold text-primary">2.</span>
+                           <p className="mt-2 text-2xl font-semibold text-white"><u>Pagamento da primeira parcela.</u></p>
+                        </div>
+                        <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left">
+                           <span className="text-5xl font-bold text-primary">3.</span>
+                           <p className="mt-2 text-2xl font-semibold text-white"><u>Reunião de Onboarding e Kick-off estratégico.</u></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -251,15 +260,15 @@ export default function ProposalTemplatePage() {
                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                     <h1 className="text-6xl font-extrabold my-2">Meta vs. Realidade</h1>
-                     <div className="mt-8" style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px'}}>
+                     <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
                         <h3 className="text-2xl font-bold text-primary mb-3">Meta</h3>
                         <p className="text-lg text-gray-300"><u>Atingir um faturamento de R$ 70.000, partindo dos R$ 20.000 atuais.</u></p>
                     </div>
-                     <div className="mt-8" style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px'}}>
+                     <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
                         <h3 className="text-2xl font-bold text-primary mb-3">Gargalo</h3>
                         <p className="text-lg text-gray-300"><u>Baixa geração de leads qualificados e ausência de um processo claro de conversão.</u></p>
                     </div>
-                     <div className="mt-8" style={{display: 'inline-block', width: '30%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px'}}>
+                     <div style={{display: 'inline-block', width: '30%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
                         <h3 className="text-2xl font-bold text-primary mb-3">Impacto Financeiro</h3>
                         <p className="text-lg text-gray-300"><u>Custo de oportunidade estimado em R$ 15.000 mensais devido ao gargalo atual.</u></p>
                     </div>
@@ -268,15 +277,15 @@ export default function ProposalTemplatePage() {
                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
                     <h1 className="text-6xl font-extrabold my-2">Os 3 Pilares do Crescimento</h1>
-                    <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', marginTop: '32px'}}>
+                    <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
                         <h3 className="text-2xl font-bold mb-2">1. Aquisição</h3>
                         <p className="text-lg text-gray-300"><u>Atrair leads qualificados via Google e Instagram Ads, focando em termos de alta intenção como "implante dentário".</u></p>
                     </div>
-                    <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', marginTop: '32px'}}>
+                    <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
                         <h3 className="text-2xl font-bold mb-2">2. Conversão</h3>
                         <p className="text-lg text-gray-300"><u>Criar uma Landing Page de alta conversão e roteirizar o atendimento via WhatsApp para transformar leads em agendamentos.</u></p>
                     </div>
-                    <div style={{display: 'inline-block', width: '30%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', marginTop: '32px'}}>
+                    <div style={{display: 'inline-block', width: '30%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
                         <h3 className="text-2xl font-bold mb-2">3. Autoridade</h3>
                         <p className="text-lg text-gray-300"><u>Produzir vídeos de depoimentos e otimizar o Google Meu Negócio para construir prova social e confiança.</u></p>
                     </div>
@@ -293,16 +302,16 @@ export default function ProposalTemplatePage() {
                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
                     <h1 className="text-6xl font-extrabold my-2">Fases do Projeto</h1>
-                    <ul className="mt-8 space-y-4 text-xl text-gray-300">
-                         <li style={{display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px'}}>
+                    <ul className="mt-8 space-y-4 text-xl text-gray-300" style={{ listStyle: 'none', padding: 0 }}>
+                         <li style={{display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
                             <strong style={{color: '#E65100'}}>Semanas 1-2:</strong>
                             <span><u>Setup e Estratégia: Realizaremos a configuração de ferramentas, o planejamento de conteúdo e campanhas, e um briefing aprofundado para alinhar todos os detalhes.</u></span>
                         </li>
-                         <li style={{display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px'}}>
+                         <li style={{display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
                             <strong style={{color: '#E65100'}}>Semanas 3-12:</strong>
                             <span><u>Execução e Otimização: Lançaremos as campanhas, produziremos o conteúdo, analisaremos as métricas e faremos otimizações semanais para maximizar o resultado.</u></span>
                         </li>
-                         <li style={{display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px'}}>
+                         <li style={{display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
                             <strong style={{color: '#E65100'}}>Revisões:</strong>
                             <span><u>Teremos reuniões mensais de alinhamento para apresentar os resultados, discutir os aprendizados e planejar os próximos passos.</u></span>
                         </li>
@@ -350,14 +359,26 @@ export default function ProposalTemplatePage() {
                     </div>
                 </div>
                 {/* Slide 9: Próximos Passos */}
-                <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-12">
-                    <p className="text-xl font-bold text-primary uppercase tracking-widest">Próximos Passos</p>
-                    <h1 className="text-6xl font-extrabold my-2">Vamos Começar?</h1>
-                     <ul style={{marginTop: '32px', listStyle: 'none', padding: 0, fontSize: '1.5rem', color: '#E5E7EB'}}>
-                        <li style={{marginBottom: '16px', display: 'flex', alignItems: 'center'}}><strong style={{fontSize: '2.25rem', color: '#E65100', marginRight: '16px'}}>1.</strong> <u>Alinhamento e assinatura da proposta.</u></li>
-                        <li style={{marginBottom: '16px', display: 'flex', alignItems: 'center'}}><strong style={{fontSize: '2.25rem', color: '#E65100', marginRight: '16px'}}>2.</strong> <u>Pagamento da primeira parcela.</u></li>
-                        <li style={{marginBottom: '16px', display: 'flex', alignItems: 'center'}}><strong style={{fontSize: '2.25rem', color: '#E65100', marginRight: '16px'}}>3.</strong> <u>Reunião de Onboarding e Kick-off estratégico.</u></li>
-                    </ul>
+                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-12 text-center">
+                    <div style={{ maxWidth: '1152px', margin: '0 auto' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 24px auto' }}><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                        <h1 className="text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
+                        <p className="text-2xl text-gray-400 mt-4">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
+                        <div style={{ marginTop: '48px', display: 'table', width: '100%', borderSpacing: '32px 0' }}>
+                            <div style={{ display: 'table-cell', width: '33.33%', padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)', textAlign: 'left' }}>
+                                <span style={{ fontSize: '3rem', fontWeight: 'bold', color: '#E65100' }}>1.</span>
+                                <p style={{ marginTop: '8px', fontSize: '1.5rem', fontWeight: '600', color: 'white' }}><u>Alinhamento e assinatura da proposta.</u></p>
+                            </div>
+                             <div style={{ display: 'table-cell', width: '33.33%', padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)', textAlign: 'left' }}>
+                                <span style={{ fontSize: '3rem', fontWeight: 'bold', color: '#E65100' }}>2.</span>
+                                <p style={{ marginTop: '8px', fontSize: '1.5rem', fontWeight: '600', color: 'white' }}><u>Pagamento da primeira parcela.</u></p>
+                            </div>
+                             <div style={{ display: 'table-cell', width: '33.33%', padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)', textAlign: 'left' }}>
+                                <span style={{ fontSize: '3rem', fontWeight: 'bold', color: '#E65100' }}>3.</span>
+                                <p style={{ marginTop: '8px', fontSize: '1.5rem', fontWeight: '600', color: 'white' }}><u>Reunião de Onboarding e Kick-off estratégico.</u></p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
