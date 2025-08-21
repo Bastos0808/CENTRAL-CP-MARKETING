@@ -80,6 +80,15 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
         'Pilar 2 - Conversão': '<strong>Nossa Solução:</strong> Desenvolvemos funis de vendas e automações que nutrem o lead, qualificam o interesse e entregam oportunidades prontas para o fechamento.',
         'Pilar 3 - Autoridade': '<strong>Nossa Solução:</strong> Com estúdios próprios e uma equipe completa, produzimos conteúdo de alta qualidade em escala para posicionar sua marca como líder de mercado.',
     };
+    
+    const defaultPackages = [
+        { name: 'Plano Essencial', price: 'R$ 2.999,00' },
+        { name: 'Plano Premium', price: 'R$ 3.999,00' }
+    ];
+
+    const investmentItems = content.investmentSlide.items.length > 0 
+        ? content.investmentSlide.items
+        : defaultPackages;
 
     return (
         <div ref={ref} className="proposal-container space-y-4 font-body">
@@ -226,32 +235,42 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                          <p className="text-lg text-gray-400 mt-4">Uma proposta transparente para uma parceria de resultados.</p>
                     </div>
                     <div className="bg-white/5 border border-white/10 rounded-xl p-8">
-                        <div className="space-y-3">
-                           {content.investmentSlide.items.map(item => (
-                               <div key={item.name} className="flex justify-between items-center text-sm text-gray-300">
-                                   <span>{item.name}</span>
-                                   <span>{item.price}</span>
-                               </div>
-                           ))}
-                        </div>
-                        <div className="my-4 border-t border-dashed border-white/20"></div>
-                        <div className="space-y-2">
-                             <div className="flex justify-between items-center text-sm text-gray-400">
-                               <span>Subtotal</span>
-                               <span>{content.investmentSlide.total}</span>
-                             </div>
-                             {content.investmentSlide.discount && (
-                                <div className="flex justify-between items-center text-sm text-green-400">
-                                    <span>Desconto Especial</span>
-                                    <span>{content.investmentSlide.discount}</span>
+                      {investmentItems.length > 0 ? (
+                        <>
+                          <div className="space-y-3">
+                            {investmentItems.map(item => (
+                                <div key={item.name} className="flex justify-between items-center text-sm text-gray-300">
+                                    <span>{item.name}</span>
+                                    <span>{item.price}</span>
                                 </div>
-                             )}
-                        </div>
-                         <div className="my-4 border-t border-solid border-white/50"></div>
-                         <div className="flex justify-between items-center">
-                            <span className="text-xl font-bold text-white">Total do Investimento</span>
-                            <span className="text-3xl font-bold text-primary">{content.investmentSlide.finalTotal}</span>
-                         </div>
+                            ))}
+                          </div>
+                           {content.investmentSlide.items.length > 0 && (
+                            <>
+                                <div className="my-4 border-t border-dashed border-white/20"></div>
+                                <div className="space-y-2">
+                                     <div className="flex justify-between items-center text-sm text-gray-400">
+                                       <span>Subtotal</span>
+                                       <span>{content.investmentSlide.total}</span>
+                                     </div>
+                                     {content.investmentSlide.discount && (
+                                        <div className="flex justify-between items-center text-sm text-green-400">
+                                            <span>Desconto Especial</span>
+                                            <span>{content.investmentSlide.discount}</span>
+                                        </div>
+                                     )}
+                                </div>
+                                <div className="my-4 border-t border-solid border-white/50"></div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-xl font-bold text-white">Total do Investimento</span>
+                                    <span className="text-3xl font-bold text-primary">{content.investmentSlide.finalTotal}</span>
+                                </div>
+                            </>
+                           )}
+                        </>
+                      ) : (
+                          <p className="text-center text-gray-400">Nenhum pacote selecionado. Consulte os planos disponíveis.</p>
+                      )}
                     </div>
                 </div>
             </div>

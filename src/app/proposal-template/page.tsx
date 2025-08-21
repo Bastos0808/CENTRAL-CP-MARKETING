@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { BackButton } from "@/components/ui/back-button";
@@ -77,6 +78,18 @@ const mockPresentationContent: GeneratePresentationOutput = {
   }
 };
 
+const mockPresentationContentNoPackages = {
+    ...mockPresentationContent,
+    investmentSlide: {
+        title: "Proposta de Investimento",
+        items: [], // No packages selected
+        total: "R$ 0,00",
+        discount: undefined,
+        finalTotal: "R$ 0,00"
+    }
+};
+
+
 
 export default function ProposalTemplatePage() {
   return (
@@ -84,10 +97,26 @@ export default function ProposalTemplatePage() {
       <div className="w-full max-w-5xl flex justify-start">
         <BackButton />
       </div>
+      
+      <div className="text-center bg-white p-4 rounded-lg shadow-md">
+        <h2 className="text-xl font-bold text-gray-800">Exemplo 1: Proposta com Pacotes Selecionados</h2>
+      </div>
       <div className="transform scale-[0.7] -translate-y-[15%]">
         <GeneratedPresentation
           content={mockPresentationContent}
           clientName="Clínica Vitalize"
+        />
+      </div>
+
+       <hr className="w-full max-w-5xl border-t-2 border-gray-400 my-8" />
+      
+       <div className="text-center bg-white p-4 rounded-lg shadow-md">
+        <h2 className="text-xl font-bold text-gray-800">Exemplo 2: Proposta sem Pacotes (Exibindo Planos Padrão)</h2>
+      </div>
+       <div className="transform scale-[0.7] -translate-y-[15%]">
+        <GeneratedPresentation
+          content={mockPresentationContentNoPackages}
+          clientName="Empresa Exemplo"
         />
       </div>
     </main>
