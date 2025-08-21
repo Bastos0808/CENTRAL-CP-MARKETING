@@ -9,7 +9,7 @@ import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Mic, T
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipProvider, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 export default function Home() {
@@ -81,7 +81,7 @@ export default function Home() {
       {
         title: "Análise de Canais",
         description: "Obtenha uma análise de pontos fortes e fracos de um canal.",
-        href: "/analise-de-anais",
+        href: "/analise-de-canais",
         icon: Search
       },
       {
