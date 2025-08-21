@@ -11,7 +11,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle } from "lucide-react";
+import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle, Diamond } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
@@ -24,8 +24,9 @@ import html2canvas from 'html2canvas';
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
 
 const slideStyle = {
-  background: "radial-gradient(ellipse 80% 80% at 50% -20%,rgba(230, 81, 0, 0.15),hsla(0,0%,100%,0))",
-  backgroundColor: "#0A0A0A"
+  backgroundColor: "#0A0A0A",
+  backgroundImage: "radial-gradient(ellipse 80% 80% at 50% -20%,rgba(230, 81, 0, 0.15),hsla(0,0%,100%,0)), linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
+  backgroundSize: "100% 100%, 40px 40px, 40px 40px",
 };
 
 const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
@@ -159,18 +160,20 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                     <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
                     <h1 className="text-5xl font-extrabold my-2">Escolha o plano ideal para você</h1>
                     
-                    <hr className="w-full border-t border-white/10 my-6" />
+                    <div className="w-full max-w-md mx-auto my-6">
+                        <hr className="w-full border-t border-white/10" />
+                    </div>
 
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                        <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full text-left">
-                          <div className="flex-grow">
+                          <div className="flex-grow space-y-3">
                               <h3 className="text-2xl font-bold text-white mb-2">Plano Inicial</h3>
                               <p className="text-gray-400 text-sm">Uma solução inicial para dar o primeiro passo. Este plano ajuda, mas não resolve o problema por completo, te ajudando a alcançar cerca de 40% da sua meta.</p>
                           </div>
-                          <p className="text-4xl font-bold text-primary mt-4">R$ 2.999,00</p>
+                          <p className="text-4xl font-bold text-white mt-4">R$ 2.999,00</p>
                        </div>
                        <div className="bg-white/5 border-2 border-primary rounded-xl p-6 flex flex-col h-full text-left relative">
-                           <div className="flex-grow">
+                           <div className="flex-grow space-y-3">
                               <h3 className="text-2xl font-bold text-primary mb-2">Plano Avançado</h3>
                               <p className="text-gray-300 text-sm">A solução completa e estratégica. Ataca todos os pontos do diagnóstico e tem a maior probabilidade de bater sua meta, construindo autoridade e um sistema de vendas robusto.</p>
                           </div>
@@ -503,5 +506,3 @@ export default function PresentationGenerator() {
     </div>
   );
 }
-
-    
