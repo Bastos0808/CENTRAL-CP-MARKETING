@@ -38,7 +38,7 @@ const slideStyles = {
     backgroundImage: `
       linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
-      radial-gradient(ellipse 80% 80% at 50% 50%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0))
+      radial-gradient(circle at 50% 50%, rgba(230, 81, 0, 0.20) 0%, hsla(0, 0%, 100%, 0) 60%)
     `,
     backgroundSize: '30px 30px, 30px 30px, 100% 100%',
   },
@@ -47,7 +47,7 @@ const slideStyles = {
     backgroundImage: `
       linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
-      radial-gradient(ellipse 80% 80% at 20% 100%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0))
+      radial-gradient(circle at 20% 100%, rgba(230, 81, 0, 0.20) 0%, hsla(0, 0%, 100%, 0) 60%)
     `,
      backgroundSize: '30px 30px, 30px 30px, 100% 100%',
   },
@@ -56,7 +56,7 @@ const slideStyles = {
     backgroundImage: `
       linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
-      radial-gradient(ellipse 80% 80% at 80% 100%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0))
+      radial-gradient(circle at 80% 100%, rgba(230, 81, 0, 0.20) 0%, hsla(0, 0%, 100%, 0) 60%)
     `,
      backgroundSize: '30px 30px, 30px 30px, 100% 100%',
   }
@@ -71,7 +71,7 @@ const glassTextboxStyle = {
 
 const AboutUsSlide = () => (
     <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-start p-[50px_80px_80px] text-white rounded-lg overflow-hidden box-border font-body">
-        <div className="max-w-[1000px]">
+        <div className="max-w-[1100px] mx-auto">
             <p className="text-[#E65100] font-bold text-[1.2rem] uppercase tracking-[0.1em] mb-4">
                 Sobre Nós
             </p>
@@ -108,6 +108,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
             <h2 className="text-lg font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
             <h1 className="text-6xl font-extrabold my-4 max-w-4xl">{content.presentationTitle}</h1>
             <p className="text-lg text-gray-400">Proposta elaborada por CP Marketing Digital - {new Date().toLocaleDateString('pt-BR')}</p>
+            <p className="text-md text-gray-500 mt-2 italic">Proposta válida por 7 dias</p>
           </div>
 
           {/* Slide 2: Sobre Nós (Estático) */}
