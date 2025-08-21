@@ -38,30 +38,7 @@ const presentationGeneratorFlow = ai.defineFlow(
     outputSchema: GeneratePresentationOutputSchema,
   },
   async (input) => {
-
-    let dataToSubmit: GeneratePresentationInput = input;
-    if (!input.clientName) {
-        dataToSubmit = {
-            clientName: "Clínica Vitalize",
-            faturamentoMedio: "R$ 50.000",
-            metaFaturamento: "R$ 120.000",
-            ticketMedio: "R$ 800",
-            origemClientes: "Indicação e pesquisa no Google.",
-            tempoEmpresa: "5 anos",
-            motivacaoMarketing: "Estagnação no crescimento e desejo de se tornar referência na região.",
-            investimentoAnterior: "Já impulsionaram posts no Instagram, sem estratégia clara e com pouco retorno.",
-            tentativasAnteriores: "Contrataram um sobrinho para cuidar das redes sociais, mas a comunicação era amadora.",
-            principalGargalo: "Geração de leads qualificados. O telefone toca pouco e os contatos que chegam não têm perfil para fechar.",
-            custoProblema: "R$ 20.000 por mês em oportunidades perdidas.",
-            envolvidosDecisao: "Apenas o sócio principal.",
-            orcamentoPrevisto: "Entre R$ 4.000 e R$ 6.000 por mês.",
-            prazoDecisao: "30 dias.",
-            packages: ['marketing_premium', 'captacao_estudio_contrato'],
-            discount: 500,
-        };
-    }
-
-    const { packages = [], discount = 0 } = dataToSubmit;
+    const { packages = [], discount = 0 } = input;
     const selectedPackageDetails = packages.map(key => ({
         key,
         ...packageOptions[key as keyof typeof packageOptions]
@@ -71,7 +48,7 @@ const presentationGeneratorFlow = ai.defineFlow(
     const finalTotal = totalValue - discount;
 
     const inputForAI = {
-      ...dataToSubmit,
+      ...input,
       selectedPackages: selectedPackageDetails.map(p => p.name).join(', '),
       totalValue: formatCurrency(totalValue),
       finalTotal: formatCurrency(finalTotal),
@@ -178,7 +155,7 @@ const presentationGeneratorFlow = ai.defineFlow(
     // Manually construct the investment slide data from the original input
     // to ensure correct formatting and data integrity.
     if (llmResponse.output) {
-        const investmentItems = dataToSubmit.packages && dataToSubmit.packages.length > 0 ? selectedPackageDetails.map(p => ({ name: p.name, price: formatCurrency(p.price) })) : [];
+        const investmentItems = input.packages && input.packages.length > 0 ? selectedPackageDetails.map(p => ({ name: p.name, price: formatCurrency(p.price) })) : [];
         llmResponse.output.investmentSlide = {
             title: llmResponse.output.investmentSlide.title || "Proposta de Investimento",
             items: investmentItems,
@@ -191,5 +168,3 @@ const presentationGeneratorFlow = ai.defineFlow(
     return llmResponse.output!;
   }
 );
-
-    

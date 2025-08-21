@@ -426,7 +426,7 @@ export default function PresentationGenerator() {
 
   const handleDownload = async () => {
     if (!presentationContent) return;
-    
+
     setIsDownloading(true);
     toast({ title: 'Gerando PDF...', description: 'Aguarde um momento. Este processo pode ser lento.' });
 
@@ -435,55 +435,61 @@ export default function PresentationGenerator() {
     container.style.left = '-9999px';
     container.style.top = '-9999px';
     document.body.appendChild(container);
-    
-    const ReactDOM = (await import('react-dom/client')).default;
+
+    const ReactDOM = (await import('react-dom')).default;
     const root = ReactDOM.createRoot(container);
-    
+
     const renderContainer = document.createElement('div');
     container.appendChild(renderContainer);
 
-    root.render(<GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />);
-    
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Use a callback with root.render to ensure it's finished before proceeding
+    root.render(
+        <React.StrictMode>
+            <GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />
+        </React.StrictMode>
+    );
+
+    // Give React time to render and browser to fetch assets
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
     const pdf = new jsPDF({
-      orientation: 'landscape',
-      unit: 'px',
-      format: [720, 1280]
+        orientation: 'landscape',
+        unit: 'px',
+        format: [720, 1280]
     });
 
     try {
-      for (let i = 0; i < slides.length; i++) {
-        const slide = slides[i];
-        const canvas = await html2canvas(slide, {
-          scale: 2, 
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#0A0A0A',
-          width: 1280,
-          height: 720
-        });
-        const imgData = canvas.toDataURL('image/png', 0.95);
-        
-        if (i > 0) {
-          pdf.addPage([720, 1280], 'landscape');
-        }
-        pdf.addImage(imgData, 'PNG', 0, 0, 1280, 720, undefined, 'FAST');
-      }
-      
-      pdf.save(`Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.pdf`);
-      toast({ title: 'Download Concluído!', description: 'Seu PDF foi baixado com sucesso.' });
+        for (let i = 0; i < slides.length; i++) {
+            const slide = slides[i];
+            const canvas = await html2canvas(slide, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#0A0A0A',
+                width: 1280,
+                height: 720
+            });
+            const imgData = canvas.toDataURL('image/png', 0.95);
 
-    } catch(err) {
+            if (i > 0) {
+                pdf.addPage([1280, 720], 'landscape');
+            }
+            pdf.addImage(imgData, 'PNG', 0, 0, 1280, 720, undefined, 'FAST');
+        }
+
+        pdf.save(`Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.pdf`);
+        toast({ title: 'Download Concluído!', description: 'Seu PDF foi baixado com sucesso.' });
+
+    } catch (err) {
         console.error("PDF Generation Error: ", err);
-        toast({ title: 'Erro ao gerar PDF', description: 'Houve um problema na captura dos slides.', variant: 'destructive'});
+        toast({ title: 'Erro ao gerar PDF', description: 'Houve um problema na captura dos slides.', variant: 'destructive' });
     } finally {
         root.unmount();
         document.body.removeChild(container);
         setIsDownloading(false);
     }
-  };
+};
   
 
   return (
