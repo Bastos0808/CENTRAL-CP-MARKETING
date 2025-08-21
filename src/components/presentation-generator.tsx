@@ -76,8 +76,24 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             <p className="text-lg text-gray-400">Proposta elaborada por CP Marketing Digital - {new Date().toLocaleDateString('pt-BR')}</p>
             <p className="text-md text-gray-500 mt-2 italic">Proposta válida por 7 dias</p>
           </div>
+          
+           {/* Slide 2: Diferenciais (About Us) */}
+            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+                <div className="flex flex-col justify-center h-full max-w-6xl">
+                    <p className="text-md font-bold text-primary uppercase tracking-widest">Sobre Nós</p>
+                    <h1 className="text-5xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
+                    <div className="mt-6 grid grid-cols-3 gap-6">
+                        {content.whyCpSlide.content.map((item, index) => (
+                            <div key={index} className="p-4 bg-white/5 border-t-2 border-primary rounded-lg h-full">
+                                <p className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<h3 class="text-lg font-bold text-white mb-2">$1</h3>') }} />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
 
-          {/* Slide 2: Diagnóstico */}
+
+          {/* Slide 3: Diagnóstico */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
@@ -93,7 +109,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             </div>
           </div>
           
-          {/* Slide 3: Plano de Ação */}
+          {/* Slide 4: Plano de Ação */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
@@ -108,7 +124,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             </div>
           </div>
           
-          {/* Slide 4: Justificativa Estratégica */}
+          {/* Slide 5: Justificativa Estratégica */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <div className="flex flex-col justify-center h-full max-w-5xl">
                   <p className="text-md font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
@@ -119,14 +135,13 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
               </div>
           </div>
 
-           {/* Slide 5: Cronograma */}
+           {/* Slide 6: Cronograma */}
             <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
                 <div className="flex flex-col justify-center h-full w-full">
                     <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
                     <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
-                    <div className="relative mt-20 w-full max-w-6xl h-48">
-                        {/* A "curva" da timeline em SVG */}
-                        <svg width="100%" height="100%" viewBox="0 0 1100 120" preserveAspectRatio="none" className="absolute top-0 left-0">
+                    <div className="relative mt-12 w-full max-w-6xl h-64">
+                        <svg width="100%" height="100%" viewBox="0 0 1100 120" preserveAspectRatio="none" className="absolute top-1/2 -translate-y-1/2 left-0">
                             <path d="M0,60 Q275,0 550,60 T1100,60" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="2" fill="none" />
                         </svg>
                         
@@ -134,22 +149,32 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                            {content.timelineSlide.content.map((item, index) => {
                                const icons = [CheckCircle, Diamond, Goal];
                                const Icon = icons[index] || Goal;
-                               const isCenter = index === 1;
                                
-                               let leftPosition;
-                                if (index === 0) leftPosition = `5%`;
-                                else if (index === 1) leftPosition = `50%`;
-                                else leftPosition = `calc(95% - 256px)`; // 256px é a largura do card (w-64)
+                               const isTop = index === 1;
+                               const alignmentClass = index === 0 ? 'items-start' : index === 2 ? 'items-end' : 'items-center';
+                               let positionStyle: React.CSSProperties = {};
+                               if(index === 0) positionStyle = { left: `5%` };
+                               if(index === 1) positionStyle = { left: `50%`, transform: 'translateX(-50%)', top: '-20px' };
+                               if(index === 2) positionStyle = { right: `5%` };
+
 
                                return (
-                                   <div key={index} className={cn("absolute flex flex-col items-center", { 'top-1/2 -translate-y-1/2': !isCenter, 'top-0': isCenter })} style={{left: leftPosition, transform: index === 1 ? 'translateX(-50%)' : undefined }}>
-                                       <div className="w-8 h-8 bg-primary rounded-full border-4 border-background z-10 flex items-center justify-center">
+                                   <div key={index} className={cn("absolute flex flex-col", alignmentClass)} style={positionStyle}>
+                                       {isTop && (
+                                           <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left h-36">
+                                               <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
+                                               <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1:</strong>') }} />
+                                           </div>
+                                       )}
+                                       <div className="w-8 h-8 bg-primary rounded-full border-4 border-background z-10 flex items-center justify-center my-2">
                                            <Icon className="h-4 w-4 text-white"/>
                                        </div>
-                                       <div className="mt-4 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left">
-                                           <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
-                                           <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1:</strong>') }} />
-                                       </div>
+                                       {!isTop && (
+                                           <div className="mt-2 bg-white/5 border border-white/10 rounded-xl p-4 w-64 text-left h-36">
+                                               <span className="font-bold text-primary mb-1 block">Fase {index + 1}</span>
+                                               <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1:</strong>') }} />
+                                           </div>
+                                       )}
                                    </div>
                                )
                            })}
@@ -158,7 +183,7 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
                 </div>
             </div>
 
-          {/* Slide 6: KPIs */}
+          {/* Slide 7: KPIs */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col p-10 text-white rounded-lg overflow-hidden">
              <div className="w-full flex flex-col justify-center h-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
@@ -177,45 +202,24 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
              </div>
           </div>
           
-          {/* Slide 7: Diferenciais */}
-           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="flex flex-col justify-center h-full">
-              <p className="text-md font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
-              <h1 className="text-5xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
-              <div className="mt-6 flex items-start gap-4 max-w-5xl">
-                  {content.whyCpSlide.content.map((item, index) => (
-                    <div key={index} className="p-4 bg-white/5 border-t-2 border-primary rounded-lg h-full" >
-                        <p className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<h3 class="text-lg font-bold text-white mb-2">$1</h3>') }} />
-                    </div>
-                  ))}
-              </div>
-            </div>
-          </div>
-
            {/* Slide 8: Investimento */}
             <div data-slide style={slideStyles.investimento} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
             <div className="w-full max-w-5xl">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
                 <h1 className="text-5xl font-extrabold my-2">{content.investmentSlide.title}</h1>
                 
-                 <div className="mt-6 relative">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {content.investmentSlide.items.map((item, index) => (
-                            <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex flex-col h-full text-left">
-                                <h3 className="text-xl font-bold text-white mb-2">{item.name}</h3>
-                                <p className="text-4xl font-bold text-primary mt-auto">{item.price}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="mt-6 text-right">
-                        {content.investmentSlide.discount && (
-                            <p className="text-lg text-gray-400">Subtotal: {content.investmentSlide.total}</p>
-                        )}
-                        {content.investmentSlide.discount && (
-                            <p className="text-lg text-red-400">Desconto: {content.investmentSlide.discount}</p>
-                        )}
-                        <p className="text-3xl font-bold text-white mt-2">Total Mensal: <span className="text-primary">{content.investmentSlide.finalTotal}</span></p>
-                    </div>
+                 <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div className="bg-white/5 border-2 border-primary/50 rounded-xl p-8 flex flex-col h-full text-left">
+                         <h3 className="text-2xl font-bold text-primary mb-2">Plano Inicial</h3>
+                         <p className="text-gray-400 text-sm flex-grow">Foco em construir a base, aumentar o reconhecimento e gerar os primeiros resultados consistentes.</p>
+                         <p className="text-4xl font-bold text-white mt-4">{content.investmentSlide.finalTotal}</p>
+                         <p className="text-sm text-gray-500">/mês</p>
+                     </div>
+                      <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col h-full text-left">
+                         <h3 className="text-xl font-bold text-white mb-2">Plano Avançado</h3>
+                          <p className="text-gray-400 text-sm flex-grow">Acelerar o crescimento com mais canais, maior volume de conteúdo e estratégias de conversão otimizadas.</p>
+                         <p className="text-3xl font-bold text-gray-500 mt-4">Consulte-nos</p>
+                     </div>
                  </div>
             </div>
             </div>
