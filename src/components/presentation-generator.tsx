@@ -81,7 +81,8 @@ const defaultPackages = {
             'Gestão de Mídias Sociais',
             'Planejamento de Conteúdo',
             '3 Posts por Semana',
-            'Relatórios Mensais'
+            'Relatórios Mensais',
+            'E muito mais...'
         ]
     },
     premium: {
@@ -91,7 +92,8 @@ const defaultPackages = {
             'Tudo do Essencial',
             'Gestão de Tráfego Pago',
             'Gravação de Podcast Mensal',
-            'Captação de Fotos e Vídeos'
+            'Captação de Fotos e Vídeos',
+            'E muito mais...'
         ]
     }
 };
@@ -193,30 +195,29 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
 
            {/* Slide 6: Cronograma */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="w-full flex flex-col justify-center h-full">
+             <div className="w-full flex flex-col justify-center h-full">
                  <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
                  <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
                  <div className="mt-12 w-full max-w-6xl mx-auto">
-                     <div className="grid grid-cols-3 gap-8 relative">
-                         {/* Linha pontilhada atrás dos cards */}
+                    <div className="grid grid-cols-3 gap-8 relative items-start">
+                        {/* Linha pontilhada atrás dos cards */}
                          <div className="absolute top-5 left-0 w-full h-0.5 bg-center" style={{ backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)`, backgroundSize: '10px 2px', zIndex: 0 }}></div>
-
-                         {content.timelineSlide.content.map((item, index) => {
+                        {content.timelineSlide.content.map((item, index) => {
                             const icons = [CheckCircle, Diamond, Goal];
                             const Icon = icons[index] || Goal;
-                             return (
-                                 <div key={index} className="flex flex-col items-center text-center relative z-10">
-                                     <div className="w-10 h-10 bg-primary rounded-full border-4 border-[#0A0A0A] flex items-center justify-center mb-4">
-                                         <Icon className="h-5 w-5 text-white" />
-                                     </div>
-                                     <div className="bg-white/5 border border-white/10 rounded-xl p-4 w-full min-h-[12rem] flex flex-col">
-                                         <span className="font-bold text-primary mb-2 block">Fase {index + 1}</span>
-                                         <div className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
-                                     </div>
-                                 </div>
-                             );
-                         })}
-                     </div>
+                            return (
+                                <div key={index} className="flex flex-col items-center text-center relative z-10">
+                                    <div className="w-10 h-10 bg-primary rounded-full border-4 border-[#0A0A0A] flex items-center justify-center mb-4">
+                                        <Icon className="h-5 w-5 text-white" />
+                                    </div>
+                                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 w-full min-h-[12rem] flex flex-col">
+                                        <span className="font-bold text-primary mb-2 block">Fase {index + 1}</span>
+                                        <div className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                  </div>
              </div>
           </div>
