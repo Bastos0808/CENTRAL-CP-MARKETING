@@ -158,14 +158,28 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
 
           {/* Slide 6: Cronograma */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="flex flex-col justify-center h-full">
+            <div className="flex flex-col justify-center h-full w-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
               <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
-              <ul className="mt-6 space-y-3 text-md text-gray-300 max-w-5xl">
-                {content.timelineSlide.content.map((item, index) => (
-                    <li key={index} className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded-lg" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-primary">$1:</strong>') }}/>
-                ))}
-              </ul>
+              
+              <div className="relative mt-12 w-full max-w-6xl">
+                 {/* Timeline Line */}
+                <div className="absolute top-1/2 left-0 w-full h-0.5 bg-white/10 -translate-y-1/2" />
+                <div className="flex justify-between items-start">
+                    {content.timelineSlide.content.map((item, index) => (
+                       <div key={index} className="relative flex flex-col items-center text-center w-1/3 px-4">
+                           {/* Circle on the line */}
+                           <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-primary rounded-full border-2 border-background z-10" />
+                           {/* Card */}
+                           <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex flex-col items-start text-left h-full w-full">
+                                <span className="font-bold text-primary mb-2">Fase {index + 1}</span>
+                               <div className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-lg font-bold text-white mb-2 block">$1:</strong>') }} />
+                           </div>
+                       </div>
+                    ))}
+                </div>
+              </div>
+
             </div>
           </div>
 
