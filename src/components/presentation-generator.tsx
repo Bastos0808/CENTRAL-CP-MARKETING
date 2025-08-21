@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import * as React from "react";
@@ -25,8 +24,7 @@ import html2canvas from 'html2canvas';
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
 
 const slideStyle = {
-  background: "radial-gradient(ellipse at center, transparent 20%, #0A0A0A 70%), linear-gradient(rgba(230, 81, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(230, 81, 0, 0.1) 1px, transparent 1px)",
-  backgroundSize: "100% 100%, 40px 40px, 40px 40px",
+  background: "radial-gradient(ellipse 80% 80% at 50% -20%,rgba(230, 81, 0, 0.15),hsla(0,0%,100%,0))",
   backgroundColor: "#0A0A0A"
 };
 
@@ -53,6 +51,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                     </div>
                 ))}
                 </div>
+                 <p className="mt-8 text-lg text-gray-400 italic max-w-5xl">{content.diagnosticSlide.question}</p>
             </div>
           </div>
           
@@ -102,7 +101,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                 <h1 className="text-5xl font-extrabold my-2">{content.kpiSlide.title}</h1>
                 <div className="mt-6 flex items-stretch gap-4 max-w-5xl">
                     {content.kpiSlide.kpis.map((kpi, index) => (
-                        <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 flex-1 flex flex-col">
+                        <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 flex-1 flex flex-col h-full">
                             <div className="flex-grow">
                                 <h4 className="font-bold text-sm text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
                                 <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
@@ -133,7 +132,8 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
             <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
             {content.investmentSlide.items.length > 0 ? (
                  <div className="flex flex-col items-center">
-                    <div className="mb-2">
+                    <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
+                    <div className="my-4">
                         {content.investmentSlide.discount && (
                             <p className="text-4xl font-semibold text-red-500 line-through decoration-red-500/80">
                                 {content.investmentSlide.total}
@@ -144,6 +144,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
                          <p className="text-7xl font-bold text-primary tracking-tighter">
                             {content.investmentSlide.finalTotal}
                         </p>
+                         <p className="text-lg text-gray-400">/mês</p>
                     </div>
 
                     <div className="text-sm text-white">
@@ -502,3 +503,5 @@ export default function PresentationGenerator() {
     </div>
   );
 }
+
+    
