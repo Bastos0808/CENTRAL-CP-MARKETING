@@ -19,6 +19,7 @@ import { GeneratePresentationOutput, DiagnosticFormSchema, packageOptions } from
 import type { z } from "zod";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import Image from "next/image";
 
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
