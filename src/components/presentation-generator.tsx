@@ -2,8 +2,8 @@
 "use client";
 
 import * as React from "react";
-import { useState, useRef, useMemo } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useState, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
@@ -33,19 +33,19 @@ const slideStyle = {
 const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
     
     return (
-        <div ref={ref} className="proposal-container w-full max-w-7xl mx-auto space-y-4">
+        <div ref={ref} className="proposal-container space-y-4">
           {/* Slide 1: Capa */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
             <h2 className="text-xl font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
-            <h1 className="text-5xl md:text-7xl font-extrabold my-4 max-w-5xl">{content.presentationTitle}</h1>
-            <p className="text-lg md:text-xl text-gray-400">Proposta elaborada por CP Marketing Digital - {new Date().toLocaleDateString('pt-BR')}</p>
+            <h1 className="text-7xl font-extrabold my-4 max-w-5xl">{content.presentationTitle}</h1>
+            <p className="text-xl text-gray-400">Proposta elaborada por CP Marketing Digital - {new Date().toLocaleDateString('pt-BR')}</p>
           </div>
 
           {/* Slide 2: Diagnóstico */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
             <p className="text-lg font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
-            <h1 className="text-5xl md:text-6xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
-            <div className="mt-8 flex flex-col md:flex-row items-start gap-6 max-w-7xl">
+            <h1 className="text-6xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
+            <div className="mt-8 flex items-start gap-6 max-w-7xl">
               {content.diagnosticSlide.content.map((item, index) => (
                 <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
                     <p className="text-base text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-xl font-bold text-primary mb-3 block">$1</strong>') }}/>
@@ -55,23 +55,23 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
           
           {/* Slide 3: Plano de Ação */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
-              <h1 className="text-5xl md:text-6xl font-extrabold my-2">{content.actionPlanSlide.title}</h1>
-              <div className="mt-8 flex flex-col md:flex-row items-start gap-6 max-w-7xl">
+              <h1 className="text-6xl font-extrabold my-2">{content.actionPlanSlide.title}</h1>
+              <div className="mt-8 flex items-start gap-6 max-w-7xl">
                 {content.actionPlanSlide.content.map((item, index) => (
                    <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
-                       <p className="text-base text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?)\*\*/g, '<strong class="text-xl font-bold text-white mb-2 block">$1</strong>') }} />
+                       <p className="text-base text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-xl font-bold text-white mb-2 block">$1</strong>') }} />
                    </div>
                 ))}
               </div>
           </div>
           
           {/* Slide 4: Justificativa Estratégica */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
               <div className="max-w-7xl">
                   <p className="text-lg font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
-                  <h1 className="text-5xl md:text-6xl font-extrabold my-2">{content.justificationSlide.title}</h1>
+                  <h1 className="text-6xl font-extrabold my-2">{content.justificationSlide.title}</h1>
                   <p className="mt-6 text-lg text-gray-300 leading-relaxed break-words max-w-7xl">
                     {content.justificationSlide.content.join(' ')}
                   </p>
@@ -79,9 +79,9 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
 
           {/* Slide 5: Cronograma */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
-              <h1 className="text-5xl md:text-6xl font-extrabold my-2">{content.timelineSlide.title}</h1>
+              <h1 className="text-6xl font-extrabold my-2">{content.timelineSlide.title}</h1>
               <ul className="mt-8 space-y-4 text-lg text-gray-300 max-w-7xl">
                 {content.timelineSlide.content.map((item, index) => (
                     <li key={index} className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-lg" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-primary">$1:</strong>') }}/>
@@ -90,9 +90,9 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
 
           {/* Slide 6: KPIs */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
              <p className="text-lg font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
-             <h1 className="text-5xl md:text-6xl font-extrabold my-2">{content.kpiSlide.title}</h1>
+             <h1 className="text-6xl font-extrabold my-2">{content.kpiSlide.title}</h1>
              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl">
                  {content.kpiSlide.kpis.map((kpi, index) => (
                     <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10">
@@ -105,9 +105,9 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
           
           {/* Slide 7: Diferenciais */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
-              <h1 className="text-5xl md:text-6xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
+              <h1 className="text-6xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl">
                   {content.whyCpSlide.content.map((item, index) => (
                     <div key={index} className="p-6 bg-white/5 border-t-4 border-primary rounded-lg h-full" >
@@ -118,30 +118,28 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
 
            {/* Slide 8: Investimento */}
-            <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
+            <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
             {content.investmentSlide.items.length > 0 ? (
                 <div className="flex flex-col items-center">
-                    <div className="mb-4">
-                        {content.investmentSlide.discount && (
-                            <p className="text-5xl font-semibold text-red-500 line-through decoration-red-500/80">
-                                {content.investmentSlide.total}
-                            </p>
-                        )}
-                    </div>
-                    <div className="text-8xl font-bold text-primary tracking-tighter">
+                    {content.investmentSlide.discount && (
+                        <p className="text-5xl font-semibold text-red-500 line-through decoration-red-500/80 mb-2">
+                            {content.investmentSlide.total}
+                        </p>
+                    )}
+                    <p className="text-8xl font-bold text-primary tracking-tighter">
                         {content.investmentSlide.finalTotal}
-                    </div>
-                    <div className="mt-4 text-base text-white">
-                        <div className="mt-4">
-                            <p><strong>Incluso:</strong> {content.investmentSlide.items.map(p => p.name).join(' + ')}</p>
-                            {content.investmentSlide.discount && <p className="mt-2"><strong>Desconto Aplicado:</strong> {content.investmentSlide.discount}</p>}
+                    </p>
+                    <div className="mt-6 text-base text-white">
+                         <div className="mt-2 text-center">
+                            <p className="text-sm"><strong>Incluso:</strong> {content.investmentSlide.items.map(p => p.name).join(' + ')}</p>
+                            {content.investmentSlide.discount && <p className="mt-1 text-sm"><strong>Desconto Aplicado:</strong> {content.investmentSlide.discount}</p>}
                         </div>
                     </div>
                 </div>
             ) : (
                 <div className="w-full max-w-7xl">
                     <p className="text-lg font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
-                    <h1 className="text-5xl md:text-6xl font-extrabold my-2">Escolha o plano ideal para você</h1>
+                    <h1 className="text-6xl font-extrabold my-2">Escolha o plano ideal para você</h1>
                     <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="bg-white/5 border border-white/10 rounded-xl p-8 flex flex-col h-full">
                             <h3 className="text-3xl font-bold text-white mb-2">Plano Essencial</h3>
@@ -171,11 +169,11 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
             </div>
 
           {/* Slide 9: Próximos Passos */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
-                <Goal className="h-16 w-16 text-primary mx-auto mb-6" />
-                <h1 className="text-5xl md:text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
+           <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
+                <Goal className="h-16 w-16 text-primary mx-auto mb-6"/>
+                <h1 className="text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
                 <p className="text-xl text-gray-400 mt-4 max-w-6xl">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
-                <div className="mt-12 flex flex-col md:flex-row items-stretch gap-8 w-full max-w-7xl">
+                <div className="mt-12 flex items-stretch gap-8 w-full max-w-7xl">
                    {content.nextStepsSlide.content.map((step, index) => (
                      <div key={index} className="bg-white/5 p-6 rounded-lg border border-white/10 text-left flex-1 flex flex-col justify-center">
                         <span className="text-5xl font-bold text-primary">{index + 1}.</span>
@@ -195,7 +193,6 @@ export default function PresentationGenerator() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [presentationContent, setPresentationContent] = useState<GeneratePresentationOutput | null>(null);
   const { toast } = useToast();
-  const presentationRef = useRef<HTMLDivElement>(null);
 
   const form = useForm<DiagnosticFormValues>({
     resolver: zodResolver(DiagnosticFormSchema),
@@ -222,7 +219,7 @@ export default function PresentationGenerator() {
   const watchedPackages = form.watch('packages') || [];
   const watchedDiscount = form.watch('discount') || 0;
 
-  const investmentValue = useMemo(() => {
+  const investmentValue = React.useMemo(() => {
     const total = watchedPackages.reduce((acc, pkgKey) => {
       const pkg = packageOptions[pkgKey as keyof typeof packageOptions];
       return acc + (pkg ? pkg.price : 0);
@@ -249,11 +246,26 @@ export default function PresentationGenerator() {
   };
 
   const handleDownload = async () => {
-    if (!presentationRef.current) return;
+    if (!presentationContent) return;
+    
     setIsDownloading(true);
     toast({ title: 'Gerando PDF...', description: 'Aguarde um momento.' });
 
-    const slides = presentationRef.current.querySelectorAll<HTMLElement>('[data-slide]');
+    // Create a hidden container to render the presentation for PDF generation
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = '-9999px';
+    container.style.top = '-9999px';
+    document.body.appendChild(container);
+
+    // Use React.createPortal might be better but this is simpler for now
+    const root = (await import('react-dom/client')).createRoot(container);
+    root.render(<GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />);
+
+    // Allow time for rendering
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
     const pdf = new jsPDF({
       orientation: 'landscape',
       unit: 'px',
@@ -263,33 +275,42 @@ export default function PresentationGenerator() {
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    for (let i = 0; i < slides.length; i++) {
-      const slide = slides[i];
-      const canvas = await html2canvas(slide, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#0A0A0A',
-        width: 1920,
-        height: 1080
-      });
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      
-      if (i > 0) {
-        pdf.addPage([pdfWidth, pdfHeight], 'landscape');
+    try {
+      for (let i = 0; i < slides.length; i++) {
+        const slide = slides[i];
+        const canvas = await html2canvas(slide, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#0A0A0A',
+          width: 1920,
+          height: 1080
+        });
+        const imgData = canvas.toDataURL('image/png', 1.0);
+        
+        if (i > 0) {
+          pdf.addPage([pdfWidth, pdfHeight], 'landscape');
+        }
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
       }
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+      
+      pdf.save(`Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.pdf`);
+      toast({ title: 'Download Concluído!', description: 'Seu PDF foi baixado com sucesso.' });
+
+    } catch(err) {
+        console.error("PDF Generation Error: ", err);
+        toast({ title: 'Erro ao gerar PDF', description: 'Houve um problema na captura dos slides.', variant: 'destructive'});
+    } finally {
+        // Cleanup
+        root.unmount();
+        document.body.removeChild(container);
+        setIsDownloading(false);
     }
-    
-    pdf.save(`Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.pdf`);
-    setIsDownloading(false);
-    toast({ title: 'Download Concluído!', description: 'Seu PDF foi baixado com sucesso.' });
   };
   
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-      {/* Etapa 1: Diagnóstico */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><FileText /> Etapa 1: Reunião de Diagnóstico (R1)</CardTitle>
@@ -345,7 +366,7 @@ export default function PresentationGenerator() {
                 <AccordionItem value="item-4">
                   <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><DollarSign className="h-6 w-6 text-primary"/>Serviços e Investimento</div></AccordionTrigger>
                    <AccordionContent className="pt-4 space-y-6">
-                        <Controller
+                       <Controller
                             control={form.control}
                             name="packages"
                             render={({ field }) => (
@@ -413,7 +434,6 @@ export default function PresentationGenerator() {
         </CardContent>
       </Card>
       
-      {/* Etapa 2: Apresentação */}
       <Card className="lg:sticky top-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
@@ -428,9 +448,13 @@ export default function PresentationGenerator() {
           )}
           {presentationContent && (
             <div className="space-y-4">
-               <div className="w-full aspect-video rounded-lg shadow-md overflow-hidden bg-black">
-                 <GeneratedPresentation ref={presentationRef} content={presentationContent} clientName={form.getValues('clientName')}/>
-               </div>
+              <Alert>
+                  <BrainCircuit className="h-4 w-4" />
+                  <AlertTitle>Apresentação Pronta!</AlertTitle>
+                  <AlertDescription>
+                    Os slides foram gerados com sucesso. Clique no botão abaixo para fazer o download do PDF.
+                  </AlertDescription>
+              </Alert>
               <Button onClick={handleDownload} disabled={isDownloading} className="w-full">
                 {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4" />}
                 Baixar Apresentação (PDF)
@@ -440,7 +464,7 @@ export default function PresentationGenerator() {
            {!isLoading && !presentationContent && (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-center">
               <Info className="h-10 w-10 mx-auto mb-4"/>
-              <p>A prévia da sua apresentação aparecerá aqui.</p>
+              <p>A sua apresentação aparecerá aqui.</p>
               <p className="text-xs mt-1">Preencha o formulário e clique em "Gerar" para começar.</p>
             </div>
            )}
