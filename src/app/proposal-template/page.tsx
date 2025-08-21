@@ -108,15 +108,15 @@ export default function ProposalTemplatePage() {
             <p className="text-lg font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
             <h1 className="text-5xl md:text-6xl font-extrabold my-2">Meta vs. Realidade</h1>
             <div className="mt-8 flex flex-col md:flex-row items-start gap-6 max-w-7xl">
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
                 <h3 className="text-xl font-bold text-primary mb-3">Meta</h3>
                 <p className="text-base text-gray-300 break-words flex-grow"><u>Atingir um faturamento de R$ 70.000, partindo dos R$ 20.000 atuais.</u></p>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
                 <h3 className="text-xl font-bold text-primary mb-3">Gargalo</h3>
                 <p className="text-base text-gray-300 break-words flex-grow"><u>Baixa geração de leads qualificados e ausência de um processo claro de conversão.</u></p>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start">
+              <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
                 <h3 className="text-xl font-bold text-primary mb-3">Impacto Financeiro</h3>
                 <p className="text-base text-gray-300 break-words flex-grow"><u>Custo de oportunidade estimado em R$ 15.000 mensais devido ao gargalo atual.</u></p>
               </div>
@@ -128,15 +128,15 @@ export default function ProposalTemplatePage() {
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
               <h1 className="text-5xl md:text-6xl font-extrabold my-2">Os 3 Pilares do Crescimento</h1>
               <div className="mt-8 flex flex-col md:flex-row items-start gap-6 max-w-7xl">
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start">
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
                       <h3 className="text-xl font-bold mb-2 text-white">1. Aquisição</h3>
                       <p className="text-base text-gray-300 break-words flex-grow"><u>Atrair leads qualificados via Google e Instagram Ads, focando em termos de alta intenção como "implante dentário".</u></p>
                   </div>
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start">
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
                       <h3 className="text-xl font-bold mb-2 text-white">2. Conversão</h3>
                       <p className="text-base text-gray-300 break-words flex-grow"><u>Criar uma Landing Page de alta conversão e roteirizar o atendimento via WhatsApp para transformar leads em agendamentos.</u></p>
                   </div>
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start">
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1 flex flex-col items-start h-full">
                       <h3 className="text-xl font-bold mb-2 text-white">3. Autoridade</h3>
                       <p className="text-base text-gray-300 break-words flex-grow"><u>Produzir vídeos de depoimentos e otimizar o Google Meu Negócio para construir prova social e confiança.</u></p>
                   </div>
@@ -207,15 +207,15 @@ export default function ProposalTemplatePage() {
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
               <h1 className="text-5xl md:text-6xl font-extrabold my-2">Nossos Diferenciais</h1>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl">
-                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
+                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg h-full">
                       <h3 className="text-xl font-bold text-white mb-2">Mentoria e Agilidade</h3>
                       <p className="text-base text-gray-300 break-words"><u>Diferente de agências tradicionais que levam meses para apresentar um plano, nós entregamos o projeto estratégico completo em 10 dias, acompanhado de uma mentoria de apresentação. Isso garante alinhamento total e acelera o início da execução, para que você comece a ver resultados o mais rápido possível.</u></p>
                   </div>
-                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
+                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg h-full">
                       <h3 className="text-xl font-bold text-white mb-2">Produção Própria</h3>
                       <p className="text-base text-gray-300 break-words"><u>Não dependemos de freelancers ou terceiros. Com estúdios e equipe de produção próprios, temos controle total sobre a qualidade e agilidade do conteúdo. Isso nos permite criar materiais de alta qualidade (vídeos, fotos, podcasts) sem sobrecarregar sua agenda ou a do seu time.</u></p>
                   </div>
-                   <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
+                   <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg h-full">
                       <h3 className="text-xl font-bold text-white mb-2">Foco em Performance de Negócio</h3>
                       <p className="text-base text-gray-300 break-words"><u>Nosso trabalho não termina na entrega de relatórios de curtidas. Somos obcecados por métricas que impactam o seu negócio: Custo por Aquisição (CAC), Retorno sobre Investimento (ROI) e Faturamento. Cada ação é pensada para mover o ponteiro do que realmente importa.</u></p>
                   </div>
@@ -226,9 +226,13 @@ export default function ProposalTemplatePage() {
           <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
             {hasSelectedPackages ? (
                 <div className="flex flex-col items-center">
-                    <h3 className="text-xl text-gray-300 mb-2">Valor do Investimento Mensal</h3>
-                    <p className="text-2xl text-red-400 line-through">De R$ 3.998,00</p>
-                    <div className="text-8xl font-bold text-primary tracking-tighter my-2">R$ 3.598,00</div>
+                    {/* <p className="text-2xl text-gray-300 mb-2">Valor do Investimento Mensal</p> */}
+                    <p className="text-5xl font-semibold text-red-500 line-through decoration-red-500/80">
+                        De R$ 3.998,00
+                    </p>
+                    <div className="text-8xl font-bold text-primary tracking-tighter mb-2">{/* my-2 to mb-2 */}
+                        R$ 3.598,00
+                    </div>
                     <div className="mt-4 text-base text-white">
                         <p><strong>Incluso:</strong> <u>Plano de Marketing Essencial + Captação em Estúdio</u></p>
                         {watchedDiscount > 0 && <p className="mt-2"><strong>Desconto Aplicado:</strong> <u>- R$ 400,00</u></p>}
