@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template de Slide Editável</title>
+    
+    <!-- Este bloco <style> contém todo o CSS que define a aparência do seu slide. -->
+    <!-- Você pode alterar cores, fontes, tamanhos e espaçamentos aqui. -->
+    <style>
+        /* Define as fontes que serão usadas no slide. Usamos a 'Inter' como exemplo. */
+        /* Para usar outras fontes do Google Fonts, você pode importá-las aqui. */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+        /* Estilos aplicados a todo o corpo (body) do documento. */
+        body {
+            /* Define a cor de fundo geral da página (fora do slide). */
+            background-color: #f0f0f0; 
+            /* Define a família de fontes padrão para todo o texto. */
+            font-family: 'Inter', sans-serif;
+            /* Centraliza o slide na tela. */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Garante que a página ocupe a altura total da tela. */
+            min-height: 100vh;
+            /* Remove margens padrão do navegador. */
+            margin: 0;
+        }
+
+        /* 
+         * Este é o container principal do seu slide.
+         * Ele tem um tamanho fixo de 1280x720 pixels, simulando uma apresentação 16:9.
+        */
+        .slide-container {
+            /* Largura do slide. */
+            width: 1280px;
+            /* Altura do slide. */
+            height: 720px;
+            /* Cor de fundo escura, a base do nosso design. */
+            background-color: #0A0A0A;
+            /* Efeito de iluminação (holofote) usando um gradiente radial. */
+            /* A luz (laranja) vem do centro superior e se dissipa. */
+            background-image: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0));
+            /* Define a cor padrão do texto para branco. */
+            color: #ffffff;
+            /* Organiza o conteúdo do slide (o .slide-content) verticalmente. */
+            display: flex;
+            flex-direction: column;
+            /* Centraliza o conteúdo verticalmente. */
+            justify-content: center;
+            /* Adiciona um preenchimento interno para o conteúdo não colar nas bordas. */
+            padding: 80px; /* 80 pixels de respiro em todos os lados */
+            /* Garante que o padding seja calculado para dentro da caixa de 1280x720. */
+            box-sizing: border-box;
+            /* Adiciona uma sombra sutil para destacar o slide da página. */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            /* Adiciona cantos arredondados. */
+            border-radius: 12px;
+        }
+
+        /* 
+         * Container para o conteúdo principal do slide.
+         * Isso nos ajuda a limitar a largura do texto para melhor legibilidade.
+        */
+        .slide-content {
+            /* Define a largura máxima do texto. */
+            max-width: 1000px;
+        }
+
+        /* Estilo para o subtítulo (a linha de texto pequena e colorida). */
+        .slide-subtitle {
+            /* Cor primária (laranja) para destaque. Altere o código HSL para mudar a cor. */
+            color: #E65100;
+            /* Deixa a fonte mais grossa (negrito). */
+            font-weight: 700;
+            /* Tamanho da fonte. */
+            font-size: 1.2rem; /* 1.2 vezes o tamanho da fonte padrão */
+            /* Converte o texto para maiúsculas. */
+            text-transform: uppercase;
+            /* Adiciona espaçamento entre as letras para um visual mais refinado. */
+            letter-spacing: 0.1em;
+            /* Margem inferior para separar do título principal. */
+            margin-bottom: 16px;
+        }
+
+        /* Estilo para o título principal do slide. */
+        .slide-title {
+            /* Tamanho da fonte bem grande para impacto. */
+            font-size: 5rem; /* 80 pixels */
+            /* Deixa a fonte extra-negrito. */
+            font-weight: 900;
+            /* Margem inferior para separar do parágrafo. */
+            margin-bottom: 24px;
+             /* Remove a margem superior padrão do h1. */
+            margin-top: 0;
+            /* Define uma altura de linha mais apertada para títulos grandes. */
+            line-height: 1.1;
+        }
+
+        /* Estilo para o parágrafo de texto principal. */
+        .slide-paragraph {
+            /* Cor de texto um pouco mais suave (cinza claro) para não competir com o título. */
+            color: #E0E0E0;
+            /* Tamanho da fonte para boa legibilidade. */
+            font-size: 1.5rem; /* 24 pixels */
+            /* Define uma altura de linha confortável para leitura. */
+            line-height: 1.6;
+            /* Remove margens padrão do parágrafo. */
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Esta é a div que cria o slide. Tudo que estiver aqui dentro fará parte da sua apresentação. -->
+    <div class="slide-container">
+        
+        <!-- Este é o container do conteúdo. Ele ajuda a manter o texto alinhado e com uma largura agradável. -->
+        <div class="slide-content">
+
+            <!-- 
+                SUBTÍTULO
+                Use esta tag <p> para um texto de destaque menor, acima do título principal.
+                Para editar, troque o texto "NOSSO PLANO DE AÇÃO".
+            -->
+            <p class="slide-subtitle">
+                Nosso Plano de Ação
+            </p>
+
+            <!-- 
+                TÍTULO PRINCIPAL
+                Use esta tag <h1> para o título principal e mais impactante do seu slide.
+                Para editar, troque o texto "O plano é claro: dominar, não competir."
+            -->
+            <h1 class="slide-title">
+                O plano é claro: dominar, não competir.
+            </h1>
+
+            <!-- 
+                PARÁGRAFO
+                Use esta tag <p> para o texto de apoio, descrições ou qualquer outro conteúdo principal.
+                Para editar, troque o texto aqui dentro.
+            -->
+            <p class="slide-paragraph">
+                Esta proposta é o primeiro passo para profissionalizar sua presença digital e construir uma máquina de vendas previsível que funciona 24 horas por dia para o seu negócio.
+            </p>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
