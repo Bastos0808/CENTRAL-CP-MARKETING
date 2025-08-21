@@ -12,7 +12,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target } from "lucide-react";
+import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
@@ -96,16 +96,18 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
           </div>
 
           {/* Slide 6: KPIs */}
-           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col items-start p-10 text-white rounded-lg overflow-hidden">
+           <div data-slide style={slideStyle} className="w-[1280px] h-[720px] shadow-2xl flex flex-col p-10 text-white rounded-lg overflow-hidden">
              <div className="w-full flex flex-col justify-center h-full">
                 <p className="text-md font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
                 <h1 className="text-5xl font-extrabold my-2">{content.kpiSlide.title}</h1>
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl">
+                <div className="mt-6 flex items-stretch gap-4 max-w-5xl">
                     {content.kpiSlide.kpis.map((kpi, index) => (
-                        <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10">
-                            <h4 className="font-bold text-sm text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
-                            <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
-                            <p className="text-sm text-gray-400 mt-2 break-words">{kpi.importance}</p>
+                        <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 flex-1 flex flex-col">
+                            <div className="flex-grow">
+                                <h4 className="font-bold text-sm text-primary flex items-center gap-2"><TrendingUp/> {kpi.metric}</h4>
+                                <p className="text-gray-300 mt-1 text-sm">Estimativa: <strong className="text-white">{kpi.estimate}</strong></p>
+                                <p className="text-sm text-gray-400 mt-2 break-words">{kpi.importance}</p>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -117,7 +119,7 @@ const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: Genera
             <div className="flex flex-col justify-center h-full">
               <p className="text-md font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
               <h1 className="text-5xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl">
+              <div className="mt-6 flex items-start gap-4 max-w-5xl">
                   {content.whyCpSlide.content.map((item, index) => (
                     <div key={index} className="p-4 bg-white/5 border-t-2 border-primary rounded-lg h-full" >
                         <p className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<h3 class="text-lg font-bold text-white mb-2">$1</h3>') }} />
