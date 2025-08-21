@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { BackButton } from "@/components/ui/back-button";
 import { Download, Loader2, Goal, TrendingUp, Target, Lightbulb, CheckCheck, Check } from "lucide-react";
@@ -143,7 +143,7 @@ export default function ProposalTemplatePage() {
           </div>
           
           {/* Slide 4: Justificativa Estratégica */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-16 text-white rounded-lg overflow-hidden">
               <div className="max-w-7xl">
                   <p className="text-lg font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
                   <h1 className="text-5xl md:text-6xl font-extrabold my-2">Por que este plano é ideal para você?</h1>
@@ -154,7 +154,7 @@ export default function ProposalTemplatePage() {
           </div>
 
           {/* Slide 5: Cronograma */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-16 text-white rounded-lg overflow-hidden">
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
               <h1 className="text-5xl md:text-6xl font-extrabold my-2">Fases do Projeto</h1>
               <ul className="mt-8 space-y-4 text-lg text-gray-300 max-w-7xl">
@@ -174,7 +174,7 @@ export default function ProposalTemplatePage() {
           </div>
 
           {/* Slide 6: KPIs */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-16 text-white rounded-lg overflow-hidden">
              <p className="text-lg font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
              <h1 className="text-5xl md:text-6xl font-extrabold my-2">Como Mediremos o Sucesso</h1>
              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl">
@@ -202,29 +202,33 @@ export default function ProposalTemplatePage() {
           </div>
           
           {/* Slide 7: Diferenciais */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-8 text-white rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center p-16 text-white rounded-lg overflow-hidden">
               <p className="text-lg font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
               <h1 className="text-5xl md:text-6xl font-extrabold my-2">Nossos Diferenciais</h1>
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-7xl">
-                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg flex-grow">
-                      <h3 className="text-2xl font-bold text-white mb-2">Mentoria e Agilidade</h3>
-                      <p className="text-base text-gray-300 break-words"><u>Para garantir alinhamento e agilidade, entregamos o projeto estratégico em 10 dias com uma mentoria de apresentação.</u></p>
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl">
+                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
+                      <h3 className="text-xl font-bold text-white mb-2">Mentoria e Agilidade</h3>
+                      <p className="text-base text-gray-300 break-words"><u>Diferente de agências tradicionais que levam meses para apresentar um plano, nós entregamos o projeto estratégico completo em 10 dias, acompanhado de uma mentoria de apresentação. Isso garante alinhamento total e acelera o início da execução, para que você comece a ver resultados o mais rápido possível.</u></p>
                   </div>
-                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg flex-grow">
-                      <h3 className="text-2xl font-bold text-white mb-2">Produção Própria</h3>
-                      <p className="text-base text-gray-300 break-words"><u>Para produzir conteúdo de alta qualidade sem depender da sua agenda, temos time presencial e estúdios próprios.</u></p>
+                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
+                      <h3 className="text-xl font-bold text-white mb-2">Produção Própria</h3>
+                      <p className="text-base text-gray-300 break-words"><u>Não dependemos de freelancers ou terceiros. Com estúdios e equipe de produção próprios, temos controle total sobre a qualidade e agilidade do conteúdo. Isso nos permite criar materiais de alta qualidade (vídeos, fotos, podcasts) sem sobrecarregar sua agenda ou a do seu time.</u></p>
+                  </div>
+                  <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
+                      <h3 className="text-xl font-bold text-white mb-2">Foco em Performance de Negócio</h3>
+                      <p className="text-base text-gray-300 break-words"><u>Nosso trabalho não termina na entrega de relatórios de curtidas. Somos obcecados por métricas que impactam o seu negócio: Custo por Aquisição (CAC), Retorno sobre Investimento (ROI) e Faturamento. Cada ação é pensada para mover o ponteiro do que realmente importa.</u></p>
                   </div>
               </div>
           </div>
 
            {/* Slide 8: Investimento */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-16 text-center text-white rounded-lg overflow-hidden">
             {hasSelectedPackages ? (
               <div className="bg-gray-900/50 rounded-xl p-8 md:p-12 border border-white/10 inline-block">
                 <h3 className="text-xl text-gray-300">Valor do Investimento Mensal</h3>
-                <div className="my-2 flex flex-col items-center">
-                  <p className="text-xl text-red-400 line-through">De <u>R$ 3.998,00</u></p>
-                  <p className="text-8xl font-bold text-primary tracking-tighter"><u>R$ 3.598,00</u></p>
+                 <div className="flex flex-col items-center my-2">
+                    <div className="text-xl text-red-400 line-through">De <u>R$ 3.998,00</u></div>
+                    <div className="text-8xl font-bold text-primary tracking-tighter"><u>R$ 3.598,00</u></div>
                 </div>
                 <div className="mt-4 text-left text-base space-y-2 text-white">
                   <p><strong>Incluso:</strong> <u>Plano de Marketing Essencial + Captação em Estúdio</u></p>
@@ -267,7 +271,7 @@ export default function ProposalTemplatePage() {
 
 
           {/* Slide 9: Próximos Passos */}
-          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
+          <div data-slide style={slideStyle} className="w-full aspect-video shadow-2xl flex flex-col justify-center items-center p-16 text-center text-white rounded-lg overflow-hidden">
                 <Goal className="h-16 w-16 text-primary mx-auto mb-6" />
                 <h1 className="text-5xl md:text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
                 <p className="text-xl text-gray-400 mt-4 max-w-6xl">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
