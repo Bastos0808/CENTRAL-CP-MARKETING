@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRef, useState } from "react";
@@ -102,18 +103,18 @@ export default function ProposalTemplatePage() {
                 <div className="w-full">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Meta vs. Realidade</h1>
-                     <div className="mt-8 grid grid-cols-3 gap-6">
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                     <div className="mt-8 flex items-start gap-6">
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1">
                             <h3 className="text-2xl font-bold text-primary mb-3">Meta</h3>
-                            <p className="text-lg text-gray-300"><u>Atingir um faturamento de R$ 70.000, partindo dos R$ 20.000 atuais.</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Atingir um faturamento de R$ 70.000, partindo dos R$ 20.000 atuais. Este texto é mais longo para testar como o contêiner se ajusta automaticamente para acomodar mais conteúdo sem quebrar o layout.</u></p>
                         </div>
-                         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                         <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1">
                             <h3 className="text-2xl font-bold text-primary mb-3">Gargalo</h3>
-                            <p className="text-lg text-gray-300"><u>Baixa geração de leads qualificados e ausência de um processo claro de conversão.</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Baixa geração de leads qualificados e ausência de um processo claro de conversão.</u></p>
                         </div>
-                         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                         <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1">
                             <h3 className="text-2xl font-bold text-primary mb-3">Impacto Financeiro</h3>
-                            <p className="text-lg text-gray-300"><u>Custo de oportunidade estimado em R$ 15.000 mensais devido ao gargalo atual.</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Custo de oportunidade estimado em R$ 15.000 mensais devido ao gargalo atual.</u></p>
                         </div>
                     </div>
                 </div>
@@ -124,18 +125,18 @@ export default function ProposalTemplatePage() {
                  <div className="w-full">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Os 3 Pilares do Crescimento</h1>
-                    <div className="mt-8 grid grid-cols-3 gap-6">
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                    <div className="mt-8 flex items-start gap-6">
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1">
                             <h3 className="text-2xl font-bold mb-2 text-white">1. Aquisição</h3>
-                            <p className="text-lg text-gray-300"><u>Atrair leads qualificados via Google e Instagram Ads, focando em termos de alta intenção como "implante dentário".</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Atrair leads qualificados via Google e Instagram Ads, focando em termos de alta intenção como "implante dentário".</u></p>
                         </div>
-                         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                         <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1">
                             <h3 className="text-2xl font-bold mb-2 text-white">2. Conversão</h3>
-                            <p className="text-lg text-gray-300"><u>Criar uma Landing Page de alta conversão e roteirizar o atendimento via WhatsApp para transformar leads em agendamentos.</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Criar uma Landing Page de alta conversão e roteirizar o atendimento via WhatsApp para transformar leads em agendamentos.</u></p>
                         </div>
-                         <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+                         <div className="bg-white/5 border border-white/10 rounded-xl p-6 flex-1">
                             <h3 className="text-2xl font-bold mb-2 text-white">3. Autoridade</h3>
-                            <p className="text-lg text-gray-300"><u>Produzir vídeos de depoimentos e otimizar o Google Meu Negócio para construir prova social e confiança.</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Produzir vídeos de depoimentos e otimizar o Google Meu Negócio para construir prova social e confiança.</u></p>
                         </div>
                     </div>
                 </div>
@@ -146,7 +147,7 @@ export default function ProposalTemplatePage() {
                 <div className="max-w-7xl">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
                     <h1 className="text-6xl font-extrabold my-2 text-white">Por que este plano é ideal para você?</h1>
-                    <p className="mt-6 text-xl text-gray-300 leading-relaxed">
+                    <p className="mt-6 text-xl text-gray-300 leading-relaxed break-words">
                       <u>Analisamos seu cenário e concluímos que o principal gargalo não é a falta de interesse, mas a ausência de um sistema para transformar esse interesse em agendamentos. Nosso plano ataca exatamente isso: as campanhas de **Tráfego Pago** trarão o volume de interessados, a **Landing Page** irá qualificá-los e facilitar o primeiro contato, e os vídeos de **Prova Social** quebrarão a principal objeção de confiança, justificando o investimento do paciente. É um sistema completo para garantir o crescimento.</u>
                     </p>
                 </div>
@@ -160,15 +161,15 @@ export default function ProposalTemplatePage() {
                     <ul className="mt-8 space-y-4 text-xl text-gray-300">
                         <li className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-lg">
                             <strong className="text-primary">Semanas 1-2:</strong>
-                            <span><u>Setup e Estratégia: Realizaremos a configuração de ferramentas, o planejamento de conteúdo e campanhas, e um briefing aprofundado para alinhar todos os detalhes.</u></span>
+                            <span className="break-words"><u>Setup e Estratégia: Realizaremos a configuração de ferramentas, o planejamento de conteúdo e campanhas, e um briefing aprofundado para alinhar todos os detalhes.</u></span>
                         </li>
                         <li className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-lg">
                             <strong className="text-primary">Semanas 3-12:</strong>
-                            <span><u>Execução e Otimização: Lançaremos as campanhas, produziremos o conteúdo, analisaremos as métricas e faremos otimizações semanais para maximizar o resultado.</u></span>
+                            <span className="break-words"><u>Execução e Otimização: Lançaremos as campanhas, produziremos o conteúdo, analisaremos as métricas e faremos otimizações semanais para maximizar o resultado.</u></span>
                         </li>
                         <li className="flex items-start gap-4 p-4 bg-white/5 border border-white/10 rounded-lg">
                             <strong className="text-primary">Revisões:</strong>
-                            <span><u>Teremos reuniões mensais de alinhamento para apresentar os resultados, discutir os aprendizados e planejar os próximos passos.</u></span>
+                            <span className="break-words"><u>Teremos reuniões mensais de alinhamento para apresentar os resultados, discutir os aprendizados e planejar os próximos passos.</u></span>
                         </li>
                     </ul>
                 </div>
@@ -197,11 +198,11 @@ export default function ProposalTemplatePage() {
                     <div className="mt-8 grid grid-cols-2 gap-8">
                         <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
                             <h3 className="text-3xl font-bold text-white mb-2">Mentoria e Agilidade</h3>
-                            <p className="text-lg text-gray-300"><u>Para garantir alinhamento e agilidade, entregamos o projeto estratégico em 10 dias com uma mentoria de apresentação.</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Para garantir alinhamento e agilidade, entregamos o projeto estratégico em 10 dias com uma mentoria de apresentação.</u></p>
                         </div>
                         <div className="p-6 bg-white/5 border-t-4 border-primary rounded-lg">
                             <h3 className="text-3xl font-bold text-white mb-2">Produção Própria</h3>
-                            <p className="text-lg text-gray-300"><u>Para produzir conteúdo de alta qualidade sem depender da sua agenda, temos time presencial e estúdios próprios.</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Para produzir conteúdo de alta qualidade sem depender da sua agenda, temos time presencial e estúdios próprios.</u></p>
                         </div>
                     </div>
                 </div>
@@ -229,18 +230,18 @@ export default function ProposalTemplatePage() {
                     <Goal className="h-16 w-16 text-primary mx-auto mb-6" />
                     <h1 className="text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
                     <p className="text-2xl text-gray-400 mt-4">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
-                     <div className="mt-12 grid grid-cols-3 gap-8">
-                        <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left">
+                     <div className="mt-12 flex items-start gap-8">
+                        <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left flex-1">
                            <span className="text-5xl font-bold text-primary">1.</span>
-                           <p className="mt-2 text-2xl font-semibold text-white"><u>Alinhamento e assinatura da proposta.</u></p>
+                           <p className="mt-2 text-2xl font-semibold text-white break-words"><u>Alinhamento e assinatura da proposta.</u></p>
                         </div>
-                        <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left">
+                        <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left flex-1">
                            <span className="text-5xl font-bold text-primary">2.</span>
-                           <p className="mt-2 text-2xl font-semibold text-white"><u>Pagamento da primeira parcela.</u></p>
+                           <p className="mt-2 text-2xl font-semibold text-white break-words"><u>Pagamento da primeira parcela.</u></p>
                         </div>
-                        <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left">
+                        <div className="bg-white/5 p-6 rounded-lg border border-white/10 text-left flex-1">
                            <span className="text-5xl font-bold text-primary">3.</span>
-                           <p className="mt-2 text-2xl font-semibold text-white"><u>Reunião de Onboarding e Kick-off estratégico.</u></p>
+                           <p className="mt-2 text-2xl font-semibold text-white break-words"><u>Reunião de Onboarding e Kick-off estratégico.</u></p>
                         </div>
                     </div>
                 </div>
@@ -260,41 +261,45 @@ export default function ProposalTemplatePage() {
                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
                     <h1 className="text-6xl font-extrabold my-2">Meta vs. Realidade</h1>
-                     <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
-                        <h3 className="text-2xl font-bold text-primary mb-3">Meta</h3>
-                        <p className="text-lg text-gray-300"><u>Atingir um faturamento de R$ 70.000, partindo dos R$ 20.000 atuais.</u></p>
-                    </div>
-                     <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
-                        <h3 className="text-2xl font-bold text-primary mb-3">Gargalo</h3>
-                        <p className="text-lg text-gray-300"><u>Baixa geração de leads qualificados e ausência de um processo claro de conversão.</u></p>
-                    </div>
-                     <div style={{display: 'inline-block', width: '30%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
-                        <h3 className="text-2xl font-bold text-primary mb-3">Impacto Financeiro</h3>
-                        <p className="text-lg text-gray-300"><u>Custo de oportunidade estimado em R$ 15.000 mensais devido ao gargalo atual.</u></p>
+                     <div style={{display: 'flex', alignItems: 'stretch', gap: '24px', marginTop: '32px'}}>
+                        <div style={{flex: 1, padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
+                            <h3 className="text-2xl font-bold text-primary mb-3">Meta</h3>
+                            <p className="text-lg text-gray-300 break-words"><u>Atingir um faturamento de R$ 70.000, partindo dos R$ 20.000 atuais. Este texto é mais longo para testar como o contêiner se ajusta automaticamente para acomodar mais conteúdo sem quebrar o layout.</u></p>
+                        </div>
+                         <div style={{flex: 1, padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
+                            <h3 className="text-2xl font-bold text-primary mb-3">Gargalo</h3>
+                            <p className="text-lg text-gray-300 break-words"><u>Baixa geração de leads qualificados e ausência de um processo claro de conversão.</u></p>
+                        </div>
+                         <div style={{flex: 1, padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
+                            <h3 className="text-2xl font-bold text-primary mb-3">Impacto Financeiro</h3>
+                            <p className="text-lg text-gray-300 break-words"><u>Custo de oportunidade estimado em R$ 15.000 mensais devido ao gargalo atual.</u></p>
+                        </div>
                     </div>
                 </div>
                  {/* Slide 3: Plano de Ação */}
                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
                     <h1 className="text-6xl font-extrabold my-2">Os 3 Pilares do Crescimento</h1>
-                    <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
-                        <h3 className="text-2xl font-bold mb-2">1. Aquisição</h3>
-                        <p className="text-lg text-gray-300"><u>Atrair leads qualificados via Google e Instagram Ads, focando em termos de alta intenção como "implante dentário".</u></p>
-                    </div>
-                    <div style={{display: 'inline-block', width: '30%', marginRight: '3%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
-                        <h3 className="text-2xl font-bold mb-2">2. Conversão</h3>
-                        <p className="text-lg text-gray-300"><u>Criar uma Landing Page de alta conversão e roteirizar o atendimento via WhatsApp para transformar leads em agendamentos.</u></p>
-                    </div>
-                    <div style={{display: 'inline-block', width: '30%', verticalAlign: 'top', padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)', marginTop: '32px'}}>
-                        <h3 className="text-2xl font-bold mb-2">3. Autoridade</h3>
-                        <p className="text-lg text-gray-300"><u>Produzir vídeos de depoimentos e otimizar o Google Meu Negócio para construir prova social e confiança.</u></p>
+                    <div style={{display: 'flex', alignItems: 'stretch', gap: '24px', marginTop: '32px'}}>
+                        <div style={{flex: 1, padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
+                            <h3 className="text-2xl font-bold mb-2">1. Aquisição</h3>
+                            <p className="text-lg text-gray-300 break-words"><u>Atrair leads qualificados via Google e Instagram Ads, focando em termos de alta intenção como "implante dentário".</u></p>
+                        </div>
+                        <div style={{flex: 1, padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
+                            <h3 className="text-2xl font-bold mb-2">2. Conversão</h3>
+                            <p className="text-lg text-gray-300 break-words"><u>Criar uma Landing Page de alta conversão e roteirizar o atendimento via WhatsApp para transformar leads em agendamentos.</u></p>
+                        </div>
+                        <div style={{flex: 1, padding: '24px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
+                            <h3 className="text-2xl font-bold mb-2">3. Autoridade</h3>
+                            <p className="text-lg text-gray-300 break-words"><u>Produzir vídeos de depoimentos e otimizar o Google Meu Negócio para construir prova social e confiança.</u></p>
+                        </div>
                     </div>
                 </div>
                 {/* Slide 4: Justificativa */}
                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
                     <h1 className="text-6xl font-extrabold my-2">Por que este plano é ideal para você?</h1>
-                    <p className="mt-6 text-xl text-gray-300 leading-relaxed max-w-7xl">
+                    <p className="mt-6 text-xl text-gray-300 leading-relaxed max-w-7xl break-words">
                       <u>Analisamos seu cenário e concluímos que o principal gargalo não é a falta de interesse, mas a ausência de um sistema para transformar esse interesse em agendamentos. Nosso plano ataca exatamente isso: as campanhas de **Tráfego Pago** trarão o volume de interessados, a **Landing Page** irá qualificá-los e facilitar o primeiro contato, e os vídeos de **Prova Social** quebrarão a principal objeção de confiança, justificando o investimento do paciente. É um sistema completo para garantir o crescimento.</u>
                     </p>
                 </div>
@@ -304,16 +309,16 @@ export default function ProposalTemplatePage() {
                     <h1 className="text-6xl font-extrabold my-2">Fases do Projeto</h1>
                     <ul className="mt-8 space-y-4 text-xl text-gray-300" style={{ listStyle: 'none', padding: 0 }}>
                          <li style={{display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
-                            <strong style={{color: '#E65100'}}>Semanas 1-2:</strong>
-                            <span><u>Setup e Estratégia: Realizaremos a configuração de ferramentas, o planejamento de conteúdo e campanhas, e um briefing aprofundado para alinhar todos os detalhes.</u></span>
+                            <strong style={{color: '#E65100', flexShrink: 0}}>Semanas 1-2:</strong>
+                            <span className="break-words"><u>Setup e Estratégia: Realizaremos a configuração de ferramentas, o planejamento de conteúdo e campanhas, e um briefing aprofundado para alinhar todos os detalhes.</u></span>
                         </li>
                          <li style={{display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
-                            <strong style={{color: '#E65100'}}>Semanas 3-12:</strong>
-                            <span><u>Execução e Otimização: Lançaremos as campanhas, produziremos o conteúdo, analisaremos as métricas e faremos otimizações semanais para maximizar o resultado.</u></span>
+                            <strong style={{color: '#E65100', flexShrink: 0}}>Semanas 3-12:</strong>
+                            <span className="break-words"><u>Execução e Otimização: Lançaremos as campanhas, produziremos o conteúdo, analisaremos as métricas e faremos otimizações semanais para maximizar o resultado.</u></span>
                         </li>
                          <li style={{display: 'flex', alignItems: 'flex-start', gap: '16px', padding: '16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
-                            <strong style={{color: '#E65100'}}>Revisões:</strong>
-                            <span><u>Teremos reuniões mensais de alinhamento para apresentar os resultados, discutir os aprendizados e planejar os próximos passos.</u></span>
+                            <strong style={{color: '#E65100', flexShrink: 0}}>Revisões:</strong>
+                            <span className="break-words"><u>Teremos reuniões mensais de alinhamento para apresentar os resultados, discutir os aprendizados e planejar os próximos passos.</u></span>
                         </li>
                     </ul>
                 </div>
@@ -333,15 +338,14 @@ export default function ProposalTemplatePage() {
                 <div data-slide style={slideStyle} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-10">
                     <p className="text-xl font-bold text-primary uppercase tracking-widest">Por que a CP Marketing?</p>
                     <h1 className="text-6xl font-extrabold my-2">Nossos Diferenciais</h1>
-                     <div style={{marginTop: '32px', display: 'table', width: '100%'}}>
-                        <div style={{display: 'table-cell', width: '48%', padding: '24px', borderTop: '4px solid #E65100', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
+                     <div style={{marginTop: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px'}}>
+                        <div style={{padding: '24px', borderTop: '4px solid #E65100', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
                             <h3 className="text-3xl font-bold mb-2">Mentoria e Agilidade</h3>
-                            <p className="text-lg text-gray-300"><u>Para garantir alinhamento e agilidade, entregamos o projeto estratégico em 10 dias com uma mentoria de apresentação.</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Para garantir alinhamento e agilidade, entregamos o projeto estratégico em 10 dias com uma mentoria de apresentação.</u></p>
                         </div>
-                        <div style={{display: 'table-cell', width: '4%'}}></div>
-                        <div style={{display: 'table-cell', width: '48%', padding: '24px', borderTop: '4px solid #E65100', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
+                        <div style={{padding: '24px', borderTop: '4px solid #E65100', borderRadius: '8px', backgroundColor: 'rgba(255,255,255,0.05)'}}>
                             <h3 className="text-3xl font-bold mb-2">Produção Própria</h3>
-                            <p className="text-lg text-gray-300"><u>Para produzir conteúdo de alta qualidade sem depender da sua agenda, temos time presencial e estúdios próprios.</u></p>
+                            <p className="text-lg text-gray-300 break-words"><u>Para produzir conteúdo de alta qualidade sem depender da sua agenda, temos time presencial e estúdios próprios.</u></p>
                         </div>
                     </div>
                 </div>
@@ -364,18 +368,18 @@ export default function ProposalTemplatePage() {
                         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#E65100" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 24px auto' }}><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
                         <h1 className="text-6xl font-extrabold my-2 text-white">Vamos Começar?</h1>
                         <p className="text-2xl text-gray-400 mt-4">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
-                        <div style={{ marginTop: '48px', display: 'table', width: '100%', borderSpacing: '32px 0' }}>
-                            <div style={{ display: 'table-cell', width: '33.33%', padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)', textAlign: 'left' }}>
+                        <div style={{ marginTop: '48px', display: 'flex', alignItems: 'stretch', gap: '32px' }}>
+                            <div style={{flex: 1, padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)', textAlign: 'left' }}>
                                 <span style={{ fontSize: '3rem', fontWeight: 'bold', color: '#E65100' }}>1.</span>
-                                <p style={{ marginTop: '8px', fontSize: '1.5rem', fontWeight: '600', color: 'white' }}><u>Alinhamento e assinatura da proposta.</u></p>
+                                <p style={{ marginTop: '8px', fontSize: '1.5rem', fontWeight: '600', color: 'white' }} className="break-words"><u>Alinhamento e assinatura da proposta.</u></p>
                             </div>
-                             <div style={{ display: 'table-cell', width: '33.33%', padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)', textAlign: 'left' }}>
+                             <div style={{flex: 1, padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)', textAlign: 'left' }}>
                                 <span style={{ fontSize: '3rem', fontWeight: 'bold', color: '#E65100' }}>2.</span>
-                                <p style={{ marginTop: '8px', fontSize: '1.5rem', fontWeight: '600', color: 'white' }}><u>Pagamento da primeira parcela.</u></p>
+                                <p style={{ marginTop: '8px', fontSize: '1.5rem', fontWeight: '600', color: 'white' }} className="break-words"><u>Pagamento da primeira parcela.</u></p>
                             </div>
-                             <div style={{ display: 'table-cell', width: '33.33%', padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)', textAlign: 'left' }}>
+                             <div style={{flex: 1, padding: '24px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(255,255,255,0.05)', textAlign: 'left' }}>
                                 <span style={{ fontSize: '3rem', fontWeight: 'bold', color: '#E65100' }}>3.</span>
-                                <p style={{ marginTop: '8px', fontSize: '1.5rem', fontWeight: '600', color: 'white' }}><u>Reunião de Onboarding e Kick-off estratégico.</u></p>
+                                <p style={{ marginTop: '8px', fontSize: '1.5rem', fontWeight: '600', color: 'white' }} className="break-words"><u>Reunião de Onboarding e Kick-off estratégico.</u></p>
                             </div>
                         </div>
                     </div>
