@@ -48,7 +48,7 @@ const slideStyles = {
   objetivos: {
     backgroundColor: "#0A0A0A",
     backgroundImage: `
-      linear-gradient(rgba(255,255,25_5,0.07) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
       linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
       radial-gradient(circle at 20% 100%, rgba(230, 81, 0, 0.20) 0%, hsla(0, 0%, 100%, 0) 60%)
     `,
@@ -98,6 +98,32 @@ const defaultPackages = {
     }
 };
 
+const AboutUsSlide = () => (
+    <div data-slide style={{ ...slideStyles.base, padding: '50px 80px 80px' }} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-start text-white rounded-lg overflow-hidden">
+        <div className="max-w-[1000px]">
+            <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider mb-4">Sobre Nós</p>
+            <h1 className="text-6xl font-black leading-tight mb-6">Conheça sua nova agência</h1>
+            <div className="flex gap-6 mt-8 items-end">
+                <Image src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png" alt="Foto da equipe da agência" width={550} height={400} className="rounded-lg object-cover" />
+                <div className="flex flex-col gap-4 flex-grow">
+                    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-6 h-[180px] text-gray-200 text-base leading-relaxed">
+                        <p className="m-0">
+                           Imagine transformar sua presença digital em seu maior vendedor. Atuamos como parceiros estratégicos para construir um ecossistema de vendas robusto e previsível para seu negócio. Nosso foco é claro: gerar um fluxo constante de clientes e impulsionar seu faturamento a novos patamares.
+                        </p>
+                    </div>
+                    <div className="flex gap-4">
+                        <Image src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799844/Prancheta_33_jj5hre.png" alt="Imagem de projeto 1" width={130} height={220} className="rounded-lg object-cover" />
+                        <Image src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_32_gxdlmx.png" alt="Imagem de projeto 2" width={130} height={220} className="rounded-lg object-cover" />
+                        <Image src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_31_lyf95d.png" alt="Imagem de projeto 3" width={130} height={220} className="rounded-lg object-cover" />
+                        <Image src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799842/Prancheta_34_hviyd6.png" alt="Imagem de projeto 4" width={130} height={220} className="rounded-lg object-cover" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+
 export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
     
     const cpSolutions = {
@@ -120,21 +146,8 @@ export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content:
             <p className="text-md text-gray-500 mt-2 italic">Proposta válida por 7 dias</p>
           </div>
           
-           {/* Slide 2: Diferenciais (About Us) */}
-            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-                <div className="flex flex-col justify-center h-full max-w-6xl">
-                    <p className="text-md font-bold text-primary uppercase tracking-widest">Sobre Nós</p>
-                    <h1 className="text-5xl font-extrabold my-2">{content.whyCpSlide.title}</h1>
-                    <div className="mt-6 grid grid-cols-3 gap-6">
-                        {content.whyCpSlide.content.map((item, index) => (
-                            <div key={index} className="p-4 bg-white/5 border-t-2 border-primary rounded-lg h-full">
-                                <p className="text-sm text-gray-300 break-words" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<h3 class="text-lg font-bold text-white mb-2">$1</h3>') }} />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
+           {/* Slide 2: Sobre Nós com Imagens */}
+           <AboutUsSlide />
 
           {/* Slide 3: Diagnóstico */}
            <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
