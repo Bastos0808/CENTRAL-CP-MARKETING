@@ -146,9 +146,9 @@ const presentationGeneratorFlow = ai.defineFlow(
             5.  **kpiSlide:**
                 -   **title:** "Como vamos medir o sucesso (e o ROI)?"
                 -   **kpis (gere 5 kpis, incluindo CPL, Taxa de Conversão, CAC, ROAS e uma outra relevante):**
-                    -   **metric:** (Ex: "Custo por Lead (CPL)")
-                    -   **estimate:** (Ex: "Abaixo de R$25,00")
-                    -   **importance:** (Ex: "Essencial para escalar o investimento em anúncios de forma lucrativa, atacando diretamente o gargalo de '${inputForAI.principalGargalo}' e buscando a meta de ${inputForAI.metaFaturamento}.")
+                    -   **metric:** (Ex: "Custo por Aquisição (CAC)")
+                    -   **estimate:** (Ex: "Abaixo de R$150,00")
+                    -   **importance:** (Ex: "A métrica mais importante para a saúde financeira do negócio. Indica quanto custa para conquistar cada novo cliente, conectando diretamente o investimento em marketing ao crescimento real da base de clientes e à meta de ${inputForAI.metaFaturamento}.")
                     -   **icon:** (Escolha um ícone de: 'TrendingUp', 'Target', 'DollarSign', 'Repeat', 'Users')
 
             6.  **whyCpSlide:**

@@ -2,7 +2,7 @@
 "use client";
 
 import { BackButton } from "@/components/ui/back-button";
-import PresentationGenerator, { GeneratedPresentation } from "@/components/presentation-generator";
+import { GeneratedPresentation } from "@/components/presentation-generator";
 import { GeneratePresentationOutput } from "@/ai/schemas/presentation-generator-schemas";
 
 // Mock data to display the presentation template
@@ -36,15 +36,17 @@ const mockPresentationContent: GeneratePresentationOutput = {
     content: [
       "**Semanas 1-2:** Setup e Imersão",
       "**Semanas 3-12:** Execução e Otimização",
-      "**Revisões Estratégicas:** Mensais"
+      "**Revisões Estratégicas:** Reuniões mensais"
     ]
   },
   kpiSlide: {
     title: "Como vamos medir o sucesso (e o ROI)?",
     kpis: [
-      { metric: "Custo por Lead (CPL)", estimate: "Abaixo de R$25,00", importance: "Essencial para escalar o investimento em anúncios de forma lucrativa e previsível." },
-      { metric: "Taxa de Conversão", estimate: "Acima de 5%", importance: "Mede a eficácia da nossa comunicação em transformar visitantes em oportunidades reais." },
-      { metric: "Retorno sobre Investimento (ROI)", estimate: "Mínimo de 3:1", importance: "A métrica final que mostra o lucro gerado para cada real investido em marketing." }
+      { metric: "Custo por Lead (CPL)", estimate: "< R$25,00", importance: "Garante que o topo do funil seja saudável e escalável.", icon: "Target" },
+      { metric: "Taxa de Conversão", estimate: "> 5%", importance: "Mede a eficácia da nossa comunicação em transformar visitantes em oportunidades.", icon: "TrendingUp" },
+      { metric: "Custo por Aquisição (CAC)", estimate: "< R$150,00", importance: "A métrica mais importante para a saúde financeira, mostrando o custo real para conquistar um cliente.", icon: "DollarSign" },
+      { metric: "Retorno sobre Investimento (ROAS)", estimate: "> 3:1", importance: "Mostra o lucro gerado para cada real investido em anúncios, provando o valor do marketing.", icon: "Repeat" },
+      { metric: "Novos Clientes", estimate: "+20/mês", importance: "A métrica final que se conecta diretamente à meta de faturamento e crescimento.", icon: "Users" }
     ]
   },
   whyCpSlide: {
@@ -91,3 +93,5 @@ export default function ProposalTemplatePage() {
     </main>
   );
 }
+
+    
