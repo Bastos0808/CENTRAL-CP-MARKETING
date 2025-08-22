@@ -40,23 +40,44 @@ export const packageOptions = {
 const packageKeys = Object.keys(packageOptions) as [keyof typeof packageOptions, ...(keyof typeof packageOptions)[]];
 
 export const DiagnosticFormSchema = z.object({
-  clientName: z.string().describe("Nome do cliente."),
-  faturamentoMedio: z.string().describe("Faturamento médio atual do cliente."),
-  metaFaturamento: z.string().describe("Meta de faturamento desejada."),
-  ticketMedio: z.string().optional().describe("Ticket médio do principal produto/serviço."),
-  origemClientes: z.string().optional().describe("De onde vêm os clientes atualmente."),
-  tempoEmpresa: z.string().optional().describe("Há quanto tempo a empresa existe."),
-  motivacaoMarketing: z.string().describe("Principal motivação para investir em marketing agora."),
-  investimentoAnterior: z.string().optional().describe("Experiências passadas com investimento em marketing."),
-  tentativasAnteriores: z.string().optional().describe("O que já foi tentado para resolver o problema."),
-  principalGargalo: z.string().describe("O maior gargalo de crescimento identificado."),
-  custoProblema: z.string().optional().describe("Custo estimado do problema (impacto financeiro)."),
-  envolvidosDecisao: z.string().optional().describe("Quem mais participa da decisão de compra."),
-  orcamentoPrevisto: z.string().optional().describe("Faixa de investimento disponível ou prevista."),
-  prazoDecisao: z.string().optional().describe("Prazo para tomar a decisão de contratar."),
+  clientName: z.string().min(1, "O nome do cliente é obrigatório."),
+  
+  // Bloco 1
+  tempoEmpresa: z.string().min(1, "Campo obrigatório."),
+  faturamentoMedio: z.string().min(1, "Campo obrigatório."),
+  metaFaturamento: z.string().min(1, "Campo obrigatório."),
+  ticketMedio: z.string().optional(),
+  origemClientes: z.string().optional(),
+
+  // Bloco 2
+  motivacaoMarketing: z.string().min(1, "Campo obrigatório."),
+  experienciaMarketing: z.string().optional(),
+  tentativasAnteriores: z.string().optional(),
+  principalGargalo: z.string().min(1, "Campo obrigatório."),
+  impactoGargalo: z.string().optional(),
+  impactoAreas: z.string().optional(),
+  sentimentoPessoal: z.string().optional(),
+  
+  // Bloco 3
+  clientesPerdidos: z.string().optional(),
+  custoProblema: z.string().optional(),
+  potencialResolucao: z.string().optional(),
+
+  // Bloco 4
+  visaoFuturo: z.string().optional(),
+  visaoFuturoPessoal: z.string().optional(),
+  prioridadeResolucao: z.string().optional(),
+  
+  // Bloco 5
+  envolvidosDecisao: z.string().optional(),
+  orcamentoPrevisto: z.string().optional(),
+  prazoDecisao: z.string().optional(),
+
+  // Pacotes
   packages: z.array(z.enum(packageKeys)).optional().describe("Lista de pacotes de serviços selecionados."),
   discount: z.number().optional().describe("Valor do desconto a ser aplicado sobre o total."),
 });
+
 
 const DiagnosticSlideSchema = z.object({
   title: z.string().describe("O título do slide."),

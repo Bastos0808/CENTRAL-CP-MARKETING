@@ -38,7 +38,7 @@ const presentationGeneratorFlow = ai.defineFlow(
     outputSchema: GeneratePresentationOutputSchema,
   },
   async (input) => {
-    const { packages = [], discount = 0 } = input;
+    const { packages = [], discount = 0, ...diagnosticData } = input;
     const selectedPackageDetails = packages.map(key => ({
         key,
         ...packageOptions[key as keyof typeof packageOptions]
@@ -48,7 +48,7 @@ const presentationGeneratorFlow = ai.defineFlow(
     const finalTotal = totalValue - discount;
 
     const inputForAI = {
-      ...input,
+      ...diagnosticData,
       selectedPackages: selectedPackageDetails.map(p => p.name).join(', '),
       totalValue: formatCurrency(totalValue),
       finalTotal: formatCurrency(finalTotal),
@@ -64,27 +64,31 @@ const presentationGeneratorFlow = ai.defineFlow(
             **Instruções Críticas:**
             1.  **Siga a Estrutura de Slides:** Gere o conteúdo para cada slide exatamente na ordem e com o propósito definido abaixo.
             2.  **Seja Persuasivo e Provocativo:** Não se limite a repetir os dados. Use-os para construir um argumento. Use uma linguagem simples mas com termos técnicos pontuais. Crie títulos em formato de pergunta e adicione "pílulas de conteúdo" (dados de mercado, insights rápidos) para tornar a apresentação mais rica e engajante.
-            3.  **Conecte Dor e Solução:** Sua principal tarefa é conectar a dor do cliente (identificada na R1) com o plano de ação que você vai propor. Cada slide deve reforçar essa ponte.
+            3.  **Conecte Dor e Solução:** Sua principal tarefa é conectar a dor do cliente (identificada na R1) com o plano de ação que você vai propor. Cada slide deve reforçar essa ponte. Foque em como o 'principalGargalo' causa o 'impactoGargalo' e custa 'custoProblema'.
             4.  **Seja Conciso e Impactante:** Use linguagem de negócios. Crie títulos fortes e textos curtos e diretos (no máximo 2-3 linhas por tópico). Use bullet points para facilitar a leitura.
             5.  **Justificativa Estratégica:** No slide "Por que este plano?", você DEVE criar uma justificativa convincente, explicando como a combinação dos serviços selecionados ataca diretamente os gargalos e dores do cliente para atingir a meta.
             6.  **KPIs com Estimativas e Análise Detalhada:** Para o slide de KPIs, não apenas liste as métricas. Para cada uma, forneça uma **estimativa de meta** realista e, no campo 'importance', uma **análise detalhada** explicando como aquela métrica específica contribui para resolver o 'principalGargalo' e alcançar a 'metaFaturamento'. Para CAC e ROAS, explique por que são as métricas mais importantes para a saúde financeira do negócio.
+            7.  **Empatia e Conexão Pessoal:** Utilize os campos 'sentimentoPessoal' e 'visaoFuturoPessoal' para criar uma conexão emocional na apresentação.
 
             **Dados do Diagnóstico (R1):**
             ---
             - **Nome do Cliente:** ${inputForAI.clientName}
+            - **Tempo de Empresa:** ${inputForAI.tempoEmpresa}
             - **Faturamento Médio Atual:** ${inputForAI.faturamentoMedio}
             - **Meta de Faturamento (Próximos 6 meses):** ${inputForAI.metaFaturamento}
-            - **Ticket Médio:** ${inputForAI.ticketMedio}
-            - **Origem dos Clientes Hoje:** ${inputForAI.origemClientes}
-            - **Tempo de Empresa:** ${inputForAI.tempoEmpresa}
-            - **Motivação para Investir em Marketing:** ${inputForAI.motivacaoMarketing}
-            - **Experiência Anterior com Marketing:** ${inputForAI.investimentoAnterior}
-            - **Tentativas Anteriores que Falharam:** ${inputForAI.tentativasAnteriores}
+            - **Ticket Médio:** ${inputForAI.ticketMedio || 'N/A'}
+            - **Origem dos Clientes Hoje:** ${inputForAI.origemClientes || 'N/A'}
+            - **Motivação para Investir:** ${inputForAI.motivacaoMarketing}
+            - **Experiência Anterior com Marketing:** ${inputForAI.experienciaMarketing || 'N/A'}
+            - **Tentativas Anteriores que Falharam:** ${inputForAI.tentativasAnteriores || 'N/A'}
             - **Principal Gargalo Identificado:** ${inputForAI.principalGargalo}
-            - **Custo Mensal Estimado do Problema:** ${inputForAI.custoProblema}
-            - **Envolvidos na Decisão:** ${inputForAI.envolvidosDecisao}
-            - **Orçamento Previsto/Disponibilidade de Investimento:** ${inputForAI.orcamentoPrevisto}
-            - **Prazo para Decisão:** ${inputForAI.prazoDecisao}
+            - **Impacto do Gargalo no Dia a Dia:** ${inputForAI.impactoGargalo || 'N/A'}
+            - **Custo Estimado do Problema:** ${inputForAI.custoProblema || 'N/A'}
+            - **Visão de Futuro (Negócio):** ${inputForAI.visaoFuturo || 'N/A'}
+            - **Visão de Futuro (Pessoal):** ${inputForAI.visaoFuturoPessoal || 'N/A'}
+            - **Envolvidos na Decisão:** ${inputForAI.envolvidosDecisao || 'N/A'}
+            - **Orçamento Previsto:** ${inputForAI.orcamentoPrevisto || 'N/A'}
+            - **Prazo para Decisão:** ${inputForAI.prazoDecisao || 'N/A'}
             - **Serviços Selecionados:** ${inputForAI.selectedPackages}
             - **Valor Total:** ${inputForAI.totalValue}
             - **Desconto Aplicado:** ${inputForAI.discount || 'N/A'}
@@ -101,10 +105,10 @@ const presentationGeneratorFlow = ai.defineFlow(
             2.  **diagnosticSlide:**
                 -   **title:** "Onde estamos e para onde vamos?"
                 -   **content (em 3 bullet points, curtos e diretos):**
-                    -   "**Meta:** Acelerar de ${inputForAI.faturamentoMedio} para ${inputForAI.metaFaturamento}."
-                    -   "**Gargalo:** O obstáculo principal é ${inputForAI.principalGargalo}."
-                    -   "**Custo da Inação:** O gargalo atual gera um custo de oportunidade estimado em ${inputForAI.custoProblema} mensais."
-                -   **question:** Crie uma pergunta de reflexão curta e provocativa baseada no gargalo. Ex: "Quantos clientes deixaram de entrar em contato este mês por não encontrarem vocês da forma certa?"
+                    -   "**Meta:** Acelerar de ${inputForAI.faturamentoMedio} para ${inputForAI.metaFaturamento} em 6 meses."
+                    -   "**Gargalo:** O obstáculo principal é ${inputForAI.principalGargalo}, que hoje causa ${inputForAI.impactoGargalo || 'um impacto significativo na operação'}."
+                    -   "**Custo da Inação:** Manter esse gargalo representa um custo de oportunidade estimado em ${inputForAI.custoProblema || 'milhares de reais'} mensais."
+                -   **question:** Crie uma pergunta de reflexão curta e provocativa baseada no gargalo. Ex: "Quantos clientes em potencial deixaram de entrar em contato este mês por não encontrarem vocês da forma certa?"
 
             3.  **actionPlanSlide:**
                 -   **title:** "Como vamos virar o jogo?"
@@ -155,7 +159,7 @@ const presentationGeneratorFlow = ai.defineFlow(
     // Manually construct the investment slide data from the original input
     // to ensure correct formatting and data integrity.
     if (llmResponse.output) {
-        const investmentItems = input.packages && input.packages.length > 0 ? selectedPackageDetails.map(p => ({ name: p.name, price: formatCurrency(p.price) })) : [];
+        const investmentItems = packages && packages.length > 0 ? selectedPackageDetails.map(p => ({ name: p.name, price: formatCurrency(p.price) })) : [];
         llmResponse.output.investmentSlide = {
             title: llmResponse.output.investmentSlide.title || "Proposta de Investimento",
             items: investmentItems,
