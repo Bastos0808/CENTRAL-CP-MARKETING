@@ -51,6 +51,40 @@ const slideStyles = {
 };
 
 
+export const AboutUsSlide = () => (
+    <div data-slide style={{ padding: '50px 80px 80px', background: "radial-gradient(ellipse at top left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" }} className="w-[1920px] h-[1080px] shadow-2xl flex items-center justify-center text-white rounded-lg overflow-hidden">
+        <div className="w-full max-w-7xl mx-auto grid grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+                <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider">SOBRE NÓS</p>
+                <h1 className="text-5xl font-black leading-tight">Somos obcecados por resultados, não por métricas de vaidade.</h1>
+                <p className="text-gray-300 text-lg leading-relaxed">Em um mercado onde muitos se contentam em entregar posts e relatórios, nós entregamos crescimento. Nosso ambiente colaborativo e estúdios próprios nos dão a agilidade e a qualidade para transformar sua presença digital em um ativo que gera lucro e autoridade.</p>
+                <div className="flex items-center gap-6 pt-4">
+                    <div className="text-center">
+                        <p className="text-4xl font-bold text-primary">+203</p>
+                        <p className="text-sm text-gray-400">Clientes Atendidos</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-4xl font-bold text-primary">+3 Anos</p>
+                        <p className="text-sm text-gray-400">de Mercado</p>
+                    </div>
+                </div>
+            </div>
+            <div className="grid grid-cols-2 grid-rows-2 gap-4 h-[500px]">
+                <div className="col-span-2 row-span-1 relative rounded-lg overflow-hidden">
+                     <Image src="https://placehold.co/600x240.png" alt="Placeholder de imagem de escritório" layout="fill" objectFit="cover" data-ai-hint="office meeting" />
+                </div>
+                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                    <Image src="https://placehold.co/300x300.png" alt="Placeholder de imagem de equipe" layout="fill" objectFit="cover" data-ai-hint="team collaboration" />
+                </div>
+                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                   <Image src="https://placehold.co/300x300.png" alt="Placeholder de imagem de detalhe" layout="fill" objectFit="cover" data-ai-hint="computer screen" />
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+
 export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedProposalProps>((props, ref) => {
     const { clientName, packages = [], investmentValue, originalInvestmentValue } = props;
     const selectedPackages = packages.map(key => packageOptions[key as keyof typeof packageOptions]).filter(Boolean);
@@ -80,7 +114,10 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 <p className="text-4xl font-normal mt-4 text-primary">{clientName}</p>
             </div>
 
-            {/* Slide 2: Sobre a Parceria */}
+            {/* Slide 2: Sobre Nós */}
+            <AboutUsSlide />
+
+            {/* Slide 3: Sobre a Parceria */}
              <div data-slide style={slideStyles.parceria} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="max-w-7xl">
                     <p className="text-3xl font-normal text-primary mb-4">SOBRE A PARCERIA</p>
@@ -92,7 +129,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 </div>
             </div>
 
-            {/* Slide 3: Objetivos */}
+            {/* Slide 4: Objetivos */}
              <div data-slide style={slideStyles.objetivos} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="max-w-7xl">
                     <p className="text-3xl font-normal text-primary mb-4">NOSSOS OBJETIVOS</p>
@@ -106,7 +143,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 </div>
             </div>
 
-            {/* Slide 4: Diferenciais */}
+            {/* Slide 5: Diferenciais */}
              <div data-slide style={slideStyles.diferenciais} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="grid grid-cols-2 gap-16 items-center">
                     <div className="max-w-2xl">
@@ -131,7 +168,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 </div>
             </div>
 
-            {/* Slide 5: Escopo do Projeto */}
+            {/* Slide 6: Escopo do Projeto */}
             <div data-slide style={slideStyles.escopo} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="max-w-7xl w-full">
                     <p className="text-3xl font-normal text-primary mb-4">ESCOPO DO PROJETO</p>
@@ -154,7 +191,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 </div>
             </div>
             
-            {/* Slide 6: Por que este plano? */}
+            {/* Slide 7: Por que este plano? */}
             <div data-slide style={slideStyles.plano} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center p-20">
                 <div className="max-w-6xl">
                     <p className="text-3xl font-normal text-primary mb-4">PLANO DE AÇÃO</p>
@@ -170,7 +207,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                 </div>
             </div>
 
-            {/* Slide 7: Investimento */}
+            {/* Slide 8: Investimento */}
             <div data-slide style={slideStyles.investimento} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-20 text-center">
                  <p className="text-2xl font-normal text-primary mb-4">INVESTIMENTO</p>
                  <h2 className="text-7xl font-bold tracking-tighter">Proposta Financeira</h2>
@@ -190,7 +227,7 @@ export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedPropo
                  </div>
             </div>
 
-             {/* Slide 8: Próximos Passos */}
+             {/* Slide 9: Próximos Passos */}
             <div data-slide style={slideStyles.proximos} className="w-[1920px] h-[1080px] text-white flex flex-col justify-center items-center p-20 text-center">
                 <Goal className="h-24 w-24 text-primary mb-8"/>
                  <h2 className="text-7xl font-bold tracking-tighter">Vamos construir juntos?</h2>
