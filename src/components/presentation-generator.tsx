@@ -27,80 +27,8 @@ import { createRoot } from 'react-dom/client';
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
 
-const slideStyles = {
-  base: {
-    backgroundColor: "#0A0A0A",
-    backgroundImage: `
-      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
-      radial-gradient(ellipse 80% 80% at 50% -20%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0))
-    `,
-    backgroundSize: '30px 30px, 30px 30px, 100% 100%',
-  },
-  capa: {
-    backgroundColor: "#0A0A0A",
-    backgroundImage: `
-      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
-      radial-gradient(circle at 50% 50%, rgba(230, 81, 0, 0.20) 0%, hsla(0, 0%, 100%, 0) 60%)
-    `,
-    backgroundSize: '30px 30px, 30px 30px, 100% 100%',
-  },
-  objetivos: {
-    backgroundColor: "#0A0A0A",
-    backgroundImage: `
-      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
-      radial-gradient(circle at 20% 100%, rgba(230, 81, 0, 0.20) 0%, hsla(0, 0%, 100%, 0) 60%)
-    `,
-     backgroundSize: '30px 30px, 30px 30px, 100% 100%',
-  },
-  investimento: {
-     backgroundColor: "#0A0A0A",
-    backgroundImage: `
-      linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px),
-      radial-gradient(circle at 80% 100%, rgba(230, 81, 0, 0.20) 0%, hsla(0, 0%, 100%, 0) 60%)
-    `,
-     backgroundSize: '30px 30px, 30px 30px, 100% 100%',
-  }
-};
-
-const kpiIcons = {
-    TrendingUp,
-    Target,
-    DollarSign,
-    Repeat,
-    Users,
-};
-
-const defaultPackages = {
-    essencial: {
-        name: 'Plano Essencial',
-        price: 'R$ 2.999,00',
-        features: [
-            'Gestão de Mídias Sociais',
-            'Planejamento de Conteúdo',
-            '3 Posts por Semana',
-            'Relatórios Mensais',
-            'E muito mais...'
-        ]
-    },
-    premium: {
-        name: 'Plano Premium',
-        price: 'R$ 3.999,00',
-        features: [
-            'Tudo do Essencial',
-            'Gestão de Tráfego Pago',
-            'Gravação de Podcast Mensal',
-            'Captação de Fotos e Vídeos',
-            'E muito mais...'
-        ]
-    }
-};
-
 export const AboutUsSlide = () => (
-    <div data-slide style={{ ...slideStyles.base, padding: '50px 80px 80px' }} className="w-[1280px] h-[720px] shadow-2xl flex items-center justify-center text-white rounded-lg overflow-hidden">
+    <div data-slide className="w-[1280px] h-[720px] shadow-2xl flex items-center justify-center text-white rounded-lg overflow-hidden bg-[#0A0A0A] p-[50px_80px_80px]">
         <div className="w-full max-w-6xl mx-auto grid grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
                 <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider">SOBRE NÓS</p>
@@ -135,213 +63,9 @@ export const AboutUsSlide = () => (
 
 export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
     
-    const cpSolutions = {
-        'Pilar 1 - Aquisição': '<strong>Nossa Solução:</strong> Criamos campanhas de tráfego pago focadas em ROI e otimizamos a conversão para não desperdiçar seu investimento.',
-        'Pilar 2 - Conversão': '<strong>Nossa Solução:</strong> Desenvolvemos funis de vendas e automações que nutrem o lead, qualificam o interesse e entregam oportunidades prontas para o fechamento.',
-        'Pilar 3 - Autoridade': '<strong>Nossa Solução:</strong> Com estúdios próprios e uma equipe completa, produzimos conteúdo de alta qualidade em escala para posicionar sua marca como líder de mercado.',
-    };
-    
-    const investmentItems = content.investmentSlide.items.length > 0 
-        ? content.investmentSlide.items
-        : [];
-
     return (
         <div ref={ref} className="proposal-container space-y-4 font-body">
-          {/* Slide 1: Capa */}
-           <div data-slide style={slideStyles.capa} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-8 text-center text-white rounded-lg overflow-hidden">
-            <h2 className="text-lg font-bold text-primary uppercase tracking-widest">Diagnóstico & Plano de Ação</h2>
-            <h1 className="text-6xl font-extrabold my-4 max-w-4xl">{content.presentationTitle}</h1>
-            <p className="text-lg text-gray-400">Proposta elaborada por CP Marketing Digital - {new Date().toLocaleDateString('pt-BR')}</p>
-            <p className="text-md text-gray-500 mt-2 italic">Proposta válida por 7 dias</p>
-          </div>
-          
-           {/* Slide 2: Sobre Nós com Imagens */}
-           <AboutUsSlide />
-
-          {/* Slide 3: Diagnóstico */}
-           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="w-full flex flex-col justify-center h-full">
-                <p className="text-md font-bold text-primary uppercase tracking-widest">O Ponto de Partida</p>
-                <h1 className="text-5xl font-extrabold my-2">{content.diagnosticSlide.title}</h1>
-                 <div className="mt-6 flex justify-center items-stretch gap-4 w-full max-w-5xl mx-auto">
-                    {content.diagnosticSlide.content.map((item, index) => (
-                        <div key={index} className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start min-h-[14rem]">
-                            <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/g, '<strong class="text-lg font-bold text-primary mb-2 block">$1</strong>') }}/>
-                        </div>
-                    ))}
-                </div>
-                 <div className="mt-8 w-full max-w-5xl mx-auto bg-primary/10 border border-primary/20 rounded-xl p-4 text-center">
-                    <p className="text-lg text-gray-300 italic">{content.diagnosticSlide.question}</p>
-                </div>
-            </div>
-          </div>
-          
-          {/* Slide 4: Plano de Ação */}
-          <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="flex flex-col justify-center h-full text-center">
-              <p className="text-md font-bold text-primary uppercase tracking-widest">Nosso Plano de Ação</p>
-              <h1 className="text-5xl font-extrabold my-2">{content.actionPlanSlide.title}</h1>
-              <div className="mt-8 flex justify-center items-start gap-6 w-full">
-                  {content.actionPlanSlide.content.map((item, index) => {
-                      const pilarTitleMatch = item.match(/\*\*(.*?):\*\*/);
-                      const pilarTitle = pilarTitleMatch ? pilarTitleMatch[1] : `Pilar ${index + 1}`;
-                      // @ts-ignore
-                      const cpSolutionText = cpSolutions[pilarTitle] || '';
-
-                      return (
-                          <div key={index} className="flex flex-col gap-4 flex-1 max-w-sm">
-                              <div className="bg-white/5 border border-white/10 rounded-xl p-4 flex-1 flex flex-col items-start h-full text-left">
-                                  <p className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-lg font-bold text-white mb-2 block">$1</strong>') }} />
-                              </div>
-                              <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex-1 flex flex-col items-start h-full text-left">
-                                  <p className="text-sm text-primary/90 break-words flex-grow" dangerouslySetInnerHTML={{ __html: cpSolutionText }} />
-                              </div>
-                          </div>
-                      );
-                  })}
-              </div>
-            </div>
-          </div>
-
-          
-          {/* Slide 5: Justificativa Estratégica */}
-           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-            <div className="flex flex-col justify-center h-full max-w-5xl">
-                  <p className="text-md font-bold text-primary uppercase tracking-widest">Justificativa Estratégica</p>
-                  <h1 className="text-5xl font-extrabold my-2">{content.justificationSlide.title}</h1>
-                  <p className="mt-4 text-md text-gray-300 leading-relaxed break-words max-w-5xl">
-                    {content.justificationSlide.content.join(' ')}
-                  </p>
-              </div>
-          </div>
-
-           {/* Slide 6: Cronograma */}
-           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center p-10 text-white rounded-lg overflow-hidden">
-             <div className="w-full flex flex-col justify-center h-full">
-                 <p className="text-md font-bold text-primary uppercase tracking-widest">Roadmap de Execução</p>
-                 <h1 className="text-5xl font-extrabold my-2">{content.timelineSlide.title}</h1>
-                 <div className="mt-12 w-full max-w-6xl mx-auto">
-                    <div className="grid grid-cols-3 gap-8 relative items-start">
-                        {/* Linha pontilhada atrás dos cards */}
-                         <div className="absolute top-5 left-0 w-full h-0.5 bg-center" style={{ backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.2) 50%, transparent 50%)`, backgroundSize: '10px 2px', zIndex: 0 }}></div>
-                        {content.timelineSlide.content.map((item, index) => {
-                            const icons = [CheckCircle, Diamond, Goal];
-                            const Icon = icons[index] || Goal;
-                            return (
-                                <div key={index} className="flex flex-col items-center text-center relative z-10">
-                                    <div className="w-10 h-10 bg-primary rounded-full border-4 border-[#0A0A0A] flex items-center justify-center mb-4">
-                                        <Icon className="h-5 w-5 text-white" />
-                                    </div>
-                                    <div className="bg-white/5 border border-white/10 rounded-xl p-4 w-full min-h-[12rem] flex flex-col">
-                                        <span className="font-bold text-primary mb-2 block">Fase {index + 1}</span>
-                                        <div className="text-sm text-gray-300 break-words flex-grow" dangerouslySetInnerHTML={{ __html: item.replace(/\*\*(.*?):\*\*/, '<strong class="text-md font-bold text-white mb-1 block">$1</strong>') }} />
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                 </div>
-             </div>
-          </div>
-
-          {/* Slide 7: KPIs */}
-           <div data-slide style={slideStyles.base} className="w-[1280px] h-[720px] shadow-2xl flex flex-col p-10 text-white rounded-lg overflow-hidden">
-             <div className="w-full flex flex-col justify-center h-full">
-                <p className="text-md font-bold text-primary uppercase tracking-widest">Métricas de Sucesso</p>
-                <h1 className="text-5xl font-extrabold my-2">{content.kpiSlide.title}</h1>
-                <div className="mt-6 flex items-stretch justify-center gap-4 max-w-6xl mx-auto">
-                    {content.kpiSlide.kpis.map((kpi, index) => {
-                        const Icon = kpiIcons[kpi.icon] || TrendingUp;
-                        return (
-                            <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 flex-1 flex flex-col h-full">
-                                <div className="flex-grow">
-                                    <Icon className="h-6 w-6 text-primary mb-3" />
-                                    <h4 className="font-bold text-md text-white">{kpi.metric}</h4>
-                                    <p className="text-gray-300 mt-1 text-2xl font-bold">{kpi.estimate}</p>
-                                    <p className="text-sm text-gray-400 mt-4 break-words">{kpi.importance}</p>
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-             </div>
-          </div>
-          
-           {/* Slide 8: Investimento */}
-            <div data-slide style={slideStyles.investimento} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-white rounded-lg overflow-hidden">
-                <div className="w-full max-w-6xl mx-auto grid grid-cols-2 gap-12 items-center">
-                    <div className="text-left">
-                         <p className="text-md font-bold text-primary uppercase tracking-widest">Proposta de Investimento</p>
-                         <h1 className="text-5xl font-extrabold my-2">{content.investmentSlide.title}</h1>
-                         <p className="text-lg text-gray-400 mt-4">Uma proposta transparente para uma parceria de resultados.</p>
-                    </div>
-                     <div className="space-y-4">
-                      {investmentItems.length > 0 ? (
-                        <div className="bg-white/5 border border-white/10 rounded-xl p-8">
-                            <div className="space-y-3">
-                                {investmentItems.map(item => (
-                                    <div key={item.name} className="flex justify-between items-center text-sm text-gray-300">
-                                        <span>{item.name}</span>
-                                        <span>{item.price}</span>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="my-4 border-t border-dashed border-white/20"></div>
-                            <div className="space-y-2">
-                                    <div className="flex justify-between items-center text-sm text-gray-400">
-                                    <span>Subtotal</span>
-                                    <span>{content.investmentSlide.total}</span>
-                                    </div>
-                                    {content.investmentSlide.discount && (
-                                    <div className="flex justify-between items-center text-sm text-green-400">
-                                        <span>Desconto Especial</span>
-                                        <span>{content.investmentSlide.discount}</span>
-                                    </div>
-                                    )}
-                            </div>
-                            <div className="my-4 border-t border-solid border-white/50"></div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-xl font-bold text-white">Total do Investimento</span>
-                                <span className="text-3xl font-bold text-primary">{content.investmentSlide.finalTotal}</span>
-                            </div>
-                        </div>
-                      ) : (
-                          <div className="grid grid-cols-2 gap-4">
-                              <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-left flex flex-col">
-                                  <h3 className="text-xl font-bold text-white mb-2">{defaultPackages.essencial.name}</h3>
-                                  <ul className="space-y-2 text-sm text-gray-300 flex-grow">
-                                      {defaultPackages.essencial.features.map(f => <li key={f} className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />{f}</li>)}
-                                  </ul>
-                                  <p className="text-3xl font-bold text-white mt-6">{defaultPackages.essencial.price}</p>
-                              </div>
-                              <div className="bg-white/10 border-2 border-primary rounded-xl p-6 text-left flex flex-col relative">
-                                  <div className="absolute -top-3 right-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Mais Popular</div>
-                                  <h3 className="text-xl font-bold text-primary mb-2">{defaultPackages.premium.name}</h3>
-                                   <ul className="space-y-2 text-sm text-gray-300 flex-grow">
-                                      {defaultPackages.premium.features.map(f => <li key={f} className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" />{f}</li>)}
-                                  </ul>
-                                  <p className="text-3xl font-bold text-primary mt-6">{defaultPackages.premium.price}</p>
-                              </div>
-                          </div>
-                      )}
-                    </div>
-                </div>
-            </div>
-
-          {/* Slide 9: Próximos Passos */}
-           <div data-slide style={slideStyles.objetivos} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center items-center p-10 text-center text-white rounded-lg overflow-hidden">
-                <Goal className="h-12 w-12 text-primary mx-auto mb-4"/>
-                <h1 className="text-5xl font-extrabold my-2 text-white">{content.nextStepsSlide.title}</h1>
-                <p className="text-lg text-gray-400 mt-2 max-w-4xl">Estamos prontos para aplicar nossa metodologia e paixão para transformar os resultados do seu negócio.</p>
-                <div className="mt-8 flex items-stretch gap-6 w-full max-w-5xl">
-                   {content.nextStepsSlide.content.map((step, index) => (
-                     <div key={index} className="bg-white/5 p-4 rounded-lg border border-white/10 text-left flex-1 flex flex-col justify-center">
-                        <span className="text-4xl font-bold text-primary">{index + 1}.</span>
-                        <p className="mt-2 text-lg font-semibold text-white break-words">{step}</p>
-                    </div>
-                   ))}
-                </div>
-          </div>
+          {/* Adicione os outros slides aqui conforme necessário */}
         </div>
     );
 });
@@ -438,61 +162,63 @@ export default function PresentationGenerator() {
 
     setIsDownloading(true);
     toast({ title: 'Gerando PDF...', description: 'Aguarde um momento. Este processo pode ser lento.' });
-
+    
+    // Create a temporary container to render the slides off-screen
     const container = document.createElement('div');
-    container.style.position = 'fixed';
+    container.style.position = 'absolute';
     container.style.left = '-9999px';
-    container.style.top = '-9999px';
+    container.style.top = '0px';
     document.body.appendChild(container);
     
+    // Create a new React root to render the component into the container
     const root = createRoot(container);
-    
-    // Use a promise to wait for the component to be rendered
+
+    // Render the component and wait for it to be fully rendered
     await new Promise<void>((resolve) => {
-      root.render(
-        <React.StrictMode>
-            <GeneratedPresentation 
-                ref={(el) => {
-                    if (el) {
-                        // Once the ref is set, we can consider it rendered for the next step
-                        resolve();
-                    }
-                }} 
-                content={presentationContent} 
-                clientName={form.getValues('clientName')} 
-            />
-        </React.StrictMode>
-      );
+        root.render(
+            <React.StrictMode>
+                <GeneratedPresentation 
+                    ref={(el) => {
+                        // The 'ref' being set means the component has mounted.
+                        // We can resolve the promise now.
+                        if (el) resolve();
+                    }} 
+                    content={presentationContent} 
+                    clientName={form.getValues('clientName')} 
+                />
+            </React.StrictMode>
+        );
     });
 
-    // Give browser extra time to fetch assets like images
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // A small delay to ensure all assets (like images from placehold.co) are loaded
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
-    const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
-    if (slides.length === 0) {
-        toast({ title: 'Erro ao gerar PDF', description: 'Não foi possível encontrar os slides para captura.', variant: 'destructive' });
+    const slideElements = container.querySelectorAll<HTMLElement>('[data-slide]');
+
+    if (slideElements.length === 0) {
+        toast({ title: 'Erro de Renderização', description: 'Não foi possível encontrar os slides para gerar o PDF.', variant: 'destructive' });
+        setIsDownloading(false);
         root.unmount();
         document.body.removeChild(container);
-        setIsDownloading(false);
         return;
     }
-    
+
     const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'px',
         format: [1280, 720]
     });
 
-    try {
-        for (let i = 0; i < slides.length; i++) {
-            const slide = slides[i];
+    for (let i = 0; i < slideElements.length; i++) {
+        const slide = slideElements[i];
+        try {
             const canvas = await html2canvas(slide, {
-                scale: 2,
+                scale: 2, // Higher scale for better quality
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: '#0A0A0A',
                 width: 1280,
-                height: 720
+                height: 720,
             });
             const imgData = canvas.toDataURL('image/png', 0.95);
 
@@ -500,19 +226,23 @@ export default function PresentationGenerator() {
                 pdf.addPage([1280, 720], 'landscape');
             }
             pdf.addImage(imgData, 'PNG', 0, 0, 1280, 720, undefined, 'FAST');
+        } catch (canvasError) {
+            console.error(`Error capturing slide ${i + 1}:`, canvasError);
+            toast({ title: `Erro no Slide ${i + 1}`, description: 'Não foi possível capturar um dos slides.', variant: 'destructive' });
+            setIsDownloading(false);
+            root.unmount();
+            document.body.removeChild(container);
+            return;
         }
-
-        pdf.save(`Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.pdf`);
-        toast({ title: 'Download Concluído!', description: 'Seu PDF foi baixado com sucesso.' });
-
-    } catch (err) {
-        console.error("PDF Generation Error: ", err);
-        toast({ title: 'Erro ao gerar PDF', description: 'Houve um problema na captura dos slides.', variant: 'destructive' });
-    } finally {
-        root.unmount();
-        document.body.removeChild(container);
-        setIsDownloading(false);
     }
+
+    pdf.save(`Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.pdf`);
+    toast({ title: 'Download Concluído!', description: 'Seu PDF foi baixado com sucesso.' });
+
+    // Cleanup
+    root.unmount();
+    document.body.removeChild(container);
+    setIsDownloading(false);
 };
   
 

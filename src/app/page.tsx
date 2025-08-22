@@ -93,12 +93,6 @@ export default function Home() {
   ];
   
   const trafficTools = [
-    {
-      title: "Gerador de Relatórios de Tráfego",
-      description: "Crie relatórios de performance de campanhas com IA.",
-      href: "/relatorios-trafego",
-      icon: Wand2
-    }
   ];
 
   const handleTabChange = (value: string) => {

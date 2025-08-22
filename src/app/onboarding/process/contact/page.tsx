@@ -116,21 +116,6 @@ export default function ContactPage() {
             </div>
         </CardContent>
       </Card>
-
-       <Link href="/onboarding/process/templates" className="group block">
-            <Card className="transition-all duration-200 ease-in-out group-hover:border-primary group-hover:shadow-lg group-hover:-translate-y-1">
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <Wand2 className="h-8 w-8 text-primary" />
-                        <div>
-                            <CardTitle>Playbook de Comunicação</CardTitle>
-                            <CardDescription>Acesse todos os modelos de mensagem, scripts de ligação e como lidar com objeções.</CardDescription>
-                        </div>
-                    </div>
-                     <ArrowRight className="h-5 w-5 text-muted-foreground transition-transform duration-200 group-hover:text-primary group-hover:translate-x-1" />
-                </CardHeader>
-            </Card>
-        </Link>
     </div>
   );
 }
