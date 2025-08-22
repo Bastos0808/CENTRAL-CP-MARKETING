@@ -3,7 +3,7 @@
 "use client";
 
 import { BackButton } from "@/components/ui/back-button";
-import { GeneratedPresentation } from "@/components/presentation-generator";
+import { GeneratedPresentation, AboutUsSlide } from "@/components/presentation-generator";
 import { GeneratePresentationOutput } from "@/ai/schemas/presentation-generator-schemas";
 
 // Mock data to display the presentation template
@@ -118,6 +118,15 @@ export default function ProposalTemplatePage() {
           content={mockPresentationContentNoPackages}
           clientName="Empresa Exemplo"
         />
+      </div>
+
+       <hr className="w-full max-w-5xl border-t-2 border-gray-400 my-8" />
+      
+       <div className="text-center bg-white p-4 rounded-lg shadow-md">
+        <h2 className="text-xl font-bold text-gray-800">Exemplo 3: Slide "Sobre Nós" Individual</h2>
+      </div>
+       <div className="transform scale-[0.7] -translate-y-[15%]">
+        <AboutUsSlide />
       </div>
     </main>
   );

@@ -99,7 +99,7 @@ const defaultPackages = {
     }
 };
 
-const AboutUsSlide = () => (
+export const AboutUsSlide = () => (
     <div data-slide style={{ ...slideStyles.base, padding: '50px 80px 80px' }} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center text-white rounded-lg overflow-hidden">
         <div className="w-full max-w-6xl mx-auto">
             <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider mb-4">NOSSA ABORDAGEM</p>
