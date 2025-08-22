@@ -39,12 +39,12 @@ const presentationGeneratorFlow = ai.defineFlow(
     const proposalValidityDate = format(add(today, { days: 7 }), "dd/MM/yyyy");
 
     // Prepare data for the AI prompt
-    const { faturamentoMedio, metaFaturamento, ticketMedio, ...restOfInput } = input;
+    const { faturamentoMedio, metaFaturamento, ...restOfInput } = input;
     const inputForAI = {
         ...restOfInput,
         faturamentoMedio: faturamentoMedio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
         metaFaturamento: metaFaturamento.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-        ticketMedio: ticketMedio?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'N/A',
+        ticketMedio: input.ticketMedio?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'N/A',
         custoProblema: input.custoProblema?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'N/A',
     };
 
@@ -89,8 +89,8 @@ const presentationGeneratorFlow = ai.defineFlow(
 
             ---
             **Slide 5: A Visualização do Futuro**
-            - **cenario_6_meses:** Descreva a visão de futuro como uma realidade próxima. Ex: "Imagine ter a agenda cheia com semanas de antecedência e a tranquilidade de saber que sua meta de ${inputForAI.metaFaturamento} não é mais um sonho, mas uma previsão. É esse o cenário que buscamos em 6 meses."
-            - **cenario_1_ano:** Projete a transformação completa. Ex: "E em 1 ano, com essa previsibilidade, você finalmente poderá '${inputForAI.potencialResolucao}'. Isso não muda apenas a empresa, mas traz a paz ('${inputForAI.visaoFuturoPessoal}') que você merece como gestor, certo?"
+            - **cenario_6_meses:** Descreva a visão de futuro como uma realidade próxima em forma de pergunta. Ex: "Consegue se imaginar daqui a 6 meses com a agenda cheia com semanas de antecedência e a tranquilidade de saber que sua meta de ${inputForAI.metaFaturamento} não é mais um sonho, mas uma previsão?"
+            - **cenario_1_ano:** Projete a transformação completa como uma pergunta. Ex: "E em 1 ano, com essa previsibilidade, você finalmente poderá '${inputForAI.potencialResolucao}'. Isso não muda apenas a empresa, mas traz a paz ('${inputForAI.visaoFuturoPessoal}') que você merece como gestor, certo?"
 
             ---
             **Slide 6: O Custo da Inação**
@@ -113,7 +113,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             ---
             **Slide 10: O Investimento**
             - **ancoragemPreco:** Gere uma pergunta de ancoragem. Ex: "Manter o problema atual custa à sua empresa ${inputForAI.custoProblema} por mês. Nosso plano é um investimento para transformar esse custo em lucro. Faz sentido?"
-            - **ganchoDecisao:** Gere a pergunta final de decisão. Ex: "Existem dois futuros à sua frente: o da tranquilidade e crescimento, ou o da estagnação. Qual deles você começa a construir hoje?"
+            - **ganchoDecisao:** Gere a pergunta final de decisão. Ex: "Existem dois futuros à sua frente: o da tranquilidade e crescimento, ou o da estagnação e frustração. Qual deles você começa a construir hoje?"
             - **gatilhoEscassez:** Crie uma frase de urgência sobre o número limitado de vagas. Ex: "Para garantir a dedicação que você merece, só temos mais 2 vagas para novos clientes este mês."
             - **gatilhoBonus:** Crie uma frase sobre o bônus de fechamento rápido. Ex: "Além disso, fechando nesta semana, garantimos a produção de um episódio de podcast para lançar sua nova fase de autoridade."
         `,
@@ -128,5 +128,3 @@ const presentationGeneratorFlow = ai.defineFlow(
     return llmResponse.output!;
   }
 );
-
-    

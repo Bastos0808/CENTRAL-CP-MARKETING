@@ -21,7 +21,6 @@ const renderBullets = (items: (string | undefined)[]) => {
     `;
 };
 
-
 interface CreateProposalData {
     clientName: string;
     presentationData: GeneratePresentationOutput;
@@ -55,7 +54,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --color-bg: #000000;
+            --color-bg: #0A0A0A;
             --color-text: #EAEAEA;
             --color-primary: #030860;
             --color-accent: #FE5412;
@@ -77,11 +76,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
-            background-image: radial-gradient(circle at 10% 20%, rgba(3, 8, 96, 0.2) 0%, transparent 40%),
-                              radial-gradient(circle at 80% 90%, rgba(254, 84, 18, 0.15) 0%, transparent 50%);
+            background-image: radial-gradient(circle at 25% 30%, rgba(3, 8, 96, 0.15) 0%, transparent 40%),
+                              radial-gradient(circle at 75% 80%, rgba(254, 84, 18, 0.1) 0%, transparent 50%);
+            min-height: 100vh;
+            width: 100%;
         }
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 0 2rem;
         }
@@ -99,6 +100,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             animation: fadeIn 1s forwards;
             animation-timeline: view();
             animation-range: entry;
+        }
+        .scene:last-of-type {
+            border-bottom: none;
         }
         @keyframes fadeIn {
             to {
@@ -120,7 +124,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         h2 {
             font-size: clamp(2rem, 4vw, 3.5rem);
             color: white;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
             position: relative;
         }
         h2::after {
@@ -137,13 +141,21 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             color: var(--color-accent);
             margin-bottom: 1rem;
         }
-        p, .check-list li {
-            max-width: 65ch;
-            color: #B3B3B3;
-            font-size: clamp(1rem, 1.5vw, 1.1rem);
-        }
         p {
-          margin-bottom: 1rem;
+          max-width: 65ch;
+          color: #B3B3B3;
+          font-size: clamp(1rem, 1.5vw, 1.1rem);
+          margin-left: auto;
+          margin-right: auto;
+        }
+        p.question {
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            font-weight: 600;
+            color: var(--color-text);
+            border-left: 3px solid var(--color-accent);
+            padding-left: 1.5rem;
+            text-align: left;
+            margin-top: 1.5rem;
         }
         .card {
             background: var(--color-surface);
@@ -170,8 +182,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             display: flex;
             align-items: flex-start;
             gap: 0.75rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             color: var(--color-text);
+            font-size: 1.1rem;
         }
         .check-list svg {
             flex-shrink: 0;
@@ -181,7 +194,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             margin-top: 2px;
         }
         .value-display {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-size: clamp(3rem, 7vw, 5.5rem);
             font-weight: 900;
             color: var(--color-accent);
             line-height: 1;
@@ -194,6 +207,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             justify-content: center;
             align-items: center;
             text-align: center;
+            gap: 0.5rem;
         }
         .highlight {
             color: var(--color-accent);
@@ -213,7 +227,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     <main class="container">
         <!-- Scene 1: Capa -->
         <section class="scene">
-            <img src="https://i.postimg.cc/8P2zVfFf/cp-logo-white.png" alt="CP Marketing Digital Logo" class="logo">
+            <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755524633/Prancheta_6_ajhh0n.png" alt="CP Marketing Digital Logo" class="logo">
             <p style="font-weight:600; color: white;">PLANO DE CRESCIMENTO PARA</p>
             <h1>${escapeHtml(clientName)}</h1>
             <p>Proposta válida até: <span class="highlight">${escapeHtml(proposalValidityDate)}</span> | Data: ${escapeHtml(proposalDate)}</p>
@@ -239,11 +253,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             <h2>O Diagnóstico</h2>
             <div class="card">
                 <h3>Sua Realidade Atual</h3>
-                <p>${escapeHtml(diagnosticSlide.resumoEmpatico)}</p>
+                <p class="question">${escapeHtml(diagnosticSlide.resumoEmpatico)}</p>
             </div>
             <div class="card">
                 <h3>O Ponto de Virada</h3>
-                <p>${escapeHtml(diagnosticSlide.analiseReflexiva)}</p>
+                <p class="question">${escapeHtml(diagnosticSlide.analiseReflexiva)}</p>
             </div>
         </section>
         
@@ -261,11 +275,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             <div class="grid">
                  <div class="card">
                     <h3>Seu Cenário em 6 Meses</h3>
-                    <p>${escapeHtml(futureSlide.cenario_6_meses)}</p>
+                    <p class="question">${escapeHtml(futureSlide.cenario_6_meses)}</p>
                 </div>
                 <div class="card">
                     <h3>Sua Realidade em 1 Ano</h3>
-                    <p>${escapeHtml(futureSlide.cenario_1_ano)}</p>
+                    <p class="question">${escapeHtml(futureSlide.cenario_1_ano)}</p>
                 </div>
             </div>
         </section>
@@ -285,7 +299,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             </div>
             <div class="card" style="margin-top: 2rem;">
                 <h3>O Cenário da Inércia</h3>
-                <p>${escapeHtml(inactionCostSlide.cenario_inercia)}</p>
+                <p class="question">${escapeHtml(inactionCostSlide.cenario_inercia)}</p>
             </div>
         </section>
 
@@ -337,11 +351,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             <h2>O Investimento na sua Aceleração</h2>
             <div class="card">
                 <h3>Ancoragem de Valor</h3>
-                <p>${escapeHtml(investmentSlide.ancoragemPreco)}</p>
+                <p class="question">${escapeHtml(investmentSlide.ancoragemPreco)}</p>
             </div>
             <div class="card">
                 <h3>Sua Decisão</h3>
-                <p>${escapeHtml(investmentSlide.ganchoDecisao)}</p>
+                <p class="question">${escapeHtml(investmentSlide.ganchoDecisao)}</p>
             </div>
             <div class="card" style="margin-top: 1.5rem;">
                 ${renderBullets([investmentSlide.gatilhoEscassez, investmentSlide.gatilhoBonus])}
@@ -358,5 +372,3 @@ export function createInteractiveProposal(data: CreateProposalData): string {
   `;
   return html;
 }
-
-    
