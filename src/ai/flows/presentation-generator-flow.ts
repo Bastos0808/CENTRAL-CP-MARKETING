@@ -12,7 +12,8 @@ import {
   GeneratePresentationInputSchema,
   GeneratePresentationInput,
   GeneratePresentationOutputSchema,
-  GeneratePresentationOutput
+  GeneratePresentationOutput,
+  packageOptions
 } from '@/ai/schemas/presentation-generator-schemas';
 import { format, add } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -133,3 +134,5 @@ const presentationGeneratorFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    
