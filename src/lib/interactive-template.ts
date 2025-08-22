@@ -85,7 +85,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 <div class="card-grid">
                     <div class="card"><h3>Meta Principal</h3><span class="highlight">${escapeHtml(diagnosticSlide.meta)}</span></div>
                     <div class="card"><h3>Gargalo Crítico</h3><span class="highlight-text">${escapeHtml(diagnosticSlide.gargalo)}</span></div>
-                    <div class="card"><h3>Custo da Inação</h3><span class="highlight">${escapeHtml(diagnosticSlide.custo)}</span></div>
+                    <div class="card"><h3>Custo da Inação</h3><span class="highlight loss">${escapeHtml(diagnosticSlide.custo)}</span></div>
                 </div>
             </div>`
       },
@@ -150,7 +150,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       },
       {
           id: 'metrics',
-          title: `<h2>Nosso Compromisso com seu Crescimento de ${escapeHtml(metricsSlide.crescimentoPercentual)}</h2>`,
+          title: `<h2>${escapeHtml(metricsSlide.title)}</h2>`,
           content: `<div class="content-center-wrapper">
                       <p>O sucesso será medido com dados claros. Nossas metas mensais:</p>
                       <div class="metrics-grid">
@@ -541,7 +541,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             
             TweenLite.to(container, 0.3, { opacity: 0, ease: Power2.easeOut, onComplete: () => {
                 // Clear previous slide's active class
-                if (container.firstChild) {
+                if (container.firstChild && container.firstChild.classList) {
                     container.firstChild.classList.remove('slide-active');
                 }
 
