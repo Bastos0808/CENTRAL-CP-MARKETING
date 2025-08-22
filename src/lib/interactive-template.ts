@@ -74,6 +74,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                             </div>
                           </div>
                       </div>
+                    </div>
+                    <div class="image-gallery">
+                      <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div>
+                      <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+2')" data-ai-hint="fashion store"></div>
+                      <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+3')" data-ai-hint="corporate office"></div>
                     </div>`
       },
       {
@@ -317,10 +322,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             width: 100%;
             flex-grow: 1;
             transition: opacity 0.4s ease-in-out;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: center;
         }
         .content-center-wrapper {
             max-height: calc(90vh - 180px);
@@ -365,7 +368,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .nav-arrows { 
             width: 100%;
             padding-top: 20px;
-            margin-top: 20px;
+            margin-top: auto;
             border-top: 1px solid var(--border-color);
             text-align: center;
         }
@@ -395,7 +398,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
-            align-items: center;
+            align-items: flex-start; /* Changed */
             width: 100%;
             flex-grow: 1;
         }
@@ -411,7 +414,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .video-container {
             width: 100%;
-            height: 250px;
+            height: auto;
+            aspect-ratio: 16 / 9;
             border-radius: 10px;
             overflow: hidden;
             background-color: #000;
@@ -421,7 +425,15 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             height: 100%;
             object-fit: cover;
         }
-        .image-placeholder { width: 100%; height: 100%; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .image-placeholder { width: 100%; height: 120px; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
         
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
@@ -472,8 +484,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         @media (min-width: 1024px) {
             .presentation-gallery-layout {
-                grid-template-columns: 1fr 1fr;
-                gap: 40px;
+                grid-template-columns: 1fr; /* Stack on top */
+            }
+            .video-container {
+              height: auto;
+              max-height: 35vh; /* Limit video height */
             }
         }
     </style>
@@ -722,6 +737,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>
-`;
+</html>`;
 }
