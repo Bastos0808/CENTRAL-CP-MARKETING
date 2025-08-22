@@ -81,7 +81,7 @@ export default function HtmlTestPage() {
                     // @ts-ignore
                     let geometry = new window.THREE.PlaneGeometry(400, 400, 70, 70);
                     // @ts-ignore
-                    let darkBlueMaterial = new window.THREE.MeshPhongMaterial({ color: 0xffffff, side: window.THREE.DoubleSide, vertexColors: true });
+                    let darkBlueMaterial = new window.THREE.MeshPhongMaterial({ color: 0xffffff, side: window.THREE.DoubleSide, vertexColors: THREE.FaceColors });
 
                     geometry.vertices.forEach(function (vertice: any) {
                         vertice.x += (Math.random() - 0.5) * 4;
@@ -509,5 +509,6 @@ export default function HtmlTestPage() {
         </>
     );
 }
+    
 
     
