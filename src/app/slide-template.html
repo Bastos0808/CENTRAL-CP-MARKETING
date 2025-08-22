@@ -3,229 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Template de Slide Editável</title>
-    
-    <!-- Este bloco <style> contém todo o CSS que define a aparência do seu slide. -->
-    <!-- Você pode alterar cores, fontes, tamanhos e espaçamentos aqui. -->
+    <title>Proposta de Crescimento</title>
     <style>
-        /* Define as fontes que serão usadas no slide. Usamos a 'Inter' como exemplo. */
-        /* Para usar outras fontes do Google Fonts, você pode importá-las aqui. */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
-        /* Estilos aplicados a todo o corpo (body) do documento. */
         body {
-            /* Define a cor de fundo geral da página (fora do slide). */
-            background-color: #f0f0f0; 
-            /* Define a família de fontes padrão para todo o texto. */
             font-family: 'Inter', sans-serif;
-            /* Centraliza o slide na tela. */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* Garante que a página ocupe a altura total da tela. */
-            min-height: 100vh;
-            /* Remove margens padrão do navegador. */
-            margin: 0;
-        }
-
-        /* * Este é o container principal do seu slide.
-         * Ele tem um tamanho fixo de 1280x720 pixels, simulando uma apresentação 16:9.
-        */
-        .slide-container {
-            /* Largura do slide. */
-            width: 1280px;
-            /* Altura do slide. */
-            height: 720px;
-            /* Cor de fundo escura, a base do nosso design. */
             background-color: #0A0A0A;
-            /* Efeito de iluminação (holofote) usando um gradiente radial. */
-            /* A luz (laranja) vem do centro superior e se dissipa. */
-            background-image: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(230, 81, 0, 0.20), hsla(0, 0%, 100%, 0));
-            /* Define a cor padrão do texto para branco. */
-            color: #ffffff;
-            /* Organiza o conteúdo do slide (o .slide-content) verticalmente. */
-            display: flex;
-            flex-direction: column;
-            /* Alinha o conteúdo no início (topo) do slide. */
-            justify-content: center;
-            /* Adiciona um preenchimento interno para o conteúdo não colar nas bordas. */
-            padding: 80px;
-            /* Garante que o padding seja calculado para dentro da caixa de 1280x720. */
-            box-sizing: border-box;
-            /* Adiciona uma sombra sutil para destacar o slide da página. */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            /* Adiciona cantos arredondados. */
-            border-radius: 12px;
-        }
-
-        /* * Container para o conteúdo principal do slide.
-         * Isso nos ajuda a limitar a largura do texto para melhor legibilidade.
-        */
-        .slide-content {
-            /* Define a largura máxima do texto. */
-            max-width: 1100px;
-            width: 100%;
-        }
-
-        /* Estilo para o subtítulo (a linha de texto pequena e colorida). */
-        .slide-subtitle {
-            /* Cor primária (laranja) para destaque. Altere o código HSL para mudar a cor. */
-            color: #E65100;
-            /* Deixa a fonte mais grossa (negrito). */
-            font-weight: 700;
-            /* Tamanho da fonte. */
-            font-size: 1.2rem; /* 1.2 vezes o tamanho da fonte padrão */
-            /* Converte o texto para maiúsculas. */
-            text-transform: uppercase;
-            /* Adiciona espaçamento entre as letras para um visual mais refinado. */
-            letter-spacing: 0.1em;
-            /* Margem inferior para separar do título principal. */
-            margin-bottom: 16px;
-        }
-
-        /* Estilo para o título principal do slide. */
-        .slide-title {
-            /* Tamanho da fonte. */
-            font-size: 4rem; /* Tamanho reduzido */
-            /* Deixa a fonte extra-negrito. */
-            font-weight: 900;
-            /* Margem inferior para separar do parágrafo. */
-            margin-bottom: 48px;
-             /* Remove a margem superior padrão do h1. */
-            margin-top: 0;
-            /* Define uma altura de linha mais apertada para títulos grandes. */
-            line-height: 1.1;
-        }
-        
-        /* Container para os pilares */
-        .pillars-container {
-            display: flex; /* Alinha os itens lado a lado */
-            gap: 32px; /* Espaço entre os pilares */
-            width: 100%;
-        }
-
-        /* Estilo para cada pilar */
-        .pillar {
-            background: rgba(255, 255, 255, 0.05); /* Fundo semi-transparente */
-            backdrop-filter: blur(10px); /* Efeito de desfoque */
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
-            flex: 1; /* Faz com que todos os pilares ocupem o mesmo espaço */
-        }
-        
-        .pillar-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .pillar-icon-container {
-            background-color: rgba(230, 81, 0, 0.2); /* Fundo laranja com transparência */
-            border-radius: 8px;
-            padding: 12px;
-            display: inline-flex;
-        }
-        
-        .pillar-icon-container svg {
-             width: 24px;
-             height: 24px;
-             stroke: #E65100; /* Cor do ícone */
-        }
-
-        .pillar-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #ffffff;
+            color: #E2E8F0;
             margin: 0;
-        }
-        
-        .pillar-description {
-            font-size: 1rem;
+            padding: 0;
             line-height: 1.6;
-            color: #d1d5db; /* cinza claro */
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 48px;
+            font-weight: 900;
+            margin: 0;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        header p {
+            font-size: 20px;
+            color: #E65100;
+            margin: 10px 0 0;
+        }
+
+        .section {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #E65100;
+            margin-top: 0;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+        }
+        
+        .section h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 12px;
+        }
+
+        ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #E65100;
+            font-weight: bold;
+        }
+        
+        .diagnostic-question {
+            font-style: italic;
+            color: #CBD5E1;
+            padding: 16px;
+            border-left: 3px solid #E65100;
+            margin-top: 24px;
+            background-color: rgba(230, 81, 0, 0.05);
+        }
+        
+        .pillars {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .pillar {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .kpi-item {
+            margin-bottom: 20px;
+        }
+
+        .kpi-item h4 {
+            font-size: 18px;
+            margin: 0 0 4px 0;
+            color: #FFFFFF;
+        }
+        .kpi-item .kpi-estimate {
+            font-size: 16px;
+            font-weight: bold;
+            color: #E65100;
+            margin: 0 0 8px 0;
+        }
+        .kpi-item .kpi-importance {
+            font-size: 14px;
+            color: #94A3B8;
             margin: 0;
         }
 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+        }
+        
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        table .price {
+            text-align: right;
+            font-weight: bold;
+        }
 
+        table tfoot tr:last-child {
+            border-top: 2px solid #E65100;
+        }
+
+        table tfoot tr:last-child td {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+
+        table .discount td {
+            color: #6EE7B7; /* Green for discount */
+        }
+
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94A3B8;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Esta é a div que cria o slide. Tudo que estiver aqui dentro fará parte da sua apresentação. -->
-    <div class="slide-container">
-        
-        <!-- Este é o container do conteúdo. Ele ajuda a manter o texto alinhado e com uma largura agradável. -->
-        <div class="slide-content">
+    <div class="container">
+        <header>
+            <h1>{{presentationTitle}}</h1>
+            <p>Preparado especialmente para {{clientName}}</p>
+        </header>
 
-            <!-- 
-                SUBTÍTULO
-                Use esta tag <p> para um texto de destaque menor, acima do título principal.
-            -->
-            <p class="slide-subtitle">
-                {{SUBTITULO_AQUI}}
-            </p>
-
-            <!-- 
-                TÍTULO PRINCIPAL
-                Use esta tag <h1> para o título principal e mais impactante do seu slide.
-            -->
-            <h1 class="slide-title">
-                {{TITULO_AQUI}}
-            </h1>
-
-            <!-- 
-                CONTAINER DOS PILARES
-                Este container organiza os 3 pilares de valor lado a lado.
-            -->
-            <div class="pillars-container">
-                <!-- Pilar 1: Diagnóstico -->
-                <div class="pillar">
-                    <div class="pillar-header">
-                        <div class="pillar-icon-container">
-                            <!-- Ícone Lucide: Search -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                        </div>
-                        <h3 class="pillar-title">Pilar 1</h3>
-                    </div>
-                    <p class="pillar-description">
-                       {{DESCRICAO_PILAR_1}}
-                    </p>
-                </div>
-                
-                <!-- Pilar 2: Estratégia -->
-                <div class="pillar">
-                     <div class="pillar-header">
-                        <div class="pillar-icon-container">
-                             <!-- Ícone Lucide: BrainCircuit -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.993.119M12 5a3 3 0 1 1 5.993.119M15 13a3 3 0 1 0-5.993.119M15 13a3 3 0 1 1 5.993.119M12 21a3 3 0 1 0-5.993-.119M12 21a3 3 0 1 1 5.993-.119M20 13h-2M6 13H4M12 17v-2M12 9V7"/><path d="m14.65 10.35-.7.7a3 3 0 0 0-3.9 3.9l-.7.7"/><path d="m9.35 10.35.7.7a3 3 0 0 1 3.9 3.9l.7.7"/></svg>
-                        </div>
-                        <h3 class="pillar-title">Pilar 2</h3>
-                    </div>
-                    <p class="pillar-description">
-                       {{DESCRICAO_PILAR_2}}
-                    </p>
-                </div>
-
-                <!-- Pilar 3: Execução -->
-                <div class="pillar">
-                    <div class="pillar-header">
-                        <div class="pillar-icon-container">
-                            <!-- Ícone Lucide: Palette -->
-                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.477-1.122-.297-.287-.703-.465-1.17-.465-1.137 0-2.062-.938-2.062-2.088s.925-2.088 2.063-2.088c.467 0 .873.178 1.17.465.297.287.477.685.477 1.122 0 .942.722 1.688 1.648 1.688 5.5 0 10-4.5 10-10S17.5 2 12 2Z"/></svg>
-                        </div>
-                        <h3 class="pillar-title">Pilar 3</h3>
-                    </div>
-                    <p class="pillar-description">
-                        {{DESCRICAO_PILAR_3}}
-                    </p>
-                </div>
-            </div>
-
+        <div class="section">
+            <h2>{{diagnosticTitle}}</h2>
+            {{diagnosticContent}}
+            <p class="diagnostic-question">{{diagnosticQuestion}}</p>
         </div>
 
+        <div class="section">
+            <h2>{{actionPlanTitle}}</h2>
+            <div class="pillars">
+                <div class="pillar">
+                    <h3>Pilar 1: Aquisição</h3>
+                    <p>{{actionPlanPillar1}}</p>
+                </div>
+                <div class="pillar">
+                    <h3>Pilar 2: Conversão</h3>
+                    <p>{{actionPlanPillar2}}</p>
+                </div>
+                <div class="pillar">
+                    <h3>Pilar 3: Autoridade</h3>
+                    <p>{{actionPlanPillar3}}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>{{timelineTitle}}</h2>
+            {{timelineContent}}
+        </div>
+
+        <div class="section">
+            <h2>{{kpiTitle}}</h2>
+            <div class="kpi-grid">
+                {{kpiItems}}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>{{whyCpTitle}}</h2>
+            {{whyCpContent}}
+        </div>
+
+        <div class="section">
+            <h2>{{justificationTitle}}</h2>
+            <p>{{justificationContent}}</p>
+        </div>
+
+        <div class="section">
+            <h2>{{investmentTitle}}</h2>
+            {{investmentTable}}
+        </div>
+
+        <div class="section">
+            <h2>{{nextStepsTitle}}</h2>
+            {{nextStepsContent}}
+        </div>
+
+        <footer>
+            CP Marketing Digital
+        </footer>
     </div>
 
 </body>

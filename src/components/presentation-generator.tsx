@@ -77,8 +77,20 @@ export default function PresentationGenerator() {
     setPresentationContent(null);
     toast({ title: "Gerando Apresentação...", description: "Aguarde enquanto a IA cria os slides." });
     
-    // Usando dados de exemplo para demonstração, se o nome do cliente não for preenchido
-    let dataToSubmit = values.clientName ? values : {
+    try {
+      const result = await generatePresentation(values);
+      setPresentationContent(result);
+      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e faça o download." });
+    } catch(error) {
+      console.error("Error generating presentation:", error);
+      toast({ title: "Erro na Geração", description: "Não foi possível gerar a apresentação. Tente novamente.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFillWithExample = () => {
+    form.reset({
         clientName: "Clínica Vitalize",
         faturamentoMedio: "R$ 50.000",
         metaFaturamento: "R$ 120.000",
@@ -95,19 +107,9 @@ export default function PresentationGenerator() {
         prazoDecisao: "30 dias.",
         packages: ['marketing_premium', 'captacao_estudio_contrato'],
         discount: 500,
-    };
-    
-    try {
-      const result = await generatePresentation(dataToSubmit);
-      setPresentationContent(result);
-      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e faça o download." });
-    } catch(error) {
-      console.error("Error generating presentation:", error);
-      toast({ title: "Erro na Geração", description: "Não foi possível gerar a apresentação. Tente novamente.", variant: "destructive" });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    });
+    toast({ title: 'Formulário Preenchido!', description: 'Dados de exemplo foram carregados.' });
+  }
 
  const handleDownloadHtml = () => {
     if (!presentationContent || !htmlTemplate) {
@@ -117,26 +119,97 @@ export default function PresentationGenerator() {
     
     setIsDownloading(true);
 
-    // Substitui placeholders no template com o conteúdo gerado
-    let finalHtml = htmlTemplate
-      .replace('{{SUBTITULO_AQUI}}', presentationContent.diagnosticSlide.title)
-      .replace('{{TITULO_AQUI}}', presentationContent.presentationTitle)
-      .replace('{{DESCRICAO_PILAR_1}}', presentationContent.actionPlanSlide.content[0])
-      .replace('{{DESCRICAO_PILAR_2}}', presentationContent.actionPlanSlide.content[1])
-      .replace('{{DESCRICAO_PILAR_3}}', presentationContent.actionPlanSlide.content[2]);
+    const {
+        presentationTitle,
+        diagnosticSlide,
+        actionPlanSlide,
+        timelineSlide,
+        kpiSlide,
+        whyCpSlide,
+        justificationSlide,
+        investmentSlide,
+        nextStepsSlide
+    } = presentationContent;
 
-    // Cria um Blob com o conteúdo HTML
+    const kpiItemsHtml = kpiSlide.kpis.map(kpi => `
+        <div class="kpi-item">
+            <h4>${kpi.metric}</h4>
+            <p class="kpi-estimate">${kpi.estimate}</p>
+            <p class="kpi-importance">${kpi.importance}</p>
+        </div>
+    `).join('');
+
+    const investmentItemsHtml = investmentSlide.items.map(item => `
+        <tr>
+            <td>${item.name}</td>
+            <td class="price">${item.price}</td>
+        </tr>
+    `).join('');
+    
+    let investmentHtml = `
+      <table>
+          <tbody>
+              ${investmentItemsHtml}
+          </tbody>
+          <tfoot>
+              <tr>
+                  <td>Subtotal</td>
+                  <td class="price">${investmentSlide.total}</td>
+              </tr>
+    `;
+
+    if (investmentSlide.discount) {
+        investmentHtml += `
+              <tr class="discount">
+                  <td>Desconto</td>
+                  <td class="price">${investmentSlide.discount}</td>
+              </tr>
+        `;
+    }
+
+    investmentHtml += `
+              <tr class="total">
+                  <td>Total</td>
+                  <td class="price">${investmentSlide.finalTotal}</td>
+              </tr>
+          </tfoot>
+      </table>
+    `;
+
+    // Replace placeholders
+    let finalHtml = htmlTemplate
+        .replace('{{presentationTitle}}', presentationTitle)
+        .replace('{{clientName}}', form.getValues('clientName'))
+        .replace('{{diagnosticTitle}}', diagnosticSlide.title)
+        .replace('{{diagnosticContent}}', `<ul>${diagnosticSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`)
+        .replace('{{diagnosticQuestion}}', diagnosticSlide.question)
+        .replace('{{actionPlanTitle}}', actionPlanSlide.title)
+        .replace('{{actionPlanPillar1}}', actionPlanSlide.content[0])
+        .replace('{{actionPlanPillar2}}', actionPlanSlide.content[1])
+        .replace('{{actionPlanPillar3}}', actionPlanSlide.content[2])
+        .replace('{{timelineTitle}}', timelineSlide.title)
+        .replace('{{timelineContent}}', `<ul>${timelineSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`)
+        .replace('{{kpiTitle}}', kpiSlide.title)
+        .replace('{{kpiItems}}', kpiItemsHtml)
+        .replace('{{whyCpTitle}}', whyCpSlide.title)
+        .replace('{{whyCpContent}}', `<ul>${whyCpSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`)
+        .replace('{{justificationTitle}}', justificationSlide.title)
+        .replace('{{justificationContent}}', justificationSlide.content)
+        .replace('{{investmentTitle}}', investmentSlide.title)
+        .replace('{{investmentTable}}', investmentHtml)
+        .replace('{{nextStepsTitle}}', nextStepsSlide.title)
+        .replace('{{nextStepsContent}}', `<ul>${nextStepsSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`);
+
+
     const blob = new Blob([finalHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
 
-    // Cria um link temporário para iniciar o download
     const a = document.createElement('a');
     a.href = url;
     a.download = `Apresentacao_${form.getValues('clientName').replace(/\s/g, '_') || 'Exemplo'}.html`;
     document.body.appendChild(a);
-    a.click();
+a.click();
 
-    // Limpeza
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     setIsDownloading(false);
@@ -260,11 +333,13 @@ export default function PresentationGenerator() {
                    </AccordionContent>
                 </AccordionItem>
               </Accordion>
-
-              <Button type="submit" disabled={isLoading} className="w-full">
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
-                Gerar Conteúdo da Apresentação
-              </Button>
+                <div className="flex items-center gap-4">
+                    <Button type="button" variant="secondary" onClick={handleFillWithExample}>Preencher com Exemplo</Button>
+                    <Button type="submit" disabled={isLoading} className="w-full">
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
+                        Gerar Conteúdo da Apresentação
+                    </Button>
+                </div>
             </form>
           </Form>
         </CardContent>
