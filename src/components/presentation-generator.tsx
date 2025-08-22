@@ -1,8 +1,7 @@
-
 "use client";
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
@@ -11,24 +10,272 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle, Diamond, Repeat, Users, Star, Search, Workflow, Palette, Eye } from "lucide-react";
+import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
 import { GeneratePresentationOutput, DiagnosticFormSchema, packageOptions } from "@/ai/schemas/presentation-generator-schemas";
 import type { z } from "zod";
-import { useRouter } from "next/navigation";
-
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
+
+const htmlTemplate = `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta de Crescimento</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
+        :root {
+            --background: #0D0D0D;
+            --foreground: #F5F5F7;
+            --card-background: #171717;
+            --border: rgba(255, 255, 255, 0.1);
+            --primary: #FF6B00;
+            --muted-foreground: #A1A1AA;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        header h1 {
+            font-size: 52px;
+            font-weight: 900;
+            color: var(--foreground);
+            margin: 0;
+            line-height: 1.1;
+        }
+        header p {
+            font-size: 20px;
+            color: var(--primary);
+            margin: 10px 0 0;
+        }
+        .section {
+            background-color: var(--card-background);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0 0 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--foreground);
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 12px;
+            color: var(--muted-foreground);
+        }
+        ul li strong {
+            color: var(--foreground);
+            font-weight: 600;
+        }
+        ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        .diagnostic-question {
+            font-style: italic;
+            color: var(--muted-foreground);
+            padding: 16px;
+            border-left: 3px solid var(--primary);
+            margin-top: 24px;
+            background-color: rgba(255, 107, 0, 0.05);
+        }
+        .pillars {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+        .pillar {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .pillar p {
+            color: var(--muted-foreground);
+        }
+         .pillar p strong {
+            color: var(--foreground);
+            font-weight: 600;
+        }
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .kpi-item {
+            padding: 16px;
+            border-radius: 8px;
+            background-color: var(--background);
+        }
+        .kpi-item h4 {
+            font-size: 18px;
+            margin: 0 0 4px 0;
+            color: var(--foreground);
+        }
+        .kpi-item .kpi-estimate {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0 0 8px 0;
+        }
+        .kpi-item .kpi-importance {
+            font-size: 14px;
+            color: var(--muted-foreground);
+            margin: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 24px;
+        }
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        table .price {
+            text-align: right;
+            font-weight: bold;
+        }
+        table tfoot tr {
+            border: none;
+        }
+        table tfoot tr td {
+             border-bottom: none;
+        }
+        table tfoot tr.total td {
+            padding-top: 16px;
+            border-top: 2px solid var(--primary);
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+         table tfoot tr.total td:first-child {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--foreground);
+        }
+        table tr.discount td {
+            color: #6EE7B7;
+        }
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--muted-foreground);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{presentationTitle}}</h1>
+            <p>Preparado especialmente para {{clientName}}</p>
+        </header>
+        <div class="section">
+            <h2>🎯 {{diagnosticTitle}}</h2>
+            {{{diagnosticContent}}}
+            <p class="diagnostic-question">{{diagnosticQuestion}}</p>
+        </div>
+        <div class="section">
+            <h2>🚀 {{actionPlanTitle}}</h2>
+            <div class="pillars">
+                <div class="pillar">
+                    <h3>Pilar 1: Aquisição</h3>
+                    <p>{{{actionPlanPillar1}}}</p>
+                </div>
+                <div class="pillar">
+                    <h3>Pilar 2: Conversão</h3>
+                    <p>{{{actionPlanPillar2}}}</p>
+                </div>
+                <div class="pillar">
+                    <h3>Pilar 3: Autoridade</h3>
+                    <p>{{{actionPlanPillar3}}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <h2>🗓️ {{timelineTitle}}</h2>
+            {{{timelineContent}}}
+        </div>
+        <div class="section">
+            <h2>📊 {{kpiTitle}}</h2>
+            <div class="kpi-grid">
+                {{{kpiItems}}}
+            </div>
+        </div>
+        <div class="section">
+            <h2>⭐ {{whyCpTitle}}</h2>
+            {{{whyCpContent}}}
+        </div>
+        <div class="section">
+            <h2>💡 {{justificationTitle}}</h2>
+            <p>{{{justificationContent}}}</p>
+        </div>
+        <div class="section">
+            <h2>💰 {{investmentTitle}}</h2>
+            {{{investmentTable}}}
+        </div>
+        <div class="section">
+            <h2>🏁 {{nextStepsTitle}}</h2>
+            {{{nextStepsContent}}}
+        </div>
+        <footer>
+            CP Marketing Digital &copy; 2024
+        </footer>
+    </div>
+</body>
+</html>
+`;
 
 
 export default function PresentationGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [presentationContent, setPresentationContent] = useState<GeneratePresentationOutput | null>(null);
-  const [htmlTemplate, setHtmlTemplate] = useState<string>('');
   const { toast } = useToast();
-  const router = useRouter();
 
   const form = useForm<DiagnosticFormValues>({
     resolver: zodResolver(DiagnosticFormSchema),
@@ -51,14 +298,6 @@ export default function PresentationGenerator() {
       discount: 0,
     },
   });
-  
-  useEffect(() => {
-    fetch('/slide-template.html')
-      .then(response => response.text())
-      .then(text => setHtmlTemplate(text))
-      .catch(error => console.error("Failed to load HTML template:", error));
-  }, []);
-
 
   const watchedPackages = form.watch('packages') || [];
   const watchedDiscount = form.watch('discount') || 0;
@@ -112,7 +351,7 @@ export default function PresentationGenerator() {
   }
 
  const handleDownload = () => {
-    if (!presentationContent || !htmlTemplate) {
+    if (!presentationContent) {
       toast({ title: 'Erro', description: 'Gere o conteúdo da apresentação primeiro.', variant: 'destructive'});
       return;
     }
@@ -130,35 +369,29 @@ export default function PresentationGenerator() {
     } = presentationContent;
 
     const escapeHtml = (text: any): string => {
-        if (typeof text !== 'string') {
-            return '';
-        }
-        return text.replace(/&/g, "&amp;")
-                   .replace(/</g, "&lt;")
-                   .replace(/>/g, "&gt;")
-                   .replace(/"/g, "&quot;")
-                   .replace(/'/g, "&#039;")
-                   .replace(/\n/g, '<br>');
+        if (typeof text !== 'string') return '';
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;")
+            .replace(/\n/g, '<br>');
     };
     
-
     const listToHtml = (items: string[]) => {
-        if (!items || items.length === 0) return '<ul></ul>';
-        const listItems = items.map(item => `<li>${escapeHtml(item).replace(/<strong>(.*?)<\/strong>/g, '<strong>$1</strong>')}</li>`).join('');
+        if (!items || !Array.isArray(items)) return '<ul></ul>';
+        const listItems = items.map(item => `<li>${item.replace(/<strong>(.*?)<\/strong>/g, '<strong>$1</strong>')}</li>`).join('');
         return `<ul>${listItems}</ul>`;
     };
 
     const kpiIcons: { [key: string]: string } = {
-        TrendingUp: '📈',
-        Target: '🎯',
-        DollarSign: '💰',
-        Repeat: '🔁',
-        Users: '👥',
+        TrendingUp: '📈', Target: '🎯', DollarSign: '💰', Repeat: '🔁', Users: '👥',
     };
 
     const kpiItemsHtml = kpiSlide.kpis.map(kpi => `
         <div class="kpi-item">
-            <h4>${kpiIcons[kpi.icon] || '-'} ${escapeHtml(kpi.metric)}</h4>
+            <h4>${kpiIcons[kpi.icon] || '•'} ${escapeHtml(kpi.metric)}</h4>
             <p class="kpi-estimate">${escapeHtml(kpi.estimate)}</p>
             <p class="kpi-importance">${escapeHtml(kpi.importance)}</p>
         </div>
@@ -182,8 +415,9 @@ export default function PresentationGenerator() {
                   <td class="price">${escapeHtml(investmentSlide.total)}</td>
               </tr>
     `;
-
-    if (investmentSlide.discount && investmentSlide.discount.trim() !== 'N/A' && parseFloat(investmentSlide.discount.replace(/[^0-9,-]+/g,"").replace(',','.')) !== 0) {
+    
+    const discountValue = parseFloat(String(form.getValues('discount') || 0));
+    if (discountValue > 0 && investmentSlide.discount) {
         investmentHtml += `
               <tr class="discount">
                   <td>Desconto</td>
@@ -208,9 +442,9 @@ export default function PresentationGenerator() {
         '{{{diagnosticContent}}}': listToHtml(diagnosticSlide.content),
         '{{diagnosticQuestion}}': escapeHtml(diagnosticSlide.question),
         '{{actionPlanTitle}}': escapeHtml(actionPlanSlide.title),
-        '{{{actionPlanPillar1}}}': escapeHtml(actionPlanSlide.content[0]),
-        '{{{actionPlanPillar2}}}': escapeHtml(actionPlanSlide.content[1]),
-        '{{{actionPlanPillar3}}}': escapeHtml(actionPlanSlide.content[2]),
+        '{{{actionPlanPillar1}}}': actionPlanSlide.content[0],
+        '{{{actionPlanPillar2}}}': actionPlanSlide.content[1],
+        '{{{actionPlanPillar3}}}': actionPlanSlide.content[2],
         '{{timelineTitle}}': escapeHtml(timelineSlide.title),
         '{{{timelineContent}}}': listToHtml(timelineSlide.content),
         '{{kpiTitle}}': escapeHtml(kpiSlide.title),
