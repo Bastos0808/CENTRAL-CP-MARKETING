@@ -101,7 +101,7 @@
             display: flex; /* Alinha os itens lado a lado */
             gap: 24px; /* Espaço entre os itens */
             margin-top: 32px; 
-            align-items: flex-end; /* Alinha os itens pela base */
+            align-items: stretch; /* Faz com que os itens preencham a altura */
         }
 
         /* Estilo base para cada imagem */
@@ -118,7 +118,7 @@
         
         /* Estilo para a imagem vertical */
         .placeholder-image-vertical {
-            width: 550px; /* Largura aumentada */
+            width: 550px; 
             height: 400px; 
             object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer */
             border-radius: 8px;
@@ -143,8 +143,8 @@
             color: #E0E0E0;
             font-size: 1rem;
             line-height: 1.5;
-            height: 164px; /* Altura aumentada */
             box-sizing: border-box; /* Garante que o padding não aumente a altura total */
+            flex-grow: 1; /* Faz a caixa crescer para preencher o espaço */
         }
 
         /* Grid para as 4 imagens horizontais */
@@ -157,7 +157,7 @@
         /* Estilo para as imagens pequenas */
         .small-placeholder {
             width: 130px; /* Largura fixa para evitar distorção */
-            height: 220px;
+            height: 180px; /* Altura reduzida */
             object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer */
             border-radius: 8px;
         }
