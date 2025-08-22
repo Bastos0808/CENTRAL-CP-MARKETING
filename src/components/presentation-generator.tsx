@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import * as React from "react";
@@ -18,64 +17,16 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
 import { GeneratePresentationOutput, DiagnosticFormSchema, packageOptions } from "@/ai/schemas/presentation-generator-schemas";
 import type { z } from "zod";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { createRoot } from 'react-dom/client';
 
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
-
-export const AboutUsSlide = () => (
-    <div data-slide className="w-[1280px] h-[720px] shadow-2xl flex items-center justify-center text-white rounded-lg overflow-hidden bg-[#0A0A0A] p-[50px_80px_80px]">
-        <div className="w-full max-w-6xl mx-auto grid grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-                <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider">SOBRE NÓS</p>
-                <h1 className="text-5xl font-black leading-tight">Somos obcecados por resultados, não por métricas de vaidade.</h1>
-                <p className="text-gray-300 text-lg leading-relaxed">Em um mercado onde muitos se contentam em entregar posts e relatórios, nós entregamos crescimento. Nosso ambiente colaborativo e estúdios próprios nos dão a agilidade e a qualidade para transformar sua presença digital em um ativo que gera lucro e autoridade.</p>
-                <div className="flex items-center gap-6 pt-4">
-                    <div className="text-center">
-                        <p className="text-4xl font-bold text-primary">+203</p>
-                        <p className="text-sm text-gray-400">Clientes Atendidos</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-4xl font-bold text-primary">+3 Anos</p>
-                        <p className="text-sm text-gray-400">de Mercado</p>
-                    </div>
-                </div>
-            </div>
-            <div className="grid grid-cols-2 grid-rows-2 gap-4 h-[500px]">
-                <div className="col-span-2 row-span-1 relative rounded-lg overflow-hidden">
-                     <Image src="https://placehold.co/600x240.png" alt="Placeholder de imagem de escritório" layout="fill" objectFit="cover" data-ai-hint="office meeting" />
-                </div>
-                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
-                    <Image src="https://placehold.co/300x300.png" alt="Placeholder de imagem de equipe" layout="fill" objectFit="cover" data-ai-hint="team collaboration" />
-                </div>
-                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
-                   <Image src="https://placehold.co/300x300.png" alt="Placeholder de imagem de detalhe" layout="fill" objectFit="cover" data-ai-hint="computer screen" />
-                </div>
-            </div>
-        </div>
-    </div>
-);
-
-
-export const GeneratedPresentation = React.forwardRef<HTMLDivElement, { content: GeneratePresentationOutput; clientName: string }>(({ content, clientName }, ref) => {
-    
-    return (
-        <div ref={ref} className="proposal-container space-y-4 font-body">
-          {/* Adicione os outros slides aqui conforme necessário */}
-        </div>
-    );
-});
-GeneratedPresentation.displayName = 'GeneratedPresentation';
 
 
 export default function PresentationGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [presentationContent, setPresentationContent] = useState<GeneratePresentationOutput | null>(null);
+  const [htmlTemplate, setHtmlTemplate] = useState<string>('');
   const { toast } = useToast();
 
   const form = useForm<DiagnosticFormValues>({
@@ -99,6 +50,15 @@ export default function PresentationGenerator() {
       discount: 0,
     },
   });
+  
+  // Fetch a HTML template quando o componente montar
+  useEffect(() => {
+    fetch('/slide-template.html')
+      .then(response => response.text())
+      .then(text => setHtmlTemplate(text))
+      .catch(error => console.error("Failed to load HTML template:", error));
+  }, []);
+
 
   const watchedPackages = form.watch('packages') || [];
   const watchedDiscount = form.watch('discount') || 0;
@@ -117,33 +77,25 @@ export default function PresentationGenerator() {
     setPresentationContent(null);
     toast({ title: "Gerando Apresentação...", description: "Aguarde enquanto a IA cria os slides." });
     
-    let dataToSubmit = values;
-
-    if (!values.clientName) {
-        toast({
-            title: "Usando Dados Fictícios",
-            description: "O nome do cliente não foi preenchido. Gerando apresentação de exemplo.",
-        });
-        dataToSubmit = {
-            clientName: "Clínica Vitalize",
-            faturamentoMedio: "R$ 50.000",
-            metaFaturamento: "R$ 120.000",
-            ticketMedio: "R$ 800",
-            origemClientes: "Indicação e pesquisa no Google.",
-            tempoEmpresa: "5 anos",
-            motivacaoMarketing: "Estagnação no crescimento e desejo de se tornar referência na região.",
-            investimentoAnterior: "Já impulsionaram posts no Instagram, sem estratégia clara e com pouco retorno.",
-            tentativasAnteriores: "Contrataram um sobrinho para cuidar das redes sociais, mas a comunicação era amadora.",
-            principalGargalo: "Geração de leads qualificados. O telefone toca pouco e os contatos que chegam não têm perfil para fechar.",
-            custoProblema: "R$ 20.000 por mês em oportunidades perdidas.",
-            envolvidosDecisao: "Apenas o sócio principal.",
-            orcamentoPrevisto: "Entre R$ 4.000 e R$ 6.000 por mês.",
-            prazoDecisao: "30 dias.",
-            packages: ['marketing_premium', 'captacao_estudio_contrato'],
-            discount: 500,
-        };
-        form.reset(dataToSubmit);
-    }
+    // Usando dados de exemplo para demonstração, se o nome do cliente não for preenchido
+    let dataToSubmit = values.clientName ? values : {
+        clientName: "Clínica Vitalize",
+        faturamentoMedio: "R$ 50.000",
+        metaFaturamento: "R$ 120.000",
+        ticketMedio: "R$ 800",
+        origemClientes: "Indicação e pesquisa no Google.",
+        tempoEmpresa: "5 anos",
+        motivacaoMarketing: "Estagnação no crescimento e desejo de se tornar referência na região.",
+        investimentoAnterior: "Já impulsionaram posts no Instagram, sem estratégia clara e com pouco retorno.",
+        tentativasAnteriores: "Contrataram um sobrinho para cuidar das redes sociais, mas a comunicação era amadora.",
+        principalGargalo: "Geração de leads qualificados. O telefone toca pouco e os contatos que chegam não têm perfil para fechar.",
+        custoProblema: "R$ 20.000 por mês em oportunidades perdidas.",
+        envolvidosDecisao: "Apenas o sócio principal.",
+        orcamentoPrevisto: "Entre R$ 4.000 e R$ 6.000 por mês.",
+        prazoDecisao: "30 dias.",
+        packages: ['marketing_premium', 'captacao_estudio_contrato'],
+        discount: 500,
+    };
     
     try {
       const result = await generatePresentation(dataToSubmit);
@@ -157,93 +109,40 @@ export default function PresentationGenerator() {
     }
   };
 
- const handleDownload = async () => {
-    if (!presentationContent) return;
-
+ const handleDownloadHtml = () => {
+    if (!presentationContent || !htmlTemplate) {
+      toast({ title: 'Erro', description: 'Conteúdo da apresentação ou template não encontrado.', variant: 'destructive'});
+      return;
+    }
+    
     setIsDownloading(true);
-    toast({ title: 'Gerando PDF...', description: 'Aguarde um momento. Este processo pode ser lento.' });
-    
-    // Create a temporary container to render the slides off-screen
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.left = '-9999px';
-    container.style.top = '0px';
-    document.body.appendChild(container);
-    
-    // Create a new React root to render the component into the container
-    const root = createRoot(container);
 
-    // Render the component and wait for it to be fully rendered
-    await new Promise<void>((resolve) => {
-        root.render(
-            <React.StrictMode>
-                <GeneratedPresentation 
-                    ref={(el) => {
-                        // The 'ref' being set means the component has mounted.
-                        // We can resolve the promise now.
-                        if (el) resolve();
-                    }} 
-                    content={presentationContent} 
-                    clientName={form.getValues('clientName')} 
-                />
-            </React.StrictMode>
-        );
-    });
+    // Substitui placeholders no template com o conteúdo gerado
+    let finalHtml = htmlTemplate
+      .replace('{{SUBTITULO_AQUI}}', presentationContent.diagnosticSlide.title)
+      .replace('{{TITULO_AQUI}}', presentationContent.presentationTitle)
+      .replace('{{DESCRICAO_PILAR_1}}', presentationContent.actionPlanSlide.content[0])
+      .replace('{{DESCRICAO_PILAR_2}}', presentationContent.actionPlanSlide.content[1])
+      .replace('{{DESCRICAO_PILAR_3}}', presentationContent.actionPlanSlide.content[2]);
 
-    // A small delay to ensure all assets (like images from placehold.co) are loaded
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Cria um Blob com o conteúdo HTML
+    const blob = new Blob([finalHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
 
-    const slideElements = container.querySelectorAll<HTMLElement>('[data-slide]');
+    // Cria um link temporário para iniciar o download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Apresentacao_${form.getValues('clientName').replace(/\s/g, '_') || 'Exemplo'}.html`;
+    document.body.appendChild(a);
+    a.click();
 
-    if (slideElements.length === 0) {
-        toast({ title: 'Erro de Renderização', description: 'Não foi possível encontrar os slides para gerar o PDF.', variant: 'destructive' });
-        setIsDownloading(false);
-        root.unmount();
-        document.body.removeChild(container);
-        return;
-    }
-
-    const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: [1280, 720]
-    });
-
-    for (let i = 0; i < slideElements.length; i++) {
-        const slide = slideElements[i];
-        try {
-            const canvas = await html2canvas(slide, {
-                scale: 2, // Higher scale for better quality
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#0A0A0A',
-                width: 1280,
-                height: 720,
-            });
-            const imgData = canvas.toDataURL('image/png', 0.95);
-
-            if (i > 0) {
-                pdf.addPage([1280, 720], 'landscape');
-            }
-            pdf.addImage(imgData, 'PNG', 0, 0, 1280, 720, undefined, 'FAST');
-        } catch (canvasError) {
-            console.error(`Error capturing slide ${i + 1}:`, canvasError);
-            toast({ title: `Erro no Slide ${i + 1}`, description: 'Não foi possível capturar um dos slides.', variant: 'destructive' });
-            setIsDownloading(false);
-            root.unmount();
-            document.body.removeChild(container);
-            return;
-        }
-    }
-
-    pdf.save(`Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.pdf`);
-    toast({ title: 'Download Concluído!', description: 'Seu PDF foi baixado com sucesso.' });
-
-    // Cleanup
-    root.unmount();
-    document.body.removeChild(container);
+    // Limpeza
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
     setIsDownloading(false);
-};
+    
+     toast({ title: 'Download Concluído!', description: 'Sua apresentação em HTML foi baixada.' });
+  };
   
 
   return (
@@ -364,7 +263,7 @@ export default function PresentationGenerator() {
 
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
-                Gerar Apresentação com IA
+                Gerar Conteúdo da Apresentação
               </Button>
             </form>
           </Form>
@@ -374,26 +273,26 @@ export default function PresentationGenerator() {
       <Card className="lg:sticky top-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
-          <CardDescription>A IA gerou a apresentação. Clique no botão abaixo para fazer o download do PDF.</CardDescription>
+          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para baixar o arquivo HTML da apresentação.</CardDescription>
         </CardHeader>
         <CardContent>
           {presentationContent ? (
             <div className="space-y-4">
               <Alert>
                 <BrainCircuit className="h-4 w-4" />
-                <AlertTitle>Apresentação Pronta!</AlertTitle>
+                <AlertTitle>Conteúdo Pronto!</AlertTitle>
                 <AlertDescription>
-                  Os slides foram gerados com sucesso.
+                  O conteúdo foi gerado com sucesso.
                 </AlertDescription>
               </Alert>
-              <Button onClick={handleDownload} disabled={isDownloading} className="w-full">
+              <Button onClick={handleDownloadHtml} disabled={isDownloading} className="w-full">
                 {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4" />}
-                Baixar Apresentação (PDF)
+                Baixar Apresentação (.html)
               </Button>
             </div>
           ) : (
             <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
-              <p>A apresentação gerada aparecerá aqui.</p>
+              <p>O conteúdo da apresentação aparecerá aqui após a geração.</p>
             </div>
           )}
         </CardContent>
