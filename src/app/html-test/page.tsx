@@ -1,83 +1,82 @@
 
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Script from 'next/script';
 import { BackButton } from '@/components/ui/back-button';
+import { cn } from '@/lib/utils';
 
 
 export default function HtmlTestPage() {
+    const mountRef = useRef<HTMLDivElement>(null);
+    const introContainerRef = useRef<HTMLDivElement>(null);
+    const skyContainerRef = useRef<HTMLDivElement>(null);
+    const xMarkRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         // Since we are loading scripts dynamically, we need to wait for them to be ready.
-        // We will check for the main libraries (THREE, TweenLite, $) before running the script.
         const interval = setInterval(() => {
-            if (typeof window.THREE !== 'undefined' && typeof window.TweenLite !== 'undefined' && typeof window.$ !== 'undefined') {
+            if (typeof window.THREE !== 'undefined' && typeof window.TweenLite !== 'undefined' && typeof window.TimelineMax !== 'undefined') {
                 clearInterval(interval);
-                
-                // The provided JavaScript code starts here, adapted for the browser environment
-                "use strict";
 
-                let camera, scene, renderer;
-                let plane;
+                // --- Start of adapted script ---
+                let camera: any, scene: any, renderer: any;
+                let plane: any;
                 let raycaster = new window.THREE.Raycaster();
                 let normalizedMouse = {
                     x: 0,
                     y: -180
                 };
 
-                let darkBlue = {
-                    r: 0,
-                    g: 52,
-                    b: 74
-                };
-
+                let darkBlue = { r: 0, g: 52, b: 74 };
                 let baseColorRGB = darkBlue;
                 let baseColor = "rgb(" + baseColorRGB.r + "," + baseColorRGB.g + "," + baseColorRGB.b + ")";
-                let nearStars, farStars, farthestStars;
+                let nearStars: any, farStars: any, farthestStars: any;
 
                 function init() {
+                    if (!mountRef.current || mountRef.current.querySelector('canvas')) {
+                        return; // Already initialized or mount point not ready
+                    }
+
                     scene = new window.THREE.Scene();
-                    camera = new window.THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+                    camera = new window.THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
                     renderer = new window.THREE.WebGLRenderer();
 
                     camera.position.z = 50;
-                    
-                    renderer.setClearColor( "#121212", 1.0);
-                    renderer.setSize( window.innerWidth, window.innerHeight );
-                    renderer.setPixelRatio( window.devicePixelRatio );
 
-                    // Ensure we don't add the renderer more than once
-                    if (!document.querySelector('canvas')) {
-                        document.body.appendChild( renderer.domElement );
-                    }
+                    renderer.setClearColor("#121212", 1.0);
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                    renderer.setPixelRatio(window.devicePixelRatio);
+
+                    mountRef.current.appendChild(renderer.domElement);
 
                     // Lights
                     let topLight = new window.THREE.DirectionalLight(0xffffff, 1);
-                    topLight.position.set(0,1,1).normalize();
+                    topLight.position.set(0, 1, 1).normalize();
                     scene.add(topLight);
 
                     let bottomLight = new window.THREE.DirectionalLight(0xffffff, 0.4);
-                    bottomLight.position.set(1,-1,1).normalize();
+                    bottomLight.position.set(1, -1, 1).normalize();
                     scene.add(bottomLight);
 
                     let skyLightRight = new window.THREE.DirectionalLight(0x666666, 0.2);
-                    skyLightRight.position.set(-1,-1,0.2).normalize();
+                    skyLightRight.position.set(-1, -1, 0.2).normalize();
                     scene.add(skyLightRight);
-
+                    
                     let skyLightCenter = new window.THREE.DirectionalLight(0x666666, 0.2);
-                    skyLightCenter.position.set(-0,-1,0.2).normalize();
+                    skyLightCenter.position.set(0,-1,0.2).normalize();
                     scene.add(skyLightCenter);
 
                     let skyLightLeft = new window.THREE.DirectionalLight(0x666666, 0.2);
                     skyLightLeft.position.set(1,-1,0.2).normalize();
                     scene.add(skyLightLeft);
 
-                    // Mesh creation
+                    // Mesh
                     let geometry = new window.THREE.PlaneGeometry(400, 400, 70, 70);
-                    let darkBlueMaterial = new window.THREE.MeshPhongMaterial( { color: 0xffffff, side: window.THREE.DoubleSide, vertexColors: window.THREE.FaceColors} );
+                    let darkBlueMaterial = new window.THREE.MeshPhongMaterial({ color: 0xffffff, side: window.THREE.DoubleSide, vertexColors: true });
 
-                    geometry.vertices.forEach(function(vertice) {
+                    geometry.vertices.forEach(function (vertice: any) {
                         vertice.x += (Math.random() - 0.5) * 4;
                         vertice.y += (Math.random() - 0.5) * 4;
                         vertice.z += (Math.random() - 0.5) * 4;
@@ -85,31 +84,32 @@ export default function HtmlTestPage() {
                         vertice.dy = Math.random() - 0.5;
                         vertice.randomDelay = Math.random() * 5;
                     });
-
+                    
                     for ( var i = 0; i < geometry.faces.length; i ++ ) {
                         geometry.faces[ i ].color.setStyle( baseColor );
-                        geometry.faces[ i ].baseColor =  baseColorRGB;    
+                        // @ts-ignore
+                        geometry.faces[ i ].baseColor =  baseColorRGB;
                     }
 
-                    plane = new window.THREE.Mesh( geometry, darkBlueMaterial );
-                    scene.add( plane );
+                    plane = new window.THREE.Mesh(geometry, darkBlueMaterial);
+                    scene.add(plane);
 
-                    // Create stars 
+                    // Stars
                     farthestStars = createStars(1200, 420, "#0952BD");
                     farStars = createStars(1200, 370, "#A5BFF0");
-                    nearStars = createStars(1200, 290,"#118CD6");
+                    nearStars = createStars(1200, 290, "#118CD6");
 
                     scene.add(farthestStars);
                     scene.add(farStars);
                     scene.add(nearStars);
-
-                    farStars.rotation.x = 0.25; 
-                    nearStars.rotation.x = 0.25; 
+                    
+                    farStars.rotation.x = 0.25;
+                    nearStars.rotation.x = 0.25;
                 }
 
-                function createStars(amount, yDistance, color = "0x000000") {
+                function createStars(amount: number, yDistance: number, color: string) {
                     let starGeometry = new window.THREE.Geometry();
-                    let starMaterial = new window.THREE.PointsMaterial({color: color, opacity: Math.random()});
+                    let starMaterial = new window.THREE.PointsMaterial({ color: color, opacity: Math.random() });
 
                     for (let i = 0; i < amount; i++) {
                         let vertex = new window.THREE.Vector3();
@@ -117,14 +117,15 @@ export default function HtmlTestPage() {
                         vertex.y = yDistance;
                         vertex.x = (Math.random() - 0.5) * 1500;
                         starGeometry.vertices.push(vertex);
-                    }	
+                    }
                     return new window.THREE.Points(starGeometry, starMaterial);
                 }
 
                 let timer = 0;
+                let animationFrameId: number;
 
                 function render() {
-                    requestAnimationFrame( render );
+                    animationFrameId = requestAnimationFrame(render);
                     timer += 0.01;
                     let vertices = plane.geometry.vertices;
 
@@ -137,8 +138,9 @@ export default function HtmlTestPage() {
                     let intersects = raycaster.intersectObjects([plane]);
 
                     if (intersects.length > 0) {
+                         // @ts-ignore
                         let faceBaseColor = intersects[0].face.baseColor;
-                        plane.geometry.faces.forEach(function(face) {
+                        plane.geometry.faces.forEach(function (face: any) {
                             face.color.r *= 255;
                             face.color.g *= 255;
                             face.color.b *= 255;
@@ -155,6 +157,7 @@ export default function HtmlTestPage() {
                             face.color.setStyle(newBasecol);
                         });
                         plane.geometry.colorsNeedUpdate = true;
+                        // @ts-ignore
                         intersects[0].face.color.setStyle("#006ea0");
                         plane.geometry.colorsNeedUpdate = true;
                     }
@@ -170,63 +173,67 @@ export default function HtmlTestPage() {
                 }
 
                 init();
-                
+                render();
+
+                // Event Listeners using refs
                 const handleResize = () => {
                     camera.aspect = window.innerWidth / window.innerHeight;
                     camera.updateProjectionMatrix();
-                    renderer.setSize( window.innerWidth, window.innerHeight );
-                }
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                };
                 window.addEventListener("resize", handleResize);
 
-                const handleMouseMove = (event) => {
-                    normalizedMouse.x = (event.clientX / window.innerWidth) * 2 - 1;	
-                    normalizedMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;	
-                }
+                const handleMouseMove = (event: MouseEvent) => {
+                    normalizedMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    normalizedMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                };
                 window.addEventListener("mousemove", handleMouseMove);
 
-                let introContainer = window.$('.intro-container');
-                let skyContainer = window.$('.sky-container');
-                let xMark = window.$('.x-mark');
-                
-                window.$('.shift-camera-button').click(function() {
+                const handleShiftCamera = () => {
                     let introTimeline = new window.TimelineMax();
                     introTimeline.add([
-                        window.TweenLite.fromTo(introContainer, 0.5, {opacity: 1}, {opacity: 0, ease: window.Power3.easeIn}),
-                        window.TweenLite.to(camera.rotation, 3, {x: Math.PI / 2, ease: window.Power3.easeInOut}),
-                        window.TweenLite.to(camera.position, 2.5, {z: 20, ease: window.Power3.easeInOut}),
-                        window.TweenLite.to(camera.position, 3, {y: 120, ease: window.Power3.easeInOut}),
-                        window.TweenLite.to(plane.scale, 3, {x: 2, ease: window.Power3.easeInOut}),
+                        window.TweenLite.fromTo(introContainerRef.current, 0.5, { opacity: 1 }, { opacity: 0, ease: window.Power3.easeIn }),
+                        window.TweenLite.to(camera.rotation, 3, { x: Math.PI / 2, ease: window.Power3.easeInOut }),
+                        window.TweenLite.to(camera.position, 2.5, { z: 20, ease: window.Power3.easeInOut }),
+                        window.TweenLite.to(camera.position, 3, { y: 120, ease: window.Power3.easeInOut }),
+                        window.TweenLite.to(plane.scale, 3, { x: 2, ease: window.Power3.easeInOut }),
                     ]);
                     introTimeline.add([
-                        window.TweenLite.to(xMark, 2, {opacity: 1, ease: window.Power3.easeInOut}),
-                        window.TweenLite.to(skyContainer, 2, {opacity: 1, ease: window.Power3.easeInOut})
+                        window.TweenLite.to(xMarkRef.current, 2, { opacity: 1, ease: window.Power3.easeInOut }),
+                        window.TweenLite.to(skyContainerRef.current, 2, { opacity: 1, ease: window.Power3.easeInOut })
                     ]);
-                });
+                };
 
-                window.$('.x-mark').click(function() {
-                    let outroTimeline = new window.TimelineMax();
+                const handleResetCamera = () => {
+                     let outroTimeline = new window.TimelineMax();
                     outroTimeline.add([
-                        window.TweenLite.to(xMark, 0.5, {opacity: 0, ease: window.Power3.easeInOut}),
-                        window.TweenLite.to(skyContainer, 0.5, {opacity: 0, ease: window.Power3.easeInOut}),
-                        window.TweenLite.to(camera.rotation, 3, {x: 0, ease: window.Power3.easeInOut}),
-                        window.TweenLite.to(camera.position, 3, {z: 50, ease: window.Power3.easeInOut}),
-                        window.TweenLite.to(camera.position, 2.5, {y: 0, ease: window.Power3.easeInOut}),
-                        window.TweenLite.to(plane.scale, 3, {x: 1, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(xMarkRef.current, 0.5, { opacity: 0, ease: window.Power3.easeInOut }),
+                        window.TweenLite.to(skyContainerRef.current, 0.5, { opacity: 0, ease: window.Power3.easeInOut }),
+                        window.TweenLite.to(camera.rotation, 3, { x: 0, ease: window.Power3.easeInOut }),
+                        window.TweenLite.to(camera.position, 3, { z: 50, ease: window.Power3.easeInOut }),
+                        window.TweenLite.to(camera.position, 2.5, { y: 0, ease: window.Power3.easeInOut }),
+                        window.TweenLite.to(plane.scale, 3, { x: 1, ease: window.Power3.easeInOut }),
                     ]);
                     outroTimeline.add([
-                        window.TweenLite.to(introContainer, 0.5, {opacity: 1, ease: window.Power3.easeIn}),
+                        window.TweenLite.to(introContainerRef.current, 0.5, { opacity: 1, ease: window.Power3.easeIn }),
                     ]);
-                });
-                render();
+                }
 
-                // Cleanup function
+                if (buttonRef.current) buttonRef.current.addEventListener('click', handleShiftCamera);
+                if (xMarkRef.current) xMarkRef.current.addEventListener('click', handleResetCamera);
+
+                // Cleanup
                 return () => {
                     window.removeEventListener('resize', handleResize);
                     window.removeEventListener('mousemove', handleMouseMove);
-                    if (renderer.domElement.parentElement) {
-                        renderer.domElement.parentElement.removeChild(renderer.domElement);
+                    if (buttonRef.current) buttonRef.current.removeEventListener('click', handleShiftCamera);
+                    if (xMarkRef.current) xMarkRef.current.removeEventListener('click', handleResetCamera);
+                    cancelAnimationFrame(animationFrameId);
+                    if (mountRef.current && renderer.domElement) {
+                        mountRef.current.removeChild(renderer.domElement);
                     }
                 };
+
             }
         }, 100);
 
@@ -234,17 +241,16 @@ export default function HtmlTestPage() {
 
     return (
         <>
-            <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js" strategy="afterInteractive" />
-            <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TweenLite.min.js" strategy="afterInteractive" />
-            <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TimelineMax.min.js" strategy="afterInteractive" />
-            <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/easing/EasePack.min.js" strategy="afterInteractive" />
-            <Script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" strategy="afterInteractive" />
-
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js" strategy="lazyOnload" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TweenLite.min.js" strategy="lazyOnload" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TimelineMax.min.js" strategy="lazyOnload" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/easing/EasePack.min.js" strategy="lazyOnload" />
+            
             <style jsx global>{`
                 body {
                     position: relative;
                     margin: 0;
-                    overflow: hidden;
+                    overflow: hidden !important;
                     background-color: #121212;
                 }
                 .intro-container {
@@ -407,91 +413,36 @@ export default function HtmlTestPage() {
                 .sky-container__left {
                     margin-right: 5px;
                 }
+                .sky-container__right {
+                    text-align: left;
+                }
                 .thirty-one {
                     letter-spacing: 4px;
                 }
-                .text-right {
-                    text-align: right;
-                }
-                .text-left {
-                    text-align: left;
-                }
-                .social-icon {
-                    z-index: 10;
-                }
-                .twitter {
-                    opacity: 0; /* Hidden for now */
-                }
-                .twitter:hover a {
-                    transform: rotate(-45deg) scale(1.05);
-                }
-                .twitter:hover i {
-                    color: #00aced;
-                }
-                .twitter a {
-                    bottom: -40px;
-                    right: -75px;
-                    transform: rotate(-45deg);
-                }
-                .twitter i {
-                    bottom: 7px;
-                    right: 7px;
-                    color: #00aced;
-                }
-                .social-icon a {
-                    position: absolute;
-                    background: white;
-                    color: white;
-                    box-shadow: -1px -1px 20px 0px rgba(0, 0, 0, 0.3);
-                    display: inline-block;
-                    width: 150px;
-                    height: 80px;
-                    transform-origin: 50% 50%;
-                    transition: 0.15s ease-out;
-                }
-                .social-icon i {
-                    position: absolute;
-                    pointer-events: none;
-                    z-index: 1000;
-                    transition: 0.15s ease-out;
-                }
-                .youtube {
-                     opacity: 0; /* Hidden for now */
-                }
-                .youtube:hover a {
-                    transform: rotate(45deg) scale(1.05);
-                }
-                .youtube:hover i {
-                    color: #e62117;
-                }
-                .youtube a {
-                    bottom: -40px;
-                    left: -75px;
-                    transform: rotate(45deg);
-                }
-                .youtube i {
-                    bottom: 7px;
-                    left: 7px;
-                    color: #e62117;
-                }
-                canvas {
+                
+                #mount {
                   position: fixed;
                   top: 0;
                   left: 0;
+                  width: 100vw;
+                  height: 100vh;
                   z-index: 1;
                 }
             `}</style>
-            <div className="x-mark">
+            
+            <div id="mount" ref={mountRef}></div>
+
+            <div className="x-mark" ref={xMarkRef}>
                 <div className="container">
                     <div className="left"></div>
                     <div className="right"></div>
                 </div>
             </div>
-            <div className="intro-container">
+            <div className="intro-container" ref={introContainerRef}>
                 <h2 className="fancy-text">CP Marketing Digital</h2>
                 <h1>UMA AGÊNCIA COM UM DESEJO <br/> INCANSÁVEL PELO DESCONHECIDO E NÃO CONTADO</h1>
 
-                <div className="button shift-camera-button">
+                <div className="button shift-camera-button" ref={buttonRef}>
                     <div className="border">
                         <div className="left-plane"></div>
                         <div className="right-plane"></div>
@@ -499,7 +450,7 @@ export default function HtmlTestPage() {
                     <div className="text">Começar</div>
                 </div>
             </div>
-            <div className="sky-container">
+            <div className="sky-container" ref={skyContainerRef}>
                 <div className="text-right sky-container__left">
                     <h2 className="portfolio">
                         PORTFOLIO
@@ -522,4 +473,5 @@ export default function HtmlTestPage() {
             </div>
         </>
     );
-}
+
+    
