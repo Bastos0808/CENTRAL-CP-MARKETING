@@ -247,7 +247,7 @@ export default function HtmlTestPage() {
 
     return (
         <>
-            <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js" strategy="lazyOnload" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js" strategy="lazyOnload" />
             <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TweenLite.min.js" strategy="lazyOnload" />
             <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TimelineMax.min.js" strategy="lazyOnload" />
             <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/easing/EasePack.min.js" strategy="lazyOnload" />
