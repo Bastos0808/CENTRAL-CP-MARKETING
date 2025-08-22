@@ -169,9 +169,17 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: 1fr;
             gap: 1.5rem;
             width: 100%;
+        }
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .grid-3 {
+                 grid-template-columns: repeat(3, 1fr);
+            }
         }
         .check-list {
             list-style: none;
@@ -236,7 +244,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <!-- Scene 2: Apresentação CP (Fixo) -->
         <section class="scene">
             <h2>Nossa Estrutura a Serviço do seu Sucesso</h2>
-            <div class="grid">
+            <div class="grid grid-3">
                 <div class="card">
                     <h3>Estrutura Física</h3>
                     <p>Time presencial, estúdios próprios e uma cultura de colaboração que se traduz em agilidade e qualidade para o seu projeto.</p>
@@ -244,6 +252,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                  <div class="card">
                     <h3>Metodologia CP MÖDUS</h3>
                     <p>Um processo testado e validado, focado em diagnóstico, estratégia e execução, que nos permite entregar performance de mercado, e não apenas posts.</p>
+                </div>
+                 <div class="card">
+                    <h3>Visão de Parceiro</h3>
+                    <p>Atuamos como uma extensão do seu negócio. Seu sucesso é nossa principal métrica de performance e o que guia nossas decisões.</p>
                 </div>
             </div>
         </section>
@@ -306,7 +318,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <!-- Scene 7: Estratégia -->
         <section class="scene">
             <h2>Nosso Plano para Virar o Jogo</h2>
-            <div class="grid">
+            <div class="grid grid-3">
                 <div class="card">
                     <h3>Aquisição</h3>
                     <p>${escapeHtml(strategySlide.pilarAquisicao)}</p>
@@ -372,3 +384,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
   `;
   return html;
 }
+
+    
