@@ -18,6 +18,7 @@ import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
 import { GeneratePresentationOutput, DiagnosticFormSchema, packageOptions } from "@/ai/schemas/presentation-generator-schemas";
 import type { z } from "zod";
 import { useRouter } from "next/navigation";
+import { createInteractiveProposal } from "@/lib/interactive-template";
 
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
@@ -149,147 +150,30 @@ export default function PresentationGenerator() {
     }
   };
   
-  const handleDownloadInteractive = async () => {
+  const handleDownloadInteractive = () => {
     if (!presentationContent) {
       toast({ title: "Erro", description: "Gere o conteúdo da apresentação primeiro.", variant: "destructive" });
       return;
     }
-    
+
     try {
-      const templateResponse = await fetch('/slide-template.html');
-      if (!templateResponse.ok) throw new Error("Template não encontrado.");
-      
-      let htmlContent = await templateResponse.text();
-
-      const escapeHtml = (text: any): string => {
-        if (typeof text !== 'string') return '';
-        return text
-             .replace(/&/g, "&amp;")
-             .replace(/</g, "&lt;")
-             .replace(/>/g, "&gt;")
-             .replace(/"/g, "&quot;")
-             .replace(/'/g, "&#039;");
-      }
-
-      const listToHtml = (items: string[] | undefined): string => {
-          if (!items || !Array.isArray(items)) return '';
-          return `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>`;
-      };
-      
-      const pillarToHtml = (items: {title: string, description: string}[] | undefined): string => {
-          if (!items || !Array.isArray(items)) return '';
-          return items.map(item => `
-              <div class="content-card">
-                  <h3>${escapeHtml(item.title)}</h3>
-                  <p>${escapeHtml(item.description)}</p>
-              </div>`).join('');
-      };
-
-       const kpiToHtml = (kpis: GeneratePresentationOutput['kpiSlide']['kpis'] | undefined): string => {
-            if (!kpis || !Array.isArray(kpis)) return '';
-            const emojiMap: { [key: string]: string } = {
-                'TrendingUp': '📈', 'Target': '🎯', 'DollarSign': '💰', 'Repeat': '🔁', 'Users': '👥'
-            };
-            return kpis.map(kpi => `
-                <div class="kpi-item">
-                    <h4>${emojiMap[kpi.icon] || '📊'} ${escapeHtml(kpi.metric)}</h4>
-                    <p class="kpi-estimate">${escapeHtml(kpi.estimate)}</p>
-                    <p class="kpi-importance">${escapeHtml(kpi.importance)}</p>
-                </div>
-            `).join('');
-        };
-
-      const investmentTableToHtml = (investment: GeneratePresentationOutput['investmentSlide'] | undefined): string => {
-          if (!investment) return '';
-          
-          const itemsHtml = investment.items.map(item => `
-              <tr>
-                  <td>${escapeHtml(item.name)}</td>
-                  <td class="price">${escapeHtml(item.price)}</td>
-              </tr>
-          `).join('');
-
-          const discountHtml = investment.discount ? `
-              <tr class="discount">
-                  <td>Desconto Especial</td>
-                  <td class="price">${escapeHtml(investment.discount)}</td>
-              </tr>
-          ` : '';
-
-          return `
-              <table>
-                  <tbody>${itemsHtml}</tbody>
-                  <tfoot>
-                      ${discountHtml}
-                      <tr class="total">
-                          <td>Valor Final</td>
-                          <td class="price">${escapeHtml(investment.finalTotal)}</td>
-                      </tr>
-                  </tfoot>
-              </table>
-          `;
-      };
-
-      const actionPlanPillars = presentationContent.actionPlanSlide.content.map((item, index) => {
-          const titles = ["Pilar 1: Aquisição", "Pilar 2: Conversão", "Pilar 3: Autoridade"];
-          return {
-              title: titles[index],
-              description: item
-          };
+      const finalHtml = createInteractiveProposal({
+        clientName: form.getValues('clientName'),
+        presentationData: presentationContent
       });
-
-      const timelineItems = presentationContent.timelineSlide.content.map((item, index) => {
-          const titles = ["Semanas 1-2 (Setup e Imersão)", "Semanas 3-12 (Execução e Otimização)", "Revisões Estratégicas"];
-          return {
-              title: titles[index],
-              description: item
-          };
-      });
-
-      const replacements: Record<string, string> = {
-          clientName: escapeHtml(form.getValues('clientName')),
-          presentationTitle: escapeHtml(presentationContent.presentationTitle),
-          diagnosticTitle: escapeHtml(presentationContent.diagnosticSlide.title),
-          diagnosticQuestion: escapeHtml(presentationContent.diagnosticSlide.question),
-          diagnosticContent: pillarToHtml(presentationContent.diagnosticSlide.content.map((item, index) => {
-              const titles = ["Meta Principal", "Gargalo Crítico", "Custo da Inação"];
-              return { title: titles[index], description: item };
-          })),
-          actionPlanTitle: escapeHtml(presentationContent.actionPlanSlide.title),
-          actionPlanContent: pillarToHtml(actionPlanPillars),
-          timelineTitle: escapeHtml(presentationContent.timelineSlide.title),
-          timelineContent: pillarToHtml(timelineItems),
-          kpiTitle: escapeHtml(presentationContent.kpiSlide.title),
-          kpiItems: kpiToHtml(presentationContent.kpiSlide.kpis),
-          whyCpTitle: escapeHtml(presentationContent.whyCpSlide.title),
-          whyCpContent: pillarToHtml(presentationContent.whyCpSlide.content.map((item, index) => {
-              const titles = ["Mentoria e Agilidade", "Produção Própria", "Foco em Business Performance"];
-              return { title: titles[index], description: item };
-          })),
-          justificationTitle: escapeHtml(presentationContent.justificationSlide.title),
-          justificationContent: `<p>${escapeHtml(presentationContent.justificationSlide.content)}</p>`,
-          investmentTitle: escapeHtml(presentationContent.investmentSlide.title),
-          investmentTable: investmentTableToHtml(presentationContent.investmentSlide),
-          nextStepsTitle: escapeHtml(presentationContent.nextStepsSlide.title),
-          nextStepsContent: pillarToHtml(presentationContent.nextStepsSlide.content.map((item, index) => {
-              const titles = ["Alinhamento e Assinatura", "Pagamento da Parcela Inicial", "Onboarding e Kick-off"];
-              return { title: titles[index], description: item };
-          })),
-      };
       
-      for (const key in replacements) {
-          htmlContent = htmlContent.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
-      }
-
-      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const blob = new Blob([finalHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.html`;
+      link.href = url;
+      link.download = `proposta-${form.getValues('clientName').toLowerCase().replace(/\s/g, '-')}.html`;
+      
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
 
+      URL.revokeObjectURL(url);
+      
     } catch (error) {
       console.error("Error downloading presentation:", error);
       toast({ title: "Erro no Download", description: "Não foi possível criar o arquivo da apresentação.", variant: "destructive" });
