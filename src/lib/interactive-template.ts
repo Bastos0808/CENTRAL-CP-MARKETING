@@ -104,7 +104,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  const html = `
+  return `
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
