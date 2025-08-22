@@ -77,7 +77,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                           </div>
                       </div>
                       <div class="image-gallery">
-                          <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div>
+                           <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div>
                           <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+2')" data-ai-hint="fashion store"></div>
                           <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+3')" data-ai-hint="corporate office"></div>
                       </div>
@@ -737,5 +737,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     </script>
 </body>
 </html>
-`
+`;
 }
