@@ -3,7 +3,6 @@
 
 import { useEffect, useRef } from 'react';
 import Script from 'next/script';
-import { BackButton } from '@/components/ui/back-button';
 import { cn } from '@/lib/utils';
 
 
@@ -17,12 +16,14 @@ export default function HtmlTestPage() {
     useEffect(() => {
         // Since we are loading scripts dynamically, we need to wait for them to be ready.
         const interval = setInterval(() => {
+            // @ts-ignore
             if (typeof window.THREE !== 'undefined' && typeof window.TweenLite !== 'undefined' && typeof window.TimelineMax !== 'undefined') {
                 clearInterval(interval);
 
                 // --- Start of adapted script ---
                 let camera: any, scene: any, renderer: any;
                 let plane: any;
+                // @ts-ignore
                 let raycaster = new window.THREE.Raycaster();
                 let normalizedMouse = {
                     x: 0,
@@ -39,9 +40,11 @@ export default function HtmlTestPage() {
                     if (!mountRef.current || mountRef.current.querySelector('canvas')) {
                         return; // Already initialized or mount point not ready
                     }
-
+                    // @ts-ignore
                     scene = new window.THREE.Scene();
+                    // @ts-ignore
                     camera = new window.THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    // @ts-ignore
                     renderer = new window.THREE.WebGLRenderer();
 
                     camera.position.z = 50;
@@ -53,28 +56,31 @@ export default function HtmlTestPage() {
                     mountRef.current.appendChild(renderer.domElement);
 
                     // Lights
+                    // @ts-ignore
                     let topLight = new window.THREE.DirectionalLight(0xffffff, 1);
                     topLight.position.set(0, 1, 1).normalize();
                     scene.add(topLight);
-
+                    // @ts-ignore
                     let bottomLight = new window.THREE.DirectionalLight(0xffffff, 0.4);
                     bottomLight.position.set(1, -1, 1).normalize();
                     scene.add(bottomLight);
-
+                    // @ts-ignore
                     let skyLightRight = new window.THREE.DirectionalLight(0x666666, 0.2);
                     skyLightRight.position.set(-1, -1, 0.2).normalize();
                     scene.add(skyLightRight);
-                    
+                    // @ts-ignore
                     let skyLightCenter = new window.THREE.DirectionalLight(0x666666, 0.2);
                     skyLightCenter.position.set(0,-1,0.2).normalize();
                     scene.add(skyLightCenter);
-
+                    // @ts-ignore
                     let skyLightLeft = new window.THREE.DirectionalLight(0x666666, 0.2);
                     skyLightLeft.position.set(1,-1,0.2).normalize();
                     scene.add(skyLightLeft);
 
                     // Mesh
+                    // @ts-ignore
                     let geometry = new window.THREE.PlaneGeometry(400, 400, 70, 70);
+                    // @ts-ignore
                     let darkBlueMaterial = new window.THREE.MeshPhongMaterial({ color: 0xffffff, side: window.THREE.DoubleSide, vertexColors: true });
 
                     geometry.vertices.forEach(function (vertice: any) {
@@ -87,11 +93,12 @@ export default function HtmlTestPage() {
                     });
                     
                     for ( var i = 0; i < geometry.faces.length; i ++ ) {
+                        // @ts-ignore
                         geometry.faces[ i ].color.setStyle( baseColor );
                         // @ts-ignore
                         geometry.faces[ i ].baseColor =  baseColorRGB;
                     }
-
+                    // @ts-ignore
                     plane = new window.THREE.Mesh(geometry, darkBlueMaterial);
                     scene.add(plane);
 
@@ -111,16 +118,20 @@ export default function HtmlTestPage() {
                 }
 
                 function createStars(amount: number, yDistance: number, color: string) {
+                    // @ts-ignore
                     let starGeometry = new window.THREE.Geometry();
+                    // @ts-ignore
                     let starMaterial = new window.THREE.PointsMaterial({ color: color, opacity: Math.random() });
 
                     for (let i = 0; i < amount; i++) {
+                        // @ts-ignore
                         let vertex = new window.THREE.Vector3();
                         vertex.z = (Math.random() - 0.5) * 1500;
                         vertex.y = yDistance;
                         vertex.x = (Math.random() - 0.5) * 1500;
                         starGeometry.vertices.push(vertex);
                     }
+                    // @ts-ignore
                     return new window.THREE.Points(starGeometry, starMaterial);
                 }
 
@@ -193,33 +204,51 @@ export default function HtmlTestPage() {
                 window.addEventListener("mousemove", handleMouseMove);
 
                 const handleShiftCamera = () => {
-                    if (!introContainerRef.current || !camera || !plane || !xMarkRef.current || !skyContainerRef.current) return;
+                     // @ts-ignore
+                    if (!introContainerRef.current || !camera || !plane || !xMarkRef.current || !skyContainerRef.current || !window.TimelineMax) return;
+                    // @ts-ignore
                     let introTimeline = new window.TimelineMax();
                     introTimeline.add([
+                        // @ts-ignore
                         window.TweenLite.fromTo(introContainerRef.current, 0.5, { opacity: 1 }, { opacity: 0, ease: window.Power3.easeIn }),
+                        // @ts-ignore
                         window.TweenLite.to(camera.rotation, 3, { x: Math.PI / 2, ease: window.Power3.easeInOut }),
+                        // @ts-ignore
                         window.TweenLite.to(camera.position, 2.5, { z: 20, ease: window.Power3.easeInOut }),
+                        // @ts-ignore
                         window.TweenLite.to(camera.position, 3, { y: 120, ease: window.Power3.easeInOut }),
+                        // @ts-ignore
                         window.TweenLite.to(plane.scale, 3, { x: 2, ease: window.Power3.easeInOut }),
                     ]);
                     introTimeline.add([
+                        // @ts-ignore
                         window.TweenLite.to(xMarkRef.current, 2, { opacity: 1, ease: window.Power3.easeInOut }),
+                        // @ts-ignore
                         window.TweenLite.to(skyContainerRef.current, 2, { opacity: 1, ease: window.Power3.easeInOut })
                     ]);
                 };
 
                 const handleResetCamera = () => {
-                    if (!xMarkRef.current || !skyContainerRef.current || !camera || !plane || !introContainerRef.current) return;
+                     // @ts-ignore
+                    if (!xMarkRef.current || !skyContainerRef.current || !camera || !plane || !introContainerRef.current || !window.TimelineMax) return;
+                     // @ts-ignore
                      let outroTimeline = new window.TimelineMax();
                     outroTimeline.add([
+                        // @ts-ignore
                         window.TweenLite.to(xMarkRef.current, 0.5, { opacity: 0, ease: window.Power3.easeInOut }),
+                        // @ts-ignore
                         window.TweenLite.to(skyContainerRef.current, 0.5, { opacity: 0, ease: window.Power3.easeInOut }),
+                        // @ts-ignore
                         window.TweenLite.to(camera.rotation, 3, { x: 0, ease: window.Power3.easeInOut }),
+                        // @ts-ignore
                         window.TweenLite.to(camera.position, 3, { z: 50, ease: window.Power3.easeInOut }),
+                        // @ts-ignore
                         window.TweenLite.to(camera.position, 2.5, { y: 0, ease: window.Power3.easeInOut }),
+                        // @ts-ignore
                         window.TweenLite.to(plane.scale, 3, { x: 1, ease: window.Power3.easeInOut }),
                     ]);
                     outroTimeline.add([
+                        // @ts-ignore
                         window.TweenLite.to(introContainerRef.current, 0.5, { opacity: 1, ease: window.Power3.easeIn }),
                     ]);
                 }
@@ -247,7 +276,7 @@ export default function HtmlTestPage() {
 
     return (
         <>
-            <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js" strategy="lazyOnload" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js" strategy="lazyOnload" />
             <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TweenLite.min.js" strategy="lazyOnload" />
             <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TimelineMax.min.js" strategy="lazyOnload" />
             <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/easing/EasePack.min.js" strategy="lazyOnload" />
@@ -480,3 +509,5 @@ export default function HtmlTestPage() {
         </>
     );
 }
+
+    
