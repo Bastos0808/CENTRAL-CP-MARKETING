@@ -156,6 +156,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                       <div class="metrics-grid">
                           <div class="metric-item">
                               <div class="metric-label">
+                                  <h4>Crescimento Percentual</h4>
+                                  <span>Meta: ${escapeHtml(metricsSlide.crescimentoPercentual)}</span>
+                              </div>
+                              <div class="animated-bar-container horizontal"><div class="animated-bar gain-bar"></div></div>
+                          </div>
+                          <div class="metric-item">
+                              <div class="metric-label">
                                   <h4>Leads Qualificados</h4>
                                   <span>Meta: ${escapeHtml(metricsSlide.metaLeadsQualificados)}</span>
                               </div>
@@ -292,7 +299,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .sky-container {
             width: 100%;
-            max-width: 1024px;
+            max-width: 1200px;
             height: 90vh;
             padding: 40px;
             background-color: var(--card-background);
@@ -316,7 +323,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             justify-content: center;
         }
         .content-center-wrapper {
-            max-height: 100%;
+            max-height: calc(90vh - 180px);
             overflow-y: auto;
             padding-right: 15px; /* Scrollbar space */
         }
@@ -540,9 +547,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             const container = document.querySelector('.sky-container-content');
             
             TweenLite.to(container, 0.3, { opacity: 0, ease: Power2.easeOut, onComplete: () => {
-                // Clear previous slide's active class
                 if (container.firstChild && container.firstChild.classList) {
-                    container.firstChild.classList.remove('slide-active');
+                  container.firstChild.classList.remove('slide-active');
                 }
 
                 if (currentSlide < 0 || currentSlide >= slides.length) {
