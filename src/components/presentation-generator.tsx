@@ -438,19 +438,14 @@ export default function PresentationGenerator() {
     document.body.appendChild(container);
 
     const root = createRoot(container);
-
-    // Use a callback with root.render to ensure it's finished before proceeding
-    await new Promise<void>((resolve) => {
-        root.render(
-            <React.StrictMode>
-                <GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />
-            </React.StrictMode>,
-            () => resolve()
-        );
-    });
+    root.render(
+      <React.StrictMode>
+        <GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />
+      </React.StrictMode>
+    );
 
     // Give React time to render and browser to fetch assets
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
     const pdf = new jsPDF({
