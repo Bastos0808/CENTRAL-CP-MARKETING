@@ -41,44 +41,46 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           id: 'cp-intro',
           title: `<h2>Por que a CP Marketing?</h2>`,
           content: `<div class="presentation-gallery-layout">
-                      <div class="video-container">
-                          <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" autoplay loop muted playsinline></video>
+                      <div>
+                          <div class="video-container">
+                              <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" autoplay loop muted playsinline></video>
+                          </div>
+                          <div class="features-list">
+                              <div class="feature-item">
+                                <i class="fas fa-building"></i>
+                                <div>
+                                    <h4>Estrutura Física</h4>
+                                    <p>Mais que um escritório, um centro de produção de resultados para sua marca.</p>
+                                </div>
+                              </div>
+                              <div class="feature-item">
+                                <i class="fas fa-video"></i>
+                                <div>
+                                    <h4>Estúdios Próprios</h4>
+                                    <p>Agilidade e qualidade de cinema para seu conteúdo, sem depender de terceiros.</p>
+                                </div>
+                              </div>
+                               <div class="feature-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <h4>Time Presencial</h4>
+                                    <p>Especialistas em estratégia, tráfego e conteúdo colaborando em tempo real no seu projeto.</p>
+                                </div>
+                              </div>
+                              <div class="feature-item">
+                                <i class="fas fa-lightbulb"></i>
+                                <div>
+                                    <h4>Metodologia</h4>
+                                    <p>O CP MÖDUS: nosso sistema validado para transformar potencial de negócio em performance de mercado.</p>
+                                </div>
+                              </div>
+                          </div>
                       </div>
-                      <div class="features-list">
-                          <div class="feature-item">
-                            <i class="fas fa-building"></i>
-                            <div>
-                                <h4>Estrutura Física</h4>
-                                <p>Mais que um escritório, um centro de produção de resultados para sua marca.</p>
-                            </div>
-                          </div>
-                          <div class="feature-item">
-                            <i class="fas fa-video"></i>
-                            <div>
-                                <h4>Estúdios Próprios</h4>
-                                <p>Agilidade e qualidade de cinema para seu conteúdo, sem depender de terceiros.</p>
-                            </div>
-                          </div>
-                           <div class="feature-item">
-                            <i class="fas fa-users"></i>
-                            <div>
-                                <h4>Time Presencial</h4>
-                                <p>Especialistas em estratégia, tráfego e conteúdo colaborando em tempo real no seu projeto.</p>
-                            </div>
-                          </div>
-                          <div class="feature-item">
-                            <i class="fas fa-lightbulb"></i>
-                            <div>
-                                <h4>Metodologia</h4>
-                                <p>O CP MÖDUS: nosso sistema validado para transformar potencial de negócio em performance de mercado.</p>
-                            </div>
-                          </div>
+                      <div class="image-gallery">
+                          <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div>
+                          <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+2')" data-ai-hint="fashion store"></div>
+                          <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+3')" data-ai-hint="corporate office"></div>
                       </div>
-                    </div>
-                    <div class="image-gallery">
-                      <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div>
-                      <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+2')" data-ai-hint="fashion store"></div>
-                      <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+3')" data-ai-hint="corporate office"></div>
                     </div>`
       },
       {
@@ -304,7 +306,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .sky-container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             height: 90vh;
             padding: 40px;
             background-color: var(--card-background);
@@ -324,11 +326,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             transition: opacity 0.4s ease-in-out;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         .content-center-wrapper {
-            max-height: calc(90vh - 180px);
+            max-height: calc(90vh - 200px);
             overflow-y: auto;
-            padding-right: 15px; /* Scrollbar space */
+            padding: 5px; 
         }
 
 
@@ -398,19 +401,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
-            align-items: flex-start; /* Changed */
+            align-items: flex-start;
             width: 100%;
             flex-grow: 1;
         }
-        .features-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        .features-list .feature-item { display: flex; align-items: flex-start; text-align: left; }
-        .features-list i { font-size: 1.5rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
-        .features-list h4 { margin: 0 0 5px 0; font-size: 1.1rem; text-align: left; color: var(--primary-color); }
-        .features-list p { font-size: 0.9rem; text-align: left; margin: 0; }
 
         .video-container {
             width: 100%;
@@ -425,6 +419,17 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             height: 100%;
             object-fit: cover;
         }
+        
+        .features-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .features-list .feature-item { display: flex; align-items: flex-start; text-align: left; }
+        .features-list i { font-size: 1.5rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
+        .features-list h4 { margin: 0 0 5px 0; font-size: 1.1rem; text-align: left; color: var(--primary-color); }
+        .features-list p { font-size: 0.9rem; text-align: left; margin: 0; }
 
         .image-gallery {
             display: grid;
@@ -480,17 +485,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             .investment-layout { flex-direction: row; align-items: flex-start; }
             .packages-list { flex: 2; }
             .total-investment { flex: 1; }
+             .presentation-gallery-layout {
+                grid-template-columns: 1fr 1fr;
+            }
         }
 
-        @media (min-width: 1024px) {
-            .presentation-gallery-layout {
-                grid-template-columns: 1fr; /* Stack on top */
-            }
-            .video-container {
-              height: auto;
-              max-height: 35vh; /* Limit video height */
-            }
-        }
     </style>
 </head>
 <body>
@@ -737,5 +736,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>`;
+</html>
+`
 }
