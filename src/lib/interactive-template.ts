@@ -82,6 +82,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             width: 100%;
         }
         .container {
+            width: 100%;
             max-width: 1100px;
             margin: 0 auto;
             padding: 0 2rem;
@@ -169,12 +170,15 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         .grid {
             display: grid;
-            grid-template-columns: 1fr;
             gap: 1.5rem;
             width: 100%;
+            place-items: center;
+        }
+        .grid-2 {
+            grid-template-columns: 1fr;
         }
         @media (min-width: 768px) {
-            .grid {
+            .grid-2 {
                 grid-template-columns: repeat(2, 1fr);
             }
             .grid-3 {
@@ -284,7 +288,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <!-- Scene 5: Visão de Futuro -->
         <section class="scene">
             <h2>A Visualização do Futuro</h2>
-            <div class="grid">
+            <div class="grid grid-2">
                  <div class="card">
                     <h3>Seu Cenário em 6 Meses</h3>
                     <p class="question">${escapeHtml(futureSlide.cenario_6_meses)}</p>
@@ -299,7 +303,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <!-- Scene 6: Custo da Inação -->
         <section class="scene">
             <h2>O Custo de Adiar a Decisão</h2>
-            <div class="grid">
+            <div class="grid grid-2">
                 <div class="card cost-card">
                     <h3>Custo da Inação em 6 Meses</h3>
                     <p class="value-display">${escapeHtml(inactionCostSlide.custo_6_meses)}</p>
@@ -344,7 +348,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <!-- Scene 9: Métricas -->
         <section class="scene">
             <h2>Nosso Compromisso com seu Crescimento de <span class="highlight">${escapeHtml(metricsSlide.crescimentoPercentual)}</span></h2>
-             <div class="grid">
+             <div class="grid grid-2">
                 <div class="card cost-card">
                     <h3>Meta de Leads Qualificados</h3>
                     <p class="value-display">${escapeHtml(metricsSlide.metaLeadsQualificados)}</p>
@@ -384,5 +388,3 @@ export function createInteractiveProposal(data: CreateProposalData): string {
   `;
   return html;
 }
-
-    
