@@ -83,57 +83,66 @@ export const GeneratePresentationInputSchema = DiagnosticFormSchema;
 export type GeneratePresentationInput = z.infer<typeof GeneratePresentationInputSchema>;
 
 export const GeneratePresentationOutputSchema = z.object({
-  clientName: z.string().describe("Nome do cliente para a capa."),
-  proposalDate: z.string().describe("Data de hoje, formatada."),
-  proposalValidityDate: z.string().describe("Data de validade da proposta, formatada."),
+  clientName: z.string(),
+  proposalDate: z.string(),
+  proposalValidityDate: z.string(),
+  presentationTitle: z.string(),
   
   diagnosticSlide: z.object({
-    resumoEmpatico: z.string().describe("Parágrafo que conecta meta, gargalo e sentimento."),
-    analiseReflexiva: z.string().describe("Parágrafo que conecta o tempo de empresa com a urgência de agir agora."),
+    title: z.string(),
+    question: z.string(),
+    content: z.array(z.string()),
+    meta: z.string(),
+    gargalo: z.string(),
+    custo: z.string()
   }),
 
   painSlide: z.object({
-    consequencia_1: z.string().describe("Primeira consequência do gargalo (operacional)."),
-    consequencia_2: z.string().describe("Segunda consequência (frustração com tentativas passadas)."),
-    consequencia_3: z.string().describe("Terceira consequência (concorrência)."),
+    title: z.string(),
+    question: z.string(),
+    content: z.array(z.string()),
   }),
   
   futureSlide: z.object({
-    cenario_6_meses: z.string().describe("Descrição do sucesso em 6 meses."),
-    cenario_1_ano: z.string().describe("Descrição da transformação em 1 ano."),
+    title: z.string(),
+    question: z.string(),
+    content: z.string(),
+    image_prompt: z.string(),
   }),
 
   inactionCostSlide: z.object({
-    custo_6_meses: z.string().describe("Valor formatado do custo da inação em 6 meses."),
-    custo_1_ano: z.string().describe("Valor formatado do custo da inação em 1 ano."),
-    cenario_inercia: z.string().describe("Parágrafo sobre o que acontece se nada for feito."),
+    title: z.string(),
+    custo_6_meses: z.string(),
+    custo_1_ano: z.string(),
+    cenario_inercia: z.string(),
   }),
   
   strategySlide: z.object({
-    pilarAquisicao: z.string().describe("Texto para o pilar de Aquisição."),
-    pilarConversao: z.string().describe("Texto para o pilar de Conversão."),
-    pilarAutoridade: z.string().describe("Texto para o pilar de Autoridade."),
+    title: z.string(),
+    content: z.array(z.string())
   }),
   
   metricsSlide: z.object({
-    crescimentoPercentual: z.string().describe("Porcentagem de crescimento, ex: '140%'."),
-    metaLeadsQualificados: z.string().describe("Meta numérica de leads qualificados por mês."),
-    metaTaxaConversao: z.string().describe("Meta percentual da taxa de conversão."),
+    title: z.string(),
+    crescimentoPercentual: z.string(),
+    metaLeadsQualificados: z.string(),
+    metaTaxaConversao: z.string(),
   }),
   
   investmentSlide: z.object({
-    ancoragemPreco: z.string().describe("Parágrafo de ancoragem de preço (Custo da Inação vs. Investimento)."),
-    ganchoDecisao: z.string().describe("Pergunta final para a tomada de decisão."),
-    gatilhoEscassez: z.string().describe("Gatilho de urgência baseado em escassez de vagas."),
-    gatilhoBonus: z.string().describe("Bônus por tempo limitado para fechamento rápido."),
+    title: z.string(),
+    ancoragemPreco: z.string(),
+    ganchoDecisao: z.string(),
+    gatilhoEscassez: z.string(),
+    gatilhoBonus: z.string(),
   }),
   
-  investmentValue: z.string().describe("Valor final do investimento com descontos."),
+  investmentValue: z.string(),
   packages: z.array(z.object({
       name: z.string(),
       price: z.number(),
       contract: z.string().optional()
-  })).describe("Lista de pacotes selecionados com nome e preço.")
+  }))
 });
 
 export type GeneratePresentationOutput = z.infer<typeof GeneratePresentationOutputSchema>;

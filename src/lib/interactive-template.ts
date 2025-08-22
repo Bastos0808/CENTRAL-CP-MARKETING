@@ -24,6 +24,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     clientName,
     proposalDate,
     proposalValidityDate,
+    presentationTitle,
     diagnosticSlide,
     painSlide,
     futureSlide,
@@ -37,7 +38,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
   const slides = [
        {
-          title: `<h2>Por que a CP Marketing?</h2><p>Somos mais que uma agência. Somos seu parceiro estratégico de crescimento, com estrutura para entregar resultados reais.</p>`,
+          title: `<h2>Por que a CP Marketing?</h2>`,
           content: `<div class="presentation-gallery-layout">
                       <div class="video-container">
                           <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" autoplay loop muted playsinline></video>
@@ -51,24 +52,45 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                     </div>`
       },
       {
-          title: `<h2>Entendemos o seu Desafio</h2>`,
-          content: `<div class="content-center-wrapper"><p class="question">${escapeHtml(diagnosticSlide.resumoEmpatico)}</p><br><p class="question">${escapeHtml(diagnosticSlide.analiseReflexiva)}</p></div>`
+          title: `<h2>${escapeHtml(diagnosticSlide.title)}</h2>`,
+          content: `
+            <div class="content-center-wrapper">
+                <p class="question">${escapeHtml(diagnosticSlide.question)}</p>
+                <div class="card-grid">
+                    <div class="card"><h3>Meta Principal</h3><span class="highlight">${escapeHtml(diagnosticSlide.meta)}</span></div>
+                    <div class="card"><h3>Gargalo Crítico</h3><span class="highlight-text">${escapeHtml(diagnosticSlide.gargalo)}</span></div>
+                    <div class="card"><h3>Custo da Inação</h3><span class="highlight">${escapeHtml(diagnosticSlide.custo)}</span></div>
+                </div>
+            </div>`
       },
       {
-          title: `<h2>O Impacto Real do Gargalo Atual</h2>`,
-          content: `<div class="content-center-wrapper"><div class="impact-list"><div class="impact-item"><i class="fas fa-arrow-down"></i> <p><strong>Impacto Operacional:</strong> ${escapeHtml(painSlide.consequencia_1)}</p></div><div class="impact-item"><i class="fas fa-arrow-down"></i> <p><strong>Frustração Estratégica:</strong> ${escapeHtml(painSlide.consequencia_2)}</p></div><div class="impact-item"><i class="fas fa-arrow-down"></i> <p><strong>Vantagem Competitiva:</strong> ${escapeHtml(painSlide.consequencia_3)}</p></div></div></div>`
+          title: `<h2>${escapeHtml(painSlide.title)}</h2>`,
+          content: `
+            <div class="content-center-wrapper">
+                <p class="question">${escapeHtml(painSlide.question)}</p>
+                <div class="impact-list">
+                    ${painSlide.content.map(item => `<div class="impact-item"><i class="fas fa-arrow-down"></i> <p>${escapeHtml(item)}</p></div>`).join('')}
+                </div>
+            </div>`
       },
       {
-          title: `<h2>Uma Nova Realidade para o seu Negócio</h2>`,
-          content: `<div class="content-center-wrapper"><div class="card-grid"><div class="card"><h3>Seu Cenário em 6 Meses</h3><p>${escapeHtml(futureSlide.cenario_6_meses)}</p></div><div class="card"><h3>Seu Cenário em 1 Ano</h3><p>${escapeHtml(futureSlide.cenario_1_ano)}</p></div></div></div>`
+          title: `<h2>${escapeHtml(futureSlide.title)}</h2>`,
+          content: `
+            <div class="content-center-wrapper">
+                <p class="question">${escapeHtml(futureSlide.question)}</p>
+                <div class="future-layout">
+                    <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png')" data-ai-hint="${escapeHtml(futureSlide.image_prompt)}"></div>
+                    <p class="future-text">${escapeHtml(futureSlide.content)}</p>
+                </div>
+            </div>`
       },
       {
-          title: `<h2>O Custo de Adiar a Decisão</h2>`,
+          title: `<h2>${escapeHtml(inactionCostSlide.title)}</h2>`,
           content: `<div class="content-center-wrapper"><div class="card-grid"><div class="card cost-card"><h3>Custo em 6 Meses</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_6_meses)}</span></div><div class="card cost-card"><h3>Custo em 1 Ano</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_1_ano)}</span></div></div><br><p class="question" style="text-align: center;">${escapeHtml(inactionCostSlide.cenario_inercia)}</p></div>`
       },
       {
-          title: `<h2>Nosso Plano para Virar o Jogo</h2>`,
-          content: `<div class="content-center-wrapper"><div class="card-grid"><div class="card"><i class="fas fa-users"></i> <h4>Aquisição</h4> <p>${escapeHtml(strategySlide.pilarAquisicao)}</p> </div><div class="card"><i class="fas fa-chart-line"></i> <h4>Conversão</h4> <p>${escapeHtml(strategySlide.pilarConversao)}</p> </div><div class="card"><i class="fas fa-star"></i> <h4>Autoridade</h4> <p>${escapeHtml(strategySlide.pilarAutoridade)}</p> </div></div></div>`
+          title: `<h2>${escapeHtml(strategySlide.title)}</h2>`,
+          content: `<div class="content-center-wrapper"><div class="card-grid"><div class="card"><i class="fas fa-users"></i> <h4>Aquisição</h4> <p>${escapeHtml(strategySlide.content[0])}</p> </div><div class="card"><i class="fas fa-chart-line"></i> <h4>Conversão</h4> <p>${escapeHtml(strategySlide.content[1])}</p> </div><div class="card"><i class="fas fa-star"></i> <h4>Autoridade</h4> <p>${escapeHtml(strategySlide.content[2])}</p> </div></div></div>`
       },
       {
           title: `<h2>Resultados que Falam por Si</h2>`,
@@ -79,7 +101,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           content: `<div class="content-center-wrapper"><p>O sucesso será medido com dados claros. Nossas metas mensais:</p><div class="card-grid"><div class="card"><h3>Leads Qualificados</h3><span class="highlight">${escapeHtml(metricsSlide.metaLeadsQualificados)}</span></div><div class="card"><h3>Taxa de Conversão</h3><span class="highlight">${escapeHtml(metricsSlide.metaTaxaConversao)}</span></div></div></div>`
       },
       {
-          title: `<h2>O Investimento no seu Crescimento</h2>`,
+          title: `<h2>${escapeHtml(investmentSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
               <div class="investment-layout">
@@ -276,6 +298,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .card h4 { font-size: 1.2rem; margin-bottom: 10px; text-align: center; }
         .card p {text-align: center;}
         .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
+        .highlight-text { font-size: 1.2rem; font-weight: 700; color: var(--primary-color); }
         
         p.question {
             font-weight: 600;
@@ -321,6 +344,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
         .impact-item i { font-size: 1.8rem; color: var(--accent-color); margin-right: 20px; }
+
+        .future-layout { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 20px; align-items: center; }
+        .future-layout .image-placeholder { width: 100%; height: 200px; }
+        .future-layout p { text-align: left; }
+        @media (min-width: 768px) {
+            .future-layout { grid-template-columns: 1fr 2fr; }
+        }
 
         .investment-layout { display: flex; flex-direction: column; gap: 30px; width: 100%; margin-top: 20px; }
         .packages-list, .total-investment { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
@@ -579,5 +609,3 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 </html>
 `;
 }
-
-    

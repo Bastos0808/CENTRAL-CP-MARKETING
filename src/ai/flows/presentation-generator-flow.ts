@@ -13,10 +13,10 @@ import {
   GeneratePresentationInput,
   GeneratePresentationOutputSchema,
   GeneratePresentationOutput,
-  packageOptions
 } from '@/ai/schemas/presentation-generator-schemas';
 import { format, add } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { packageOptions } from '@/ai/schemas/presentation-generator-schemas';
 
 // Exported function that the frontend will call
 export async function generatePresentation(
@@ -77,45 +77,42 @@ const presentationGeneratorFlow = ai.defineFlow(
             **Instrução:** Agora, gere o conteúdo para cada slide da apresentação, preenchendo todos os campos do objeto de saída com textos curtos, diretos e persuasivos, usando os dados acima.
 
             ---
+            **Slide 1: Título da Proposta**
+            - **presentationTitle:** Crie um título inspirador e direto para a apresentação. Algo como "A Estratégia para a [Nome do Cliente] Dobrar o Faturamento" ou "O Plano para Transformar a [Nome do Cliente] em Referência de Mercado".
+
+            ---
             **Slide 3: O Diagnóstico**
-            - **resumoEmpatico:** Gere o parágrafo de 'Resumo Empático', conectando a meta de faturamento ao gargalo principal e ao sentimento de frustração/estar perdido do cliente.
-            - **analiseReflexiva:** Gere a 'Análise Reflexiva' começando com 'Uma empresa com [X] anos de história decide agir agora porque...' e conecte com as respostas sobre 'aumento da concorrência' ou 'chegamos num platô'.
+            - **title:** Gere o título do slide: "Entendemos o seu Desafio".
+            - **question:** Gere a pergunta reflexiva: "Você sente que a ${inputForAI.clientName} tem o potencial para atingir um novo patamar, mas o cenário atual tem sido um freio?".
+            - **content:** Deixe este campo em branco. Os dados serão preenchidos diretamente.
+            - **meta:** Extraia a Meta de Faturamento. Ex: "${inputForAI.metaFaturamento} em 6 meses".
+            - **gargalo:** Extraia o Principal Gargalo. Ex: "${inputForAI.principalGargalo}".
+            - **custo:** Extraia o Custo do Problema. Ex: "${inputForAI.custoProblema} deixados na mesa todo mês".
 
             ---
             **Slide 4: A Dor e Suas Consequências**
-            - **consequencia_1:** Descreva o impacto operacional do gargalo (equipe ociosa, agenda com buracos).
-            - **consequencia_2:** Destaque a frustração de já ter tentado resolver isso sem sucesso, mostrando que o problema não é a falta de esforço, mas da estratégia correta.
-            - **consequencia_3:** Mostre como a inação fortalece a concorrência que está investindo em marketing.
+            - **title:** Gere o título do slide: "O Custo Real de Adiar a Decisão".
+            - **question:** Gere a pergunta: "Adiamos decisões por medo de errar, mas qual o custo de não decidir?".
+            - **content:** Gere três parágrafos curtos sobre as consequências. O primeiro sobre o impacto operacional do gargalo. O segundo deve destacar a frustração das tentativas passadas que falharam. O terceiro deve usar a internet para encontrar um exemplo de empresa do mesmo setor que enfrentou dificuldades (sem citar o nome) e descrever o risco que a concorrência representa. Seja emotivo e gere senso de urgência.
 
             ---
             **Slide 5: A Visualização do Futuro**
-            - **cenario_6_meses:** Descreva a conquista da meta de faturamento, a previsibilidade e a agenda cheia.
-            - **cenario_1_ano:** Projete a transformação completa do negócio, usando as respostas sobre 'o que faria com mais clientes' e o 'impacto pessoal'.
-
-            ---
-            **Slide 6: O Custo da Inação**
-            - **custo_6_meses:** Calcule o custo da inação em 6 meses, multiplicando o 'Custo Estimado do Problema por Mês' por 6. Formate como moeda BRL (Ex: "R$ 120.000,00").
-            - **custo_1_ano:** Calcule o custo da inação em 1 ano, multiplicando o 'Custo Estimado do Problema por Mês' por 12. Formate como moeda BRL (Ex: "R$ 240.000,00").
-            - **cenario_inercia:** Crie um parágrafo de alto impacto sobre o que acontecerá em 1 ano se nada for feito (faturamento estagnado, concorrência dominando, frustração aumentando).
+            - **title:** Gere o título do slide: "O Futuro que Vamos Construir Juntos".
+            - **question:** Gere a pergunta: "Como seria se, em vez de se preocupar com o gargalo, sua única preocupação fosse em como gerenciar o crescimento?".
+            - **content:** Gere um parágrafo que descreva vividamente a conquista da meta de faturamento em 6 meses e a transformação do negócio em 1 ano, usando as respostas sobre 'o que faria com mais clientes' e o 'impacto pessoal'.
+            - **image_prompt:** Crie um prompt de texto para um gerador de imagem (como DALL-E) que represente visualmente o sucesso do cliente. Ex: "Foto realista de uma clínica médica moderna e movimentada, com pacientes felizes na recepção e médicos sorrindo, luz natural, estilo cinematográfico".
 
             ---
             **Slide 7: A Estratégia**
-            - **pilarAquisicao:** Para 'Aquisição', conecte o texto à resolução do 'gargalo de geração'.
-            - **pilarConversao:** Para 'Conversão', conecte o texto à falha da experiência anterior (leads desqualificados).
-            - **pilarAutoridade:** Para 'Autoridade', conecte o texto ao fato de que a maioria dos clientes vem de 'indicação', mostrando como vamos escalar essa confiança.
+            - **title:** Gere o título do slide: "Nosso Plano para Virar o Jogo".
+            - **content:** Gere três parágrafos para os pilares. Pilar 'Aquisição' deve focar em resolver o 'gargalo de geração'. Pilar 'Conversão' deve focar em resolver a falha da 'experiência anterior com leads desqualificados'. Pilar 'Autoridade' deve focar em escalar a 'confiança da indicação'.
 
             ---
             **Slide 9: Métricas de Sucesso**
+            - **title:** Gere o título do slide: "Seu Crescimento em Números".
             - **crescimentoPercentual:** Calcule a porcentagem de crescimento necessária para ir do faturamento médio para a meta. Formate como string (Ex: '140%').
             - **metaLeadsQualificados:** Com base na meta de faturamento e no ticket médio, calcule uma meta realista de leads qualificados por mês. Retorne como string (Ex: "88").
             - **metaTaxaConversao:** Defina uma meta de taxa de conversão realista para atingir o objetivo. Retorne como string (Ex: "20%").
-
-            ---
-            **Slide 10: O Investimento**
-            - **ancoragemPreco:** Gere a pergunta de 'Ancoragem de Preço', comparando o custo mensal do problema com o investimento na solução.
-            - **ganchoDecisao:** Gere o 'Gancho da Decisão', contrastando a 'Visão de Futuro' com o 'Cenário da Inércia' e terminando com a pergunta: 'Qual desses dois futuros você escolherá construir a partir de hoje?'.
-            - **gatilhoEscassez:** Crie uma frase de urgência sobre o número limitado de vagas para novos clientes (use "3 novas vagas").
-            - **gatilhoBonus:** Crie uma frase sobre o bônus de ação rápida (produção de um episódio de podcast).
         `,
     });
     
@@ -129,10 +126,26 @@ const presentationGeneratorFlow = ai.defineFlow(
       const finalInvestment = totalPackages - (input.discount || 0);
       output.investmentValue = finalInvestment.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       output.packages = input.packages?.map(key => packageOptions[key as keyof typeof packageOptions]) || [];
+      
+      // Manually populate fields for slide 6, which are direct calculations
+      const custoMensal = input.custoProblema || 0;
+      output.inactionCostSlide = {
+          title: "O Custo da Inação",
+          custo_6_meses: (custoMensal * 6).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+          custo_1_ano: (custoMensal * 12).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+          cenario_inercia: "Enquanto a decisão é adiada, o faturamento pode continuar estagnado e a concorrência, que investe em marketing, pode abocanhar uma fatia maior do seu mercado, tornando a recuperação futura ainda mais difícil e cara."
+      };
+      
+       // Manually populate fields for slide 10, which are also more direct
+       output.investmentSlide = {
+           title: "O Investimento no seu Crescimento",
+           ancoragemPreco: `Considerando que o problema atual custa ${inputForAI.custoProblema} por mês, o investimento para resolver a causa raiz desse problema é significativamente menor.`,
+           ganchoDecisao: "Diante de tudo que conversamos, existem dois futuros possíveis: um de crescimento previsível e outro de estagnação. Qual deles você escolherá construir a partir de hoje?",
+           gatilhoEscassez: "Para garantir a dedicação e a qualidade que você viu, só temos capacidade para iniciar com 3 novos clientes este mês.",
+           gatilhoBonus: "Além disso, fechando a parceria nesta semana, você garante como bônus a produção de um episódio de podcast em nosso estúdio para lançar sua nova fase de autoridade no mercado."
+       };
     }
     
     return output!;
   }
 );
-
-    
