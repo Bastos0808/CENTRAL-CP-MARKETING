@@ -103,7 +103,7 @@ const AboutUsSlide = () => (
     <div data-slide style={{ ...slideStyles.base, padding: '50px 80px 80px' }} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center text-white rounded-lg overflow-hidden">
         <div className="w-full max-w-6xl mx-auto">
             <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider mb-4">NOSSA ABORDAGEM</p>
-            <h1 className="text-6xl font-black leading-tight mb-12">Não somos uma agência comum. Somos seu próximo parceiro de crescimento.</h1>
+            <h1 className="text-6xl font-black leading-tight mb-12">Não somos uma agência comum.<br/>Somos seu próximo parceiro de crescimento.</h1>
             
             <div className="grid grid-cols-3 gap-8">
                 <div className="bg-white/5 border border-white/10 rounded-xl p-6">
@@ -446,16 +446,15 @@ export default function PresentationGenerator() {
     container.style.left = '-9999px';
     container.style.top = '-9999px';
     document.body.appendChild(container);
-
+    
     const root = createRoot(container);
+    
     root.render(
-      <React.StrictMode>
         <GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />
-      </React.StrictMode>
     );
 
     // Give React time to render and browser to fetch assets
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
 
     const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
     const pdf = new jsPDF({
