@@ -1,0 +1,414 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposta de Crescimento</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        :root {
+            --background: #0D0D0D;
+            --foreground: #F5F5F7;
+            --card-background: rgba(23, 23, 23, 0.6);
+            --border: rgba(255, 255, 255, 0.1);
+            --primary: #FF6B00;
+            --muted-foreground: #A1A1AA;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        .scene-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(ellipse 80% 80% at 50% -20%, rgba(255, 107, 0, 0.15), transparent),
+                radial-gradient(ellipse 50% 50% at 10% 100%, rgba(255, 107, 0, 0.1), transparent),
+                radial-gradient(ellipse 50% 50% at 90% 90%, rgba(255, 107, 0, 0.1), transparent);
+            background-color: #0D0D0D;
+            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: -1;
+        }
+
+        main {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .scene {
+            display: none;
+            width: 100%;
+            max-width: 56rem; /* 896px */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.8s forwards cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .scene.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .scene-header {
+            margin-bottom: 2rem;
+        }
+
+        .icon-wrapper {
+            margin: 0 auto 1.5rem;
+            background-color: rgba(255, 107, 0, 0.1);
+            padding: 1rem;
+            border-radius: 9999px;
+            width: fit-content;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+        
+        .icon-wrapper span {
+            font-size: 2.5rem;
+            line-height: 1;
+            display: block;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: var(--foreground);
+        }
+        
+        h2 {
+            margin-top: 1rem;
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+        }
+
+        .scene-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            text-align: left;
+        }
+        
+        @media (min-width: 768px) {
+            .scene-content {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .diagnostic-list {
+                 grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .content-card, .list-item, .kpi-item {
+            background: var(--card-background);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        h3 {
+            font-weight: 600;
+            color: var(--primary);
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .list-item, .kpi-item {
+            padding: 1rem;
+        }
+        
+        .list-item ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .list-item li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--muted-foreground);
+        }
+        
+        .list-item li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+        
+        .diagnostic-question {
+            font-style: italic;
+            color: var(--muted-foreground);
+            padding: 1rem;
+            border-left: 3px solid var(--primary);
+            margin-top: 1.5rem;
+            background-color: rgba(255, 107, 0, 0.05);
+            grid-column: 1 / -1;
+        }
+        
+        .kpi-item h4 {
+            font-size: 1rem;
+            margin: 0 0 4px 0;
+            color: var(--foreground);
+        }
+        .kpi-item .kpi-estimate {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0 0 8px 0;
+        }
+        .kpi-item .kpi-importance {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        table .price {
+            text-align: right;
+            font-weight: bold;
+        }
+        table tfoot tr.total td {
+            padding-top: 1rem;
+            border-top: 2px solid var(--primary);
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        table tfoot tr.total td:first-child {
+            font-size: 1.25rem;
+            color: var(--foreground);
+        }
+        table tr.discount td {
+            color: #6EE7B7;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-button {
+            background-color: var(--card-background);
+            color: var(--foreground);
+            border: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .nav-button:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div class="scene-bg"></div>
+
+    <main>
+        <!-- Scene 1: Title -->
+        <div id="scene-0" class="scene active">
+            <div class="scene-header">
+                <div class="icon-wrapper"><span>⚡️</span></div>
+                <h1>{{presentationTitle}}</h1>
+                <h2>Uma proposta desenhada para o sucesso de {{clientName}}.</h2>
+            </div>
+        </div>
+
+        <!-- Scene 2: Diagnostic -->
+        <div id="scene-1" class="scene">
+            <div class="scene-header">
+                <div class="icon-wrapper"><span>🎯</span></div>
+                <h1>{{diagnosticTitle}}</h1>
+            </div>
+            <div class="scene-content diagnostic-list">
+                {{{diagnosticContent}}}
+            </div>
+             <p class="diagnostic-question">{{diagnosticQuestion}}</p>
+        </div>
+
+        <!-- Scene 3: Action Plan -->
+        <div id="scene-2" class="scene">
+            <div class="scene-header">
+                <div class="icon-wrapper"><span>🚀</span></div>
+                <h1>{{actionPlanTitle}}</h1>
+            </div>
+            <div class="scene-content">
+                {{{actionPlanContent}}}
+            </div>
+        </div>
+
+        <!-- Scene 4: Timeline -->
+        <div id="scene-3" class="scene">
+            <div class="scene-header">
+                <div class="icon-wrapper"><span>🗓️</span></div>
+                <h1>{{timelineTitle}}</h1>
+            </div>
+            <div class="scene-content list-item">
+                <ul>{{{timelineContent}}}</ul>
+            </div>
+        </div>
+
+        <!-- Scene 5: KPIs -->
+        <div id="scene-4" class="scene">
+             <div class="scene-header">
+                <div class="icon-wrapper"><span>📊</span></div>
+                <h1>{{kpiTitle}}</h1>
+            </div>
+            <div class="scene-content">
+                {{{kpiItems}}}
+            </div>
+        </div>
+
+        <!-- Scene 6: Why CP -->
+        <div id="scene-5" class="scene">
+            <div class="scene-header">
+                <div class="icon-wrapper"><span>⭐</span></div>
+                <h1>{{whyCpTitle}}</h1>
+            </div>
+            <div class="scene-content list-item">
+                 <ul>{{{whyCpContent}}}</ul>
+            </div>
+        </div>
+
+        <!-- Scene 7: Justification -->
+        <div id="scene-6" class="scene">
+            <div class="scene-header">
+                <div class="icon-wrapper"><span>💡</span></div>
+                <h1>{{justificationTitle}}</h1>
+            </div>
+            <div class="scene-content">
+                <div class="content-card" style="grid-column: 1 / -1;">
+                    {{{justificationContent}}}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scene 8: Investment -->
+        <div id="scene-7" class="scene">
+             <div class="scene-header">
+                <div class="icon-wrapper"><span>💰</span></div>
+                <h1>{{investmentTitle}}</h1>
+            </div>
+            <div class="scene-content">
+                <div class="content-card" style="grid-column: 1 / -1;">
+                   {{{investmentTable}}}
+                </div>
+            </div>
+        </div>
+
+        <!-- Scene 9: Next Steps -->
+        <div id="scene-8" class="scene">
+             <div class="scene-header">
+                <div class="icon-wrapper"><span>🏁</span></div>
+                <h1>{{nextStepsTitle}}</h1>
+            </div>
+            <div class="scene-content list-item">
+                 <ul>{{{nextStepsContent}}}</ul>
+            </div>
+        </div>
+
+    </main>
+    
+    <div class="navigation">
+        <button id="prevBtn" class="nav-button" disabled>&#8592; Voltar</button>
+        <button id="nextBtn" class="nav-button">Avançar &#8594;</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const scenes = document.querySelectorAll('.scene');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const bg = document.querySelector('.scene-bg');
+            let currentSceneIndex = 0;
+
+            function updateScene() {
+                scenes.forEach((scene, index) => {
+                    if (index === currentSceneIndex) {
+                        scene.classList.add('active');
+                    } else {
+                        scene.classList.remove('active');
+                    }
+                });
+
+                if (bg) {
+                    bg.style.transform = `scale(${1 + currentSceneIndex * 0.05}) translate(${currentSceneIndex * -3}%, ${currentSceneIndex * -1.5}%)`;
+                }
+                
+                prevBtn.disabled = currentSceneIndex === 0;
+                nextBtn.disabled = currentSceneIndex === scenes.length - 1;
+                
+                if(currentSceneIndex === scenes.length - 1) {
+                    nextBtn.innerHTML = 'Finalizar ✨';
+                } else {
+                    nextBtn.innerHTML = 'Avançar →';
+                }
+            }
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSceneIndex < scenes.length - 1) {
+                    currentSceneIndex++;
+                    updateScene();
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSceneIndex > 0) {
+                    currentSceneIndex--;
+                    updateScene();
+                }
+            });
+            
+            updateScene();
+        });
+    </script>
+</body>
+</html>
+
+    

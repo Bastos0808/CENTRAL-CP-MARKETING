@@ -11,7 +11,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, Briefcase, Smile, ChevronsUp, FileText, Eye } from "lucide-react";
+import { Loader2, Wand2, ArrowRight, TrendingUp, HandCoins, UserCheck, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, Briefcase, Smile, ChevronsUp, FileText, Eye, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
@@ -44,6 +44,8 @@ const CurrencyInput = React.forwardRef<
         const numericValue = Number(numbers) / 100;
         if (!isNaN(numericValue)) {
           onValueChange(numericValue);
+        } else {
+          onValueChange(undefined);
         }
     };
     
@@ -60,6 +62,11 @@ const CurrencyInput = React.forwardRef<
         const plainNumber = e.target.value.replace(/\D/g, '');
         setDisplayValue(plainNumber);
     };
+
+    React.useEffect(() => {
+        setDisplayValue(formatToCurrency(value));
+    }, [value]);
+
 
     return (
       <Input
@@ -133,7 +140,7 @@ export default function PresentationGenerator() {
     try {
       const result = await generatePresentation(values);
       setPresentationContent(result);
-      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e clique para visualizar." });
+      toast({ title: "Apresentação Gerada!", description: "O conteúdo dos slides está pronto. Clique em 'Baixar Apresentação'." });
     } catch(error) {
       console.error("Error generating presentation:", error);
       toast({ title: "Erro na Geração", description: "Não foi possível gerar a apresentação. Tente novamente.", variant: "destructive" });
@@ -141,6 +148,140 @@ export default function PresentationGenerator() {
       setIsLoading(false);
     }
   };
+  
+  const escapeHtml = (text: any): string => {
+    if (typeof text !== 'string') {
+        return ''; 
+    }
+    return text
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+  }
+
+  const listToHtml = (items: string[] | undefined): string => {
+      if (!items || !Array.isArray(items)) return '';
+      return items.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+  };
+  
+  const pillarToHtml = (items: string[] | undefined): string => {
+    if (!items || !Array.isArray(items)) return '';
+    const titles = ["Pilar 1: Aquisição", "Pilar 2: Conversão", "Pilar 3: Autoridade"];
+    return items.map((item, index) => `
+        <div class="content-card">
+            <h3>${escapeHtml(titles[index] || `Pilar ${index + 1}`)}</h3>
+            <p>${escapeHtml(item)}</p>
+        </div>`).join('');
+  };
+
+   const kpiToHtml = (kpis: GeneratePresentationOutput['kpiSlide']['kpis'] | undefined): string => {
+        if (!kpis || !Array.isArray(kpis)) return '';
+        const emojiMap = {
+            'TrendingUp': '📈', 'Target': '🎯', 'DollarSign': '💰', 'Repeat': '🔁', 'Users': '👥'
+        };
+        return kpis.map(kpi => `
+            <div class="kpi-item">
+                <h4>${emojiMap[kpi.icon] || '📊'} ${escapeHtml(kpi.metric)}</h4>
+                <p class="kpi-estimate">${escapeHtml(kpi.estimate)}</p>
+                <p class="kpi-importance">${escapeHtml(kpi.importance)}</p>
+            </div>
+        `).join('');
+    };
+
+  const investmentTableToHtml = (investment: GeneratePresentationOutput['investmentSlide'] | undefined): string => {
+      if (!investment) return '';
+      
+      const itemsHtml = investment.items.map(item => `
+          <tr>
+              <td>${escapeHtml(item.name)}</td>
+              <td class="price">${escapeHtml(item.price)}</td>
+          </tr>
+      `).join('');
+
+      const discountHtml = investment.discount ? `
+          <tr class="discount">
+              <td>Desconto Especial</td>
+              <td class="price">${escapeHtml(investment.discount)}</td>
+          </tr>
+      ` : '';
+
+      return `
+          <table>
+              <tbody>${itemsHtml}</tbody>
+              <tfoot>
+                  ${discountHtml}
+                  <tr class="total">
+                      <td>Valor Final</td>
+                      <td class="price">${escapeHtml(investment.finalTotal)}</td>
+                  </tr>
+              </tfoot>
+          </table>
+      `;
+  };
+
+  const handleDownloadInteractive = async () => {
+    if (!presentationContent) {
+      toast({ title: "Erro", description: "Gere o conteúdo da apresentação primeiro.", variant: "destructive" });
+      return;
+    }
+    try {
+      const templateResponse = await fetch('/interactive-slide-template.html');
+      if (!templateResponse.ok) throw new Error("Template não encontrado.");
+
+      let htmlContent = await templateResponse.text();
+
+      const replacements: Record<string, string> = {
+          clientName: escapeHtml(form.getValues('clientName')),
+          
+          presentationTitle: escapeHtml(presentationContent.presentationTitle),
+          
+          diagnosticTitle: escapeHtml(presentationContent.diagnosticSlide.title),
+          diagnosticContent: listToHtml(presentationContent.diagnosticSlide.content),
+          diagnosticQuestion: escapeHtml(presentationContent.diagnosticSlide.question),
+          
+          actionPlanTitle: escapeHtml(presentationContent.actionPlanSlide.title),
+          actionPlanContent: pillarToHtml(presentationContent.actionPlanSlide.content),
+          
+          timelineTitle: escapeHtml(presentationContent.timelineSlide.title),
+          timelineContent: listToHtml(presentationContent.timelineSlide.content),
+          
+          kpiTitle: escapeHtml(presentationContent.kpiSlide.title),
+          kpiItems: kpiToHtml(presentationContent.kpiSlide.kpis),
+
+          whyCpTitle: escapeHtml(presentationContent.whyCpSlide.title),
+          whyCpContent: listToHtml(presentationContent.whyCpSlide.content),
+
+          justificationTitle: escapeHtml(presentationContent.justificationSlide.title),
+          justificationContent: `<p>${escapeHtml(presentationContent.justificationSlide.content)}</p>`,
+
+          investmentTitle: escapeHtml(presentationContent.investmentSlide.title),
+          investmentTable: investmentTableToHtml(presentationContent.investmentSlide),
+          
+          nextStepsTitle: escapeHtml(presentationContent.nextStepsSlide.title),
+          nextStepsContent: listToHtml(presentationContent.nextStepsSlide.content),
+      };
+      
+      for (const key in replacements) {
+          htmlContent = htmlContent.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
+      }
+
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Apresentacao_${form.getValues('clientName').replace(/\s/g, '_')}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+
+    } catch (error) {
+      console.error("Error downloading presentation:", error);
+      toast({ title: "Erro no Download", description: "Não foi possível criar o arquivo da apresentação.", variant: "destructive" });
+    }
+  };
+
 
   const handleFillWithExample = () => {
     form.reset({
@@ -172,22 +313,6 @@ export default function PresentationGenerator() {
     toast({ title: 'Formulário Preenchido!', description: 'Dados de exemplo foram carregados.' });
   }
 
- const handlePreview = () => {
-    if (!presentationContent) {
-      toast({ title: 'Erro', description: 'Gere o conteúdo da apresentação primeiro.', variant: 'destructive'});
-      return;
-    }
-    
-    try {
-        sessionStorage.setItem('presentationData', JSON.stringify(presentationContent));
-        router.push('/gerador-apresentacoes/preview');
-    } catch(e) {
-        toast({ title: 'Erro de Navegação', description: 'Não foi possível armazenar os dados para o preview.', variant: 'destructive' });
-        console.error("Session storage error:", e);
-    }
-  };
-  
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <Card>
@@ -214,42 +339,42 @@ export default function PresentationGenerator() {
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><TrendingUp className="h-6 w-6 text-primary"/>Cenário e Metas</div></AccordionTrigger>
                   <AccordionContent className="pt-4 space-y-6">
-                    <FormField control={form.control} name="tempoEmpresa" render={({ field }) => (<FormItem><FormLabel>Há quanto tempo vocês estão no mercado?</FormLabel><FormControl><Input placeholder="Ex: Estamos há 12 anos." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="faturamentoMedio" render={({ field }) => (<FormItem><FormLabel>Qual é o faturamento médio mensal?</FormLabel><FormControl><CurrencyInput placeholder="R$ 50.000,00" {...field} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="metaFaturamento" render={({ field }) => (<FormItem><FormLabel>Qual é a meta de faturamento para os próximos 6 meses?</FormLabel><FormControl><CurrencyInput placeholder="R$ 120.000,00" {...field} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="ticketMedio" render={({ field }) => (<FormItem><FormLabel>Qual o ticket médio do seu principal serviço ou produto?</FormLabel><FormControl><CurrencyInput placeholder="R$ 2.000,00" {...field} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="origemClientes" render={({ field }) => (<FormItem><FormLabel>Atualmente, a maioria dos seus clientes chega como?</FormLabel><FormControl><Input placeholder="Ex: 90% vem de indicação." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="tempoEmpresa" render={({ field }) => (<FormItem><FormLabel>Me conta um pouco da história da empresa, há quanto tempo vocês estão no mercado?</FormLabel><FormControl><Input placeholder='Ex: "Estamos há 12 anos."' {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="faturamentoMedio" render={({ field }) => (<FormItem><FormLabel>E hoje, para eu entender o momento de vocês, qual é o faturamento médio mensal?</FormLabel><FormControl><CurrencyInput placeholder="R$ 50.000,00" value={field.value} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="metaFaturamento" render={({ field }) => (<FormItem><FormLabel>Olhando para o futuro, qual é a meta de faturamento para os próximos 6 meses?</FormLabel><FormControl><CurrencyInput placeholder="R$ 120.000,00" value={field.value} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="ticketMedio" render={({ field }) => (<FormItem><FormLabel>Qual o ticket médio do seu principal serviço ou produto?</FormLabel><FormControl><CurrencyInput placeholder="R$ 2.000,00" value={field.value} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="origemClientes" render={({ field }) => (<FormItem><FormLabel>Atualmente, a maioria dos seus clientes chega como? É mais por indicação?</FormLabel><FormControl><Input placeholder='Ex: "90% vem de indicação."' {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-2">
                   <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><Briefcase className="h-6 w-6 text-primary"/>O Desafio Atual</div></AccordionTrigger>
                   <AccordionContent className="pt-4 space-y-6">
-                    <FormField control={form.control} name="motivacaoMarketing" render={({ field }) => (<FormItem><FormLabel>O que te motivou a buscar uma solução de marketing exatamente agora?</FormLabel><FormControl><Textarea placeholder="Ex: Chegamos num platô, não estamos crescendo." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="experienciaMarketing" render={({ field }) => (<FormItem><FormLabel>Vocês já tiveram alguma experiência com marketing antes?</FormLabel><FormControl><Textarea placeholder="Ex: Sim, já contratei uma agência, mas não deu certo." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="tentativasAnteriores" render={({ field }) => (<FormItem><FormLabel>Nessas tentativas, o que você sentiu que não funcionou como deveria?</FormLabel><FormControl><Textarea placeholder="Ex: Fizeram uns posts, mas não virou cliente." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="motivacaoMarketing" render={({ field }) => (<FormItem><FormLabel>O que te motivou a buscar uma solução de marketing exatamente agora?</FormLabel><FormControl><Textarea placeholder='Ex: "Chegamos num platô, não estamos crescendo."' {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="experienciaMarketing" render={({ field }) => (<FormItem><FormLabel>Vocês já tiveram alguma experiência com marketing antes, seja com agência ou time interno?</FormLabel><FormControl><Textarea placeholder='Ex: "Sim, já contratei uma agência, mas não deu certo."' {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="tentativasAnteriores" render={({ field }) => (<FormItem><FormLabel>Nessas tentativas, o que você sentiu que não funcionou como deveria?</FormLabel><FormControl><Textarea placeholder='Ex: "Fizeram uns posts, mas não virou cliente."' {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="principalGargalo" render={({ field }) => (<FormItem><FormLabel>Se você pudesse apontar o maior gargalo hoje, onde ele estaria?</FormLabel><FormControl><Textarea placeholder="Ex: Geração, com certeza. Chega pouca gente." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="impactoGargalo" render={({ field }) => (<FormItem><FormLabel>Na prática, como esse gargalo afeta o dia a dia de vocês?</FormLabel><FormControl><Textarea placeholder="Ex: A agenda fica com muitos buracos." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="impactoAreas" render={({ field }) => (<FormItem><FormLabel>Além do faturamento, essa situação impacta alguma outra área da empresa?</FormLabel><FormControl><Textarea placeholder="Ex: Sim, a gente para de investir em equipamento." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="sentimentoPessoal" render={({ field }) => (<FormItem><FormLabel>Como você, pessoalmente, se sente com isso?</FormLabel><FormControl><Textarea placeholder="Ex: É frustrante, a gente sabe que tem potencial." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="impactoGargalo" render={({ field }) => (<FormItem><FormLabel>Na prática, como esse gargalo afeta o dia a dia de vocês? A equipe fica ociosa em alguns momentos?</FormLabel><FormControl><Textarea placeholder='Ex: "Sim, a agenda fica com muitos buracos."' {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="impactoAreas" render={({ field }) => (<FormItem><FormLabel>Além do faturamento, essa situação impacta alguma outra área da empresa?</FormLabel><FormControl><Textarea placeholder='Ex: "Sim, a gente para de investir em equipamento."' {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="sentimentoPessoal" render={({ field }) => (<FormItem><FormLabel>Imagino que seja um cenário desafiador. Como você, pessoalmente, se sente com isso?</FormLabel><FormControl><Textarea placeholder='Ex: "É frustrante, a gente sabe que tem potencial."' {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </AccordionContent>
                 </AccordionItem>
                 
                 <AccordionItem value="item-3">
                   <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><HandCoins className="h-6 w-6 text-primary"/>O Custo do Problema</div></AccordionTrigger>
                    <AccordionContent className="pt-4 space-y-6">
-                     <FormField control={form.control} name="clientesPerdidos" render={({ field }) => (<FormItem><FormLabel>Quantos clientes a mais você acredita que poderiam ter fechado no último mês sem esse gargalo?</FormLabel><FormControl><Input placeholder="Ex: Acho que uns 10 clientes a mais, fácil." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                     <FormField control={form.control} name="custoProblema" render={({ field }) => (<FormItem><FormLabel>Então, quanto você diria que esse problema custa para a empresa por mês?</FormLabel><FormControl><CurrencyInput placeholder="R$ 20.000,00" {...field} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
-                     <FormField control={form.control} name="potencialResolucao" render={({ field }) => (<FormItem><FormLabel>Se a gente resolvesse isso, o que um fluxo constante de novos clientes permitiria que você fizesse?</FormLabel><FormControl><Textarea placeholder="Ex: Eu contrataria mais um profissional." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                     <FormField control={form.control} name="clientesPerdidos" render={({ field }) => (<FormItem><FormLabel>Com base no seu ticket médio, quantos clientes a mais você acredita que poderiam ter fechado no último mês se esse gargalo não existisse?</FormLabel><FormControl><Input placeholder='Ex: "Acho que uns 10 clientes a mais, fácil."' {...field} /></FormControl><FormMessage /></FormItem>)} />
+                     <FormField control={form.control} name="custoProblema" render={({ field }) => (<FormItem><FormLabel>Então, em um número aproximado, quanto você diria que esse problema custa para a empresa por mês?</FormLabel><FormControl><CurrencyInput placeholder="R$ 20.000,00" value={field.value} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
+                     <FormField control={form.control} name="potencialResolucao" render={({ field }) => (<FormItem><FormLabel>E se a gente resolvesse isso, o que um fluxo constante de novos clientes permitiria que você fizesse hoje que não é possível?</FormLabel><FormControl><Textarea placeholder='Ex: "Eu contrataria mais um profissional."' {...field} /></FormControl><FormMessage /></FormItem>)} />
                    </AccordionContent>
                 </AccordionItem>
                 
                 <AccordionItem value="item-4">
                   <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><ChevronsUp className="h-6 w-6 text-primary"/>A Visão de Futuro</div></AccordionTrigger>
                    <AccordionContent className="pt-4 space-y-6">
-                    <FormField control={form.control} name="visaoFuturo" render={({ field }) => (<FormItem><FormLabel>Se nos falássemos daqui a 6 meses e tudo tivesse dado certo, o que estaria acontecendo de diferente?</FormLabel><FormControl><Textarea placeholder="Ex: A agenda estaria cheia com antecedência." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="visaoFuturoPessoal" render={({ field }) => (<FormItem><FormLabel>E para você, pessoalmente, o que essa mudança traria?</FormLabel><FormControl><Textarea placeholder="Ex: Com certeza, muito mais tranquilidade." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="prioridadeResolucao" render={({ field }) => (<FormItem><FormLabel>Então, ter um sistema para gerar novos clientes de forma previsível é uma prioridade para você agora?</FormLabel><FormControl><Input placeholder="Ex: Sim, total prioridade." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="visaoFuturo" render={({ field }) => (<FormItem><FormLabel>Se nos falássemos daqui a 6 meses e tudo tivesse dado certo, o que estaria acontecendo de diferente aqui?</FormLabel><FormControl><Textarea placeholder='Ex: "A agenda estaria cheia com antecedência."' {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="visaoFuturoPessoal" render={({ field }) => (<FormItem><FormLabel>E para você, pessoalmente, o que essa mudança traria?</FormLabel><FormControl><Textarea placeholder='Ex: "Com certeza, muito mais tranquilidade."' {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="prioridadeResolucao" render={({ field }) => (<FormItem><FormLabel>Então, ter um sistema para gerar novos clientes de forma previsível é uma prioridade para você agora?</FormLabel><FormControl><Input placeholder='Ex: "Sim, total prioridade."' {...field} /></FormControl><FormMessage /></FormItem>)} />
                    </AccordionContent>
                 </AccordionItem>
 
@@ -258,7 +383,7 @@ export default function PresentationGenerator() {
                   <AccordionContent className="pt-4 space-y-6">
                     <FormField control={form.control} name="envolvidosDecisao" render={({ field }) => (<FormItem><FormLabel>Além de você, quem mais participa da decisão para aprovar um projeto como este?</FormLabel><FormControl><Input placeholder="Sócio, esposa, etc." {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="orcamentoPrevisto" render={({ field }) => (<FormItem><FormLabel>Para um projeto que busca resolver esse cenário, qual faixa de investimento mensal vocês consideram?</FormLabel><FormControl><Input placeholder="Ex: Penso em investir entre R$ 3k e R$ 5k." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="prazoDecisao" render={({ field }) => (<FormItem><FormLabel>Se encontrarmos o plano ideal, qual o seu prazo para tomar uma decisão?</FormLabel><FormControl><Input placeholder="Ex: Tenho urgência, o quanto antes." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="prazoDecisao" render={({ field }) => (<FormItem><FormLabel>Se encontrarmos o plano ideal, qual o seu prazo para tomar uma decisão e iniciar o projeto?</FormLabel><FormControl><Input placeholder='Ex: "Tenho urgência, o quanto antes."' {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </AccordionContent>
                 </AccordionItem>
 
@@ -337,7 +462,7 @@ export default function PresentationGenerator() {
       <Card className="lg:sticky top-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
-          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para abrir a pré-visualização da apresentação interativa.</CardDescription>
+          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para baixar a apresentação interativa em HTML.</CardDescription>
         </CardHeader>
         <CardContent>
           {presentationContent ? (
@@ -349,9 +474,9 @@ export default function PresentationGenerator() {
                   O conteúdo foi gerado com sucesso.
                 </AlertDescription>
               </Alert>
-              <Button onClick={handlePreview} className="w-full">
-                <Eye className="mr-2 h-4 w-4" />
-                Visualizar Apresentação Interativa
+              <Button onClick={handleDownloadInteractive} className="w-full">
+                <Download className="mr-2 h-4 w-4" />
+                Baixar Apresentação Interativa
               </Button>
             </div>
           ) : (
@@ -364,3 +489,5 @@ export default function PresentationGenerator() {
     </div>
   );
 }
+
+    
