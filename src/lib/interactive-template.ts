@@ -65,7 +65,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       },
       {
           title: `<h2>O Custo de Não Agir Agora</h2>`,
-          content: `<div class="card-grid"><div class="card"><h3>Custo em 6 Meses</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_6_meses)}</span></div><div class="card"><h3>Custo em 1 Ano</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_1_ano)}</span></div></div><br><p>${escapeHtml(inactionCostSlide.cenario_inercia)}</p>`
+          content: `<div class="card-grid" style="grid-template-columns: repeat(2, 1fr); place-items: center;"><div class="card cost-card"><h3>Custo em 6 Meses</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_6_meses)}</span></div><div class="card cost-card"><h3>Custo em 1 Ano</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_1_ano)}</span></div></div><br><p class="question" style="text-align: center;">${escapeHtml(inactionCostSlide.cenario_inercia)}</p>`
       },
       {
           title: `<h2>Nosso Plano para Virar o Jogo</h2>`,
@@ -73,7 +73,24 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       },
       {
           title: `<h2>Resultados que Falam por Si</h2>`,
-          content: `<p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p><div class="card-grid"><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/400x300.png')"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/400x300.png')"></div><h4>Case 2: E-commerce</h4><p>+80% no faturamento.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/400x300.png')"></div><h4>Case 3: B2B</h4><p>-40% no Custo por Lead.</p></div></div>`
+          content: `<p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p>
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/400x300.png')" data-ai-hint="happy woman"></div>
+                            <h4>Clínica Estética</h4>
+                            <p>+250% em agendamentos qualificados.</p>
+                        </div>
+                        <div class="card">
+                            <div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/400x300.png')" data-ai-hint="fashion style"></div>
+                            <h4>E-commerce de Moda</h4>
+                            <p>+80% no faturamento online.</p>
+                        </div>
+                        <div class="card">
+                            <div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/400x300.png')" data-ai-hint="business meeting"></div>
+                            <h4>Consultoria B2B</h4>
+                            <p>-40% no Custo por Lead (CPL).</p>
+                        </div>
+                    </div>`
       },
       {
           title: `<h2>Nosso Compromisso com seu Crescimento de ${escapeHtml(metricsSlide.crescimentoPercentual)}</h2>`,
@@ -116,130 +133,94 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             overflow: hidden; 
             background-color: var(--background-color); 
             color: var(--primary-color); 
-            font-family: 'Montserrat', sans-serif; 
+            font-family: 'Montserrat', sans-serif;
+            background-image: radial-gradient(ellipse 80% 80% at 50% -20%,rgba(3, 8, 96, 0.25), transparent),
+                              radial-gradient(ellipse 50% 50% at 90% 90%,rgba(254, 84, 18, 0.15), transparent);
+            background-size: 200% 200%;
         }
 
-        #webgl-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        .ui-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            pointer-events: none;
-        }
-        .ui-layer > * {
-            pointer-events: auto;
-        }
-
-        .intro-container { 
-            text-align: center;
-            padding: 20px;
-            opacity: 1;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .intro-container.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .proposal-container-wrapper {
+        .scene {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            opacity: 0; 
-            pointer-events: none; 
-            transition: opacity 0.5s ease-in-out;
-        }
-        .proposal-container-wrapper.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .sky-container {
-            width: 100%;
-            max-width: 900px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1100px;
+            height: auto;
             max-height: 90vh;
-            padding: 40px;
+            padding: 4rem 2rem 8rem;
             background-color: var(--card-background);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow-y: auto;
             border: 1px solid var(--border-color);
-            position: relative;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s;
+            overflow-y: auto;
+            text-align: center;
         }
-        .sky-container-content {
-            width: 100%;
-            transition: opacity 0.4s ease-in-out;
+        .scene.active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 10;
         }
-
-        .close-button { 
-            position: absolute;
-            top: 20px; 
-            right: 20px;
-            width: 40px; 
-            height: 40px; 
+        
+        .navigation {
+            position: fixed;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+        
+        .nav-button { 
+            background: none; 
+            border: 1px solid var(--accent-color); 
+            color: var(--accent-color); 
+            padding: 12px 25px; 
+            margin: 0 10px; 
             cursor: pointer; 
-            z-index: 12;
+            font-family: 'Montserrat', sans-serif; 
+            text-transform: uppercase; 
+            font-weight: 700; 
+            border-radius: 50px; 
+            transition: all 0.3s ease; 
         }
-        .close-button .left, .close-button .right { width: 2px; height: 25px; background: white; position: absolute; top: 7.5px; left: 19px; border-radius: 3px; transition: 0.3s ease-out; }
-        .close-button .right { transform: rotate(-45deg); }
-        .close-button .left { transform: rotate(45deg); }
-        .close-button:hover .right, .close-button:hover .left { transform: rotate(0deg); }
+        .nav-button:not(:disabled):hover { background-color: var(--accent-color); color: white; }
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
 
         h1, h2, h3 { font-weight: 900; margin-bottom: 20px; text-wrap: balance; }
         h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); text-transform: uppercase; line-height: 1.3; color: var(--accent-color); }
         h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
         h3 { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; }
-        p { font-size: clamp(0.9rem, 1.5vw, 1.1rem); line-height: 1.6; color: var(--secondary-color); max-width: 800px; }
+        p { font-size: clamp(0.9rem, 1.5vw, 1.1rem); line-height: 1.6; color: var(--secondary-color); max-width: 800px; margin-left: auto; margin-right: auto; }
         
-        .intro-container .fancy-text { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
         .proposal-meta { margin-top: 20px; font-size: 0.9rem; color: var(--secondary-color); }
 
-        .button { position: relative; cursor: pointer; display: inline-block; text-transform: uppercase; min-width: 250px; margin-top: 30px; color: white; font-weight: 700; }
-        .button .border { border: 2px solid var(--accent-color); transform: skewX(-20deg); height: 50px; border-radius: 5px; overflow: hidden; position: relative; transition: 0.2s ease-out; }
-        .button .text { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); transition: 0.2s ease-out; font-size: 1.1rem; }
-        .button .left-plane, .button .right-plane { position: absolute; background: var(--accent-color); height: 100%; width: 51%; transition: 0.2s ease-out; }
-        .button .left-plane { left: 0; transform: translateX(-101%); }
-        .button .right-plane { right: 0; transform: translateX(101%); }
-        .button:hover .border { box-shadow: 0px 0px 15px 0px var(--accent-color); }
-        .button:hover .left-plane, .button:hover .right-plane { transform: translateX(0%); }
-        .button:hover .text { color: var(--background-color); }
-        
-        .nav-arrows { 
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
             width: 100%;
-            padding-top: 30px;
-            margin-top: auto;
+            margin-top: 30px;
         }
-        .nav-button { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 12px 25px; margin: 0 10px; cursor: pointer; font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-weight: 700; border-radius: 50px; transition: all 0.3s ease; }
-        .nav-button:not(:disabled):hover { background-color: var(--accent-color); color: white; }
-        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
-        
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
-        .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .card { 
+            background-color: #1a1a1a; 
+            padding: 25px; 
+            border-radius: 10px; 
+            border: 1px solid var(--border-color); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            height: 100%; /* Important for equal height */
+        }
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
-        .card h4 { font-size: 1.2rem; margin-bottom: 10px; }
+        .card h4 { font-size: 1.2rem; margin-bottom: 10px; text-align: center; }
+        
+        .cost-card { justify-content: center; }
         .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
+        
         p.question {
             font-weight: 600;
             color: var(--primary-color);
@@ -254,7 +235,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .features-list .feature-item { display: flex; align-items: flex-start; text-align: left; }
         .features-list i { font-size: 1.5rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
         .features-list h4 { margin-bottom: 5px; font-size: 1.2rem; }
-        .features-list p { font-size: 1rem; }
+        .features-list p { font-size: 1rem; text-align: left; }
 
         .image-gallery { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 15px; height: 300px; }
         .image-placeholder { width: 100%; height: 100%; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
@@ -263,204 +244,71 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
         .impact-item i { font-size: 1.8rem; color: var(--accent-color); margin-right: 20px; }
-
+        
         @media (min-width: 1024px) {
             .presentation-gallery-layout { grid-template-columns: 7fr 5fr; gap: 40px; }
         }
+
     </style>
 </head>
 <body>
-    <div id="webgl-container"></div>
-    <div class="ui-layer">
-        <div class="intro-container">
+    <div id="presentation-container">
+        <!-- Capa Inicial -->
+        <div id="intro-slide" class="scene active">
             <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755524633/Prancheta_6_ajhh0n.png" alt="Logo da CP Marketing" style="max-height: 120px; margin-bottom: 30px;">
-            <h3 class="fancy-text">Plano de Crescimento para</h3>
+            <h3>Plano de Crescimento para</h3>
             <h1>${escapeHtml(clientName)}</h1>
             <div class="proposal-meta">
                 <p>Data: ${escapeHtml(proposalDate)} | Validade: ${escapeHtml(proposalValidityDate)}</p>
             </div>
-            <div class="button shift-camera-button">
-                <div class="border">
-                    <div class="left-plane"></div><div class="right-plane"></div>
-                </div>
-                <div class="text">Iniciar Apresentação</div>
-            </div>
         </div>
-        <div class="proposal-container-wrapper">
-            <div class="sky-container">
-                <div class="sky-container-content"></div>
-                <div class="nav-arrows">
-                    <button id="prev-button" class="nav-button">Voltar</button>
-                    <button id="next-button" class="nav-button">Avançar</button>
-                </div>
+
+        <!-- Slides Dinâmicos -->
+        ${slidesData.map((slide, index) => `
+            <div id="slide-${index}" class="scene">
+                ${slide.title}
+                ${slide.content}
             </div>
-            <div class="close-button">
-                <div class="left"></div>
-                <div class="right"></div>
-            </div>
-        </div>
+        `).join('')}
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"></script>
+
+    <div class="navigation">
+        <button id="prev-button" class="nav-button">Anterior</button>
+        <button id="next-button" class="nav-button">Avançar</button>
+    </div>
+
     <script>
-        "use strict";
-        let camera, scene, renderer, plane, stars;
-        
-        const slides = ${JSON.stringify(slidesData)};
-        let currentSlide = -1;
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.scene');
+        const totalSlides = slides.length;
 
-        const cameraPath = [
-            { y: 120, z: 20 }, { y: 110, z: 25 }, { y: 100, z: 30 }, { y: 90, z: 35 },
-            { y: 80, z: 40 }, { y: 70, z: 45 }, { y: 60, z: 50 }, { y: 50, z: 55 },
-            { y: 40, z: 60 }, { y: 30, z: 65 }
-        ];
+        const prevButton = document.getElementById('prev-button');
+        const nextButton = document.getElementById('next-button');
 
-        function updateSlideContent() {
-            const container = document.querySelector('.sky-container-content');
-            const skyContainer = document.querySelector('.sky-container');
-            
-            TweenLite.to(container, 0.3, { opacity: 0, ease: Power2.easeOut, onComplete: () => {
-                if (currentSlide < 0 || currentSlide >= slides.length) {
-                    container.innerHTML = ''; return;
-                }
-                const slide = slides[currentSlide];
-                container.innerHTML = slide.title + slide.content;
-                
-                document.getElementById('prev-button').disabled = currentSlide === 0;
-                document.getElementById('next-button').disabled = currentSlide === slides.length - 1;
-
-                skyContainer.scrollTop = 0;
-                TweenLite.to(container, 0.5, { opacity: 1, ease: Power2.easeIn });
-            }});
+        function updateSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            prevButton.disabled = index === 0;
+            nextButton.disabled = index === totalSlides - 1;
         }
 
-        function createStars() {
-            let starGeometry = new THREE.Geometry();
-            for(let i=0; i<10000; i++) {
-                let star = new THREE.Vector3();
-                star.x = THREE.Math.randFloatSpread(2000);
-                star.y = THREE.Math.randFloatSpread(2000);
-                star.z = THREE.Math.randFloatSpread(2000);
-                starGeometry.vertices.push(star);
+        nextButton.addEventListener('click', () => {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide(currentSlide);
             }
-            let starMaterial = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.7 });
-            stars = new THREE.Points(starGeometry, starMaterial);
-            scene.add(stars);
-        }
+        });
 
-        function init() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            camera.position.z = 50;
-            renderer.setClearColor("#000000", 1.0);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.getElementById('webgl-container').appendChild(renderer.domElement);
-
-            let topLight = new THREE.DirectionalLight(0xffffff, 1);
-            topLight.position.set(0, 1, 1).normalize();
-            scene.add(topLight);
-
-            let geometry = new THREE.PlaneGeometry(400, 400, 70, 70);
-            let material = new THREE.MeshPhongMaterial({ color: 0x111111, flatShading: true, side: THREE.DoubleSide });
-            
-            geometry.vertices.forEach(function (vertice) {
-                vertice.x += (Math.random() - 0.5) * 4;
-                vertice.y += (Math.random() - 0.5) * 4;
-                vertice.z += (Math.random() - 0.5) * 4;
-                vertice.dx = Math.random() - 0.5;
-                vertice.dy = Math.random() - 0.5;
-                vertice.randomDelay = Math.random() * 5;
-            });
-            
-            plane = new THREE.Mesh(geometry, material);
-            scene.add(plane);
-            createStars();
-            render();
-        }
-
-        let timer = 0;
-        function render() {
-            requestAnimationFrame(render);
-            timer += 0.01;
-            if (plane && plane.geometry) {
-              let vertices = plane.geometry.vertices;
-              for (let i = 0; i < vertices.length; i++) {
-                  vertices[i].x -= (Math.sin(timer + vertices[i].randomDelay) / 40) * vertices[i].dx;
-                  vertices[i].y += (Math.sin(timer + vertices[i].randomDelay) / 40) * vertices[i].dy;
-              }
-              plane.geometry.verticesNeedUpdate = true;
+        prevButton.addEventListener('click', () => {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide(currentSlide);
             }
-            if (stars) { stars.rotation.y += 0.0001; }
-            renderer.render(scene, camera);
-        }
+        });
 
-        function navigateToScene(index) {
-            const targetPosition = cameraPath[index];
-            TweenLite.to(camera.position, 1.5, { y: targetPosition.y, z: targetPosition.z, ease: Power3.easeInOut });
-            updateSlideContent();
-        }
-
-        window.onload = function() {
-            init();
-            const introContainer = document.querySelector('.intro-container');
-            const proposalWrapper = document.querySelector('.proposal-container-wrapper');
-            const closeButton = document.querySelector('.close-button');
-
-            document.querySelector('.shift-camera-button').addEventListener('click', function() {
-                let introTimeline = new TimelineMax();
-                introTimeline.add([
-                    TweenLite.to(introContainer, 0.5, { opacity: 0, ease: Power3.easeIn, onComplete: () => { introContainer.style.pointerEvents = 'none'; } }),
-                    TweenLite.to(camera.rotation, 3, { x: Math.PI / 2, ease: Power3.easeInOut }),
-                    TweenLite.to(camera.position, 3, { y: cameraPath[0].y, z: cameraPath[0].z, ease: Power3.easeInOut }),
-                    TweenLite.to(plane.scale, 3, { x: 2, ease: Power3.easeInOut }),
-                ]);
-                introTimeline.add([
-                    TweenLite.to(proposalWrapper, 1, { opacity: 1, ease: Power3.easeInOut, onStart: () => {
-                         proposalWrapper.style.pointerEvents = 'auto';
-                         currentSlide = 0;
-                         updateSlideContent();
-                    } }),
-                ]);
-            });
-
-            closeButton.addEventListener('click', function() {
-                let outroTimeline = new TimelineMax();
-                outroTimeline.add([
-                    TweenLite.to(proposalWrapper, 0.5, { opacity: 0, ease: Power3.easeInOut, onComplete: () => {
-                        proposalWrapper.style.pointerEvents = 'none';
-                        currentSlide = -1;
-                        updateSlideContent();
-                    }}),
-                    TweenLite.to(camera.rotation, 3, { x: 0, ease: Power3.easeInOut }),
-                    TweenLite.to(camera.position, 3, { z: 50, y: 0, ease: Power3.easeInOut }),
-                    TweenLite.to(plane.scale, 3, { x: 1, ease: Power3.easeInOut }),
-                ]);
-                outroTimeline.add([
-                    TweenLite.to(introContainer, 0.5, { opacity: 1, ease: Power3.easeIn, delay: 1, onComplete: () => { introContainer.style.pointerEvents = 'auto'; } }),
-                ]);
-            });
-
-            document.getElementById('next-button').addEventListener('click', () => {
-                if (currentSlide < slides.length - 1) {
-                    currentSlide++;
-                    navigateToScene(currentSlide);
-                }
-            });
-            document.getElementById('prev-button').addEventListener('click', () => {
-                if (currentSlide > 0) {
-                    currentSlide--;
-                    navigateToScene(currentSlide);
-                }
-            });
-
-            window.addEventListener("resize", function () {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        };
+        // Initialize first slide
+        updateSlide(0);
     </script>
 </body>
 </html>
