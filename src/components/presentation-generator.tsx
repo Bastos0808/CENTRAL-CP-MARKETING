@@ -11,12 +11,14 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, Briefcase, Smile, ChevronsUp, FileText } from "lucide-react";
+import { Loader2, Wand2, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, Briefcase, Smile, ChevronsUp, FileText, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
 import { GeneratePresentationOutput, DiagnosticFormSchema, packageOptions } from "@/ai/schemas/presentation-generator-schemas";
 import type { z } from "zod";
+import { useRouter } from "next/navigation";
+
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
 
@@ -32,41 +34,31 @@ const CurrencyInput = React.forwardRef<
         if (num === undefined || num === null || isNaN(num)) return '';
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
     };
-
-    const parseFromCurrency = (str: string) => {
-        if (!str) return undefined;
-        const num = str.replace(/[^\d]/g, '');
-        if (num === '') return undefined;
-        return parseFloat(num) / 100;
-    };
     
-    const [displayValue, setDisplayValue] = useState<string>(value !== undefined ? String(value) : '');
-
-    React.useEffect(() => {
-       setDisplayValue(value !== undefined ? String(value) : '');
-    }, [value]);
-
-    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-        const numericValue = parseFloat(e.target.value);
-        if (!isNaN(numericValue)) {
-            onValueChange(numericValue);
-            setDisplayValue(formatToCurrency(numericValue));
-        } else {
-             onValueChange(undefined);
-             setDisplayValue('');
-        }
-    };
-    
-    const handleFocus = () => {
-        setDisplayValue(value !== undefined ? String(value) : '');
-    };
+    const [displayValue, setDisplayValue] = useState(formatToCurrency(value));
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
-        // Allow only numbers and a single decimal point
-        if (/^\d*\.?\d*$/.test(val)) {
-            setDisplayValue(val);
+        const numbers = val.replace(/\D/g, '');
+        setDisplayValue(numbers);
+        const numericValue = Number(numbers) / 100;
+        if (!isNaN(numericValue)) {
+          onValueChange(numericValue);
         }
+    };
+    
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+        const numericValue = parseFloat(e.target.value.replace(/\D/g, '')) / 100;
+        if (!isNaN(numericValue)) {
+             setDisplayValue(formatToCurrency(numericValue));
+        } else {
+            setDisplayValue('');
+        }
+    };
+    
+     const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+        const plainNumber = e.target.value.replace(/\D/g, '');
+        setDisplayValue(plainNumber);
     };
 
     return (
@@ -77,7 +69,7 @@ const CurrencyInput = React.forwardRef<
         onBlur={handleBlur}
         onFocus={handleFocus}
         type="text"
-        inputMode="decimal"
+        inputMode="numeric"
         {...props}
       />
     );
@@ -89,6 +81,7 @@ export default function PresentationGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [presentationContent, setPresentationContent] = useState<GeneratePresentationOutput | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<DiagnosticFormValues>({
     resolver: zodResolver(DiagnosticFormSchema),
@@ -140,7 +133,7 @@ export default function PresentationGenerator() {
     try {
       const result = await generatePresentation(values);
       setPresentationContent(result);
-      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e clique para baixar." });
+      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e clique para visualizar." });
     } catch(error) {
       console.error("Error generating presentation:", error);
       toast({ title: "Erro na Geração", description: "Não foi possível gerar a apresentação. Tente novamente.", variant: "destructive" });
@@ -179,120 +172,19 @@ export default function PresentationGenerator() {
     toast({ title: 'Formulário Preenchido!', description: 'Dados de exemplo foram carregados.' });
   }
 
- const handleDownload = async () => {
+ const handlePreview = () => {
     if (!presentationContent) {
       toast({ title: 'Erro', description: 'Gere o conteúdo da apresentação primeiro.', variant: 'destructive'});
       return;
     }
     
-    const escapeHtml = (text: any): string => {
-        if (typeof text !== 'string') return '';
-        return text
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;")
-            .replace(/\n/g, '<br>');
-    };
-    
-    const listToHtml = (items: any): string => {
-        if (!Array.isArray(items)) return '<ul></ul>';
-        const listItems = items.map(item => `<li>${escapeHtml(item)}</li>`).join('');
-        return `<ul>${listItems}</ul>`;
-    };
-
-    const kpiIcons: { [key: string]: string } = {
-        TrendingUp: '📈', Target: '🎯', DollarSign: '💰', Repeat: '🔁', Users: '👥',
-    };
-
-    const kpiItemsHtml = presentationContent.kpiSlide.kpis.map(kpi => `
-        <div class="kpi-item">
-            <h4>${kpiIcons[kpi.icon] || '•'} ${escapeHtml(kpi.metric)}</h4>
-            <p class="kpi-estimate">${escapeHtml(kpi.estimate)}</p>
-            <p class="kpi-importance">${escapeHtml(kpi.importance)}</p>
-        </div>
-    `).join('');
-
-    const investmentItemsHtml = presentationContent.investmentSlide.items.map(item => `
-        <tr>
-            <td>${escapeHtml(item.name)}</td>
-            <td class="price">${escapeHtml(item.price)}</td>
-        </tr>
-    `).join('');
-    
-    let investmentHtml = `
-      <table>
-          <tbody>
-              ${investmentItemsHtml}
-          </tbody>
-          <tfoot>
-              <tr>
-                  <td>Subtotal</td>
-                  <td class="price">${escapeHtml(presentationContent.investmentSlide.total)}</td>
-              </tr>
-    `;
-    
-    if (presentationContent.investmentSlide.discount) {
-        investmentHtml += `
-              <tr class="discount">
-                  <td>Desconto</td>
-                  <td class="price">${escapeHtml(presentationContent.investmentSlide.discount)}</td>
-              </tr>
-        `;
+    try {
+        sessionStorage.setItem('presentationData', JSON.stringify(presentationContent));
+        router.push('/gerador-apresentacoes/preview');
+    } catch(e) {
+        toast({ title: 'Erro de Navegação', description: 'Não foi possível armazenar os dados para o preview.', variant: 'destructive' });
+        console.error("Session storage error:", e);
     }
-
-    investmentHtml += `
-              <tr class="total">
-                  <td>Total</td>
-                  <td class="price">${escapeHtml(presentationContent.investmentSlide.finalTotal)}</td>
-              </tr>
-          </tfoot>
-      </table>
-    `;
-
-    // Fetch the template content
-    const response = await fetch('/slide-template.html');
-    let templateHtml = await response.text();
-
-    const replacements = {
-        '{{presentationTitle}}': escapeHtml(presentationContent.presentationTitle),
-        '{{clientName}}': escapeHtml(form.getValues('clientName')),
-        '{{diagnosticTitle}}': escapeHtml(presentationContent.diagnosticSlide.title),
-        '{{{diagnosticContent}}}': listToHtml(presentationContent.diagnosticSlide.content),
-        '{{diagnosticQuestion}}': escapeHtml(presentationContent.diagnosticSlide.question),
-        '{{actionPlanTitle}}': escapeHtml(presentationContent.actionPlanSlide.title),
-        '{{{actionPlanPillar1}}}': escapeHtml(presentationContent.actionPlanSlide.content[0]),
-        '{{{actionPlanPillar2}}}': escapeHtml(presentationContent.actionPlanSlide.content[1]),
-        '{{{actionPlanPillar3}}}': escapeHtml(presentationContent.actionPlanSlide.content[2]),
-        '{{timelineTitle}}': escapeHtml(presentationContent.timelineSlide.title),
-        '{{{timelineContent}}}': listToHtml(presentationContent.timelineSlide.content),
-        '{{kpiTitle}}': escapeHtml(presentationContent.kpiSlide.title),
-        '{{{kpiItems}}}': kpiItemsHtml,
-        '{{whyCpTitle}}': escapeHtml(presentationContent.whyCpSlide.title),
-        '{{{whyCpContent}}}': listToHtml(presentationContent.whyCpSlide.content),
-        '{{justificationTitle}}': escapeHtml(presentationContent.justificationSlide.title),
-        '{{{justificationContent}}}': escapeHtml(presentationContent.justificationSlide.content),
-        '{{investmentTitle}}': escapeHtml(presentationContent.investmentSlide.title),
-        '{{{investmentTable}}}': investmentHtml,
-        '{{nextStepsTitle}}': escapeHtml(presentationContent.nextStepsSlide.title),
-        '{{{nextStepsContent}}}': listToHtml(presentationContent.nextStepsSlide.content)
-    };
-
-    let finalHtml = templateHtml;
-    for (const [key, value] of Object.entries(replacements)) {
-      finalHtml = finalHtml.replace(new RegExp(key.replace(/([.*+?^${}()|\[\]\/\\])/g, '\\$1'), 'g'), String(value));
-    }
-
-    const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Apresentacao_${form.getValues('clientName').replace(/\s+/g, '_')}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
   
 
@@ -348,7 +240,7 @@ export default function PresentationGenerator() {
                    <AccordionContent className="pt-4 space-y-6">
                      <FormField control={form.control} name="clientesPerdidos" render={({ field }) => (<FormItem><FormLabel>Quantos clientes a mais você acredita que poderiam ter fechado no último mês sem esse gargalo?</FormLabel><FormControl><Input placeholder="Ex: Acho que uns 10 clientes a mais, fácil." {...field} /></FormControl><FormMessage /></FormItem>)} />
                      <FormField control={form.control} name="custoProblema" render={({ field }) => (<FormItem><FormLabel>Então, quanto você diria que esse problema custa para a empresa por mês?</FormLabel><FormControl><CurrencyInput placeholder="R$ 20.000,00" {...field} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
-                     <FormField control={form.control} name="potencialResolucao" render={({ field }) => (<FormItem><FormLabel>Se a gente resolvesse isso, o que um fluxo constante de clientes permitiria que você fizesse?</FormLabel><FormControl><Textarea placeholder="Ex: Eu contrataria mais um profissional." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                     <FormField control={form.control} name="potencialResolucao" render={({ field }) => (<FormItem><FormLabel>Se a gente resolvesse isso, o que um fluxo constante de novos clientes permitiria que você fizesse?</FormLabel><FormControl><Textarea placeholder="Ex: Eu contrataria mais um profissional." {...field} /></FormControl><FormMessage /></FormItem>)} />
                    </AccordionContent>
                 </AccordionItem>
                 
@@ -445,7 +337,7 @@ export default function PresentationGenerator() {
       <Card className="lg:sticky top-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
-          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para baixar o arquivo HTML da apresentação.</CardDescription>
+          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para abrir a pré-visualização da apresentação interativa.</CardDescription>
         </CardHeader>
         <CardContent>
           {presentationContent ? (
@@ -457,9 +349,9 @@ export default function PresentationGenerator() {
                   O conteúdo foi gerado com sucesso.
                 </AlertDescription>
               </Alert>
-              <Button onClick={handleDownload} className="w-full">
-                <FileDown className="mr-2 h-4 w-4" />
-                Baixar Apresentação (.html)
+              <Button onClick={handlePreview} className="w-full">
+                <Eye className="mr-2 h-4 w-4" />
+                Visualizar Apresentação Interativa
               </Button>
             </div>
           ) : (
