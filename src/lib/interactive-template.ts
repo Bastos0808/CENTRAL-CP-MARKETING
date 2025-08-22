@@ -12,11 +12,11 @@ const escapeHtml = (text: string | undefined): string => {
          .replace(/'/g, "&#039;");
 };
 
-const renderBullets = (items: string[] | undefined) => {
+const renderBullets = (items: (string | undefined)[]) => {
     if (!items || items.length === 0) return '';
     return `
         <ul class="check-list">
-            ${items.map(item => `<li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>${escapeHtml(item)}</li>`).join('')}
+            ${items.filter(Boolean).map(item => `<li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>${escapeHtml(item)}</li>`).join('')}
         </ul>
     `;
 };
@@ -77,6 +77,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
+            background-image: radial-gradient(circle at 10% 20%, rgba(3, 8, 96, 0.2) 0%, transparent 40%),
+                              radial-gradient(circle at 80% 90%, rgba(254, 84, 18, 0.15) 0%, transparent 50%);
         }
         .container {
             max-width: 900px;
@@ -95,6 +97,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             opacity: 0;
             transform: translateY(20px);
             animation: fadeIn 1s forwards;
+            animation-timeline: view();
+            animation-range: entry;
         }
         @keyframes fadeIn {
             to {
@@ -110,7 +114,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         h1 {
             font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
-            color: var(--color-accent);
+            color: white;
             margin-bottom: 0.5rem;
         }
         h2 {
@@ -133,10 +137,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             color: var(--color-accent);
             margin-bottom: 1rem;
         }
-        p {
+        p, .check-list li {
             max-width: 65ch;
-            margin-bottom: 1rem;
             color: #B3B3B3;
+            font-size: clamp(1rem, 1.5vw, 1.1rem);
+        }
+        p {
+          margin-bottom: 1rem;
         }
         .card {
             background: var(--color-surface);
@@ -168,14 +175,25 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         .check-list svg {
             flex-shrink: 0;
+            width: 24px;
+            height: 24px;
             color: var(--color-accent);
             margin-top: 2px;
         }
         .value-display {
-            font-size: clamp(2.5rem, 6vw, 5rem);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
             font-weight: 900;
             color: var(--color-accent);
             line-height: 1;
+            padding: 0;
+            margin: 0;
+        }
+        .cost-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
         .highlight {
             color: var(--color-accent);
@@ -220,18 +238,18 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <section class="scene">
             <h2>O Diagnóstico</h2>
             <div class="card">
-                <h3>Resumo Empático</h3>
+                <h3>Sua Realidade Atual</h3>
                 <p>${escapeHtml(diagnosticSlide.resumoEmpatico)}</p>
             </div>
             <div class="card">
-                <h3>Análise Reflexiva</h3>
+                <h3>O Ponto de Virada</h3>
                 <p>${escapeHtml(diagnosticSlide.analiseReflexiva)}</p>
             </div>
         </section>
         
         <!-- Scene 4: A Dor -->
         <section class="scene">
-            <h2>O Impacto Real do Gargalo Atual</h2>
+            <h2>As Consequências Reais do Gargalo</h2>
             <div class="card">
                 ${renderBullets([painSlide.consequencia_1, painSlide.consequencia_2, painSlide.consequencia_3])}
             </div>
@@ -246,7 +264,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                     <p>${escapeHtml(futureSlide.cenario_6_meses)}</p>
                 </div>
                 <div class="card">
-                    <h3>Seu Cenário em 1 Ano</h3>
+                    <h3>Sua Realidade em 1 Ano</h3>
                     <p>${escapeHtml(futureSlide.cenario_1_ano)}</p>
                 </div>
             </div>
@@ -256,11 +274,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <section class="scene">
             <h2>O Custo de Adiar a Decisão</h2>
             <div class="grid">
-                <div class="card">
+                <div class="card cost-card">
                     <h3>Custo da Inação em 6 Meses</h3>
                     <p class="value-display">${escapeHtml(inactionCostSlide.custo_6_meses)}</p>
                 </div>
-                 <div class="card">
+                 <div class="card cost-card">
                     <h3>Custo da Inação em 1 Ano</h3>
                     <p class="value-display">${escapeHtml(inactionCostSlide.custo_1_ano)}</p>
                 </div>
@@ -301,12 +319,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <section class="scene">
             <h2>Nosso Compromisso com seu Crescimento de <span class="highlight">${escapeHtml(metricsSlide.crescimentoPercentual)}</span></h2>
              <div class="grid">
-                <div class="card">
+                <div class="card cost-card">
                     <h3>Meta de Leads Qualificados</h3>
                     <p class="value-display">${escapeHtml(metricsSlide.metaLeadsQualificados)}</p>
                     <p>por mês</p>
                 </div>
-                <div class="card">
+                <div class="card cost-card">
                     <h3>Meta de Taxa de Conversão</h3>
                     <p class="value-display">${escapeHtml(metricsSlide.metaTaxaConversao)}</p>
                     <p>de lead para cliente</p>
@@ -318,7 +336,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <section class="scene">
             <h2>O Investimento na sua Aceleração</h2>
             <div class="card">
-                <h3>Ancoragem de Preço</h3>
+                <h3>Ancoragem de Valor</h3>
                 <p>${escapeHtml(investmentSlide.ancoragemPreco)}</p>
             </div>
             <div class="card">
@@ -340,3 +358,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
   `;
   return html;
 }
+
+    

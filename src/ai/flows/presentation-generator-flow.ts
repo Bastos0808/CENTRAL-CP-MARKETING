@@ -52,7 +52,7 @@ const presentationGeneratorFlow = ai.defineFlow(
         model: googleAI.model('gemini-1.5-pro-latest'),
         output: { schema: GeneratePresentationOutputSchema },
         prompt: `
-            Você é um Estrategista de Vendas Sênior e um especialista em criar narrativas comerciais persuasivas para a agência "CP Marketing Digital". Sua missão é transformar os dados brutos de uma reunião de diagnóstico em conteúdo textual para uma apresentação interativa, seguindo rigorosamente as instruções para cada slide.
+            Você é um Estrategista de Vendas Sênior e um especialista em criar narrativas comerciais persuasivas para a agência "CP Marketing Digital". Sua missão é transformar os dados brutos de uma reunião de diagnóstico em conteúdo textual para uma apresentação interativa, seguindo rigorosamente as instruções para cada slide. O tom deve ser provocativo e focado em perguntas reflexivas.
 
             **Dados do Diagnóstico:**
             ---
@@ -74,35 +74,35 @@ const presentationGeneratorFlow = ai.defineFlow(
             - **O que faria com mais clientes:** ${inputForAI.potencialResolucao}
             ---
 
-            **Agora, gere o conteúdo para cada slide da apresentação, preenchendo todos os campos do objeto de saída.**
+            **Agora, gere o conteúdo para cada slide da apresentação, preenchendo todos os campos do objeto de saída com textos curtos, diretos e provocativos.**
 
             ---
             **Slide 3: O Diagnóstico**
-            - **resumoEmpatico:** Crie um parágrafo que conecte a meta de faturamento (${inputForAI.metaFaturamento}) ao gargalo principal (${inputForAI.principalGargalo}) e ao sentimento de frustração/estar perdido do cliente (${inputForAI.sentimentoPessoal}).
-            - **analiseReflexiva:** Crie um parágrafo que comece com 'Uma empresa com ${inputForAI.tempoEmpresa} de história decide agir agora porque...' e conecte com as respostas sobre 'aumento da concorrência' ou 'chegamos num platô' (${inputForAI.motivacaoMarketing}). O objetivo é reforçar a criticidade do momento.
+            - **resumoEmpatico:** Gere uma pergunta que valide o sentimento do cliente. Ex: "Você sente que o negócio tem potencial para chegar a ${inputForAI.metaFaturamento}, mas o gargalo em '${inputForAI.principalGargalo}' tem gerado uma frustração de '${inputForAI.sentimentoPessoal}'?"
+            - **analiseReflexiva:** Gere uma pergunta sobre o timing da decisão. Ex: "Uma empresa com ${inputForAI.tempoEmpresa} de história, que sempre cresceu com base em '${inputForAI.origemClientes}', decide agir agora. Isso acontece porque a concorrência se tornou mais forte ou porque o modelo atual simplesmente chegou ao seu limite?"
 
             ---
             **Slide 4: A Dor e Suas Consequências**
-            - **consequencia_1:** Gere um bullet point sobre o impacto operacional do gargalo, usando a resposta de '${inputForAI.impactoGargalo}'.
-            - **consequencia_2:** Gere um bullet point destacando a frustração de já ter tentado resolver isso sem sucesso ('${inputForAI.tentativasAnteriores}'), mostrando que o problema é a falta da estratégia correta.
-            - **consequencia_3:** Gere um bullet point mostrando como a inação fortalece a concorrência, que já está investindo em marketing.
+            - **consequencia_1:** Descreva o impacto operacional como um sintoma. Ex: "A agenda com buracos ('${inputForAI.impactoGargalo}') é o sintoma mais claro de que o motor de aquisição de clientes da sua empresa está desligado. Concorda?"
+            - **consequencia_2:** Questione a tentativa anterior. Ex: "A experiência passada com '${inputForAI.tentativasAnteriores}' não falhou por falta de esforço, mas por focar na ferramenta errada. O que adianta ter um carro bonito se falta gasolina?"
+            - **consequencia_3:** Provoque sobre a concorrência. Ex: "Enquanto discutimos, quantos clientes que buscavam uma solução como a sua acabaram de fechar com seu concorrente que anuncia online?"
 
             ---
             **Slide 5: A Visualização do Futuro**
-            - **cenario_6_meses:** Descreva a conquista da meta de faturamento de ${inputForAI.metaFaturamento}, a previsibilidade e a agenda cheia, baseado em '${inputForAI.visaoFuturo}'.
-            - **cenario_1_ano:** Projete os resultados para 1 ano. Use as respostas sobre 'o que faria com mais clientes' ('${inputForAI.potencialResolucao}') e o 'impacto pessoal' ('${inputForAI.visaoFuturoPessoal}') para descrever a transformação completa do negócio e da vida do gestor.
+            - **cenario_6_meses:** Descreva a visão de futuro como uma realidade próxima. Ex: "Imagine ter a agenda cheia com semanas de antecedência e a tranquilidade de saber que sua meta de ${inputForAI.metaFaturamento} não é mais um sonho, mas uma previsão. É esse o cenário que buscamos em 6 meses."
+            - **cenario_1_ano:** Projete a transformação completa. Ex: "E em 1 ano, com essa previsibilidade, você finalmente poderá '${inputForAI.potencialResolucao}'. Isso não muda apenas a empresa, mas traz a paz ('${inputForAI.visaoFuturoPessoal}') que você merece como gestor, certo?"
 
             ---
             **Slide 6: O Custo da Inação**
             - **custo_6_meses:** Calcule o custo da inação em 6 meses, multiplicando '${input.custoProblema || 0}' por 6. Formate como moeda BRL.
             - **custo_1_ano:** Calcule o custo da inação em 1 ano, multiplicando '${input.custoProblema || 0}' por 12. Formate como moeda BRL.
-            - **cenario_inercia:** Gere um parágrafo de alto impacto sobre o que acontecerá em 1 ano se nada for feito, focando na estagnação do faturamento, domínio da concorrência e aumento da frustração do gestor.
+            - **cenario_inercia:** Crie uma pergunta sobre o futuro da inércia. Ex: "Se nada for feito, onde a sua empresa estará em 1 ano? Com o mesmo faturamento, vendo a concorrência crescer e com sua frustração ainda maior? É esse o futuro que você aceita?"
 
             ---
             **Slide 7: A Estratégia**
-            - **pilarAquisicao:** Gere um texto para o pilar 'Aquisição' que o conecte diretamente ao '${inputForAI.principalGargalo}'.
-            - **pilarConversao:** Gere um texto para o pilar 'Conversão' que use a resposta sobre 'leads desqualificados' e a falha do '${inputForAI.tentativasAnteriores}'.
-            - **pilarAutoridade:** Gere um texto para o pilar 'Autoridade' que conecte com o fato de que a maioria dos clientes vem de '${inputForAI.origemClientes}', mostrando como vamos escalar essa confiança.
+            - **pilarAquisicao:** Conecte o pilar ao gargalo. Ex: "Para resolver seu principal gargalo ('${inputForAI.principalGargalo}'), nosso pilar de Aquisição foca em criar um sistema que atrai clientes qualificados de forma consistente."
+            - **pilarConversao:** Conecte o pilar à falha anterior. Ex: "Para evitar o problema de '${inputForAI.tentativasAnteriores}', nosso pilar de Conversão qualifica os leads para que seu time comercial converse apenas com quem tem real potencial de compra."
+            - **pilarAutoridade:** Conecte o pilar à força atual. Ex: "Seu negócio já é validado por '${inputForAI.origemClientes}'. Nosso pilar de Autoridade irá amplificar essa confiança, transformando sua marca na referência número 1 do seu mercado."
 
             ---
             **Slide 9: Métricas de Sucesso**
@@ -112,10 +112,10 @@ const presentationGeneratorFlow = ai.defineFlow(
 
             ---
             **Slide 10: O Investimento**
-            - **ancoragemPreco:** Gere um parágrafo que compare o 'Custo da Inação' (${inputForAI.custoProblema} por mês) com o valor do investimento, posicionando a proposta como uma decisão inteligente.
-            - **ganchoDecisao:** Gere um parágrafo final que contraste a 'Visão de Futuro' com o 'Cenário da Inércia' e termine com a pergunta: 'Qual desses dois futuros você escolherá construir a partir de hoje?'.
-            - **gatilhoEscassez:** Crie uma frase de urgência sobre o número limitado de vagas para novos clientes este mês. Ex: 'Para garantir a dedicação que você viu, só abrimos 3 novas vagas este mês.'.
-            - **gatilhoBonus:** Crie uma frase sobre o bônus de um episódio de podcast para fechamento na semana. Ex: 'Fechando nesta semana, você garante a produção de um episódio de podcast em nosso estúdio para lançar sua nova fase de autoridade.'.
+            - **ancoragemPreco:** Gere uma pergunta de ancoragem. Ex: "Manter o problema atual custa à sua empresa ${inputForAI.custoProblema} por mês. Nosso plano é um investimento para transformar esse custo em lucro. Faz sentido?"
+            - **ganchoDecisao:** Gere a pergunta final de decisão. Ex: "Existem dois futuros à sua frente: o da tranquilidade e crescimento, ou o da estagnação. Qual deles você começa a construir hoje?"
+            - **gatilhoEscassez:** Crie uma frase de urgência sobre o número limitado de vagas. Ex: "Para garantir a dedicação que você merece, só temos mais 2 vagas para novos clientes este mês."
+            - **gatilhoBonus:** Crie uma frase sobre o bônus de fechamento rápido. Ex: "Além disso, fechando nesta semana, garantimos a produção de um episódio de podcast para lançar sua nova fase de autoridade."
         `,
     });
     
@@ -128,3 +128,5 @@ const presentationGeneratorFlow = ai.defineFlow(
     return llmResponse.output!;
   }
 );
+
+    
