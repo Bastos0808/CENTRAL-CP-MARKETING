@@ -38,20 +38,46 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
   const slides = [
        {
+          id: 'cp-intro',
           title: `<h2>Por que a CP Marketing?</h2>`,
           content: `<div class="presentation-gallery-layout">
                       <div class="video-container">
                           <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" autoplay loop muted playsinline></video>
                       </div>
                       <div class="features-list">
-                          <div class="feature-item"><i class="fas fa-building"></i><div><h4>Estrutura Física</h4><p>Mais que um escritório, um centro de produção de resultados para sua marca.</p></div></div>
-                          <div class="feature-item"><i class="fas fa-video"></i><div><h4>Estúdios Próprios</h4><p>Agilidade e qualidade de cinema para seu conteúdo, sem depender de terceiros.</p></div></div>
-                          <div class="feature-item"><i class="fas fa-users"></i><div><h4>Time Presencial</h4><p>Especialistas em estratégia, tráfego e conteúdo colaborando em tempo real no seu projeto.</p></div></div>
-                          <div class="feature-item"><i class="fas fa-lightbulb"></i><div><h4>Metodologia</h4><p>O CP MÖDUS: nosso sistema validado para transformar potencial de negócio em performance de mercado.</p></div></div>
+                          <div class="feature-item">
+                            <i class="fas fa-building"></i>
+                            <div>
+                                <h4>Estrutura Física</h4>
+                                <p>Mais que um escritório, um centro de produção de resultados para sua marca.</p>
+                            </div>
+                          </div>
+                          <div class="feature-item">
+                            <i class="fas fa-video"></i>
+                            <div>
+                                <h4>Estúdios Próprios</h4>
+                                <p>Agilidade e qualidade de cinema para seu conteúdo, sem depender de terceiros.</p>
+                            </div>
+                          </div>
+                           <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <h4>Time Presencial</h4>
+                                <p>Especialistas em estratégia, tráfego e conteúdo colaborando em tempo real no seu projeto.</p>
+                            </div>
+                          </div>
+                          <div class="feature-item">
+                            <i class="fas fa-lightbulb"></i>
+                            <div>
+                                <h4>Metodologia</h4>
+                                <p>O CP MÖDUS: nosso sistema validado para transformar potencial de negócio em performance de mercado.</p>
+                            </div>
+                          </div>
                       </div>
                     </div>`
       },
       {
+          id: 'diagnosis',
           title: `<h2>${escapeHtml(diagnosticSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
@@ -64,6 +90,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             </div>`
       },
       {
+          id: 'pain',
           title: `<h2>${escapeHtml(painSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
@@ -74,6 +101,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             </div>`
       },
       {
+          id: 'future',
           title: `<h2>${escapeHtml(futureSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
@@ -85,22 +113,66 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             </div>`
       },
       {
+          id: 'inaction-cost',
           title: `<h2>${escapeHtml(inactionCostSlide.title)}</h2>`,
-          content: `<div class="content-center-wrapper"><div class="card-grid"><div class="card cost-card"><h3>Custo em 6 Meses</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_6_meses)}</span></div><div class="card cost-card"><h3>Custo em 1 Ano</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_1_ano)}</span></div></div><br><p class="question" style="text-align: center;">${escapeHtml(inactionCostSlide.cenario_inercia)}</p></div>`
+          content: `<div class="content-center-wrapper">
+                      <div class="card-grid">
+                          <div class="card cost-card">
+                              <h3>Custo em 6 Meses</h3>
+                              <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_6_meses)}</span>
+                              <div class="animated-bar-container"><div class="animated-bar loss-bar"></div></div>
+                          </div>
+                          <div class="card cost-card">
+                              <h3>Custo em 1 Ano</h3>
+                              <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_1_ano)}</span>
+                              <div class="animated-bar-container"><div class="animated-bar loss-bar double"></div></div>
+                          </div>
+                      </div>
+                      <br>
+                      <p class="question" style="text-align: center;">${escapeHtml(inactionCostSlide.cenario_inercia)}</p>
+                    </div>`
       },
       {
+          id: 'strategy',
           title: `<h2>${escapeHtml(strategySlide.title)}</h2>`,
           content: `<div class="content-center-wrapper"><div class="card-grid"><div class="card"><i class="fas fa-users"></i> <h4>Aquisição</h4> <p>${escapeHtml(strategySlide.content[0])}</p> </div><div class="card"><i class="fas fa-chart-line"></i> <h4>Conversão</h4> <p>${escapeHtml(strategySlide.content[1])}</p> </div><div class="card"><i class="fas fa-star"></i> <h4>Autoridade</h4> <p>${escapeHtml(strategySlide.content[2])}</p> </div></div></div>`
       },
       {
+          id: 'social-proof',
           title: `<h2>Resultados que Falam por Si</h2>`,
-          content: `<div class="content-center-wrapper"><p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p><div class="card-grid"><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+2')" data-ai-hint="fashion store"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+3')" data-ai-hint="corporate office"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div></div></div>`
+          content: `<div class="content-center-wrapper"><p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p>
+                      <div class="card-grid">
+                          <div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div>
+                          <div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+2')" data-ai-hint="fashion store"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div>
+                          <div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+3')" data-ai-hint="corporate office"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div>
+                      </div>
+                    </div>`
       },
       {
+          id: 'metrics',
           title: `<h2>Nosso Compromisso com seu Crescimento de ${escapeHtml(metricsSlide.crescimentoPercentual)}</h2>`,
-          content: `<div class="content-center-wrapper"><p>O sucesso será medido com dados claros. Nossas metas mensais:</p><div class="card-grid"><div class="card"><h3>Leads Qualificados</h3><span class="highlight">${escapeHtml(metricsSlide.metaLeadsQualificados)}</span></div><div class="card"><h3>Taxa de Conversão</h3><span class="highlight">${escapeHtml(metricsSlide.metaTaxaConversao)}</span></div></div></div>`
+          content: `<div class="content-center-wrapper">
+                      <p>O sucesso será medido com dados claros. Nossas metas mensais:</p>
+                      <div class="metrics-grid">
+                          <div class="metric-item">
+                              <div class="metric-label">
+                                  <h4>Leads Qualificados</h4>
+                                  <span>Meta: ${escapeHtml(metricsSlide.metaLeadsQualificados)}</span>
+                              </div>
+                              <div class="animated-bar-container horizontal"><div class="animated-bar gain-bar"></div></div>
+                          </div>
+                           <div class="metric-item">
+                              <div class="metric-label">
+                                  <h4>Taxa de Conversão</h4>
+                                  <span>Meta: ${escapeHtml(metricsSlide.metaTaxaConversao)}</span>
+                              </div>
+                              <div class="animated-bar-container horizontal"><div class="animated-bar gain-bar"></div></div>
+                          </div>
+                      </div>
+                    </div>`
       },
       {
+          id: 'investment',
           title: `<h2>${escapeHtml(investmentSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
@@ -151,6 +223,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             --highlight-color: #360FC5;
             --card-background: rgba(17, 17, 17, 0.85);
             --border-color: #222222;
+            --loss-color: #ef4444;
+            --gain-color: #22c55e;
         }
 
         body { 
@@ -298,6 +372,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .card h4 { font-size: 1.2rem; margin-bottom: 10px; text-align: center; }
         .card p {text-align: center;}
         .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
+        .highlight.loss { color: var(--loss-color); }
         .highlight-text { font-size: 1.2rem; font-weight: 700; color: var(--primary-color); }
         
         p.question {
@@ -361,6 +436,27 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .total-investment { text-align: center; }
         .final-price { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; color: var(--accent-color); }
         
+        /* Animated Graphs */
+        @keyframes grow-bar-vertical { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+        @keyframes grow-bar-horizontal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+        .animated-bar-container { background-color: var(--border-color); border-radius: 5px; overflow: hidden; }
+        .animated-bar { height: 100%; width: 100%; transform-origin: bottom; }
+        .slide-active .animated-bar { animation: grow-bar-vertical 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .card.cost-card { justify-content: flex-end; }
+        .animated-bar-container { width: 60px; height: 100px; margin-top: 15px; }
+        .loss-bar { background-color: var(--loss-color); }
+        .gain-bar { background-color: var(--gain-color); }
+        .animated-bar-container.horizontal { width: 100%; height: 20px; }
+        .animated-bar.horizontal { transform-origin: left; }
+        .slide-active .animated-bar.horizontal { animation-name: grow-bar-horizontal; }
+        
+        .metrics-grid { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+        .metric-item { background-color: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .metric-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .metric-label h4 { font-size: 1.1rem; margin: 0; text-align: left; }
+        .metric-label span { font-size: 0.9rem; color: var(--secondary-color); }
+
         @media (min-width: 768px) {
             .investment-layout { flex-direction: row; align-items: flex-start; }
             .packages-list { flex: 2; }
@@ -437,20 +533,30 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             { y: 60, z: 50 },  // Posição 6
             { y: 50, z: 55 },  // Posição 7
             { y: 40, z: 60 },   // Posição 8
-            { y: 30, z: 65 }    // Posição 9 (Novo slide)
+            { y: 30, z: 65 }    // Posição 9
         ];
 
         function updateSlideContent() {
             const container = document.querySelector('.sky-container-content');
-            const skyContainer = document.querySelector('.sky-container');
             
             TweenLite.to(container, 0.3, { opacity: 0, ease: Power2.easeOut, onComplete: () => {
+                // Clear previous slide's active class
+                if (container.firstChild) {
+                    container.firstChild.classList.remove('slide-active');
+                }
+
                 if (currentSlide < 0 || currentSlide >= slides.length) {
                     container.innerHTML = '';
                     return;
                 }
+
                 const slide = slides[currentSlide];
-                container.innerHTML = slide.title + slide.content;
+                const slideWrapper = document.createElement('div');
+                slideWrapper.classList.add('slide-content-wrapper');
+                slideWrapper.setAttribute('data-slide-id', slide.id);
+                slideWrapper.innerHTML = slide.title + slide.content;
+                container.innerHTML = '';
+                container.appendChild(slideWrapper);
                 
                 document.getElementById('prev-button').disabled = currentSlide === 0;
                 document.getElementById('next-button').disabled = currentSlide === slides.length - 1;
@@ -460,6 +566,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                   contentWrapper.scrollTop = 0;
                 }
                 
+                // Add active class to trigger animations
+                requestAnimationFrame(() => {
+                    slideWrapper.classList.add('slide-active');
+                });
 
                 TweenLite.to(container, 0.5, { opacity: 1, ease: Power2.easeIn });
             }});
