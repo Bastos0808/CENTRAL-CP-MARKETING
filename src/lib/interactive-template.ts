@@ -196,7 +196,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .sky-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1024px;
             height: 90vh;
             padding: 40px;
             background-color: var(--card-background);
@@ -578,4 +578,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 </body>
 </html>
 `;
-  
+}
+
+    
