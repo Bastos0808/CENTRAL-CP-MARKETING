@@ -76,40 +76,41 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             text-rendering: optimizeLegibility;
-            background-image: radial-gradient(circle at 25% 30%, rgba(3, 8, 96, 0.15) 0%, transparent 40%),
-                              radial-gradient(circle at 75% 80%, rgba(254, 84, 18, 0.1) 0%, transparent 50%);
+            background-image: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(3, 8, 96, 0.15), var(--color-bg) 80%),
+                              radial-gradient(ellipse 50% 50% at 10% 100%, rgba(254, 84, 18, 0.1), var(--color-bg) 70%),
+                              radial-gradient(ellipse 50% 50% at 90% 90%, rgba(254, 84, 18, 0.05), var(--color-bg) 70%);
             min-height: 100vh;
             width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .container {
+        .presentation-container {
             width: 100%;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 2rem;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
         }
         .scene {
-            min-height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 6rem 2rem;
-            border-bottom: 1px solid var(--color-border);
+            padding: 4rem 2rem;
             text-align: center;
             opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 1s forwards;
-            animation-timeline: view();
-            animation-range: entry;
+            visibility: hidden;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
         }
-        .scene:last-of-type {
-            border-bottom: none;
-        }
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .scene.active {
+            opacity: 1;
+            visibility: visible;
         }
         h1, h2, h3 {
             font-weight: 900;
@@ -168,11 +169,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
         .grid {
             display: grid;
             gap: 1.5rem;
             width: 100%;
+            max-width: 1100px;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             place-items: center;
         }
@@ -211,25 +214,49 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             align-items: center;
             text-align: center;
             gap: 0.5rem;
+            min-height: 250px; /* Ensure cards have a minimum height */
         }
         .highlight {
             color: var(--color-accent);
             font-weight: 700;
         }
         .logo { max-width: 150px; margin-bottom: 2rem; }
-        .footer {
-            text-align: center;
-            padding: 2rem;
-            font-size: 0.9rem;
-            color: #808080;
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 100;
+        }
+        .nav-button {
+            background-color: var(--color-surface);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .nav-button:hover {
+            background-color: var(--color-accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
-    <main class="container">
+    <main class="presentation-container">
         <!-- Scene 1: Capa -->
-        <section class="scene">
+        <section class="scene active">
             <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755524633/Prancheta_6_ajhh0n.png" alt="CP Marketing Digital Logo" class="logo">
             <p style="font-weight:600; color: white;">PLANO DE CRESCIMENTO PARA</p>
             <h1>${escapeHtml(clientName)}</h1>
@@ -370,9 +397,55 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         </section>
 
     </main>
-    <footer class="footer">
-        <p>&copy; ${new Date().getFullYear()} CP Marketing Digital. Todos os direitos reservados.</p>
-    </footer>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn">Anterior</button>
+        <button class="nav-button" id="nextBtn">Avançar</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const scenes = document.querySelectorAll('.scene');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            let currentSceneIndex = 0;
+
+            function showScene(index) {
+                scenes.forEach((scene, i) => {
+                    scene.classList.toggle('active', i === index);
+                });
+                prevBtn.disabled = index === 0;
+                nextBtn.disabled = index === scenes.length - 1;
+            }
+
+            function nextScene() {
+                if (currentSceneIndex < scenes.length - 1) {
+                    currentSceneIndex++;
+                    showScene(currentSceneIndex);
+                }
+            }
+
+            function prevScene() {
+                if (currentSceneIndex > 0) {
+                    currentSceneIndex--;
+                    showScene(currentSceneIndex);
+                }
+            }
+
+            prevBtn.addEventListener('click', prevScene);
+            nextBtn.addEventListener('click', nextScene);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    nextScene();
+                } else if (e.key === 'ArrowLeft') {
+                    prevScene();
+                }
+            });
+
+            showScene(currentSceneIndex);
+        });
+    </script>
 
 </body>
 </html>
