@@ -1,231 +1,525 @@
 
 "use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Zap, Target, BarChart, Trophy, Calendar, Sparkles } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { useEffect } from 'react';
+import Script from 'next/script';
 import { BackButton } from '@/components/ui/back-button';
-
-interface Scene {
-  title: string;
-  subtitle?: string;
-  icon: React.ElementType;
-  content?: {
-    title: string;
-    description: string;
-  }[];
-}
-
-const placeholderData = {
-    presentationTitle: "Plano de Crescimento para [Cliente]",
-    diagnosticSlide: {
-        title: "Onde estamos e para onde vamos?",
-        question: "Pergunta de reflexão sobre o gargalo...",
-        content: [
-            "**Meta:** Acelerar de R$50k para R$120k em 6 meses.",
-            "**Gargalo:** O obstáculo principal é a geração de leads qualificados.",
-            "**Custo da Inação:** Manter esse gargalo representa um custo de oportunidade de R$20k/mês."
-        ],
-    },
-    actionPlanSlide: {
-        title: "Como vamos virar o jogo?",
-        content: [
-            "Como vamos atrair um fluxo constante de leads qualificados. **Insight:** 85% dos compradores B2B usam conteúdo online para tomar decisões.",
-            "Como vamos transformar curiosos em clientes pagantes. **Insight:** Empresas que nutrem leads geram 50% mais vendas a um custo 33% menor.",
-            "Como vamos posicionar sua marca como líder no setor. **Insight:** Marcas consistentes têm uma receita 23% maior, em média."
-        ]
-    },
-    timelineSlide: {
-        title: "Qual o cronograma de execução?",
-        content: [
-            "Alinhamento estratégico, configuração de ferramentas e planejamento de campanhas/conteúdo.",
-            "Lançamento de campanhas, produção de conteúdo e otimizações semanais baseadas em dados.",
-            "Reuniões mensais para análise de resultados, ROI e próximos passos."
-        ]
-    },
-    whyCpSlide: {
-        title: "Por que a CP é a escolha certa?",
-        content: [
-            "Projeto estratégico entregue em 10 dias com mentoria de apresentação, garantindo que a execução comece rápido.",
-            "Time presencial e estúdios próprios para produzir conteúdo de alta qualidade sem depender da sua agenda.",
-            "Nossa obsessão é o crescimento do seu faturamento e o ROI do seu investimento, não métricas de vaidade."
-        ]
-    }
-}
 
 
 export default function HtmlTestPage() {
-  const [scenes, setScenes] = useState<Scene[]>([]);
-  const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
 
-  useEffect(() => {
-    const generatedScenes: Scene[] = [
-        {
-            title: placeholderData.presentationTitle,
-            subtitle: `Uma proposta desenhada para o seu sucesso.`,
-            icon: Zap,
-        },
-        {
-            title: placeholderData.diagnosticSlide.title,
-            subtitle: placeholderData.diagnosticSlide.question,
-            icon: Target,
-            content: placeholderData.diagnosticSlide.content.map((item, index) => {
-                const titles = ["Meta Principal", "Gargalo Crítico", "Custo da Inação"];
-                return {
-                    title: titles[index] || `Ponto ${index + 1}`,
-                    description: item
+    useEffect(() => {
+        // Since we are loading scripts dynamically, we need to wait for them to be ready.
+        // We will check for the main libraries (THREE, TweenLite, $) before running the script.
+        const interval = setInterval(() => {
+            if (typeof window.THREE !== 'undefined' && typeof window.TweenLite !== 'undefined' && typeof window.$ !== 'undefined') {
+                clearInterval(interval);
+                
+                // The provided JavaScript code starts here, adapted for the browser environment
+                "use strict";
+
+                let camera, scene, renderer;
+                let plane;
+                let raycaster = new window.THREE.Raycaster();
+                let normalizedMouse = {
+                    x: 0,
+                    y: -180
+                };
+
+                let darkBlue = {
+                    r: 0,
+                    g: 52,
+                    b: 74
+                };
+
+                let baseColorRGB = darkBlue;
+                let baseColor = "rgb(" + baseColorRGB.r + "," + baseColorRGB.g + "," + baseColorRGB.b + ")";
+                let nearStars, farStars, farthestStars;
+
+                function init() {
+                    scene = new window.THREE.Scene();
+                    camera = new window.THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+                    renderer = new window.THREE.WebGLRenderer();
+
+                    camera.position.z = 50;
+                    
+                    renderer.setClearColor( "#121212", 1.0);
+                    renderer.setSize( window.innerWidth, window.innerHeight );
+                    renderer.setPixelRatio( window.devicePixelRatio );
+
+                    // Ensure we don't add the renderer more than once
+                    if (!document.querySelector('canvas')) {
+                        document.body.appendChild( renderer.domElement );
+                    }
+
+                    // Lights
+                    let topLight = new window.THREE.DirectionalLight(0xffffff, 1);
+                    topLight.position.set(0,1,1).normalize();
+                    scene.add(topLight);
+
+                    let bottomLight = new window.THREE.DirectionalLight(0xffffff, 0.4);
+                    bottomLight.position.set(1,-1,1).normalize();
+                    scene.add(bottomLight);
+
+                    let skyLightRight = new window.THREE.DirectionalLight(0x666666, 0.2);
+                    skyLightRight.position.set(-1,-1,0.2).normalize();
+                    scene.add(skyLightRight);
+
+                    let skyLightCenter = new window.THREE.DirectionalLight(0x666666, 0.2);
+                    skyLightCenter.position.set(-0,-1,0.2).normalize();
+                    scene.add(skyLightCenter);
+
+                    let skyLightLeft = new window.THREE.DirectionalLight(0x666666, 0.2);
+                    skyLightLeft.position.set(1,-1,0.2).normalize();
+                    scene.add(skyLightLeft);
+
+                    // Mesh creation
+                    let geometry = new window.THREE.PlaneGeometry(400, 400, 70, 70);
+                    let darkBlueMaterial = new window.THREE.MeshPhongMaterial( { color: 0xffffff, side: window.THREE.DoubleSide, vertexColors: window.THREE.FaceColors} );
+
+                    geometry.vertices.forEach(function(vertice) {
+                        vertice.x += (Math.random() - 0.5) * 4;
+                        vertice.y += (Math.random() - 0.5) * 4;
+                        vertice.z += (Math.random() - 0.5) * 4;
+                        vertice.dx = Math.random() - 0.5;
+                        vertice.dy = Math.random() - 0.5;
+                        vertice.randomDelay = Math.random() * 5;
+                    });
+
+                    for ( var i = 0; i < geometry.faces.length; i ++ ) {
+                        geometry.faces[ i ].color.setStyle( baseColor );
+                        geometry.faces[ i ].baseColor =  baseColorRGB;    
+                    }
+
+                    plane = new window.THREE.Mesh( geometry, darkBlueMaterial );
+                    scene.add( plane );
+
+                    // Create stars 
+                    farthestStars = createStars(1200, 420, "#0952BD");
+                    farStars = createStars(1200, 370, "#A5BFF0");
+                    nearStars = createStars(1200, 290,"#118CD6");
+
+                    scene.add(farthestStars);
+                    scene.add(farStars);
+                    scene.add(nearStars);
+
+                    farStars.rotation.x = 0.25; 
+                    nearStars.rotation.x = 0.25; 
                 }
-            }),
-        },
-        {
-            title: placeholderData.actionPlanSlide.title,
-            subtitle: "Nossa estratégia é baseada em 3 pilares fundamentais.",
-            icon: BarChart,
-            content: placeholderData.actionPlanSlide.content.map((item, index) => {
-                const titles = ["Pilar 1: Aquisição", "Pilar 2: Conversão", "Pilar 3: Autoridade"];
-                return {
-                    title: titles[index] || `Pilar ${index + 1}`,
-                    description: item
+
+                function createStars(amount, yDistance, color = "0x000000") {
+                    let starGeometry = new window.THREE.Geometry();
+                    let starMaterial = new window.THREE.PointsMaterial({color: color, opacity: Math.random()});
+
+                    for (let i = 0; i < amount; i++) {
+                        let vertex = new window.THREE.Vector3();
+                        vertex.z = (Math.random() - 0.5) * 1500;
+                        vertex.y = yDistance;
+                        vertex.x = (Math.random() - 0.5) * 1500;
+                        starGeometry.vertices.push(vertex);
+                    }	
+                    return new window.THREE.Points(starGeometry, starMaterial);
                 }
-            }),
-        },
-            {
-            title: placeholderData.timelineSlide.title,
-            subtitle: "Um cronograma claro para resultados rápidos.",
-            icon: Calendar,
-            content: placeholderData.timelineSlide.content.map((item, index) => {
-                const titles = ["Semanas 1-2 (Setup e Imersão)", "Semanas 3-12 (Execução e Otimização)", "Revisões Estratégicas"];
-                return {
-                    title: titles[index] || `Fase ${index + 1}`,
-                    description: item
+
+                let timer = 0;
+
+                function render() {
+                    requestAnimationFrame( render );
+                    timer += 0.01;
+                    let vertices = plane.geometry.vertices;
+
+                    for (let i = 0; i < vertices.length; i++) {
+                        vertices[i].x -= (Math.sin(timer + vertices[i].randomDelay) / 40) * vertices[i].dx;
+                        vertices[i].y += (Math.sin(timer + vertices[i].randomDelay) / 40) * vertices[i].dy;
+                    }
+
+                    raycaster.setFromCamera(normalizedMouse, camera);
+                    let intersects = raycaster.intersectObjects([plane]);
+
+                    if (intersects.length > 0) {
+                        let faceBaseColor = intersects[0].face.baseColor;
+                        plane.geometry.faces.forEach(function(face) {
+                            face.color.r *= 255;
+                            face.color.g *= 255;
+                            face.color.b *= 255;
+
+                            face.color.r += (faceBaseColor.r - face.color.r) * 0.01;
+                            face.color.g += (faceBaseColor.g - face.color.g) * 0.01;
+                            face.color.b += (faceBaseColor.b - face.color.b) * 0.01;
+
+                            let rInt = Math.floor(face.color.r);
+                            let gInt = Math.floor(face.color.g);
+                            let bInt = Math.floor(face.color.b);
+
+                            let newBasecol = "rgb(" + rInt + "," + gInt + "," + bInt + ")";
+                            face.color.setStyle(newBasecol);
+                        });
+                        plane.geometry.colorsNeedUpdate = true;
+                        intersects[0].face.color.setStyle("#006ea0");
+                        plane.geometry.colorsNeedUpdate = true;
+                    }
+
+                    plane.geometry.verticesNeedUpdate = true;
+                    plane.geometry.elementsNeedUpdate = true;
+
+                    farthestStars.rotation.y -= 0.00001;
+                    farStars.rotation.y -= 0.00005;
+                    nearStars.rotation.y -= 0.00011;
+
+                    renderer.render(scene, camera);
                 }
-            }),
-        },
-            {
-            title: placeholderData.whyCpSlide.title,
-            subtitle: "Nossos diferenciais a serviço do seu crescimento.",
-            icon: Trophy,
-            content: placeholderData.whyCpSlide.content.map((item, index) => {
-                const titles = ["Mentoria e Agilidade", "Produção Própria", "Foco em Business Performance"];
-                return {
-                    title: titles[index] || `Diferencial ${index + 1}`,
-                    description: item
+
+                init();
+                
+                const handleResize = () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize( window.innerWidth, window.innerHeight );
                 }
-            }),
-        },
-    ];
-    setScenes(generatedScenes);
-  }, []);
+                window.addEventListener("resize", handleResize);
 
-  const goToNextScene = () => {
-    if (currentSceneIndex < scenes.length - 1) {
-      setCurrentSceneIndex(currentSceneIndex + 1);
-    }
-  };
+                const handleMouseMove = (event) => {
+                    normalizedMouse.x = (event.clientX / window.innerWidth) * 2 - 1;	
+                    normalizedMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;	
+                }
+                window.addEventListener("mousemove", handleMouseMove);
 
-  const goToPreviousScene = () => {
-      if (currentSceneIndex > 0) {
-          setCurrentSceneIndex(currentSceneIndex - 1);
-      }
-  }
-  
-  const currentScene = scenes[currentSceneIndex];
+                let introContainer = window.$('.intro-container');
+                let skyContainer = window.$('.sky-container');
+                let xMark = window.$('.x-mark');
+                
+                window.$('.shift-camera-button').click(function() {
+                    let introTimeline = new window.TimelineMax();
+                    introTimeline.add([
+                        window.TweenLite.fromTo(introContainer, 0.5, {opacity: 1}, {opacity: 0, ease: window.Power3.easeIn}),
+                        window.TweenLite.to(camera.rotation, 3, {x: Math.PI / 2, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(camera.position, 2.5, {z: 20, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(camera.position, 3, {y: 120, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(plane.scale, 3, {x: 2, ease: window.Power3.easeInOut}),
+                    ]);
+                    introTimeline.add([
+                        window.TweenLite.to(xMark, 2, {opacity: 1, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(skyContainer, 2, {opacity: 1, ease: window.Power3.easeInOut})
+                    ]);
+                });
 
-  if (scenes.length === 0) {
-    return <div>Carregando...</div>
-  }
+                window.$('.x-mark').click(function() {
+                    let outroTimeline = new window.TimelineMax();
+                    outroTimeline.add([
+                        window.TweenLite.to(xMark, 0.5, {opacity: 0, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(skyContainer, 0.5, {opacity: 0, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(camera.rotation, 3, {x: 0, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(camera.position, 3, {z: 50, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(camera.position, 2.5, {y: 0, ease: window.Power3.easeInOut}),
+                        window.TweenLite.to(plane.scale, 3, {x: 1, ease: window.Power3.easeInOut}),
+                    ]);
+                    outroTimeline.add([
+                        window.TweenLite.to(introContainer, 0.5, {opacity: 1, ease: window.Power3.easeIn}),
+                    ]);
+                });
+                render();
 
-  return (
-    <>
-      <style jsx global>{`
-        body {
-          overflow: hidden;
-        }
-        .scene-bg {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-image: 
-            radial-gradient(ellipse 80% 80% at 50% -20%, rgba(255, 107, 0, 0.15), transparent),
-            radial-gradient(ellipse 50% 50% at 10% 100%, rgba(255, 107, 0, 0.1), transparent),
-            radial-gradient(ellipse 50% 50% at 90% 90%, rgba(255, 107, 0, 0.1), transparent);
-          background-color: #0D0D0D;
-          transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .scene-content {
-          opacity: 0;
-          transform: translateY(20px);
-          animation: fadeIn 0.8s 0.3s forwards cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        @keyframes fadeIn {
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .content-card {
-            background: rgba(23, 23, 23, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        .content-card:hover {
-             border-color: rgba(255, 107, 0, 0.5);
-        }
-      `}</style>
+                // Cleanup function
+                return () => {
+                    window.removeEventListener('resize', handleResize);
+                    window.removeEventListener('mousemove', handleMouseMove);
+                    if (renderer.domElement.parentElement) {
+                        renderer.domElement.parentElement.removeChild(renderer.domElement);
+                    }
+                };
+            }
+        }, 100);
 
-      <div
-        className="scene-bg"
-        style={{
-          transform: `scale(${1 + currentSceneIndex * 0.1}) translate(${currentSceneIndex * -5}%, ${currentSceneIndex * -2}%)`,
-        }}
-      />
-      
-      <main className="relative z-10 flex min-h-screen flex-col items-center justify-center p-4 text-center">
-        <div className="absolute top-4 left-4">
-            <BackButton />
-        </div>
-        
-        <div className="scene-content w-full max-w-4xl">
-            <div className="mb-8">
-                <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-6 border border-primary/20">
-                    <currentScene.icon className="h-10 w-10 text-primary" />
+    }, []);
+
+    return (
+        <>
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js" strategy="afterInteractive" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TweenLite.min.js" strategy="afterInteractive" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TimelineMax.min.js" strategy="afterInteractive" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/easing/EasePack.min.js" strategy="afterInteractive" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" strategy="afterInteractive" />
+
+            <style jsx global>{`
+                body {
+                    position: relative;
+                    margin: 0;
+                    overflow: hidden;
+                    background-color: #121212;
+                }
+                .intro-container {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    color: white;
+                    text-align: center;
+                    width: 90%;
+                    z-index: 10;
+                }
+                h1 {
+                    font-family: 'brandon-grotesque', sans-serif;
+                    font-weight: bold;
+                    margin-top: 0px;
+                    margin-bottom: 0;
+                    font-size: 20px;
+                }
+                @media screen and (min-width: 860px) {
+                    h1 {
+                        font-size: 40px;
+                        line-height: 52px;
+                    }
+                }
+                .fancy-text {
+                    font-family: 'adobe-garamond-pro', sans-serif;
+                    font-style: italic;
+                    letter-spacing: 1px;
+                    margin-bottom: 17px;
+                }
+                .button {
+                    position: relative;
+                    cursor: pointer;
+                    display: inline-block;
+                    font-family: 'brandon-grotesque', sans-serif;
+                    text-transform: uppercase;
+                    min-width: 200px;
+                    margin-top: 30px;
+                }
+                .button:hover .border {
+                    box-shadow: 0px 0px 10px 0px rgba(255, 255, 255, 1);
+                }
+                .button:hover .border .left-plane,
+                .button:hover .border .right-plane {
+                    transform: translateX(0%);
+                }
+                .button:hover .text {
+                    color: #121212;
+                }
+                .button .border {
+                    border: 1px solid white;
+                    transform: skewX(-20deg);
+                    height: 32px;
+                    border-radius: 3px;
+                    overflow: hidden;
+                    position: relative;
+                    transition: 0.1s ease-out;
+                }
+                .button .border .left-plane,
+                .button .border .right-plane {
+                    position: absolute;
+                    background: white;
+                    height: 32px;
+                    width: 100px;
+                    transition: 0.15s ease-out;
+                }
+                .button .border .left-plane {
+                    left: 0;
+                    transform: translateX(-100%);
+                }
+                .button .border .right-plane {
+                    right: 0;
+                    transform: translateX(100%);
+                }
+                .button .text {
+                    position: absolute;
+                    left: 0;
+                    right: 0;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    transition: 0.15s ease-out;
+                }
+                .x-mark {
+                    right: 10px;
+                    top: 10px;
+                    position: absolute;
+                    cursor: pointer;
+                    opacity: 0;
+                    z-index: 10;
+                }
+                .x-mark:hover .right {
+                    transform: rotate(-45deg) scaleY(1.2);
+                }
+                .x-mark:hover .left {
+                    transform: rotate(45deg) scaleY(1.2);
+                }
+                .x-mark .container {
+                    position: relative;
+                    width: 20px;
+                    height: 20px;
+                }
+                .x-mark .left,
+                .x-mark .right {
+                    width: 2px;
+                    height: 20px;
+                    background: white;
+                    position: absolute;
+                    border-radius: 3px;
+                    transition: 0.15s ease-out;
+                    margin: 0 auto;
+                    left: 0;
+                    right: 0;
+                }
+                .x-mark .right {
+                    transform: rotate(-45deg);
+                }
+                .x-mark .left {
+                    transform: rotate(45deg);
+                }
+                .sky-container {
+                    position: absolute;
+                    color: white;
+                    text-transform: uppercase;
+                    margin: 0 auto;
+                    right: 0;
+                    left: 0;
+                    top: 2%;
+                    text-align: center;
+                    opacity: 0;
+                    z-index: 10;
+                }
+                @media screen and (min-width: 860px) {
+                    .sky-container {
+                        top: 18%;
+                        right: 12%;
+                        left: auto;
+                    }
+                }
+                .sky-container__left,
+                .sky-container__right {
+                    display: inline-block;
+                    vertical-align: top;
+                    font-weight: bold;
+                }
+                .sky-container__left h2,
+                .sky-container__right h2 {
+                    font-family: 'brandon-grotesque', sans-serif;
+                    font-size: 26px;
+                    line-height: 26px;
+                    margin: 0;
+                }
+                @media screen and (min-width: 860px) {
+                    .sky-container__left h2,
+                    .sky-container__right h2 {
+                        font-size: 72px;
+                        line-height: 68px;
+                    }
+                }
+                .sky-container__left {
+                    margin-right: 5px;
+                }
+                .thirty-one {
+                    letter-spacing: 4px;
+                }
+                .text-right {
+                    text-align: right;
+                }
+                .text-left {
+                    text-align: left;
+                }
+                .social-icon {
+                    z-index: 10;
+                }
+                .twitter {
+                    opacity: 0; /* Hidden for now */
+                }
+                .twitter:hover a {
+                    transform: rotate(-45deg) scale(1.05);
+                }
+                .twitter:hover i {
+                    color: #00aced;
+                }
+                .twitter a {
+                    bottom: -40px;
+                    right: -75px;
+                    transform: rotate(-45deg);
+                }
+                .twitter i {
+                    bottom: 7px;
+                    right: 7px;
+                    color: #00aced;
+                }
+                .social-icon a {
+                    position: absolute;
+                    background: white;
+                    color: white;
+                    box-shadow: -1px -1px 20px 0px rgba(0, 0, 0, 0.3);
+                    display: inline-block;
+                    width: 150px;
+                    height: 80px;
+                    transform-origin: 50% 50%;
+                    transition: 0.15s ease-out;
+                }
+                .social-icon i {
+                    position: absolute;
+                    pointer-events: none;
+                    z-index: 1000;
+                    transition: 0.15s ease-out;
+                }
+                .youtube {
+                     opacity: 0; /* Hidden for now */
+                }
+                .youtube:hover a {
+                    transform: rotate(45deg) scale(1.05);
+                }
+                .youtube:hover i {
+                    color: #e62117;
+                }
+                .youtube a {
+                    bottom: -40px;
+                    left: -75px;
+                    transform: rotate(45deg);
+                }
+                .youtube i {
+                    bottom: 7px;
+                    left: 7px;
+                    color: #e62117;
+                }
+                canvas {
+                  position: fixed;
+                  top: 0;
+                  left: 0;
+                  z-index: 1;
+                }
+            `}</style>
+            <div className="x-mark">
+                <div className="container">
+                    <div className="left"></div>
+                    <div className="right"></div>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground" dangerouslySetInnerHTML={{ __html: currentScene.title }} />
-                {currentScene.subtitle && <p className="mt-4 text-lg text-muted-foreground">{currentScene.subtitle}</p>}
             </div>
+            <div className="intro-container">
+                <h2 className="fancy-text">CP Marketing Digital</h2>
+                <h1>UMA AGÊNCIA COM UM DESEJO <br/> INCANSÁVEL PELO DESCONHECIDO E NÃO CONTADO</h1>
 
-            {currentScene.content && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-                {currentScene.content.map((item, index) => (
-                  <div key={index} className="content-card p-6 rounded-lg">
-                    <h3 className="font-semibold text-primary mb-2">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: item.description }}/>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="mt-12 flex justify-center items-center gap-4">
-                 <Button size="lg" onClick={goToPreviousScene} variant="outline" disabled={currentSceneIndex === 0}>
-                    <ArrowLeft className="mr-2 h-5 w-5" /> Anterior
-                </Button>
-                {currentSceneIndex < scenes.length - 1 ? (
-                    <Button size="lg" onClick={goToNextScene}>
-                        Avançar <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                ) : (
-                    <Button size="lg" onClick={() => alert("Fim da apresentação!")}>
-                       Finalizar <Sparkles className="ml-2 h-5 w-5" />
-                    </Button>
-                )}
+                <div className="button shift-camera-button">
+                    <div className="border">
+                        <div className="left-plane"></div>
+                        <div className="right-plane"></div>
+                    </div>	
+                    <div className="text">Começar</div>
+                </div>
             </div>
-        </div>
-      </main>
-    </>
-  );
+            <div className="sky-container">
+                <div className="text-right sky-container__left">
+                    <h2 className="portfolio">
+                        PORTFOLIO
+                    </h2>
+                    <h2 className="resurrection">
+                        resurrection	
+                    </h2>
+                </div>
+                <div className="text-left sky-container__right">
+                    <h2 className="08">
+                        08
+                    </h2>
+                    <h2 className="thirty-one">
+                        31
+                    </h2>
+                    <h2 className="2016">
+                        2024
+                    </h2>
+                </div>
+            </div>
+        </>
+    );
 }
