@@ -40,10 +40,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>Por que a CP Marketing?</h2><p>Somos mais que uma agência. Somos seu parceiro estratégico de crescimento, com estrutura para entregar resultados reais.</p>`,
           content: `<div class="presentation-gallery-layout">
                       <div class="features-list">
-                          <div class="feature-item"><i class="fas fa-building"></i><div><h4>Estrutura Física</h4><p>Recursos para atender sua demanda com excelência.</p></div></div>
-                          <div class="feature-item"><i class="fas fa-video"></i><div><h4>Estúdios Próprios</h4><p>Produção de conteúdo ágil e de alta qualidade.</p></div></div>
-                          <div class="feature-item"><i class="fas fa-users"></i><div><h4>Time Presencial</h4><p>Colaboração e sinergia de uma equipe dedicada.</p></div></div>
-                          <div class="feature-item"><i class="fas fa-lightbulb"></i><div><h4>Metodologia</h4><p>Processos validados para gerar resultados mensuráveis.</p></div></div>
+                          <div class="feature-item"><i class="fas fa-building"></i><div><h4>Estrutura Física</h4><p>Mais que um escritório, um centro de produção de resultados para sua marca.</p></div></div>
+                          <div class="feature-item"><i class="fas fa-video"></i><div><h4>Estúdios Próprios</h4><p>Agilidade e qualidade de cinema para seu conteúdo, sem depender de terceiros.</p></div></div>
+                          <div class="feature-item"><i class="fas fa-users"></i><div><h4>Time Presencial</h4><p>Especialistas em estratégia, tráfego e conteúdo colaborando em tempo real no seu projeto.</p></div></div>
+                          <div class="feature-item"><i class="fas fa-lightbulb"></i><div><h4>Metodologia</h4><p>O CP MÖDUS: nosso sistema validado para transformar potencial de negócio em performance de mercado.</p></div></div>
                       </div>
                       <div class="video-container">
                           <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" autoplay loop muted playsinline></video>
