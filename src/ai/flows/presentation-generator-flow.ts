@@ -48,7 +48,7 @@ const presentationGeneratorFlow = ai.defineFlow(
         custoProblema: input.custoProblema?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'N/A',
     };
 
-    const llmResponse = await ai.generate({
+    const { output } = await ai.generate({
         model: googleAI.model('gemini-1.5-pro-latest'),
         output: { schema: GeneratePresentationOutputSchema },
         prompt: `
@@ -83,9 +83,9 @@ const presentationGeneratorFlow = ai.defineFlow(
 
             ---
             **Slide 4: A Dor e Suas Consequências**
-            - **consequencia_1:** Descreva o impacto operacional como um sintoma. Ex: "A agenda com buracos ('${inputForAI.impactoGargalo}') é o sintoma mais claro de que o motor de aquisição de clientes da sua empresa está desligado. Concorda?"
-            - **consequencia_2:** Questione a tentativa anterior. Ex: "A experiência passada com '${inputForAI.tentativasAnteriores}' não falhou por falta de esforço, mas por focar na ferramenta errada. O que adianta ter um carro bonito se falta gasolina?"
-            - **consequencia_3:** Provoque sobre a concorrência. Ex: "Enquanto discutimos, quantos clientes que buscavam uma solução como a sua acabaram de fechar com seu concorrente que anuncia online?"
+            - **consequencia_1:** Descreva o impacto operacional como um sintoma em forma de pergunta. Ex: "A agenda com buracos ('${inputForAI.impactoGargalo}') é o sintoma mais claro de que o motor de aquisição de clientes da sua empresa está desligado. Concorda?"
+            - **consequencia_2:** Questione a tentativa anterior, transformando-a em aprendizado. Ex: "A experiência passada com '${inputForAI.tentativasAnteriores}' não falhou por falta de esforço, mas talvez por focar na ferramenta errada. Será que o problema não era o carro, mas a falta de um mapa?"
+            - **consequencia_3:** Provoque sobre a concorrência e o custo de oportunidade. Ex: "Enquanto discutimos, quantos clientes que buscavam uma solução como a sua acabaram de fechar com seu concorrente que anuncia online?"
 
             ---
             **Slide 5: A Visualização do Futuro**
@@ -94,8 +94,8 @@ const presentationGeneratorFlow = ai.defineFlow(
 
             ---
             **Slide 6: O Custo da Inação**
-            - **custo_6_meses:** Calcule o custo da inação em 6 meses, multiplicando '${input.custoProblema || 0}' por 6. Formate como moeda BRL.
-            - **custo_1_ano:** Calcule o custo da inação em 1 ano, multiplicando '${input.custoProblema || 0}' por 12. Formate como moeda BRL.
+            - **custo_6_meses:** Calcule o custo da inação em 6 meses, multiplicando '${input.custoProblema || 0}' por 6. Formate como moeda BRL, por exemplo, "R$ 120.000,00".
+            - **custo_1_ano:** Calcule o custo da inação em 1 ano, multiplicando '${input.custoProblema || 0}' por 12. Formate como moeda BRL, por exemplo, "R$ 240.000,00".
             - **cenario_inercia:** Crie uma pergunta sobre o futuro da inércia. Ex: "Se nada for feito, onde a sua empresa estará em 1 ano? Com o mesmo faturamento, vendo a concorrência crescer e com sua frustração ainda maior? É esse o futuro que você aceita?"
 
             ---
@@ -106,9 +106,9 @@ const presentationGeneratorFlow = ai.defineFlow(
 
             ---
             **Slide 9: Métricas de Sucesso**
-            - **crescimentoPercentual:** Calcule a porcentagem de crescimento necessária para ir de ${input.faturamentoMedio} para ${input.metaFaturamento} em 6 meses. Formate como 'XX%'.
-            - **metaLeadsQualificados:** Com base na meta de faturamento e no ticket médio de ${inputForAI.ticketMedio}, calcule uma meta realista de leads qualificados por mês.
-            - **metaTaxaConversao:** Defina uma meta de taxa de conversão realista para atingir o objetivo.
+            - **crescimentoPercentual:** Calcule a porcentagem de crescimento necessária para ir de ${input.faturamentoMedio} para ${input.metaFaturamento}. Formate como 'XX%'. Ex: '140%'.
+            - **metaLeadsQualificados:** Com base na meta de faturamento e no ticket médio de ${inputForAI.ticketMedio}, calcule uma meta realista de leads qualificados por mês. Ex: "88".
+            - **metaTaxaConversao:** Defina uma meta de taxa de conversão realista para atingir o objetivo. Ex: "20%".
 
             ---
             **Slide 10: O Investimento**
@@ -119,12 +119,13 @@ const presentationGeneratorFlow = ai.defineFlow(
         `,
     });
     
-    // Manually add the date fields which don't require AI generation
-    if (llmResponse.output) {
-      llmResponse.output.proposalDate = proposalDate;
-      llmResponse.output.proposalValidityDate = proposalValidityDate;
+    // Manually add the date and client name fields which don't require AI generation
+    if (output) {
+      output.clientName = input.clientName;
+      output.proposalDate = proposalDate;
+      output.proposalValidityDate = proposalValidityDate;
     }
     
-    return llmResponse.output!;
+    return output!;
   }
 );

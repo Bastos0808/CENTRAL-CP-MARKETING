@@ -12,15 +12,6 @@ const escapeHtml = (text: string | undefined): string => {
          .replace(/'/g, "&#039;");
 };
 
-const renderBullets = (items: (string | undefined)[]) => {
-    if (!items || items.length === 0) return '';
-    return `
-        <ul class="check-list">
-            ${items.filter(Boolean).map(item => `<li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>${escapeHtml(item)}</li>`).join('')}
-        </ul>
-    `;
-};
-
 interface CreateProposalData {
     clientName: string;
     presentationData: GeneratePresentationOutput;
@@ -102,7 +93,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 4rem 2rem;
+            padding: 4rem 2rem 8rem;
             text-align: center;
             opacity: 0;
             visibility: hidden;
@@ -259,7 +250,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <section class="scene active">
             <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755524633/Prancheta_6_ajhh0n.png" alt="CP Marketing Digital Logo" class="logo">
             <p style="font-weight:600; color: white;">PLANO DE CRESCIMENTO PARA</p>
-            <h1>${escapeHtml(clientName)}</h1>
+            <h1>${escapeHtml(presentationData.clientName)}</h1>
             <p>Proposta válida até: <span class="highlight">${escapeHtml(proposalValidityDate)}</span> | Data: ${escapeHtml(proposalDate)}</p>
         </section>
 
@@ -298,8 +289,16 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         <!-- Scene 4: A Dor -->
         <section class="scene">
             <h2>As Consequências Reais do Gargalo</h2>
-            <div class="card" style="width: 100%; max-width: 800px;">
-                ${renderBullets([painSlide.consequencia_1, painSlide.consequencia_2, painSlide.consequencia_3])}
+            <div class="grid">
+                 <div class="card">
+                    <p class="question">${escapeHtml(painSlide.consequencia_1)}</p>
+                </div>
+                <div class="card">
+                     <p class="question">${escapeHtml(painSlide.consequencia_2)}</p>
+                </div>
+                <div class="card">
+                     <p class="question">${escapeHtml(painSlide.consequencia_3)}</p>
+                </div>
             </div>
         </section>
 
@@ -392,7 +391,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 <p class="question">${escapeHtml(investmentSlide.ganchoDecisao)}</p>
             </div>
             <div class="card" style="margin-top: 1.5rem; max-width: 800px;">
-                ${renderBullets([investmentSlide.gatilhoEscassez, investmentSlide.gatilhoBonus])}
+                <ul class="check-list">
+                    <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>${escapeHtml(investmentSlide.gatilhoEscassez)}</li>
+                    <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>${escapeHtml(investmentSlide.gatilhoBonus)}</li>
+                </ul>
             </div>
         </section>
 
@@ -452,5 +454,3 @@ export function createInteractiveProposal(data: CreateProposalData): string {
   `;
   return html;
 }
-
-    
