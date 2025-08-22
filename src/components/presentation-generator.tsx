@@ -52,7 +52,6 @@ export default function PresentationGenerator() {
     },
   });
   
-  // Fetch a HTML template quando o componente montar
   useEffect(() => {
     fetch('/slide-template.html')
       .then(response => response.text())
@@ -178,27 +177,28 @@ export default function PresentationGenerator() {
     `;
 
     let finalHtml = htmlTemplate
-        .replace('{{presentationTitle}}', presentationTitle || '')
-        .replace('{{clientName}}', form.getValues('clientName') || '')
-        .replace('{{diagnosticTitle}}', diagnosticSlide.title || '')
-        .replace('{{diagnosticContent}}', listToHtml(diagnosticSlide.content || []))
-        .replace('{{diagnosticQuestion}}', diagnosticSlide.question || '')
-        .replace('{{actionPlanTitle}}', actionPlanSlide.title || '')
-        .replace('{{{actionPlanPillar1}}}', actionPlanSlide.content[0] || '')
-        .replace('{{{actionPlanPillar2}}}', actionPlanSlide.content[1] || '')
-        .replace('{{{actionPlanPillar3}}}', actionPlanSlide.content[2] || '')
-        .replace('{{timelineTitle}}', timelineSlide.title || '')
-        .replace('{{timelineContent}}', listToHtml(timelineSlide.content || []))
-        .replace('{{kpiTitle}}', kpiSlide.title || '')
-        .replace('{{kpiItems}}', kpiItemsHtml)
-        .replace('{{whyCpTitle}}', whyCpSlide.title || '')
-        .replace('{{whyCpContent}}', listToHtml(whyCpSlide.content || []))
-        .replace('{{justificationTitle}}', justificationSlide.title || '')
-        .replace('{{{justificationContent}}}', justificationSlide.content || '')
-        .replace('{{investmentTitle}}', investmentSlide.title || '')
-        .replace('{{investmentTable}}', investmentHtml)
-        .replace('{{nextStepsTitle}}', nextStepsSlide.title || '')
-        .replace('{{nextStepsContent}}', listToHtml(nextStepsSlide.content || []));
+      .replace('{{presentationTitle}}', presentationTitle || '')
+      .replace('{{clientName}}', form.getValues('clientName') || '')
+      .replace('{{diagnosticTitle}}', diagnosticSlide.title || '')
+      .replace('{{{diagnosticContent}}}', listToHtml(diagnosticSlide.content || []))
+      .replace('{{diagnosticQuestion}}', diagnosticSlide.question || '')
+      .replace('{{actionPlanTitle}}', actionPlanSlide.title || '')
+      .replace('{{{actionPlanPillar1}}}', actionPlanSlide.content[0] || '')
+      .replace('{{{actionPlanPillar2}}}', actionPlanSlide.content[1] || '')
+      .replace('{{{actionPlanPillar3}}}', actionPlanSlide.content[2] || '')
+      .replace('{{timelineTitle}}', timelineSlide.title || '')
+      .replace('{{{timelineContent}}}', listToHtml(timelineSlide.content || []))
+      .replace('{{kpiTitle}}', kpiSlide.title || '')
+      .replace('{{{kpiItems}}}', kpiItemsHtml)
+      .replace('{{whyCpTitle}}', whyCpSlide.title || '')
+      .replace('{{{whyCpContent}}}', listToHtml(whyCpSlide.content || []))
+      .replace('{{justificationTitle}}', justificationSlide.title || '')
+      .replace('{{{justificationContent}}}', justificationSlide.content || '')
+      .replace('{{investmentTitle}}', investmentSlide.title || '')
+      .replace('{{{investmentTable}}}', investmentHtml)
+      .replace('{{nextStepsTitle}}', nextStepsSlide.title || '')
+      .replace('{{{nextStepsContent}}}', listToHtml(nextStepsSlide.content || []));
+
 
     const blob = new Blob([finalHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
