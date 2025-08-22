@@ -90,12 +90,6 @@ export default function Home() {
         href: "/gerador-apresentacoes",
         icon: Presentation
       },
-      {
-        title: "Demo da Apresentação Interativa",
-        description: "Visualize um protótipo da nova apresentação interativa.",
-        href: "/interactive-demo",
-        icon: Dices
-      },
   ];
   
   const trafficTools = [
