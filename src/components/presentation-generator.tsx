@@ -158,7 +158,6 @@ export default function PresentationGenerator() {
 
     try {
       const finalHtml = createInteractiveProposal({
-        clientName: form.getValues('clientName'),
         presentationData: presentationContent
       });
       
@@ -166,7 +165,7 @@ export default function PresentationGenerator() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `proposta-${form.getValues('clientName').toLowerCase().replace(/\s/g, '-')}.html`;
+      link.download = `proposta-${presentationContent.clientName.toLowerCase().replace(/\s/g, '-')}.html`;
       
       document.body.appendChild(link);
       link.click();

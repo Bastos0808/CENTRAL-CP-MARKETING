@@ -13,15 +13,15 @@ const escapeHtml = (text: string | undefined): string => {
 };
 
 interface CreateProposalData {
-    clientName: string;
     presentationData: GeneratePresentationOutput;
 }
 
 
 export function createInteractiveProposal(data: CreateProposalData): string {
-  const { clientName, presentationData } = data;
+  const { presentationData } = data;
 
   const {
+    clientName,
     proposalDate,
     proposalValidityDate,
     diagnosticSlide,
@@ -33,6 +33,58 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     investmentSlide,
   } = presentationData;
 
+  // We will build the slides array dynamically here
+  const slidesData = [
+      {
+          title: `<h2>Por que a CP Marketing?</h2><p>Somos mais que uma agência. Somos seu parceiro estratégico de crescimento, com estrutura para entregar resultados reais.</p>`,
+          content: `<div class="presentation-gallery-layout">
+                      <div class="features-list">
+                          <div class="feature-item"><i class="fas fa-building"></i><div><h4>Estrutura Física</h4><p>Recursos para atender sua demanda com excelência.</p></div></div>
+                          <div class="feature-item"><i class="fas fa-video"></i><div><h4>Estúdios Próprios</h4><p>Produção de conteúdo ágil e de alta qualidade.</p></div></div>
+                          <div class="feature-item"><i class="fas fa-users"></i><div><h4>Time Presencial</h4><p>Colaboração e sinergia de uma equipe dedicada.</p></div></div>
+                          <div class="feature-item"><i class="fas fa-lightbulb"></i><div><h4>Metodologia</h4><p>Processos validados para gerar resultados mensuráveis.</p></div></div>
+                      </div>
+                      <div class="image-gallery">
+                          <div class="image-placeholder img-h" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524630/PODCAST_01_wifyte.png')"></div>
+                          <div class="image-placeholder img-s1" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
+                          <div class="image-placeholder img-s2" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_32_gxdlmx.png')"></div>
+                      </div>
+                    </div>`
+      },
+      {
+          title: `<h2>Entendemos o seu Desafio</h2>`,
+          content: `<p class="question">${escapeHtml(diagnosticSlide.resumoEmpatico)}</p><br><p class="question">${escapeHtml(diagnosticSlide.analiseReflexiva)}</p>`
+      },
+      {
+          title: `<h2>O Impacto Real do Gargalo Atual</h2>`,
+          content: `<div class="impact-list"><div class="impact-item"><i class="fas fa-arrow-down"></i> <p><strong>Impacto Operacional:</strong> ${escapeHtml(painSlide.consequencia_1)}</p></div><div class="impact-item"><i class="fas fa-arrow-down"></i> <p><strong>Frustração Estratégica:</strong> ${escapeHtml(painSlide.consequencia_2)}</p></div><div class="impact-item"><i class="fas fa-arrow-down"></i> <p><strong>Vantagem Competitiva:</strong> ${escapeHtml(painSlide.consequencia_3)}</p></div></div>`
+      },
+      {
+          title: `<h2>Uma Nova Realidade para o seu Negócio</h2>`,
+          content: `<div class="card-grid"><div class="card"><h3>Seu Cenário em 6 Meses</h3><p>${escapeHtml(futureSlide.cenario_6_meses)}</p></div><div class="card"><h3>Seu Cenário em 1 Ano</h3><p>${escapeHtml(futureSlide.cenario_1_ano)}</p></div></div>`
+      },
+      {
+          title: `<h2>O Custo de Não Agir Agora</h2>`,
+          content: `<div class="card-grid"><div class="card"><h3>Custo em 6 Meses</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_6_meses)}</span></div><div class="card"><h3>Custo em 1 Ano</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_1_ano)}</span></div></div><br><p>${escapeHtml(inactionCostSlide.cenario_inercia)}</p>`
+      },
+      {
+          title: `<h2>Nosso Plano para Virar o Jogo</h2>`,
+          content: `<div class="card-grid"><div class="card"><i class="fas fa-users"></i> <h4>Aquisição</h4> <p>${escapeHtml(strategySlide.pilarAquisicao)}</p> </div><div class="card"><i class="fas fa-chart-line"></i> <h4>Conversão</h4> <p>${escapeHtml(strategySlide.pilarConversao)}</p> </div><div class="card"><i class="fas fa-star"></i> <h4>Autoridade</h4> <p>${escapeHtml(strategySlide.pilarAutoridade)}</p> </div></div>`
+      },
+      {
+          title: `<h2>Resultados que Falam por Si</h2>`,
+          content: `<p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p><div class="card-grid"><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/400x300.png')"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/400x300.png')"></div><h4>Case 2: E-commerce</h4><p>+80% no faturamento.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/400x300.png')"></div><h4>Case 3: B2B</h4><p>-40% no Custo por Lead.</p></div></div>`
+      },
+      {
+          title: `<h2>Nosso Compromisso com seu Crescimento de ${escapeHtml(metricsSlide.crescimentoPercentual)}</h2>`,
+          content: `<p>O sucesso será medido com dados claros. Nossas metas mensais:</p><div class="card-grid"><div class="card"><h3>Leads Qualificados</h3><span class="highlight">${escapeHtml(metricsSlide.metaLeadsQualificados)}</span></div><div class="card"><h3>Taxa de Conversão</h3><span class="highlight">${escapeHtml(metricsSlide.metaTaxaConversao)}</span></div></div>`
+      },
+      {
+          title: `<h2>O Investimento no seu Crescimento</h2>`,
+          content: `<p class="question">${escapeHtml(investmentSlide.ancoragemPreco)}</p><div class="card" style="margin-top: 20px;"><p>${escapeHtml(investmentSlide.gatilhoEscassez)}</p><p><strong>Bônus de Ação Rápida:</strong> ${escapeHtml(investmentSlide.gatilhoBonus)}</p></div><br><p class="question">${escapeHtml(investmentSlide.ganchoDecisao)}</p>`
+      }
+  ];
+
   const html = `
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -40,415 +92,376 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proposta para ${escapeHtml(clientName)}</title>
+    
+    <!-- Fontes e Ícones -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         :root {
-            --color-bg: #0A0A0A;
-            --color-text: #EAEAEA;
-            --color-primary: #030860;
-            --color-accent: #FE5412;
-            --color-surface: #1A1A1A;
-            --color-border: rgba(255, 255, 255, 0.1);
+            --primary-color: #ffffff;
+            --secondary-color: #a7a7a7;
+            --background-color: #000000;
+            --accent-color: #FE4900;
+            --highlight-color: #360FC5;
+            --card-background: rgba(17, 17, 17, 0.85);
+            --border-color: #222222;
         }
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+
+        body { 
+            position: relative; 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: var(--background-color); 
+            color: var(--primary-color); 
+            font-family: 'Montserrat', sans-serif; 
         }
-        html {
-            scroll-behavior: smooth;
-        }
-        body {
-            background-color: var(--color-bg);
-            color: var(--color-text);
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-            background-image: radial-gradient(ellipse 80% 80% at 50% -20%, rgba(3, 8, 96, 0.15), var(--color-bg) 80%),
-                              radial-gradient(ellipse 50% 50% at 10% 100%, rgba(254, 84, 18, 0.1), var(--color-bg) 70%),
-                              radial-gradient(ellipse 50% 50% at 90% 90%, rgba(254, 84, 18, 0.05), var(--color-bg) 70%);
-            min-height: 100vh;
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .presentation-container {
-            width: 100%;
-            height: 100vh;
-            position: relative;
-            overflow: hidden;
-        }
-        .scene {
-            position: absolute;
+
+        #webgl-container {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: 1;
+        }
+
+        .ui-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+        .ui-layer > * {
+            pointer-events: auto;
+        }
+
+        .intro-container { 
+            text-align: center;
+            padding: 20px;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .intro-container.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .proposal-container-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0; 
+            pointer-events: none; 
+            transition: opacity 0.5s ease-in-out;
+        }
+        .proposal-container-wrapper.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sky-container {
+            width: 100%;
+            max-width: 900px;
+            max-height: 90vh;
+            padding: 40px;
+            background-color: var(--card-background);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 4rem 2rem 8rem;
-            text-align: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
-        }
-        .scene.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        h1, h2, h3 {
-            font-weight: 900;
-            line-height: 1.2;
-            color: white;
-            text-wrap: balance;
-        }
-        h1 {
-            font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-        h2 {
-            font-size: clamp(2rem, 4vw, 3.5rem);
-            color: white;
-            margin-bottom: 2.5rem;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
             position: relative;
         }
-        h2::after {
-            content: '';
-            display: block;
-            width: 80px;
-            height: 4px;
-            background-color: var(--color-accent);
-            margin: 1rem auto 0;
-            border-radius: 2px;
+        .sky-container-content {
+            width: 100%;
+            transition: opacity 0.4s ease-in-out;
         }
-        h3 {
-            font-size: clamp(1.2rem, 2vw, 1.5rem);
-            color: var(--color-accent);
-            margin-bottom: 1rem;
+
+        .close-button { 
+            position: absolute;
+            top: 20px; 
+            right: 20px;
+            width: 40px; 
+            height: 40px; 
+            cursor: pointer; 
+            z-index: 12;
         }
-        p {
-          max-width: 65ch;
-          color: #B3B3B3;
-          font-size: clamp(1rem, 1.5vw, 1.1rem);
-          margin-left: auto;
-          margin-right: auto;
+        .close-button .left, .close-button .right { width: 2px; height: 25px; background: white; position: absolute; top: 7.5px; left: 19px; border-radius: 3px; transition: 0.3s ease-out; }
+        .close-button .right { transform: rotate(-45deg); }
+        .close-button .left { transform: rotate(45deg); }
+        .close-button:hover .right, .close-button:hover .left { transform: rotate(0deg); }
+
+        h1, h2, h3 { font-weight: 900; margin-bottom: 20px; text-wrap: balance; }
+        h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); text-transform: uppercase; line-height: 1.3; color: var(--accent-color); }
+        h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+        h3 { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; }
+        p { font-size: clamp(0.9rem, 1.5vw, 1.1rem); line-height: 1.6; color: var(--secondary-color); max-width: 800px; }
+        
+        .intro-container .fancy-text { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+        .proposal-meta { margin-top: 20px; font-size: 0.9rem; color: var(--secondary-color); }
+
+        .button { position: relative; cursor: pointer; display: inline-block; text-transform: uppercase; min-width: 250px; margin-top: 30px; color: white; font-weight: 700; }
+        .button .border { border: 2px solid var(--accent-color); transform: skewX(-20deg); height: 50px; border-radius: 5px; overflow: hidden; position: relative; transition: 0.2s ease-out; }
+        .button .text { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); transition: 0.2s ease-out; font-size: 1.1rem; }
+        .button .left-plane, .button .right-plane { position: absolute; background: var(--accent-color); height: 100%; width: 51%; transition: 0.2s ease-out; }
+        .button .left-plane { left: 0; transform: translateX(-101%); }
+        .button .right-plane { right: 0; transform: translateX(101%); }
+        .button:hover .border { box-shadow: 0px 0px 15px 0px var(--accent-color); }
+        .button:hover .left-plane, .button:hover .right-plane { transform: translateX(0%); }
+        .button:hover .text { color: var(--background-color); }
+        
+        .nav-arrows { 
+            width: 100%;
+            padding-top: 30px;
+            margin-top: auto;
         }
+        .nav-button { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 12px 25px; margin: 0 10px; cursor: pointer; font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-weight: 700; border-radius: 50px; transition: all 0.3s ease; }
+        .nav-button:not(:disabled):hover { background-color: var(--accent-color); color: white; }
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+        
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
+        .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
+        .card h4 { font-size: 1.2rem; margin-bottom: 10px; }
+        .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
         p.question {
-            font-size: clamp(1.1rem, 2vw, 1.5rem);
             font-weight: 600;
-            color: var(--color-text);
-            border-left: 3px solid var(--color-accent);
-            padding-left: 1.5rem;
+            color: var(--primary-color);
+            border-left: 3px solid var(--accent-color);
+            padding-left: 1rem;
             text-align: left;
-            margin-top: 1.5rem;
+            margin: 1rem 0;
         }
-        .card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: 12px;
-            padding: 2rem;
-            width: 100%;
-            text-align: left;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .grid {
-            display: grid;
-            gap: 1.5rem;
-            width: 100%;
-            max-width: 1100px;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            place-items: center;
-        }
-        .check-list {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-        }
-        .check-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            color: var(--color-text);
-            font-size: 1.1rem;
-        }
-        .check-list svg {
-            flex-shrink: 0;
-            width: 24px;
-            height: 24px;
-            color: var(--color-accent);
-            margin-top: 2px;
-        }
-        .value-display {
-            font-size: clamp(3rem, 7vw, 5.5rem);
-            font-weight: 900;
-            color: var(--color-accent);
-            line-height: 1;
-            padding: 0;
-            margin: 0;
-        }
-        .cost-card {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            gap: 0.5rem;
-            min-height: 250px; /* Ensure cards have a minimum height */
-        }
-        .highlight {
-            color: var(--color-accent);
-            font-weight: 700;
-        }
-        .logo { max-width: 150px; margin-bottom: 2rem; }
-        .navigation {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 1rem;
-            z-index: 100;
-        }
-        .nav-button {
-            background-color: var(--color-surface);
-            color: var(--color-text);
-            border: 1px solid var(--color-border);
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            transition: background-color 0.2s, transform 0.2s;
-        }
-        .nav-button:hover {
-            background-color: var(--color-accent);
-            color: white;
-            transform: translateY(-2px);
-        }
-        .nav-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        
+        .presentation-gallery-layout { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: flex-start; width: 100%; margin-top: 30px; }
+        .features-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .features-list .feature-item { display: flex; align-items: flex-start; text-align: left; }
+        .features-list i { font-size: 1.5rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
+        .features-list h4 { margin-bottom: 5px; font-size: 1.2rem; }
+        .features-list p { font-size: 1rem; }
+
+        .image-gallery { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 15px; height: 300px; }
+        .image-placeholder { width: 100%; height: 100%; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
+        .img-h { grid-column: 1 / -1; } .img-s1 { grid-column: 1 / 2; } .img-s2 { grid-column: 2 / 3; }
+
+        .impact-list { width: 100%; margin-top: 30px; }
+        .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
+        .impact-item i { font-size: 1.8rem; color: var(--accent-color); margin-right: 20px; }
+
+        @media (min-width: 1024px) {
+            .presentation-gallery-layout { grid-template-columns: 7fr 5fr; gap: 40px; }
         }
     </style>
 </head>
 <body>
-
-    <main class="presentation-container">
-        <!-- Scene 1: Capa -->
-        <section class="scene active">
-            <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755524633/Prancheta_6_ajhh0n.png" alt="CP Marketing Digital Logo" class="logo">
-            <p style="font-weight:600; color: white;">PLANO DE CRESCIMENTO PARA</p>
-            <h1>${escapeHtml(presentationData.clientName)}</h1>
-            <p>Proposta válida até: <span class="highlight">${escapeHtml(proposalValidityDate)}</span> | Data: ${escapeHtml(proposalDate)}</p>
-        </section>
-
-        <!-- Scene 2: Apresentação CP (Fixo) -->
-        <section class="scene">
-            <h2>Nossa Estrutura a Serviço do seu Sucesso</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Estrutura Física</h3>
-                    <p>Time presencial, estúdios próprios e uma cultura de colaboração que se traduz em agilidade e qualidade para o seu projeto.</p>
+    <div id="webgl-container"></div>
+    <div class="ui-layer">
+        <div class="intro-container">
+            <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755524633/Prancheta_6_ajhh0n.png" alt="Logo da CP Marketing" style="max-height: 120px; margin-bottom: 30px;">
+            <h3 class="fancy-text">Plano de Crescimento para</h3>
+            <h1>${escapeHtml(clientName)}</h1>
+            <div class="proposal-meta">
+                <p>Data: ${escapeHtml(proposalDate)} | Validade: ${escapeHtml(proposalValidityDate)}</p>
+            </div>
+            <div class="button shift-camera-button">
+                <div class="border">
+                    <div class="left-plane"></div><div class="right-plane"></div>
                 </div>
-                 <div class="card">
-                    <h3>Metodologia CP MÖDUS</h3>
-                    <p>Um processo testado e validado, focado em diagnóstico, estratégia e execução, que nos permite entregar performance de mercado, e não apenas posts.</p>
-                </div>
-                 <div class="card">
-                    <h3>Visão de Parceiro</h3>
-                    <p>Atuamos como uma extensão do seu negócio. Seu sucesso é nossa principal métrica de performance e o que guia nossas decisões.</p>
+                <div class="text">Iniciar Apresentação</div>
+            </div>
+        </div>
+        <div class="proposal-container-wrapper">
+            <div class="sky-container">
+                <div class="sky-container-content"></div>
+                <div class="nav-arrows">
+                    <button id="prev-button" class="nav-button">Voltar</button>
+                    <button id="next-button" class="nav-button">Avançar</button>
                 </div>
             </div>
-        </section>
-
-        <!-- Scene 3: Diagnóstico -->
-        <section class="scene">
-            <h2>O Diagnóstico</h2>
-            <div class="card" style="width: 100%; max-width: 800px;">
-                <h3>Sua Realidade Atual</h3>
-                <p class="question">${escapeHtml(diagnosticSlide.resumoEmpatico)}</p>
+            <div class="close-button">
+                <div class="left"></div>
+                <div class="right"></div>
             </div>
-            <div class="card" style="margin-top: 1.5rem; width: 100%; max-width: 800px;">
-                <h3>O Ponto de Virada</h3>
-                <p class="question">${escapeHtml(diagnosticSlide.analiseReflexiva)}</p>
-            </div>
-        </section>
-        
-        <!-- Scene 4: A Dor -->
-        <section class="scene">
-            <h2>As Consequências Reais do Gargalo</h2>
-            <div class="grid">
-                 <div class="card">
-                    <p class="question">${escapeHtml(painSlide.consequencia_1)}</p>
-                </div>
-                <div class="card">
-                     <p class="question">${escapeHtml(painSlide.consequencia_2)}</p>
-                </div>
-                <div class="card">
-                     <p class="question">${escapeHtml(painSlide.consequencia_3)}</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Scene 5: Visão de Futuro -->
-        <section class="scene">
-            <h2>A Visualização do Futuro</h2>
-            <div class="grid">
-                 <div class="card">
-                    <h3>Seu Cenário em 6 Meses</h3>
-                    <p class="question">${escapeHtml(futureSlide.cenario_6_meses)}</p>
-                </div>
-                <div class="card">
-                    <h3>Sua Realidade em 1 Ano</h3>
-                    <p class="question">${escapeHtml(futureSlide.cenario_1_ano)}</p>
-                </div>
-            </div>
-        </section>
-        
-        <!-- Scene 6: Custo da Inação -->
-        <section class="scene">
-            <h2>O Custo de Adiar a Decisão</h2>
-            <div class="grid">
-                <div class="card cost-card">
-                    <h3>Custo da Inação em 6 Meses</h3>
-                    <p class="value-display">${escapeHtml(inactionCostSlide.custo_6_meses)}</p>
-                </div>
-                 <div class="card cost-card">
-                    <h3>Custo da Inação em 1 Ano</h3>
-                    <p class="value-display">${escapeHtml(inactionCostSlide.custo_1_ano)}</p>
-                </div>
-            </div>
-            <div class="card" style="margin-top: 2rem; width: 100%; max-width: 800px;">
-                <h3>O Cenário da Inércia</h3>
-                <p class="question">${escapeHtml(inactionCostSlide.cenario_inercia)}</p>
-            </div>
-        </section>
-
-        <!-- Scene 7: Estratégia -->
-        <section class="scene">
-            <h2>Nosso Plano para Virar o Jogo</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Aquisição</h3>
-                    <p>${escapeHtml(strategySlide.pilarAquisicao)}</p>
-                </div>
-                <div class="card">
-                    <h3>Conversão</h3>
-                    <p>${escapeHtml(strategySlide.pilarConversao)}</p>
-                </div>
-                <div class="card">
-                    <h3>Autoridade</h3>
-                    <p>${escapeHtml(strategySlide.pilarAutoridade)}</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Scene 8: Prova Social (Fixo) -->
-        <section class="scene">
-            <h2>Resultados que Falam por Nós</h2>
-            <p>Nossa maior métrica é o sucesso dos nossos parceiros. Veja alguns exemplos.</p>
-            <!-- Adicionar logos de clientes ou depoimentos aqui -->
-        </section>
-
-        <!-- Scene 9: Métricas -->
-        <section class="scene">
-            <h2>Nosso Compromisso com seu Crescimento de <span class="highlight">${escapeHtml(metricsSlide.crescimentoPercentual)}</span></h2>
-             <div class="grid">
-                <div class="card cost-card">
-                    <h3>Meta de Leads Qualificados</h3>
-                    <p class="value-display">${escapeHtml(metricsSlide.metaLeadsQualificados)}</p>
-                    <p>por mês</p>
-                </div>
-                <div class="card cost-card">
-                    <h3>Meta de Taxa de Conversão</h3>
-                    <p class="value-display">${escapeHtml(metricsSlide.metaTaxaConversao)}</p>
-                    <p>de lead para cliente</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Scene 10: Investimento -->
-        <section class="scene">
-            <h2>O Investimento na sua Aceleração</h2>
-            <div class="card" style="max-width: 800px;">
-                <h3>Ancoragem de Valor</h3>
-                <p class="question">${escapeHtml(investmentSlide.ancoragemPreco)}</p>
-            </div>
-            <div class="card" style="margin-top: 1.5rem; max-width: 800px;">
-                <h3>Sua Decisão</h3>
-                <p class="question">${escapeHtml(investmentSlide.ganchoDecisao)}</p>
-            </div>
-            <div class="card" style="margin-top: 1.5rem; max-width: 800px;">
-                <ul class="check-list">
-                    <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>${escapeHtml(investmentSlide.gatilhoEscassez)}</li>
-                    <li><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>${escapeHtml(investmentSlide.gatilhoBonus)}</li>
-                </ul>
-            </div>
-        </section>
-
-    </main>
-
-    <div class="navigation">
-        <button class="nav-button" id="prevBtn">Anterior</button>
-        <button class="nav-button" id="nextBtn">Avançar</button>
+        </div>
     </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.1.3/TweenMax.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const scenes = document.querySelectorAll('.scene');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            let currentSceneIndex = 0;
+        "use strict";
+        let camera, scene, renderer, plane, stars;
+        
+        const slides = ${JSON.stringify(slidesData)};
+        let currentSlide = -1;
 
-            function showScene(index) {
-                scenes.forEach((scene, i) => {
-                    scene.classList.toggle('active', i === index);
-                });
-                prevBtn.disabled = index === 0;
-                nextBtn.disabled = index === scenes.length - 1;
-            }
+        const cameraPath = [
+            { y: 120, z: 20 }, { y: 110, z: 25 }, { y: 100, z: 30 }, { y: 90, z: 35 },
+            { y: 80, z: 40 }, { y: 70, z: 45 }, { y: 60, z: 50 }, { y: 50, z: 55 },
+            { y: 40, z: 60 }, { y: 30, z: 65 }
+        ];
 
-            function nextScene() {
-                if (currentSceneIndex < scenes.length - 1) {
-                    currentSceneIndex++;
-                    showScene(currentSceneIndex);
+        function updateSlideContent() {
+            const container = document.querySelector('.sky-container-content');
+            const skyContainer = document.querySelector('.sky-container');
+            
+            TweenLite.to(container, 0.3, { opacity: 0, ease: Power2.easeOut, onComplete: () => {
+                if (currentSlide < 0 || currentSlide >= slides.length) {
+                    container.innerHTML = ''; return;
                 }
-            }
+                const slide = slides[currentSlide];
+                container.innerHTML = slide.title + slide.content;
+                
+                document.getElementById('prev-button').disabled = currentSlide === 0;
+                document.getElementById('next-button').disabled = currentSlide === slides.length - 1;
 
-            function prevScene() {
-                if (currentSceneIndex > 0) {
-                    currentSceneIndex--;
-                    showScene(currentSceneIndex);
+                skyContainer.scrollTop = 0;
+                TweenLite.to(container, 0.5, { opacity: 1, ease: Power2.easeIn });
+            }});
+        }
+
+        function createStars() {
+            let starGeometry = new THREE.Geometry();
+            for(let i=0; i<10000; i++) {
+                let star = new THREE.Vector3();
+                star.x = THREE.Math.randFloatSpread(2000);
+                star.y = THREE.Math.randFloatSpread(2000);
+                star.z = THREE.Math.randFloatSpread(2000);
+                starGeometry.vertices.push(star);
+            }
+            let starMaterial = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.7 });
+            stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+        }
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            camera.position.z = 50;
+            renderer.setClearColor("#000000", 1.0);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('webgl-container').appendChild(renderer.domElement);
+
+            let topLight = new THREE.DirectionalLight(0xffffff, 1);
+            topLight.position.set(0, 1, 1).normalize();
+            scene.add(topLight);
+
+            let geometry = new THREE.PlaneGeometry(400, 400, 70, 70);
+            let material = new THREE.MeshPhongMaterial({ color: 0x111111, flatShading: true, side: THREE.DoubleSide });
+            
+            geometry.vertices.forEach(function (vertice) {
+                vertice.x += (Math.random() - 0.5) * 4;
+                vertice.y += (Math.random() - 0.5) * 4;
+                vertice.z += (Math.random() - 0.5) * 4;
+                vertice.dx = Math.random() - 0.5;
+                vertice.dy = Math.random() - 0.5;
+                vertice.randomDelay = Math.random() * 5;
+            });
+            
+            plane = new THREE.Mesh(geometry, material);
+            scene.add(plane);
+            createStars();
+            render();
+        }
+
+        let timer = 0;
+        function render() {
+            requestAnimationFrame(render);
+            timer += 0.01;
+            if (plane && plane.geometry) {
+              let vertices = plane.geometry.vertices;
+              for (let i = 0; i < vertices.length; i++) {
+                  vertices[i].x -= (Math.sin(timer + vertices[i].randomDelay) / 40) * vertices[i].dx;
+                  vertices[i].y += (Math.sin(timer + vertices[i].randomDelay) / 40) * vertices[i].dy;
+              }
+              plane.geometry.verticesNeedUpdate = true;
+            }
+            if (stars) { stars.rotation.y += 0.0001; }
+            renderer.render(scene, camera);
+        }
+
+        function navigateToScene(index) {
+            const targetPosition = cameraPath[index];
+            TweenLite.to(camera.position, 1.5, { y: targetPosition.y, z: targetPosition.z, ease: Power3.easeInOut });
+            updateSlideContent();
+        }
+
+        window.onload = function() {
+            init();
+            const introContainer = document.querySelector('.intro-container');
+            const proposalWrapper = document.querySelector('.proposal-container-wrapper');
+            const closeButton = document.querySelector('.close-button');
+
+            document.querySelector('.shift-camera-button').addEventListener('click', function() {
+                let introTimeline = new TimelineMax();
+                introTimeline.add([
+                    TweenLite.to(introContainer, 0.5, { opacity: 0, ease: Power3.easeIn, onComplete: () => { introContainer.style.pointerEvents = 'none'; } }),
+                    TweenLite.to(camera.rotation, 3, { x: Math.PI / 2, ease: Power3.easeInOut }),
+                    TweenLite.to(camera.position, 3, { y: cameraPath[0].y, z: cameraPath[0].z, ease: Power3.easeInOut }),
+                    TweenLite.to(plane.scale, 3, { x: 2, ease: Power3.easeInOut }),
+                ]);
+                introTimeline.add([
+                    TweenLite.to(proposalWrapper, 1, { opacity: 1, ease: Power3.easeInOut, onStart: () => {
+                         proposalWrapper.style.pointerEvents = 'auto';
+                         currentSlide = 0;
+                         updateSlideContent();
+                    } }),
+                ]);
+            });
+
+            closeButton.addEventListener('click', function() {
+                let outroTimeline = new TimelineMax();
+                outroTimeline.add([
+                    TweenLite.to(proposalWrapper, 0.5, { opacity: 0, ease: Power3.easeInOut, onComplete: () => {
+                        proposalWrapper.style.pointerEvents = 'none';
+                        currentSlide = -1;
+                        updateSlideContent();
+                    }}),
+                    TweenLite.to(camera.rotation, 3, { x: 0, ease: Power3.easeInOut }),
+                    TweenLite.to(camera.position, 3, { z: 50, y: 0, ease: Power3.easeInOut }),
+                    TweenLite.to(plane.scale, 3, { x: 1, ease: Power3.easeInOut }),
+                ]);
+                outroTimeline.add([
+                    TweenLite.to(introContainer, 0.5, { opacity: 1, ease: Power3.easeIn, delay: 1, onComplete: () => { introContainer.style.pointerEvents = 'auto'; } }),
+                ]);
+            });
+
+            document.getElementById('next-button').addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    navigateToScene(currentSlide);
                 }
-            }
-
-            prevBtn.addEventListener('click', prevScene);
-            nextBtn.addEventListener('click', nextScene);
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowRight') {
-                    nextScene();
-                } else if (e.key === 'ArrowLeft') {
-                    prevScene();
+            });
+            document.getElementById('prev-button').addEventListener('click', () => {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    navigateToScene(currentSlide);
                 }
             });
 
-            showScene(currentSceneIndex);
-        });
+            window.addEventListener("resize", function () {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
     </script>
-
 </body>
 </html>
   `;
