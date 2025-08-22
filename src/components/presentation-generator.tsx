@@ -11,12 +11,13 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle, Diamond, Repeat, Users, Star, Search, Workflow, Palette } from "lucide-react";
+import { Loader2, Wand2, FileText, FileDown, ArrowRight, TrendingUp, HandCoins, UserCheck, Info, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, CheckCircle, Diamond, Repeat, Users, Star, Search, Workflow, Palette, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
 import { GeneratePresentationOutput, DiagnosticFormSchema, packageOptions } from "@/ai/schemas/presentation-generator-schemas";
 import type { z } from "zod";
+import { useRouter } from "next/navigation";
 
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
@@ -28,6 +29,7 @@ export default function PresentationGenerator() {
   const [presentationContent, setPresentationContent] = useState<GeneratePresentationOutput | null>(null);
   const [htmlTemplate, setHtmlTemplate] = useState<string>('');
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<DiagnosticFormValues>({
     resolver: zodResolver(DiagnosticFormSchema),
@@ -80,7 +82,7 @@ export default function PresentationGenerator() {
     try {
       const result = await generatePresentation(values);
       setPresentationContent(result);
-      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e faça o download." });
+      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e clique para visualizar." });
     } catch(error) {
       console.error("Error generating presentation:", error);
       toast({ title: "Erro na Geração", description: "Não foi possível gerar a apresentação. Tente novamente.", variant: "destructive" });
@@ -111,14 +113,12 @@ export default function PresentationGenerator() {
     toast({ title: 'Formulário Preenchido!', description: 'Dados de exemplo foram carregados.' });
   }
 
- const handleDownloadHtml = () => {
+ const handlePreview = () => {
     if (!presentationContent || !htmlTemplate) {
-      toast({ title: 'Erro', description: 'Conteúdo da apresentação ou template não encontrado.', variant: 'destructive'});
+      toast({ title: 'Erro', description: 'Gere o conteúdo da apresentação primeiro.', variant: 'destructive'});
       return;
     }
     
-    setIsDownloading(true);
-
     const {
         presentationTitle,
         diagnosticSlide,
@@ -176,7 +176,6 @@ export default function PresentationGenerator() {
       </table>
     `;
 
-    // Replace placeholders
     let finalHtml = htmlTemplate
         .replace('{{presentationTitle}}', presentationTitle)
         .replace('{{clientName}}', form.getValues('clientName'))
@@ -200,21 +199,12 @@ export default function PresentationGenerator() {
         .replace('{{nextStepsTitle}}', nextStepsSlide.title)
         .replace('{{nextStepsContent}}', `<ul>${nextStepsSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`);
 
-
-    const blob = new Blob([finalHtml], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Apresentacao_${form.getValues('clientName').replace(/\s/g, '_') || 'Exemplo'}.html`;
-    document.body.appendChild(a);
-a.click();
-
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    setIsDownloading(false);
-    
-     toast({ title: 'Download Concluído!', description: 'Sua apresentação em HTML foi baixada.' });
+    try {
+        sessionStorage.setItem('presentationHtml', finalHtml);
+        router.push('/gerador-apresentacoes/preview');
+    } catch (e) {
+        toast({ title: 'Erro ao pré-visualizar', description: 'O conteúdo da apresentação é muito grande para ser exibido.', variant: 'destructive'});
+    }
   };
   
 
@@ -348,7 +338,7 @@ a.click();
       <Card className="lg:sticky top-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
-          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para baixar o arquivo HTML da apresentação.</CardDescription>
+          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para visualizar o arquivo HTML da apresentação.</CardDescription>
         </CardHeader>
         <CardContent>
           {presentationContent ? (
@@ -360,9 +350,9 @@ a.click();
                   O conteúdo foi gerado com sucesso.
                 </AlertDescription>
               </Alert>
-              <Button onClick={handleDownloadHtml} disabled={isDownloading} className="w-full">
-                {isDownloading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileDown className="mr-2 h-4 w-4" />}
-                Baixar Apresentação (.html)
+              <Button onClick={handlePreview} className="w-full">
+                <Eye className="mr-2 h-4 w-4" />
+                Visualizar Apresentação
               </Button>
             </div>
           ) : (
