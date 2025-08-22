@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Mic, Target, Loader2, Waypoints, FileSignature, DollarSign, Megaphone, Workflow, Lightbulb, Video, Search, ShieldAlert, Presentation, Dices } from 'lucide-react';
+import { ArrowRight, Database, FileText, LogOut, Users, Wand2, Briefcase, Mic, Target, Loader2, Waypoints, FileSignature, DollarSign, Megaphone, Workflow, Lightbulb, Video, Search, ShieldAlert, Presentation, Dices, TestTube2 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -94,6 +94,15 @@ export default function Home() {
   
   const trafficTools = [
   ];
+  
+  const internalTools = [
+     {
+        title: "HTML Test Page",
+        description: "Espaço de trabalho para construir e testar o template HTML interativo.",
+        href: "/html-test",
+        icon: TestTube2
+      },
+  ]
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
@@ -118,6 +127,7 @@ export default function Home() {
     const allTabs = [
         { value: 'production', label: 'Produção', icon: Workflow, enabled: canAccessProduction },
         { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, enabled: canAccessCommercial },
+        { value: 'internal', label: 'Interno', icon: Dices, content: internalTools, enabled: isAdmin },
     ];
 
     const enabledTabs = allTabs.filter(tab => tab.enabled);
@@ -246,6 +256,13 @@ export default function Home() {
                         {commercialTools.length > 0 ? renderTools(commercialTools) : (
                              <div className="text-center text-muted-foreground p-8">
                                 <p>Nenhuma ferramenta disponível para esta área ainda.</p>
+                            </div>
+                        )}
+                     </TabsContent>
+                      <TabsContent value="internal" className="mt-8">
+                        {internalTools.length > 0 ? renderTools(internalTools) : (
+                             <div className="text-center text-muted-foreground p-8">
+                                <p>Nenhuma ferramenta interna disponível.</p>
                             </div>
                         )}
                      </TabsContent>
