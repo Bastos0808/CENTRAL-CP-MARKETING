@@ -1,5 +1,5 @@
 
-import type { GeneratePresentationOutput } from "@/ai/schemas/presentation-generator-schemas";
+import type { GeneratePresentationOutput, packageOptions } from "@/ai/schemas/presentation-generator-schemas";
 
 // Helper function to safely escape HTML content
 const escapeHtml = (text: string | undefined): string => {
@@ -31,10 +31,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     strategySlide,
     metricsSlide,
     investmentSlide,
+    investmentValue,
+    packages,
   } = presentationData;
 
   const slides = [
-      {
+       {
           title: `<h2>Por que a CP Marketing?</h2><p>Somos mais que uma agência. Somos seu parceiro estratégico de crescimento, com estrutura para entregar resultados reais.</p>`,
           content: `<div class="presentation-gallery-layout">
                       <div class="features-list">
@@ -63,7 +65,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           content: `<div class="card-grid"><div class="card"><h3>Seu Cenário em 6 Meses</h3><p>${escapeHtml(futureSlide.cenario_6_meses)}</p></div><div class="card"><h3>Seu Cenário em 1 Ano</h3><p>${escapeHtml(futureSlide.cenario_1_ano)}</p></div></div>`
       },
       {
-          title: `<h2>O Custo de Não Agir Agora</h2>`,
+          title: `<h2>O Custo de Adiar a Decisão</h2>`,
           content: `<div class="card-grid"><div class="card cost-card"><h3>Custo em 6 Meses</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_6_meses)}</span></div><div class="card cost-card"><h3>Custo em 1 Ano</h3><span class="highlight">${escapeHtml(inactionCostSlide.custo_1_ano)}</span></div></div><br><p class="question" style="text-align: center;">${escapeHtml(inactionCostSlide.cenario_inercia)}</p>`
       },
       {
@@ -72,7 +74,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       },
       {
           title: `<h2>Resultados que Falam por Si</h2>`,
-          content: `<p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p><div class="card-grid"><div class="card"><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div><div class="card"><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div><div class="card"><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div></div>`
+          content: `<p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p><div class="card-grid"><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+1')"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+2')"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+3')"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div></div>`
       },
       {
           title: `<h2>Nosso Compromisso com seu Crescimento de ${escapeHtml(metricsSlide.crescimentoPercentual)}</h2>`,
@@ -80,7 +82,27 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       },
       {
           title: `<h2>O Investimento no seu Crescimento</h2>`,
-          content: `<p class="question">${escapeHtml(investmentSlide.ancoragemPreco)}</p><div class="card" style="margin-top: 20px;"><p>${escapeHtml(investmentSlide.gatilhoEscassez)}</p><p><strong>Bônus de Ação Rápida:</strong> ${escapeHtml(investmentSlide.gatilhoBonus)}</p></div><br><p class="question">${escapeHtml(investmentSlide.ganchoDecisao)}</p>`
+          content: `
+            <div class="investment-layout">
+                <div class="packages-list">
+                    <h4>Pacotes Selecionados:</h4>
+                    <ul>
+                        ${packages.map(pkg => `<li><strong>${escapeHtml(pkg.name)}</strong>: ${pkg.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="total-investment">
+                    <h4>Investimento Total Mensal</h4>
+                    <span class="final-price">${escapeHtml(investmentValue)}</span>
+                </div>
+            </div>
+            <br>
+            <p class="question">${escapeHtml(investmentSlide.ancoragemPreco)}</p>
+            <div class="card" style="margin-top: 20px; text-align: left;">
+              <p><strong><i class="fas fa-exclamation-circle"></i> ${escapeHtml(investmentSlide.gatilhoEscassez)}</strong></p>
+              <p><strong><i class="fas fa-gift"></i> Bônus de Ação Rápida:</strong> ${escapeHtml(investmentSlide.gatilhoBonus)}</p>
+            </div>
+            <br>
+            <p class="question">${escapeHtml(investmentSlide.ganchoDecisao)}</p>`
       }
   ];
 
@@ -185,7 +207,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border-radius: 15px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between; /* Ajustado */
             align-items: center;
             overflow: hidden; /* Garante que não haja rolagem */
             border: 1px solid var(--border-color);
@@ -193,9 +215,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         .sky-container-content {
             width: 100%;
+            flex-grow: 1; /* Permite que o conteúdo cresça */
             transition: opacity 0.4s ease-in-out;
             overflow-y: auto;
             padding-right: 15px; /* Evita que a barra de rolagem cubra o conteúdo */
+            margin-bottom: 20px; /* Espaço antes da navegação */
         }
 
         /* Botão de Fechar */
@@ -223,7 +247,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .intro-container .fancy-text { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
         .proposal-meta { margin-top: 20px; font-size: 0.9rem; color: var(--secondary-color); }
 
-        .button { position: relative; cursor: pointer; display: inline-block; text-transform: uppercase; min-width: 250px; margin-top: 30px; color: white; font-weight: 700; }
+        .button { position: relative; cursor: pointer; display: inline-block; text-transform: uppercase; min-width: 250px; margin-top: 30px; color: white; font-weight: 700; text-align: center; }
         .button .border { border: 2px solid var(--accent-color); transform: skewX(-20deg); height: 50px; border-radius: 5px; overflow: hidden; position: relative; transition: 0.2s ease-out; }
         .button .text { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); transition: 0.2s ease-out; font-size: 1.1rem; }
         .button .left-plane, .button .right-plane { position: absolute; background: var(--accent-color); height: 100%; width: 51%; transition: 0.2s ease-out; }
@@ -237,8 +261,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .nav-arrows { 
             width: 100%;
             padding-top: 20px;
-            margin-top: auto; /* Empurra para o fundo */
             border-top: 1px solid var(--border-color);
+            text-align: center;
         }
         .nav-button { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 12px 25px; margin: 0 10px; cursor: pointer; font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-weight: 700; border-radius: 50px; transition: all 0.3s ease; }
         .nav-button:not(:disabled):hover { background-color: var(--accent-color); color: white; }
@@ -247,7 +271,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
         .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
-        .card h4 { font-size: 1.2rem; margin-bottom: 10px; }
+        .card h4 { font-size: 1.2rem; margin-bottom: 10px; text-align: center; }
+        .card p {text-align: center;}
         .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
         
         p.question {
@@ -256,7 +281,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border-left: 3px solid var(--accent-color);
             padding-left: 1rem;
             text-align: left;
-            margin: 1rem 0;
+            margin: 1rem auto;
         }
         
         .presentation-gallery-layout {
@@ -274,7 +299,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         .features-list .feature-item { display: flex; align-items: flex-start; text-align: left; }
         .features-list i { font-size: 1.5rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
-        .features-list h4 { margin-bottom: 5px; font-size: 1.2rem; }
+        .features-list h4 { margin-bottom: 5px; font-size: 1.2rem; text-align: left; }
         .features-list p { font-size: 1rem; text-align: left; }
 
         .image-gallery {
@@ -292,6 +317,21 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
         .impact-item i { font-size: 1.8rem; color: var(--accent-color); margin-right: 20px; }
+
+        .investment-layout { display: flex; flex-direction: column; gap: 30px; width: 100%; margin-top: 20px; }
+        .packages-list, .total-investment { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .packages-list h4, .total-investment h4 { font-size: 1.2rem; text-align: left; margin-bottom: 15px; }
+        .packages-list ul { list-style: none; padding: 0; text-align: left; }
+        .packages-list li { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .packages-list li:last-child { border-bottom: none; }
+        .total-investment { text-align: center; }
+        .final-price { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; color: var(--accent-color); }
+        
+        @media (min-width: 768px) {
+            .investment-layout { flex-direction: row; align-items: flex-start; }
+            .packages-list { flex: 2; }
+            .total-investment { flex: 1; }
+        }
 
         @media (min-width: 1024px) {
             .presentation-gallery-layout {
@@ -363,7 +403,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             { y: 70, z: 45 },  // Posição 5
             { y: 60, z: 50 },  // Posição 6
             { y: 50, z: 55 },  // Posição 7
-            { y: 40, z: 60 }   // Posição 8
+            { y: 40, z: 60 },   // Posição 8
+            { y: 30, z: 65 }    // Posição 9 (Novo slide)
         ];
 
         function updateSlideContent() {
@@ -407,9 +448,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         function init() {
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             camera.position.z = 50;
-            renderer.setClearColor("#000000", 1.0);
+            renderer.setClearColor(0x000000, 0); // Fundo transparente
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             document.getElementById('webgl-container').appendChild(renderer.domElement);
@@ -532,5 +573,3 @@ export function createInteractiveProposal(data: CreateProposalData): string {
   `;
   return html;
 }
-
-    

@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview Schemas for the Presentation Generator flow.
  */
@@ -126,6 +127,13 @@ export const GeneratePresentationOutputSchema = z.object({
     gatilhoEscassez: z.string().describe("Gatilho de urgência baseado em escassez de vagas."),
     gatilhoBonus: z.string().describe("Bônus por tempo limitado para fechamento rápido."),
   }),
+  
+  investmentValue: z.string().describe("Valor final do investimento com descontos."),
+  packages: z.array(z.object({
+      name: z.string(),
+      price: z.number(),
+      contract: z.string().optional()
+  })).describe("Lista de pacotes selecionados com nome e preço.")
 });
 
 export type GeneratePresentationOutput = z.infer<typeof GeneratePresentationOutputSchema>;
