@@ -1,5 +1,5 @@
 
-import type { GeneratePresentationOutput, packageOptions } from "@/ai/schemas/presentation-generator-schemas";
+import type { GeneratePresentationOutput } from "@/ai/schemas/presentation-generator-schemas";
 
 // Helper function to safely escape HTML content
 const escapeHtml = (text: string | undefined): string => {
@@ -45,10 +45,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                           <div class="feature-item"><i class="fas fa-users"></i><div><h4>Time Presencial</h4><p>Colaboração e sinergia de uma equipe dedicada.</p></div></div>
                           <div class="feature-item"><i class="fas fa-lightbulb"></i><div><h4>Metodologia</h4><p>Processos validados para gerar resultados mensuráveis.</p></div></div>
                       </div>
-                      <div class="image-gallery">
-                          <div class="image-placeholder img-h" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524630/PODCAST_01_wifyte.png')"></div>
-                          <div class="image-placeholder img-s1" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
-                          <div class="image-placeholder img-s2" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_32_gxdlmx.png')"></div>
+                      <div class="video-container">
+                          <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" autoplay loop muted playsinline></video>
                       </div>
                     </div>`
       },
@@ -74,7 +72,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       },
       {
           title: `<h2>Resultados que Falam por Si</h2>`,
-          content: `<p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p><div class="card-grid"><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+1')"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+2')"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+3')"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div></div>`
+          content: `<p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p><div class="card-grid"><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+2')" data-ai-hint="fashion store"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div><div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+3')" data-ai-hint="corporate office"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div></div>`
       },
       {
           title: `<h2>Nosso Compromisso com seu Crescimento de ${escapeHtml(metricsSlide.crescimentoPercentual)}</h2>`,
@@ -302,18 +300,19 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .features-list h4 { margin-bottom: 5px; font-size: 1.2rem; text-align: left; }
         .features-list p { font-size: 1rem; text-align: left; }
 
-        .image-gallery {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 15px;
+        .video-container {
+            width: 100%;
             height: 300px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .image-placeholder { width: 100%; height: 100%; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
-        .img-h { grid-column: 1 / -1; }
-        .img-s1 { grid-column: 1 / 2; }
-        .img-s2 { grid-column: 2 / 3; }
-
+        
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
         .impact-item i { font-size: 1.8rem; color: var(--accent-color); margin-right: 20px; }
