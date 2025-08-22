@@ -100,34 +100,32 @@ const defaultPackages = {
 };
 
 export const AboutUsSlide = () => (
-    <div data-slide style={{ ...slideStyles.base, padding: '50px 80px 80px' }} className="w-[1280px] h-[720px] shadow-2xl flex flex-col justify-center text-white rounded-lg overflow-hidden">
-        <div className="w-full max-w-6xl mx-auto">
-            <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider mb-4">NOSSA ABORDAGEM</p>
-            <h1 className="text-6xl font-black leading-tight mb-12">Não somos uma agência comum.<br/>Somos seu próximo parceiro de crescimento.</h1>
-            
-            <div className="grid grid-cols-3 gap-8">
-                <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="bg-primary/20 p-3 rounded-lg"><Search className="h-6 w-6 text-primary" /></div>
-                        <h3 className="text-xl font-bold">Diagnóstico Preciso</h3>
+    <div data-slide style={{ ...slideStyles.base, padding: '50px 80px 80px' }} className="w-[1280px] h-[720px] shadow-2xl flex items-center justify-center text-white rounded-lg overflow-hidden">
+        <div className="w-full max-w-6xl mx-auto grid grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+                <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider">SOBRE NÓS</p>
+                <h1 className="text-5xl font-black leading-tight">Somos obcecados por resultados, não por métricas de vaidade.</h1>
+                <p className="text-gray-300 text-lg leading-relaxed">Em um mercado onde muitos se contentam em entregar posts e relatórios, nós entregamos crescimento. Nossa equipe multidisciplinar e nossos estúdios próprios nos dão a agilidade e a qualidade para transformar a presença digital da sua empresa em um ativo que gera lucro e autoridade.</p>
+                <div className="flex items-center gap-6 pt-4">
+                    <div className="text-center">
+                        <p className="text-4xl font-bold text-primary">+50</p>
+                        <p className="text-sm text-gray-400">Clientes Atendidos</p>
                     </div>
-                    <p className="text-gray-300 text-base leading-relaxed">Mergulhamos no seu negócio para entender o DNA da sua marca, seus desafios e suas metas. Não aplicamos fórmulas prontas; criamos um mapa baseado em dados.</p>
+                    <div className="text-center">
+                        <p className="text-4xl font-bold text-primary">+3 Anos</p>
+                        <p className="text-sm text-gray-400">de Mercado</p>
+                    </div>
                 </div>
-                
-                <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                     <div className="flex items-center gap-4 mb-4">
-                        <div className="bg-primary/20 p-3 rounded-lg"><BrainCircuit className="h-6 w-6 text-primary" /></div>
-                        <h3 className="text-xl font-bold">Estratégia Sob Medida</h3>
-                    </div>
-                    <p className="text-gray-300 text-base leading-relaxed">Com o diagnóstico em mãos, desenhamos um plano de ação focado em resultados. Cada peça de conteúdo, cada campanha, cada post tem um propósito claro: mover o ponteiro do seu faturamento.</p>
+            </div>
+            <div className="grid grid-cols-2 grid-rows-2 gap-4 h-[500px]">
+                <div className="col-span-2 row-span-1 relative rounded-lg overflow-hidden">
+                     <Image src="https://placehold.co/600x240.png" alt="Placeholder de imagem de escritório" layout="fill" objectFit="cover" data-ai-hint="office meeting" />
                 </div>
-
-                <div className="bg-white/5 border border-white/10 rounded-xl p-6">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="bg-primary/20 p-3 rounded-lg"><Palette className="h-6 w-6 text-primary" /></div>
-                        <h3 className="text-xl font-bold">Execução Impecável</h3>
-                    </div>
-                    <p className="text-gray-300 text-base leading-relaxed">Nossa equipe interna e estúdios próprios garantem agilidade e qualidade superior. Da criação do conteúdo à gestão de tráfego, cuidamos de tudo para que você possa focar no seu negócio.</p>
+                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                    <Image src="https://placehold.co/300x300.png" alt="Placeholder de imagem de equipe" layout="fill" objectFit="cover" data-ai-hint="team collaboration" />
+                </div>
+                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
+                   <Image src="https://placehold.co/300x300.png" alt="Placeholder de imagem de detalhe" layout="fill" objectFit="cover" data-ai-hint="computer screen" />
                 </div>
             </div>
         </div>
@@ -454,7 +452,7 @@ export default function PresentationGenerator() {
     );
 
     // Give React time to render and browser to fetch assets
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise(resolve => setTimeout(resolve, 2500));
 
     const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
     const pdf = new jsPDF({
