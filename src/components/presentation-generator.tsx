@@ -129,16 +129,18 @@ export default function PresentationGenerator() {
         nextStepsSlide
     } = presentationContent;
 
-    const escapeHtml = (text: string | undefined) => {
-        if (!text) return '';
+    const escapeHtml = (text: any): string => {
+        if (typeof text !== 'string') {
+            return '';
+        }
         return text.replace(/&/g, "&amp;")
                    .replace(/</g, "&lt;")
                    .replace(/>/g, "&gt;")
                    .replace(/"/g, "&quot;")
                    .replace(/'/g, "&#039;")
-                   .replace(/`(?![^`]*`)/g, '') // Remove stray backticks
-                   .replace(/\n/g, '<br>'); // Convert newlines to breaks
+                   .replace(/\n/g, '<br>');
     };
+    
 
     const listToHtml = (items: string[]) => {
         if (!items || items.length === 0) return '<ul></ul>';
@@ -225,7 +227,7 @@ export default function PresentationGenerator() {
 
     let finalHtml = htmlTemplate;
     for (const [key, value] of Object.entries(replacements)) {
-      finalHtml = finalHtml.replace(new RegExp(key, 'g'), value);
+      finalHtml = finalHtml.replace(new RegExp(key.replace(/([.*+?^${}()|\[\]\/\\])/g, '\\$1'), 'g'), value);
     }
 
     const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
