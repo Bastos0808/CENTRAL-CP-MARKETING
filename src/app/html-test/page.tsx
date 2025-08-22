@@ -33,6 +33,7 @@ export default function HtmlTestPage() {
                 let baseColorRGB = darkBlue;
                 let baseColor = "rgb(" + baseColorRGB.r + "," + baseColorRGB.g + "," + baseColorRGB.b + ")";
                 let nearStars: any, farStars: any, farthestStars: any;
+                let animationFrameId: number;
 
                 function init() {
                     if (!mountRef.current || mountRef.current.querySelector('canvas')) {
@@ -105,6 +106,8 @@ export default function HtmlTestPage() {
                     
                     farStars.rotation.x = 0.25;
                     nearStars.rotation.x = 0.25;
+
+                    render(); // Start rendering loop only after init is complete
                 }
 
                 function createStars(amount: number, yDistance: number, color: string) {
@@ -122,11 +125,11 @@ export default function HtmlTestPage() {
                 }
 
                 let timer = 0;
-                let animationFrameId: number;
 
                 function render() {
                     animationFrameId = requestAnimationFrame(render);
                     timer += 0.01;
+                    if (!plane || !plane.geometry) return; // Guard clause
                     let vertices = plane.geometry.vertices;
 
                     for (let i = 0; i < vertices.length; i++) {
@@ -173,10 +176,10 @@ export default function HtmlTestPage() {
                 }
 
                 init();
-                render();
 
                 // Event Listeners using refs
                 const handleResize = () => {
+                    if (!camera || !renderer) return;
                     camera.aspect = window.innerWidth / window.innerHeight;
                     camera.updateProjectionMatrix();
                     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -190,6 +193,7 @@ export default function HtmlTestPage() {
                 window.addEventListener("mousemove", handleMouseMove);
 
                 const handleShiftCamera = () => {
+                    if (!introContainerRef.current || !camera || !plane || !xMarkRef.current || !skyContainerRef.current) return;
                     let introTimeline = new window.TimelineMax();
                     introTimeline.add([
                         window.TweenLite.fromTo(introContainerRef.current, 0.5, { opacity: 1 }, { opacity: 0, ease: window.Power3.easeIn }),
@@ -205,6 +209,7 @@ export default function HtmlTestPage() {
                 };
 
                 const handleResetCamera = () => {
+                    if (!xMarkRef.current || !skyContainerRef.current || !camera || !plane || !introContainerRef.current) return;
                      let outroTimeline = new window.TimelineMax();
                     outroTimeline.add([
                         window.TweenLite.to(xMarkRef.current, 0.5, { opacity: 0, ease: window.Power3.easeInOut }),
@@ -229,7 +234,7 @@ export default function HtmlTestPage() {
                     if (buttonRef.current) buttonRef.current.removeEventListener('click', handleShiftCamera);
                     if (xMarkRef.current) xMarkRef.current.removeEventListener('click', handleResetCamera);
                     cancelAnimationFrame(animationFrameId);
-                    if (mountRef.current && renderer.domElement) {
+                    if (mountRef.current && renderer?.domElement) {
                         mountRef.current.removeChild(renderer.domElement);
                     }
                 };
@@ -237,11 +242,12 @@ export default function HtmlTestPage() {
             }
         }, 100);
 
+        return () => clearInterval(interval);
     }, []);
 
     return (
         <>
-            <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js" strategy="lazyOnload" />
+            <Script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js" strategy="lazyOnload" />
             <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TweenLite.min.js" strategy="lazyOnload" />
             <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/TimelineMax.min.js" strategy="lazyOnload" />
             <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.19.1/easing/EasePack.min.js" strategy="lazyOnload" />
@@ -473,5 +479,4 @@ export default function HtmlTestPage() {
             </div>
         </>
     );
-
-    
+}
