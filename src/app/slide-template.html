@@ -74,6 +74,11 @@
             position: relative;
             padding-left: 28px;
             margin-bottom: 12px;
+            color: var(--muted-foreground);
+        }
+        ul li strong {
+            color: var(--foreground);
+            font-weight: 600;
         }
         ul li::before {
             content: '✓';
@@ -99,6 +104,13 @@
             background-color: rgba(255, 255, 255, 0.05);
             padding: 20px;
             border-radius: 8px;
+        }
+        .pillar p {
+            color: var(--muted-foreground);
+        }
+         .pillar p strong {
+            color: var(--foreground);
+            font-weight: 600;
         }
         .kpi-grid {
             display: grid;
@@ -147,6 +159,9 @@
         table tfoot tr {
             border: none;
         }
+        table tfoot tr td {
+             border-bottom: none;
+        }
         table tfoot tr.total td {
             padding-top: 16px;
             border-top: 2px solid var(--primary);
@@ -190,15 +205,15 @@
             <div class="pillars">
                 <div class="pillar">
                     <h3>Pilar 1: Aquisição</h3>
-                    <p>{{actionPlanPillar1}}</p>
+                    <p>{{{actionPlanPillar1}}}</p>
                 </div>
                 <div class="pillar">
                     <h3>Pilar 2: Conversão</h3>
-                    <p>{{actionPlanPillar2}}</p>
+                    <p>{{{actionPlanPillar2}}}</p>
                 </div>
                 <div class="pillar">
                     <h3>Pilar 3: Autoridade</h3>
-                    <p>{{actionPlanPillar3}}</p>
+                    <p>{{{actionPlanPillar3}}}</p>
                 </div>
             </div>
         </div>
@@ -222,7 +237,7 @@
 
         <div class="section">
             <h2>{{justificationTitle}}</h2>
-            <p>{{justificationContent}}</p>
+            <p>{{{justificationContent}}}</p>
         </div>
 
         <div class="section">

@@ -130,7 +130,7 @@ export default function PresentationGenerator() {
         nextStepsSlide
     } = presentationContent;
 
-    const listToHtml = (items: string[]) => `<ul>${items.map(item => `<li>${item.replace(/<strong>/g, '<span style="font-weight: bold;">').replace(/<\/strong>/g, '</span>')}</li>`).join('')}</ul>`;
+    const listToHtml = (items: string[]) => `<ul>${items.map(item => `<li>${item.replace(/<strong>/g, '<strong>').replace(/<\/strong>/g, '</strong>')}</li>`).join('')}</ul>`;
 
     const kpiItemsHtml = kpiSlide.kpis.map(kpi => `
         <div class="kpi-item">
@@ -184,9 +184,9 @@ export default function PresentationGenerator() {
         .replace('{{diagnosticContent}}', listToHtml(diagnosticSlide.content || []))
         .replace('{{diagnosticQuestion}}', diagnosticSlide.question || '')
         .replace('{{actionPlanTitle}}', actionPlanSlide.title || '')
-        .replace('{{actionPlanPillar1}}', actionPlanSlide.content[0] || '')
-        .replace('{{actionPlanPillar2}}', actionPlanSlide.content[1] || '')
-        .replace('{{actionPlanPillar3}}', actionPlanSlide.content[2] || '')
+        .replace('{{{actionPlanPillar1}}}', actionPlanSlide.content[0] || '')
+        .replace('{{{actionPlanPillar2}}}', actionPlanSlide.content[1] || '')
+        .replace('{{{actionPlanPillar3}}}', actionPlanSlide.content[2] || '')
         .replace('{{timelineTitle}}', timelineSlide.title || '')
         .replace('{{timelineContent}}', listToHtml(timelineSlide.content || []))
         .replace('{{kpiTitle}}', kpiSlide.title || '')
@@ -194,7 +194,7 @@ export default function PresentationGenerator() {
         .replace('{{whyCpTitle}}', whyCpSlide.title || '')
         .replace('{{whyCpContent}}', listToHtml(whyCpSlide.content || []))
         .replace('{{justificationTitle}}', justificationSlide.title || '')
-        .replace('{{justificationContent}}', justificationSlide.content || '')
+        .replace('{{{justificationContent}}}', justificationSlide.content || '')
         .replace('{{investmentTitle}}', investmentSlide.title || '')
         .replace('{{investmentTable}}', investmentHtml)
         .replace('{{nextStepsTitle}}', nextStepsSlide.title || '')
