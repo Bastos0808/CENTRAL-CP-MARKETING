@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-R-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Template de Slide Editável</title>
     
@@ -47,9 +47,9 @@
             display: flex;
             flex-direction: column;
             /* Alinha o conteúdo no início (topo) do slide. */
-            justify-content: flex-start;
+            justify-content: center;
             /* Adiciona um preenchimento interno para o conteúdo não colar nas bordas. */
-            padding: 50px 80px 80px; /* Padding superior reduzido */
+            padding: 80px;
             /* Garante que o padding seja calculado para dentro da caixa de 1280x720. */
             box-sizing: border-box;
             /* Adiciona uma sombra sutil para destacar o slide da página. */
@@ -63,7 +63,8 @@
         */
         .slide-content {
             /* Define a largura máxima do texto. */
-            max-width: 1000px;
+            max-width: 1100px;
+            width: 100%;
         }
 
         /* Estilo para o subtítulo (a linha de texto pequena e colorida). */
@@ -85,82 +86,69 @@
         /* Estilo para o título principal do slide. */
         .slide-title {
             /* Tamanho da fonte. */
-            font-size: 3.5rem; /* Tamanho reduzido */
+            font-size: 4rem; /* Tamanho reduzido */
             /* Deixa a fonte extra-negrito. */
             font-weight: 900;
             /* Margem inferior para separar do parágrafo. */
-            margin-bottom: 24px;
+            margin-bottom: 48px;
              /* Remove a margem superior padrão do h1. */
             margin-top: 0;
             /* Define uma altura de linha mais apertada para títulos grandes. */
             line-height: 1.1;
         }
         
-        /* Container para as imagens */
-        .image-container {
+        /* Container para os pilares */
+        .pillars-container {
             display: flex; /* Alinha os itens lado a lado */
-            gap: 24px; /* Espaço entre os itens */
-            margin-top: 32px; 
-            align-items: stretch; /* Faz com que os itens preencham a altura */
-        }
-
-        /* Estilo base para cada imagem */
-        .placeholder-image {
-            background-color: #222; /* Cor de fundo para o placeholder */
-            border-radius: 8px; /* Cantos arredondados */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #555;
-            font-size: 1rem;
-            font-weight: bold;
-        }
-        
-        /* Estilo para a imagem vertical */
-        .placeholder-image-vertical {
-            width: 550px; 
-            height: 400px; 
-            object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer */
-            border-radius: 8px;
-        }
-        
-        /* Wrapper para empilhar a caixa de texto e a imagem horizontal */
-        .horizontal-item-wrapper {
-            display: flex;
-            flex-direction: column; /* Empilha os itens verticalmente */
-            gap: 16px; /* Espaço entre a caixa de texto e a imagem */
-            flex-grow: 1; /* Faz o wrapper ocupar o espaço horizontal restante */
-        }
-
-        /* Estilo para a caixa de texto de vidro */
-        .glass-textbox {
-            background: rgba(255, 255, 255, 0.05); /* Fundo semi-transparente */
-            backdrop-filter: blur(10px); /* Efeito de desfoque (mágico!) */
-            -webkit-backdrop-filter: blur(10px); /* Suporte para o navegador Safari */
-            border-radius: 8px;
-            padding: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil para definir a forma */
-            color: #E0E0E0;
-            font-size: 1rem;
-            line-height: 1.5;
-            box-sizing: border-box; /* Garante que o padding não aumente a altura total */
-            flex-grow: 1; /* Faz a caixa crescer para preencher o espaço */
-        }
-
-        /* Grid para as 4 imagens horizontais */
-        .horizontal-image-grid {
-            display: flex;
-            gap: 16px;
+            gap: 32px; /* Espaço entre os pilares */
             width: 100%;
         }
 
-        /* Estilo para as imagens pequenas */
-        .small-placeholder {
-            width: 130px; /* Largura fixa para evitar distorção */
-            height: 180px; /* Altura reduzida */
-            object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer */
-            border-radius: 8px;
+        /* Estilo para cada pilar */
+        .pillar {
+            background: rgba(255, 255, 255, 0.05); /* Fundo semi-transparente */
+            backdrop-filter: blur(10px); /* Efeito de desfoque */
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Borda sutil */
+            flex: 1; /* Faz com que todos os pilares ocupem o mesmo espaço */
         }
+        
+        .pillar-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .pillar-icon-container {
+            background-color: rgba(230, 81, 0, 0.2); /* Fundo laranja com transparência */
+            border-radius: 8px;
+            padding: 12px;
+            display: inline-flex;
+        }
+        
+        .pillar-icon-container svg {
+             width: 24px;
+             height: 24px;
+             stroke: #E65100; /* Cor do ícone */
+        }
+
+        .pillar-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+        
+        .pillar-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #d1d5db; /* cinza claro */
+            margin: 0;
+        }
+
 
     </style>
 </head>
@@ -177,7 +165,7 @@
                 Use esta tag <p> para um texto de destaque menor, acima do título principal.
             -->
             <p class="slide-subtitle">
-                Sobre Nós
+                Nossa Abordagem
             </p>
 
             <!-- 
@@ -185,45 +173,54 @@
                 Use esta tag <h1> para o título principal e mais impactante do seu slide.
             -->
             <h1 class="slide-title">
-                Conheça sua nova agência
+                Não somos uma agência comum. Somos seu próximo parceiro de crescimento.
             </h1>
 
             <!-- 
-                CONTAINER DE IMAGENS
-                Este container organiza a imagem vertical e o conjunto da imagem horizontal.
+                CONTAINER DOS PILARES
+                Este container organiza os 3 pilares de valor lado a lado.
             -->
-            <div class="image-container">
-                <!-- 
-                    IMAGEM DA ESQUERDA (Vertical)
-                    A div foi substituída por uma tag <img>
-                -->
-                <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png" alt="Foto da equipe da agência" class="placeholder-image-vertical">
-
-                <!-- 
-                    WRAPPER
-                    Este container agrupa a caixa de texto e a imagem horizontal.
-                -->
-                <div class="horizontal-item-wrapper">
-                    <!-- 
-                        CAIXA DE TEXTO DE VIDRO
-                        Edite o texto aqui dentro.
-                    -->
-                    <div class="glass-textbox">
-                        <p style="margin:0;">
-                           Imagine transformar sua presença digital em seu maior vendedor. Atuamos como parceiros estratégicos para construir um ecossistema de vendas robusto e previsível para seu negócio. Nosso foco é claro: gerar um fluxo constante de clientes e impulsionar seu faturamento a novos patamares.
-                        </p>
+            <div class="pillars-container">
+                <!-- Pilar 1: Diagnóstico -->
+                <div class="pillar">
+                    <div class="pillar-header">
+                        <div class="pillar-icon-container">
+                            <!-- Ícone Lucide: Search -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        </div>
+                        <h3 class="pillar-title">Diagnóstico Preciso</h3>
                     </div>
-
-                    <!-- 
-                        Grid para as 4 imagens horizontais
-                        As divs foram substituídas por tags <img>
-                    -->
-                    <div class="horizontal-image-grid">
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799844/Prancheta_33_jj5hre.png" alt="Imagem de projeto 1" class="small-placeholder">
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_32_gxdlmx.png" alt="Imagem de projeto 2" class="small-placeholder">
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_31_lyf95d.png" alt="Imagem de projeto 3" class="small-placeholder">
-                        <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1755799842/Prancheta_34_hviyd6.png" alt="Imagem de projeto 4" class="small-placeholder">
+                    <p class="pillar-description">
+                        Mergulhamos no seu negócio para entender o DNA da sua marca, seus desafios e suas metas. Não aplicamos fórmulas prontas; criamos um mapa baseado em dados.
+                    </p>
+                </div>
+                
+                <!-- Pilar 2: Estratégia -->
+                <div class="pillar">
+                     <div class="pillar-header">
+                        <div class="pillar-icon-container">
+                             <!-- Ícone Lucide: BrainCircuit -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a3 3 0 1 0-5.993.119M12 5a3 3 0 1 1 5.993.119M15 13a3 3 0 1 0-5.993.119M15 13a3 3 0 1 1 5.993.119M12 21a3 3 0 1 0-5.993-.119M12 21a3 3 0 1 1 5.993-.119M20 13h-2M6 13H4M12 17v-2M12 9V7"/><path d="m14.65 10.35-.7.7a3 3 0 0 0-3.9 3.9l-.7.7"/><path d="m9.35 10.35.7.7a3 3 0 0 1 3.9 3.9l.7.7"/></svg>
+                        </div>
+                        <h3 class="pillar-title">Estratégia Sob Medida</h3>
                     </div>
+                    <p class="pillar-description">
+                       Com o diagnóstico em mãos, desenhamos um plano de ação focado em resultados. Cada peça de conteúdo, cada campanha, tem um propósito claro: mover o ponteiro do seu faturamento.
+                    </p>
+                </div>
+
+                <!-- Pilar 3: Execução -->
+                <div class="pillar">
+                    <div class="pillar-header">
+                        <div class="pillar-icon-container">
+                            <!-- Ícone Lucide: Palette -->
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.477-1.122-.297-.287-.703-.465-1.17-.465-1.137 0-2.062-.938-2.062-2.088s.925-2.088 2.063-2.088c.467 0 .873.178 1.17.465.297.287.477.685.477 1.122 0 .942.722 1.688 1.648 1.688 5.5 0 10-4.5 10-10S17.5 2 12 2Z"/></svg>
+                        </div>
+                        <h3 class="pillar-title">Execução Impecável</h3>
+                    </div>
+                    <p class="pillar-description">
+                       Nossa equipe interna e estúdios próprios garantem agilidade e qualidade superior. Da criação do conteúdo à gestão de tráfego, cuidamos de tudo para que você possa focar no seu negócio.
+                    </p>
                 </div>
             </div>
 
