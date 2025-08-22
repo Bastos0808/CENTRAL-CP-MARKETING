@@ -12,10 +12,10 @@ import {
   GeneratePresentationInputSchema,
   GeneratePresentationInput,
   GeneratePresentationOutputSchema,
-  GeneratePresentationOutput,
-  packageOptions
+  GeneratePresentationOutput
 } from '@/ai/schemas/presentation-generator-schemas';
-import { z } from 'zod';
+import { format, add } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 // Exported function that the frontend will call
 export async function generatePresentation(
@@ -23,12 +23,6 @@ export async function generatePresentation(
 ): Promise<GeneratePresentationOutput> {
   return presentationGeneratorFlow(input);
 }
-
-// Helper to format currency
-const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-};
-
 
 // Define the flow that orchestrates the call to the AI
 const presentationGeneratorFlow = ai.defineFlow(
@@ -38,135 +32,97 @@ const presentationGeneratorFlow = ai.defineFlow(
     outputSchema: GeneratePresentationOutputSchema,
   },
   async (input) => {
-    const { packages = [], discount = 0, ...diagnosticData } = input;
-    const selectedPackageDetails = packages.map(key => ({
-        key,
-        ...packageOptions[key as keyof typeof packageOptions]
-    }));
     
-    const totalValue = selectedPackageDetails.reduce((acc, pkg) => acc + pkg.price, 0);
-    const finalTotal = totalValue - discount;
+    // Format dates
+    const today = new Date();
+    const proposalDate = format(today, "d 'de' MMMM 'de' yyyy", { locale: ptBR });
+    const proposalValidityDate = format(add(today, { days: 7 }), "dd/MM/yyyy");
 
+    // Prepare data for the AI prompt
+    const { faturamentoMedio, metaFaturamento, ticketMedio, ...restOfInput } = input;
     const inputForAI = {
-      ...diagnosticData,
-      selectedPackages: selectedPackageDetails.map(p => p.name).join(', '),
-      totalValue: formatCurrency(totalValue),
-      finalTotal: formatCurrency(finalTotal),
-      discount: discount > 0 ? formatCurrency(discount) : undefined,
-    }
-    
+        ...restOfInput,
+        faturamentoMedio: faturamentoMedio.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+        metaFaturamento: metaFaturamento.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+        ticketMedio: ticketMedio?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'N/A',
+        custoProblema: input.custoProblema?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) || 'N/A',
+    };
+
     const llmResponse = await ai.generate({
         model: googleAI.model('gemini-1.5-pro-latest'),
         output: { schema: GeneratePresentationOutputSchema },
         prompt: `
-            Você é um Estrategista de Vendas Sênior e um especialista em criar apresentações comerciais consultivas para a agência "CP Marketing Digital". Sua missão é transformar os dados brutos de uma reunião de diagnóstico (R1) em uma narrativa de vendas poderosa e persuasiva para a Reunião de Solução (R2).
+            Você é um Estrategista de Vendas Sênior e um especialista em criar narrativas comerciais persuasivas para a agência "CP Marketing Digital". Sua missão é transformar os dados brutos de uma reunião de diagnóstico em conteúdo textual para uma apresentação interativa, seguindo rigorosamente as instruções para cada slide.
 
-            **Instruções Críticas:**
-            1.  **Siga a Estrutura de Slides:** Gere o conteúdo para cada slide exatamente na ordem e com o propósito definido abaixo.
-            2.  **Seja Persuasivo e Provocativo:** Não se limite a repetir os dados. Use-os para construir um argumento. Use uma linguagem simples mas com termos técnicos pontuais. Crie títulos em formato de pergunta e adicione "pílulas de conteúdo" (dados de mercado, insights rápidos) para tornar a apresentação mais rica e engajante.
-            3.  **Conecte Dor e Solução:** Sua principal tarefa é conectar a dor do cliente (identificada na R1) com o plano de ação que você vai propor. Cada slide deve reforçar essa ponte. Foque em como o 'principalGargalo' causa o 'impactoGargalo' e custa 'custoProblema'.
-            4.  **Seja Conciso e Impactante:** Use linguagem de negócios. Crie títulos fortes e textos curtos e diretos (no máximo 2-3 linhas por tópico). Use bullet points para facilitar a leitura.
-            5.  **Justificativa Estratégica:** No slide "Por que este plano?", você DEVE criar uma justificativa convincente, explicando como a combinação dos serviços selecionados ataca diretamente os gargalos e dores do cliente para atingir a meta.
-            6.  **KPIs com Estimativas e Análise Detalhada:** Para o slide de KPIs, não apenas liste as métricas. Para cada uma, forneça uma **estimativa de meta** realista e, no campo 'importance', uma **análise detalhada** explicando como aquela métrica específica contribui para resolver o 'principalGargalo' e alcançar a 'metaFaturamento'. Para CAC e ROAS, explique por que são as métricas mais importantes para a saúde financeira do negócio.
-            7.  **Empatia e Conexão Pessoal:** Utilize os campos 'sentimentoPessoal' e 'visaoFuturoPessoal' para criar uma conexão emocional na apresentação.
-
-            **Dados do Diagnóstico (R1):**
+            **Dados do Diagnóstico:**
             ---
             - **Nome do Cliente:** ${inputForAI.clientName}
             - **Tempo de Empresa:** ${inputForAI.tempoEmpresa}
             - **Faturamento Médio Atual:** ${inputForAI.faturamentoMedio}
-            - **Meta de Faturamento (Próximos 6 meses):** ${inputForAI.metaFaturamento}
-            - **Ticket Médio:** ${inputForAI.ticketMedio || 'N/A'}
-            - **Origem dos Clientes Hoje:** ${inputForAI.origemClientes || 'N/A'}
+            - **Meta de Faturamento (6 meses):** ${inputForAI.metaFaturamento}
+            - **Ticket Médio:** ${inputForAI.ticketMedio}
+            - **Origem dos Clientes:** ${inputForAI.origemClientes}
             - **Motivação para Investir:** ${inputForAI.motivacaoMarketing}
-            - **Experiência Anterior com Marketing:** ${inputForAI.experienciaMarketing || 'N/A'}
-            - **Tentativas Anteriores que Falharam:** ${inputForAI.tentativasAnteriores || 'N/A'}
-            - **Principal Gargalo Identificado:** ${inputForAI.principalGargalo}
-            - **Impacto do Gargalo no Dia a Dia:** ${inputForAI.impactoGargalo || 'N/A'}
-            - **Custo Estimado do Problema:** ${inputForAI.custoProblema || 'N/A'}
-            - **Visão de Futuro (Negócio):** ${inputForAI.visaoFuturo || 'N/A'}
-            - **Visão de Futuro (Pessoal):** ${inputForAI.visaoFuturoPessoal || 'N/A'}
-            - **Envolvidos na Decisão:** ${inputForAI.envolvidosDecisao || 'N/A'}
-            - **Orçamento Previsto:** ${inputForAI.orcamentoPrevisto || 'N/A'}
-            - **Prazo para Decisão:** ${inputForAI.prazoDecisao || 'N/A'}
-            - **Serviços Selecionados:** ${inputForAI.selectedPackages}
-            - **Valor Total:** ${inputForAI.totalValue}
-            - **Desconto Aplicado:** ${inputForAI.discount || 'N/A'}
-            - **Valor Final:** ${inputForAI.finalTotal}
+            - **Experiência Anterior com Marketing:** ${inputForAI.experienciaMarketing}
+            - **Tentativas Anteriores que Falharam:** ${inputForAI.tentativasAnteriores}
+            - **Principal Gargalo:** ${inputForAI.principalGargalo}
+            - **Impacto do Gargalo:** ${inputForAI.impactoGargalo}
+            - **Sentimento Pessoal do Gestor:** ${inputForAI.sentimentoPessoal}
+            - **Custo Estimado do Problema por Mês:** ${inputForAI.custoProblema}
+            - **Visão de Futuro (Negócio):** ${inputForAI.visaoFuturo}
+            - **Visão de Futuro (Pessoal):** ${inputForAI.visaoFuturoPessoal}
+            - **O que faria com mais clientes:** ${inputForAI.potencialResolucao}
             ---
 
-            **Agora, gere o conteúdo para a apresentação seguindo a estrutura abaixo. Preencha todos os campos do objeto de saída.**
+            **Agora, gere o conteúdo para cada slide da apresentação, preenchendo todos os campos do objeto de saída.**
 
             ---
-            **Estrutura da Apresentação (Slides)**
+            **Slide 3: O Diagnóstico**
+            - **resumoEmpatico:** Crie um parágrafo que conecte a meta de faturamento (${inputForAI.metaFaturamento}) ao gargalo principal (${inputForAI.principalGargalo}) e ao sentimento de frustração/estar perdido do cliente (${inputForAI.sentimentoPessoal}).
+            - **analiseReflexiva:** Crie um parágrafo que comece com 'Uma empresa com ${inputForAI.tempoEmpresa} de história decide agir agora porque...' e conecte com as respostas sobre 'aumento da concorrência' ou 'chegamos num platô' (${inputForAI.motivacaoMarketing}). O objetivo é reforçar a criticidade do momento.
 
-            1.  **presentationTitle:** "Plano de Crescimento para ${inputForAI.clientName}"
+            ---
+            **Slide 4: A Dor e Suas Consequências**
+            - **consequencia_1:** Gere um bullet point sobre o impacto operacional do gargalo, usando a resposta de '${inputForAI.impactoGargalo}'.
+            - **consequencia_2:** Gere um bullet point destacando a frustração de já ter tentado resolver isso sem sucesso ('${inputForAI.tentativasAnteriores}'), mostrando que o problema é a falta da estratégia correta.
+            - **consequencia_3:** Gere um bullet point mostrando como a inação fortalece a concorrência, que já está investindo em marketing.
 
-            2.  **diagnosticSlide:**
-                -   **title:** "Onde estamos e para onde vamos?"
-                -   **content (em 3 bullet points, curtos e diretos):**
-                    -   "**Meta:** Acelerar de ${inputForAI.faturamentoMedio} para ${inputForAI.metaFaturamento} em 6 meses."
-                    -   "**Gargalo:** O obstáculo principal é ${inputForAI.principalGargalo}, que hoje causa ${inputForAI.impactoGargalo || 'um impacto significativo na operação'}."
-                    -   "**Custo da Inação:** Manter esse gargalo representa um custo de oportunidade estimado em ${inputForAI.custoProblema || 'milhares de reais'} mensais."
-                -   **question:** Crie uma pergunta de reflexão curta e provocativa baseada no gargalo. Ex: "Quantos clientes em potencial deixaram de entrar em contato este mês por não encontrarem vocês da forma certa?"
+            ---
+            **Slide 5: A Visualização do Futuro**
+            - **cenario_6_meses:** Descreva a conquista da meta de faturamento de ${inputForAI.metaFaturamento}, a previsibilidade e a agenda cheia, baseado em '${inputForAI.visaoFuturo}'.
+            - **cenario_1_ano:** Projete os resultados para 1 ano. Use as respostas sobre 'o que faria com mais clientes' ('${inputForAI.potencialResolucao}') e o 'impacto pessoal' ('${inputForAI.visaoFuturoPessoal}') para descrever a transformação completa do negócio e da vida do gestor.
 
-            3.  **actionPlanSlide:**
-                -   **title:** "Como vamos virar o jogo?"
-                -   **content (descreva os 3 pilares, cada um com um título forte e um insight):**
-                    -   "**Pilar 1 - Aquisição:** Como vamos atrair um fluxo constante de leads qualificados. **Insight:** Adicione um dado de mercado ou frase de impacto sobre aquisição."
-                    -   "**Pilar 2 - Conversão:** Como vamos transformar curiosos em clientes pagantes. **Insight:** Adicione um dado de mercado ou frase de impacto sobre funil de vendas."
-                    -   "**Pilar 3 - Autoridade:** Como vamos posicionar sua marca como líder no setor. **Insight:** Adicione um dado de mercado ou frase de impacto sobre branding."
+            ---
+            **Slide 6: O Custo da Inação**
+            - **custo_6_meses:** Calcule o custo da inação em 6 meses, multiplicando '${input.custoProblema || 0}' por 6. Formate como moeda BRL.
+            - **custo_1_ano:** Calcule o custo da inação em 1 ano, multiplicando '${input.custoProblema || 0}' por 12. Formate como moeda BRL.
+            - **cenario_inercia:** Gere um parágrafo de alto impacto sobre o que acontecerá em 1 ano se nada for feito, focando na estagnação do faturamento, domínio da concorrência e aumento da frustração do gestor.
 
-            4.  **timelineSlide:**
-                -   **title:** "Qual o cronograma de execução?"
-                -   **content (descreva as fases de forma concisa):**
-                    -   "**Semanas 1-2 (Setup e Imersão):** Alinhamento estratégico, configuração de ferramentas e planejamento de campanhas/conteúdo."
-                    -   "**Semanas 3-12 (Execução e Otimização):** Lançamento de campanhas, produção de conteúdo e otimizações semanais baseadas em dados."
-                    -   "**Revisões Estratégicas:** Reuniões mensais para análise de resultados, ROI e próximos passos."
+            ---
+            **Slide 7: A Estratégia**
+            - **pilarAquisicao:** Gere um texto para o pilar 'Aquisição' que o conecte diretamente ao '${inputForAI.principalGargalo}'.
+            - **pilarConversao:** Gere um texto para o pilar 'Conversão' que use a resposta sobre 'leads desqualificados' e a falha do '${inputForAI.tentativasAnteriores}'.
+            - **pilarAutoridade:** Gere um texto para o pilar 'Autoridade' que conecte com o fato de que a maioria dos clientes vem de '${inputForAI.origemClientes}', mostrando como vamos escalar essa confiança.
 
-            5.  **kpiSlide:**
-                -   **title:** "Como vamos medir o sucesso (e o ROI)?"
-                -   **kpis (gere 5 kpis, incluindo CPL, Taxa de Conversão, CAC, ROAS e uma outra relevante):**
-                    -   **metric:** (Ex: "Custo por Aquisição (CAC)")
-                    -   **estimate:** (Ex: "Abaixo de R$150,00")
-                    -   **importance:** (Ex: "A métrica mais importante para a saúde financeira do negócio. Indica quanto custa para conquistar cada novo cliente, conectando diretamente o investimento em marketing ao crescimento real da base de clientes e à meta de ${inputForAI.metaFaturamento}.")
-                    -   **icon:** (Escolha um ícone de: 'TrendingUp', 'Target', 'DollarSign', 'Repeat', 'Users')
+            ---
+            **Slide 9: Métricas de Sucesso**
+            - **crescimentoPercentual:** Calcule a porcentagem de crescimento necessária para ir de ${input.faturamentoMedio} para ${input.metaFaturamento} em 6 meses. Formate como 'XX%'.
+            - **metaLeadsQualificados:** Com base na meta de faturamento e no ticket médio de ${inputForAI.ticketMedio}, calcule uma meta realista de leads qualificados por mês.
+            - **metaTaxaConversao:** Defina uma meta de taxa de conversão realista para atingir o objetivo.
 
-            6.  **whyCpSlide:**
-                -   **title:** "Por que a CP é a escolha certa?"
-                -   **content (em 3 bullet points, conectando os diferenciais à dor do cliente):**
-                    -   "**Mentoria e Agilidade:** Projeto estratégico entregue em 10 dias com mentoria de apresentação, garantindo que a execução comece rápido para atacar o gargalo de ${inputForAI.principalGargalo}."
-                    -   "**Produção Própria:** Time presencial e estúdios próprios para produzir conteúdo de alta qualidade sem depender da sua agenda, garantindo consistência e padrão profissional."
-                    -   "**Foco em Business Performance:** Enquanto o mercado foca em métricas de vaidade, nossa obsessão é o crescimento do seu faturamento e o ROI do seu investimento."
-                
-            7.  **justificationSlide:**
-                -   **title:** "Por que este plano é ideal para você?"
-                -   **content:** Crie um texto persuasivo (2-3 linhas) que justifique a escolha dos serviços, conectando-os aos gargalos e metas do cliente. Se não houver serviços, explique a importância de um plano estratégico.
-
-            8.  **investmentSlide:**
-                -   **title:** "Proposta de Investimento"
-                -   **items:** Baseado nos pacotes selecionados, descreva os itens de forma atraente.
-                -   **total:** ${inputForAI.totalValue}
-                -   **discount:** ${inputForAI.discount || 'N/A'}
-                -   **finalTotal:** ${inputForAI.finalTotal}
-                
-            9.  **nextStepsSlide:**
-                -   **title:** "Quais os próximos passos?"
-                -   **content (em 3 bullet points):** "Alinhamento e assinatura da proposta.", "Pagamento da primeira parcela para reserva de agenda.", "Reunião de Onboarding e Kick-off estratégico."
-            `,
+            ---
+            **Slide 10: O Investimento**
+            - **ancoragemPreco:** Gere um parágrafo que compare o 'Custo da Inação' (${inputForAI.custoProblema} por mês) com o valor do investimento, posicionando a proposta como uma decisão inteligente.
+            - **ganchoDecisao:** Gere um parágrafo final que contraste a 'Visão de Futuro' com o 'Cenário da Inércia' e termine com a pergunta: 'Qual desses dois futuros você escolherá construir a partir de hoje?'.
+            - **gatilhoEscassez:** Crie uma frase de urgência sobre o número limitado de vagas para novos clientes este mês. Ex: 'Para garantir a dedicação que você viu, só abrimos 3 novas vagas este mês.'.
+            - **gatilhoBonus:** Crie uma frase sobre o bônus de um episódio de podcast para fechamento na semana. Ex: 'Fechando nesta semana, você garante a produção de um episódio de podcast em nosso estúdio para lançar sua nova fase de autoridade.'.
+        `,
     });
     
-    // Manually construct the investment slide data from the original input
-    // to ensure correct formatting and data integrity.
+    // Manually add the date fields which don't require AI generation
     if (llmResponse.output) {
-        const investmentItems = packages && packages.length > 0 ? selectedPackageDetails.map(p => ({ name: p.name, price: formatCurrency(p.price) })) : [];
-        llmResponse.output.investmentSlide = {
-            title: llmResponse.output.investmentSlide.title || "Proposta de Investimento",
-            items: investmentItems,
-            total: formatCurrency(totalValue),
-            discount: discount > 0 ? `- ${formatCurrency(discount)}` : undefined,
-            finalTotal: formatCurrency(finalTotal)
-        };
+      llmResponse.output.proposalDate = proposalDate;
+      llmResponse.output.proposalValidityDate = proposalValidityDate;
     }
     
     return llmResponse.output!;

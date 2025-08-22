@@ -78,47 +78,54 @@ export const DiagnosticFormSchema = z.object({
 });
 
 
-const DiagnosticSlideSchema = z.object({
-  title: z.string().describe("O título do slide."),
-  content: z.array(z.string()).describe("O conteúdo do slide, em formato de bullet points."),
-  question: z.string().describe("Uma pergunta provocativa para reflexão baseada no diagnóstico.")
-});
-
-const KpiItemSchema = z.object({
-  metric: z.string().describe("Nome da métrica (Ex: Custo por Aquisição (CAC))."),
-  estimate: z.string().describe("Estimativa de meta para a métrica (Ex: 'Abaixo de R$150,00')."),
-  importance: z.string().describe("Breve explicação sobre por que esta métrica é importante para o cliente."),
-  icon: z.enum(['TrendingUp', 'Target', 'DollarSign', 'Repeat', 'Users']).describe("Ícone para representar a métrica.")
-});
-
-
-const SlideSchema = z.object({
-  title: z.string().describe("O título do slide."),
-  content: z.array(z.string()).describe("O conteúdo do slide, em formato de bullet points ou parágrafos curtos."),
-});
-
 export const GeneratePresentationInputSchema = DiagnosticFormSchema;
 export type GeneratePresentationInput = z.infer<typeof GeneratePresentationInputSchema>;
 
 export const GeneratePresentationOutputSchema = z.object({
-  presentationTitle: z.string().describe("O título geral da apresentação (Ex: Plano de Crescimento para [Nome do Cliente])."),
-  diagnosticSlide: DiagnosticSlideSchema.describe("Conteúdo para o slide de Diagnóstico."),
-  actionPlanSlide: SlideSchema.describe("Conteúdo para o slide do Plano de Ação com insights."),
-  timelineSlide: SlideSchema.describe("Conteúdo para o slide de Cronograma."),
-  kpiSlide: z.object({
-    title: z.string(),
-    kpis: z.array(KpiItemSchema)
-  }).describe("Conteúdo para o slide de KPIs, com estimativas e explicações para cada métrica."),
-  whyCpSlide: SlideSchema.describe("Conteúdo para o slide 'Por que a CP Marketing?'."),
+  clientName: z.string().describe("Nome do cliente para a capa."),
+  proposalDate: z.string().describe("Data de hoje, formatada."),
+  proposalValidityDate: z.string().describe("Data de validade da proposta, formatada."),
+  
+  diagnosticSlide: z.object({
+    resumoEmpatico: z.string().describe("Parágrafo que conecta meta, gargalo e sentimento."),
+    analiseReflexiva: z.string().describe("Parágrafo que conecta o tempo de empresa com a urgência de agir agora."),
+  }),
+
+  painSlide: z.object({
+    consequencia_1: z.string().describe("Primeira consequência do gargalo (operacional)."),
+    consequencia_2: z.string().describe("Segunda consequência (frustração com tentativas passadas)."),
+    consequencia_3: z.string().describe("Terceira consequência (concorrência)."),
+  }),
+  
+  futureSlide: z.object({
+    cenario_6_meses: z.string().describe("Descrição do sucesso em 6 meses."),
+    cenario_1_ano: z.string().describe("Descrição da transformação em 1 ano."),
+  }),
+
+  inactionCostSlide: z.object({
+    custo_6_meses: z.string().describe("Valor formatado do custo da inação em 6 meses."),
+    custo_1_ano: z.string().describe("Valor formatado do custo da inação em 1 ano."),
+    cenario_inercia: z.string().describe("Parágrafo sobre o que acontece se nada for feito."),
+  }),
+  
+  strategySlide: z.object({
+    pilarAquisicao: z.string().describe("Texto para o pilar de Aquisição."),
+    pilarConversao: z.string().describe("Texto para o pilar de Conversão."),
+    pilarAutoridade: z.string().describe("Texto para o pilar de Autoridade."),
+  }),
+  
+  metricsSlide: z.object({
+    crescimentoPercentual: z.string().describe("Porcentagem de crescimento, ex: '140%'."),
+    metaLeadsQualificados: z.string().describe("Meta numérica de leads qualificados por mês."),
+    metaTaxaConversao: z.string().describe("Meta percentual da taxa de conversão."),
+  }),
+  
   investmentSlide: z.object({
-    title: z.string().describe("Título do slide de investimento."),
-    items: z.array(z.object({ name: z.string(), price: z.string() })).describe("Itens do plano com nome e preço."),
-    total: z.string().describe("Valor total."),
-    discount: z.string().optional().describe("Valor do desconto."),
-    finalTotal: z.string().describe("Valor final após o desconto."),
-  }).describe("Conteúdo detalhado para o slide de investimento."),
-  nextStepsSlide: SlideSchema.describe("Conteúdo para o slide de Próximos Passos."),
-  justificationSlide: SlideSchema.describe("Conteúdo para o slide 'Por que este plano?'. Justificativa estratégica para os serviços selecionados."),
+    ancoragemPreco: z.string().describe("Parágrafo de ancoragem de preço (Custo da Inação vs. Investimento)."),
+    ganchoDecisao: z.string().describe("Pergunta final para a tomada de decisão."),
+    gatilhoEscassez: z.string().describe("Gatilho de urgência baseado em escassez de vagas."),
+    gatilhoBonus: z.string().describe("Bônus por tempo limitado para fechamento rápido."),
+  }),
 });
 
 export type GeneratePresentationOutput = z.infer<typeof GeneratePresentationOutputSchema>;
