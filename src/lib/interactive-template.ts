@@ -213,6 +213,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         .sky-container-content {
             width: 100%;
+            height: 100%;
             flex-grow: 1; /* Permite que o conteúdo cresça */
             transition: opacity 0.4s ease-in-out;
             overflow-y: auto;
@@ -569,6 +570,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     </script>
 </body>
 </html>
-  `;
-  return html;
+`;
 }
