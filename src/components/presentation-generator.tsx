@@ -25,7 +25,6 @@ type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
 
 export default function PresentationGenerator() {
   const [isLoading, setIsLoading] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
   const [presentationContent, setPresentationContent] = useState<GeneratePresentationOutput | null>(null);
   const [htmlTemplate, setHtmlTemplate] = useState<string>('');
   const { toast } = useToast();
@@ -82,7 +81,7 @@ export default function PresentationGenerator() {
     try {
       const result = await generatePresentation(values);
       setPresentationContent(result);
-      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e clique para visualizar." });
+      toast({ title: "Apresentação Gerada!", description: "Revise os slides abaixo e clique para baixar." });
     } catch(error) {
       console.error("Error generating presentation:", error);
       toast({ title: "Erro na Geração", description: "Não foi possível gerar a apresentação. Tente novamente.", variant: "destructive" });
@@ -113,7 +112,7 @@ export default function PresentationGenerator() {
     toast({ title: 'Formulário Preenchido!', description: 'Dados de exemplo foram carregados.' });
   }
 
- const handlePreview = () => {
+ const handleDownload = () => {
     if (!presentationContent || !htmlTemplate) {
       toast({ title: 'Erro', description: 'Gere o conteúdo da apresentação primeiro.', variant: 'destructive'});
       return;
@@ -199,12 +198,15 @@ export default function PresentationGenerator() {
         .replace('{{nextStepsTitle}}', nextStepsSlide.title)
         .replace('{{nextStepsContent}}', `<ul>${nextStepsSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`);
 
-    try {
-        sessionStorage.setItem('presentationHtml', finalHtml);
-        router.push('/gerador-apresentacoes/preview');
-    } catch (e) {
-        toast({ title: 'Erro ao pré-visualizar', description: 'O conteúdo da apresentação é muito grande para ser exibido.', variant: 'destructive'});
-    }
+    const blob = new Blob([finalHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Apresentacao_${form.getValues('clientName').replace(/\s+/g, '_')}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
   
 
@@ -338,7 +340,7 @@ export default function PresentationGenerator() {
       <Card className="lg:sticky top-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
-          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para visualizar o arquivo HTML da apresentação.</CardDescription>
+          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para baixar o arquivo HTML da apresentação.</CardDescription>
         </CardHeader>
         <CardContent>
           {presentationContent ? (
@@ -350,9 +352,9 @@ export default function PresentationGenerator() {
                   O conteúdo foi gerado com sucesso.
                 </AlertDescription>
               </Alert>
-              <Button onClick={handlePreview} className="w-full">
-                <Eye className="mr-2 h-4 w-4" />
-                Visualizar Apresentação
+              <Button onClick={handleDownload} className="w-full">
+                <FileDown className="mr-2 h-4 w-4" />
+                Baixar Apresentação (.html)
               </Button>
             </div>
           ) : (

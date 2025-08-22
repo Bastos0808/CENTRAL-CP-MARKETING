@@ -105,6 +105,11 @@
             grid-template-columns: 1fr;
             gap: 20px;
         }
+        @media (min-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
         .kpi-item {
             padding: 16px;
             border-radius: 8px;
@@ -139,15 +144,22 @@
             text-align: right;
             font-weight: bold;
         }
-        table tfoot tr:last-child {
-            border-top: 2px solid var(--primary);
+        table tfoot tr {
+            border: none;
         }
-        table tfoot tr:last-child td {
+        table tfoot tr.total td {
+            padding-top: 16px;
+            border-top: 2px solid var(--primary);
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+         table tfoot tr.total td:first-child {
             font-size: 20px;
             font-weight: bold;
             color: var(--foreground);
         }
-        table .discount td {
+        table tr.discount td {
             color: #6EE7B7;
         }
         footer {
@@ -169,7 +181,7 @@
 
         <div class="section">
             <h2>{{diagnosticTitle}}</h2>
-            <ul>{{diagnosticContent}}</ul>
+            {{diagnosticContent}}
             <p class="diagnostic-question">{{diagnosticQuestion}}</p>
         </div>
 
@@ -193,7 +205,7 @@
         
         <div class="section">
             <h2>{{timelineTitle}}</h2>
-            <ul>{{timelineContent}}</ul>
+            {{timelineContent}}
         </div>
 
         <div class="section">
@@ -205,7 +217,7 @@
 
         <div class="section">
             <h2>{{whyCpTitle}}</h2>
-            <ul>{{whyCpContent}}</ul>
+            {{whyCpContent}}
         </div>
 
         <div class="section">
@@ -220,7 +232,7 @@
 
         <div class="section">
             <h2>{{nextStepsTitle}}</h2>
-            <ul>{{nextStepsContent}}</ul>
+            {{nextStepsContent}}
         </div>
 
         <footer>
