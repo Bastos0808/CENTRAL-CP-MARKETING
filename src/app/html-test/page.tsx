@@ -448,9 +448,6 @@ export default function HtmlTestPage() {
                 .sky-container__left {
                     margin-right: 5px;
                 }
-                .sky-container__right {
-                    text-align: left;
-                }
                 .thirty-one {
                     letter-spacing: 4px;
                 }
@@ -509,6 +506,4 @@ export default function HtmlTestPage() {
         </>
     );
 }
-    
-
     
