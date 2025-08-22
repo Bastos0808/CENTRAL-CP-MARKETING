@@ -130,6 +130,8 @@ export default function PresentationGenerator() {
         nextStepsSlide
     } = presentationContent;
 
+    const listToHtml = (items: string[]) => `<ul>${items.map(item => `<li>${item.replace(/<strong>/g, '<span style="font-weight: bold;">').replace(/<\/strong>/g, '</span>')}</li>`).join('')}</ul>`;
+
     const kpiItemsHtml = kpiSlide.kpis.map(kpi => `
         <div class="kpi-item">
             <h4>${kpi.metric}</h4>
@@ -157,7 +159,7 @@ export default function PresentationGenerator() {
               </tr>
     `;
 
-    if (investmentSlide.discount) {
+    if (investmentSlide.discount && investmentSlide.discount.trim() !== 'N/A') {
         investmentHtml += `
               <tr class="discount">
                   <td>Desconto</td>
@@ -176,27 +178,27 @@ export default function PresentationGenerator() {
     `;
 
     let finalHtml = htmlTemplate
-        .replace('{{presentationTitle}}', presentationTitle)
-        .replace('{{clientName}}', form.getValues('clientName'))
-        .replace('{{diagnosticTitle}}', diagnosticSlide.title)
-        .replace('{{diagnosticContent}}', `<ul>${diagnosticSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`)
-        .replace('{{diagnosticQuestion}}', diagnosticSlide.question)
-        .replace('{{actionPlanTitle}}', actionPlanSlide.title)
-        .replace('{{actionPlanPillar1}}', actionPlanSlide.content[0])
-        .replace('{{actionPlanPillar2}}', actionPlanSlide.content[1])
-        .replace('{{actionPlanPillar3}}', actionPlanSlide.content[2])
-        .replace('{{timelineTitle}}', timelineSlide.title)
-        .replace('{{timelineContent}}', `<ul>${timelineSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`)
-        .replace('{{kpiTitle}}', kpiSlide.title)
+        .replace('{{presentationTitle}}', presentationTitle || '')
+        .replace('{{clientName}}', form.getValues('clientName') || '')
+        .replace('{{diagnosticTitle}}', diagnosticSlide.title || '')
+        .replace('{{diagnosticContent}}', listToHtml(diagnosticSlide.content || []))
+        .replace('{{diagnosticQuestion}}', diagnosticSlide.question || '')
+        .replace('{{actionPlanTitle}}', actionPlanSlide.title || '')
+        .replace('{{actionPlanPillar1}}', actionPlanSlide.content[0] || '')
+        .replace('{{actionPlanPillar2}}', actionPlanSlide.content[1] || '')
+        .replace('{{actionPlanPillar3}}', actionPlanSlide.content[2] || '')
+        .replace('{{timelineTitle}}', timelineSlide.title || '')
+        .replace('{{timelineContent}}', listToHtml(timelineSlide.content || []))
+        .replace('{{kpiTitle}}', kpiSlide.title || '')
         .replace('{{kpiItems}}', kpiItemsHtml)
-        .replace('{{whyCpTitle}}', whyCpSlide.title)
-        .replace('{{whyCpContent}}', `<ul>${whyCpSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`)
-        .replace('{{justificationTitle}}', justificationSlide.title)
-        .replace('{{justificationContent}}', justificationSlide.content)
-        .replace('{{investmentTitle}}', investmentSlide.title)
+        .replace('{{whyCpTitle}}', whyCpSlide.title || '')
+        .replace('{{whyCpContent}}', listToHtml(whyCpSlide.content || []))
+        .replace('{{justificationTitle}}', justificationSlide.title || '')
+        .replace('{{justificationContent}}', justificationSlide.content || '')
+        .replace('{{investmentTitle}}', investmentSlide.title || '')
         .replace('{{investmentTable}}', investmentHtml)
-        .replace('{{nextStepsTitle}}', nextStepsSlide.title)
-        .replace('{{nextStepsContent}}', `<ul>${nextStepsSlide.content.map(c => `<li>${c}</li>`).join('')}</ul>`);
+        .replace('{{nextStepsTitle}}', nextStepsSlide.title || '')
+        .replace('{{nextStepsContent}}', listToHtml(nextStepsSlide.content || []));
 
     const blob = new Blob([finalHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
