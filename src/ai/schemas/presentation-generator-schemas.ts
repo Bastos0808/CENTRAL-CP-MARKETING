@@ -1,4 +1,3 @@
-
 /**
  * @fileoverview Schemas for the Presentation Generator flow.
  */
@@ -42,35 +41,35 @@ const packageKeys = Object.keys(packageOptions) as [keyof typeof packageOptions,
 export const DiagnosticFormSchema = z.object({
   clientName: z.string().min(1, "O nome do cliente é obrigatório."),
   
-  // Bloco 1
-  tempoEmpresa: z.string().min(1, "Campo obrigatório."),
-  faturamentoMedio: z.string().min(1, "Campo obrigatório."),
-  metaFaturamento: z.string().min(1, "Campo obrigatório."),
-  ticketMedio: z.string().optional(),
+  // Bloco 1: Cenário e Metas
+  tempoEmpresa: z.string().optional(),
+  faturamentoMedio: z.number({ required_error: "Campo obrigatório." }).min(1, "Campo obrigatório."),
+  metaFaturamento: z.number({ required_error: "Campo obrigatório." }).min(1, "Campo obrigatório."),
+  ticketMedio: z.number().optional(),
   origemClientes: z.string().optional(),
 
-  // Bloco 2
-  motivacaoMarketing: z.string().min(1, "Campo obrigatório."),
+  // Bloco 2: O Desafio Atual
+  motivacaoMarketing: z.string().optional(),
   experienciaMarketing: z.string().optional(),
   tentativasAnteriores: z.string().optional(),
-  principalGargalo: z.string().min(1, "Campo obrigatório."),
+  principalGargalo: z.string().optional(),
   impactoGargalo: z.string().optional(),
   impactoAreas: z.string().optional(),
   sentimentoPessoal: z.string().optional(),
   
-  // Bloco 3
+  // Bloco 3: O Custo do Problema
   clientesPerdidos: z.string().optional(),
-  custoProblema: z.string().optional(),
+  custoProblema: z.number().optional(),
   potencialResolucao: z.string().optional(),
 
-  // Bloco 4
+  // Bloco 4: A Visão de Futuro
   visaoFuturo: z.string().optional(),
   visaoFuturoPessoal: z.string().optional(),
   prioridadeResolucao: z.string().optional(),
   
-  // Bloco 5
+  // Bloco 5: Próximos Passos
   envolvidosDecisao: z.string().optional(),
-  orcamentoPrevisto: z.string().optional(),
+  orcamentoPrevisto: z.string().optional(), // Mantido como string para flexibilidade (Ex: "entre 3k e 5k")
   prazoDecisao: z.string().optional(),
 
   // Pacotes

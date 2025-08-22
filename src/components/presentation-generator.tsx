@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from "react";
@@ -19,6 +20,45 @@ import type { z } from "zod";
 
 type DiagnosticFormValues = z.infer<typeof DiagnosticFormSchema>;
 
+const CurrencyInput = React.forwardRef<HTMLInputElement, Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> & {
+    value: number | undefined;
+    onValueChange: (value: number | undefined) => void;
+}>(({ value, onValueChange, ...props }, ref) => {
+    
+    const format = (num: number | undefined) => {
+        if (num === undefined || isNaN(num)) return '';
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num);
+    };
+
+    const parse = (str: string) => {
+        const numbers = str.replace(/\D/g, '');
+        if (numbers === '') return undefined;
+        return parseFloat(numbers) / 100;
+    };
+    
+    const [displayValue, setDisplayValue] = useState(format(value));
+
+    React.useEffect(() => {
+       setDisplayValue(format(value));
+    }, [value]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value;
+        const numberValue = parse(rawValue);
+        setDisplayValue(format(numberValue));
+        onValueChange(numberValue);
+    };
+
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      // Moves cursor to the end
+      e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+    };
+
+    return <Input ref={ref} value={displayValue} onChange={handleChange} onFocus={handleFocus} {...props} />;
+});
+CurrencyInput.displayName = 'CurrencyInput';
+
+
 export default function PresentationGenerator() {
   const [isLoading, setIsLoading] = useState(false);
   const [presentationContent, setPresentationContent] = useState<GeneratePresentationOutput | null>(null);
@@ -28,9 +68,9 @@ export default function PresentationGenerator() {
     resolver: zodResolver(DiagnosticFormSchema),
     defaultValues: {
       clientName: "",
-      faturamentoMedio: "",
-      metaFaturamento: "",
-      ticketMedio: "",
+      faturamentoMedio: undefined,
+      metaFaturamento: undefined,
+      ticketMedio: undefined,
       origemClientes: "",
       tempoEmpresa: "",
       motivacaoMarketing: "",
@@ -41,7 +81,7 @@ export default function PresentationGenerator() {
       impactoAreas: "",
       sentimentoPessoal: "",
       clientesPerdidos: "",
-      custoProblema: "",
+      custoProblema: undefined,
       potencialResolucao: "",
       prioridadeResolucao: "",
       visaoFuturo: "",
@@ -87,9 +127,9 @@ export default function PresentationGenerator() {
     form.reset({
         clientName: "Clínica Vitalize",
         tempoEmpresa: "5 anos",
-        faturamentoMedio: "R$ 50.000",
-        metaFaturamento: "R$ 120.000",
-        ticketMedio: "R$ 800",
+        faturamentoMedio: 50000,
+        metaFaturamento: 120000,
+        ticketMedio: 800,
         origemClientes: "90% vem de indicação e um pouco do Instagram.",
         motivacaoMarketing: "Chegamos num platô, o crescimento estagnou e a concorrência aumentou muito.",
         experienciaMarketing: "Sim, já contratamos uma agência no passado, mas não deu certo.",
@@ -99,7 +139,7 @@ export default function PresentationGenerator() {
         impactoAreas: "Sim, com a receita estagnada, a gente para de investir em equipamentos novos e na modernização da clínica.",
         sentimentoPessoal: "É frustrante. Sei que temos potencial e um serviço ótimo, mas me sinto um pouco perdido sobre qual o próximo passo para crescer.",
         clientesPerdidos: "Acredito que uns 10 clientes a mais, fácil.",
-        custoProblema: "Calculando por alto, uns R$ 20.000 que deixamos na mesa todo mês.",
+        custoProblema: 20000,
         potencialResolucao: "Eu finalmente contrataria mais um especialista que estou precisando e faria aquela reforma na recepção.",
         visaoFuturo: "A agenda estaria cheia com 2 semanas de antecedência e teríamos uma previsibilidade de faturamento que hoje não existe.",
         visaoFuturoPessoal: "Com certeza, muito mais tranquilidade para gerir o negócio e quem sabe tirar umas férias sem me preocupar tanto.",
@@ -461,7 +501,7 @@ export default function PresentationGenerator() {
 </html>`;
 
     for (const [key, value] of Object.entries(replacements)) {
-      finalHtml = finalHtml.replace(new RegExp(key.replace(/([.*+?^${}()|\[\]\/\\])/g, '\\$1'), 'g'), value);
+      finalHtml = finalHtml.replace(new RegExp(key.replace(/([.*+?^${}()|\[\]\/\\])/g, '\\$1'), 'g'), String(value));
     }
 
     const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
@@ -503,9 +543,9 @@ export default function PresentationGenerator() {
                   <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><TrendingUp className="h-6 w-6 text-primary"/>Cenário e Metas</div></AccordionTrigger>
                   <AccordionContent className="pt-4 space-y-6">
                     <FormField control={form.control} name="tempoEmpresa" render={({ field }) => (<FormItem><FormLabel>Há quanto tempo vocês estão no mercado?</FormLabel><FormControl><Input placeholder="Ex: Estamos há 12 anos." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="faturamentoMedio" render={({ field }) => (<FormItem><FormLabel>Qual é o faturamento médio mensal?</FormLabel><FormControl><Input placeholder="Ex: Em torno de R$ 50 mil." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="metaFaturamento" render={({ field }) => (<FormItem><FormLabel>Qual é a meta de faturamento para os próximos 6 meses?</FormLabel><FormControl><Input placeholder="Ex: A meta é chegar nos R$ 120 mil." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="ticketMedio" render={({ field }) => (<FormItem><FormLabel>Qual o ticket médio do seu principal serviço ou produto?</FormLabel><FormControl><Input placeholder="Ex: Nosso ticket é de uns R$ 2.000." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="faturamentoMedio" render={({ field }) => (<FormItem><FormLabel>Qual é o faturamento médio mensal?</FormLabel><FormControl><CurrencyInput placeholder="R$ 50.000,00" {...field} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="metaFaturamento" render={({ field }) => (<FormItem><FormLabel>Qual é a meta de faturamento para os próximos 6 meses?</FormLabel><FormControl><CurrencyInput placeholder="R$ 120.000,00" {...field} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
+                    <FormField control={form.control} name="ticketMedio" render={({ field }) => (<FormItem><FormLabel>Qual o ticket médio do seu principal serviço ou produto?</FormLabel><FormControl><CurrencyInput placeholder="R$ 2.000,00" {...field} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
                     <FormField control={form.control} name="origemClientes" render={({ field }) => (<FormItem><FormLabel>Atualmente, a maioria dos seus clientes chega como?</FormLabel><FormControl><Input placeholder="Ex: 90% vem de indicação." {...field} /></FormControl><FormMessage /></FormItem>)} />
                   </AccordionContent>
                 </AccordionItem>
@@ -527,7 +567,7 @@ export default function PresentationGenerator() {
                   <AccordionTrigger className="text-lg hover:no-underline"><div className="flex items-center gap-3"><HandCoins className="h-6 w-6 text-primary"/>O Custo do Problema</div></AccordionTrigger>
                    <AccordionContent className="pt-4 space-y-6">
                      <FormField control={form.control} name="clientesPerdidos" render={({ field }) => (<FormItem><FormLabel>Quantos clientes a mais você acredita que poderiam ter fechado no último mês sem esse gargalo?</FormLabel><FormControl><Input placeholder="Ex: Acho que uns 10 clientes a mais, fácil." {...field} /></FormControl><FormMessage /></FormItem>)} />
-                     <FormField control={form.control} name="custoProblema" render={({ field }) => (<FormItem><FormLabel>Então, quanto você diria que esse problema custa para a empresa por mês?</FormLabel><FormControl><Input placeholder="Ex: Calculando rápido, uns R$ 20 mil." {...field} /></FormControl><FormMessage /></FormItem>)} />
+                     <FormField control={form.control} name="custoProblema" render={({ field }) => (<FormItem><FormLabel>Então, quanto você diria que esse problema custa para a empresa por mês?</FormLabel><FormControl><CurrencyInput placeholder="R$ 20.000,00" {...field} onValueChange={field.onChange} /></FormControl><FormMessage /></FormItem>)} />
                      <FormField control={form.control} name="potencialResolucao" render={({ field }) => (<FormItem><FormLabel>Se a gente resolvesse isso, o que um fluxo constante de clientes permitiria que você fizesse?</FormLabel><FormControl><Textarea placeholder="Ex: Eu contrataria mais um profissional." {...field} /></FormControl><FormMessage /></FormItem>)} />
                    </AccordionContent>
                 </AccordionItem>
@@ -591,11 +631,10 @@ export default function PresentationGenerator() {
                                 <FormItem>
                                     <FormLabel>Desconto (R$)</FormLabel>
                                     <FormControl>
-                                        <Input 
-                                            type="number" 
-                                            placeholder="0" 
-                                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                                            value={field.value || ''}
+                                        <CurrencyInput 
+                                            placeholder="R$ 0,00" 
+                                            value={field.value} 
+                                            onValueChange={field.onChange}
                                         />
                                     </FormControl>
                                     <FormMessage />
