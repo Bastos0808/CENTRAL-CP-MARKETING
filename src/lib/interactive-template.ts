@@ -41,11 +41,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           id: 'cp-intro',
           title: `<h2>Por que a CP Marketing?</h2>`,
           content: `<div class="presentation-gallery-layout">
-                      <div>
+                      <div class="main-content-intro">
                           <div class="video-container">
                               <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" autoplay loop muted playsinline></video>
                           </div>
-                          <div class="features-list">
+                           <div class="features-list">
                               <div class="feature-item">
                                 <i class="fas fa-building"></i>
                                 <div>
@@ -76,10 +76,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                               </div>
                           </div>
                       </div>
-                      <div class="image-gallery">
-                           <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div>
-                          <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+2')" data-ai-hint="fashion store"></div>
-                          <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png?text=Case+3')" data-ai-hint="corporate office"></div>
+                      <div class="side-content-intro">
+                          <div class="image-gallery">
+                               <div class="image-placeholder" style="background-image: url('https://i.postimg.cc/R01f7zJb/Whats-App-Image-2024-07-16-at-15-28-56.jpg')" data-ai-hint="business success"></div>
+                                <div class="image-placeholder" style="background-image: url('https://i.postimg.cc/tCTz2M1K/Whats-App-Image-2024-07-16-at-15-28-55.jpg')" data-ai-hint="fashion store"></div>
+                                <div class="image-placeholder" style="background-image: url('https://i.postimg.cc/d1hK5Jqg/Whats-App-Image-2024-07-16-at-15-28-52.jpg')" data-ai-hint="corporate office"></div>
+                          </div>
                       </div>
                     </div>`
       },
@@ -114,7 +116,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             <div class="content-center-wrapper">
                 <p class="question">${escapeHtml(futureSlide.question)}</p>
                 <div class="future-layout">
-                    <div class="image-placeholder" style="background-image: url('https://placehold.co/600x400.png')" data-ai-hint="${escapeHtml(futureSlide.image_prompt)}"></div>
+                    <div class="image-placeholder" style="background-image: url('https://placehold.co/800x600.png')" data-ai-hint="${escapeHtml(futureSlide.image_prompt)}"></div>
                     <p class="future-text">${escapeHtml(futureSlide.content)}</p>
                 </div>
             </div>`
@@ -123,7 +125,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           id: 'inaction-cost',
           title: `<h2>${escapeHtml(inactionCostSlide.title)}</h2>`,
           content: `<div class="content-center-wrapper">
-                      <div class="card-grid">
+                      <div class="card-grid cost-grid">
                           <div class="card cost-card">
                               <h3>Custo em 6 Meses</h3>
                               <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_6_meses)}</span>
@@ -136,7 +138,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                           </div>
                       </div>
                       <br>
-                      <p class="question" style="text-align: center;">${escapeHtml(inactionCostSlide.cenario_inercia)}</p>
+                      <p class="question" style="text-align: center; max-width: 700px;">${escapeHtml(inactionCostSlide.cenario_inercia)}</p>
                     </div>`
       },
       {
@@ -149,9 +151,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>Resultados que Falam por Si</h2>`,
           content: `<div class="content-center-wrapper"><p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p>
                       <div class="card-grid">
-                          <div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+1')" data-ai-hint="business success"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div>
-                          <div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+2')" data-ai-hint="fashion store"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div>
-                          <div class="card"><div class="image-placeholder" style="height: 120px; width:100%; margin-bottom: 15px; background-image: url('https://placehold.co/600x400.png?text=Case+3')" data-ai-hint="corporate office"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div>
+                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/R01f7zJb/Whats-App-Image-2024-07-16-at-15-28-56.jpg')" data-ai-hint="business success"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div>
+                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/tCTz2M1K/Whats-App-Image-2024-07-16-at-15-28-55.jpg')" data-ai-hint="fashion store"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div>
+                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/d1hK5Jqg/Whats-App-Image-2024-07-16-at-15-28-52.jpg')" data-ai-hint="corporate office"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div>
                       </div>
                     </div>`
       },
@@ -204,7 +206,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
               </div>
               <br>
               <p class="question">${escapeHtml(investmentSlide.ancoragemPreco)}</p>
-              <div class="card" style="margin-top: 20px; text-align: left;">
+              <div class="card special-offers" style="margin-top: 20px; text-align: left;">
                 <p><strong><i class="fas fa-exclamation-circle"></i> ${escapeHtml(investmentSlide.gatilhoEscassez)}</strong></p>
                 <p><strong><i class="fas fa-gift"></i> Bônus de Ação Rápida:</strong> ${escapeHtml(investmentSlide.gatilhoBonus)}</p>
               </div>
@@ -306,7 +308,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .sky-container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1600px; /* Aumentado */
             height: 90vh;
             padding: 40px;
             background-color: var(--card-background);
@@ -320,18 +322,23 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border: 1px solid var(--border-color);
             position: relative;
         }
+        
         .sky-container-content {
             width: 100%;
             flex-grow: 1;
             transition: opacity 0.4s ease-in-out;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            justify-content: center;
         }
+        
         .content-center-wrapper {
-            max-height: calc(90vh - 200px);
-            overflow-y: auto;
-            padding: 5px; 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
 
 
@@ -351,9 +358,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         h1, h2, h3 { font-weight: 900; margin-bottom: 20px; text-align: center; }
         h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); text-transform: uppercase; line-height: 1.3; color: var(--accent-color); }
-        h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin: 0; padding-bottom: 20px; }
+        h2 { font-size: clamp(2rem, 3.5vw, 3rem); margin: 0; padding-bottom: 20px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
         h3 { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; }
-        p { font-size: clamp(0.9rem, 1.5vw, 1.1rem); line-height: 1.6; color: var(--secondary-color); max-width: 800px; text-align: center; margin-left: auto; margin-right: auto;}
+        p { font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.6; color: var(--secondary-color); max-width: 800px; text-align: center; margin-left: auto; margin-right: auto;}
         
         .intro-container .fancy-text { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
         .proposal-meta { margin-top: 20px; font-size: 0.9rem; color: var(--secondary-color); }
@@ -379,78 +386,56 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .nav-button:not(:disabled):hover { background-color: var(--accent-color); color: white; }
         .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
         
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; max-width: 1200px; }
         .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
         .card h4 { font-size: 1.2rem; margin-bottom: 10px; text-align: center; }
-        .card p {text-align: center;}
-        .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
+        .card p {font-size: 1rem; text-align: center;}
+        .highlight { color: var(--highlight-color); font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; display: block; margin: 10px 0; }
         .highlight.loss { color: var(--loss-color); }
-        .highlight-text { font-size: 1.2rem; font-weight: 700; color: var(--primary-color); }
+        .highlight-text { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
         
         p.question {
             font-weight: 600;
+            font-size: 1.3rem;
             color: var(--primary-color);
             border-left: 3px solid var(--accent-color);
             padding-left: 1rem;
             text-align: left;
             margin: 1rem auto;
+            max-width: 900px;
         }
         
         .presentation-gallery-layout {
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
-            align-items: flex-start;
-            width: 100%;
-            flex-grow: 1;
-        }
-
-        .video-container {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 16 / 9;
-            border-radius: 10px;
-            overflow: hidden;
-            background-color: #000;
-        }
-        .video-container video {
+            align-items: center;
             width: 100%;
             height: 100%;
-            object-fit: cover;
         }
+        .main-content-intro { flex: 1; display: flex; flex-direction: column; gap: 20px; justify-content: center; }
+        .side-content-intro { flex: 1; }
+        .video-container { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background-color: #000; }
+        .video-container video { width: 100%; height: 100%; object-fit: cover; }
         
-        .features-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
+        .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .features-list .feature-item { display: flex; align-items: flex-start; text-align: left; }
         .features-list i { font-size: 1.5rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
         .features-list h4 { margin: 0 0 5px 0; font-size: 1.1rem; text-align: left; color: var(--primary-color); }
         .features-list p { font-size: 0.9rem; text-align: left; margin: 0; }
 
-        .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .image-placeholder { width: 100%; height: 120px; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
+        .image-gallery { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .image-placeholder { width: 100%; height: 160px; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
         
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
         .impact-item i { font-size: 1.8rem; color: var(--accent-color); margin-right: 20px; }
 
-        .future-layout { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 20px; align-items: center; }
-        .future-layout .image-placeholder { width: 100%; height: 200px; }
-        .future-layout p { text-align: left; }
-        @media (min-width: 768px) {
-            .future-layout { grid-template-columns: 1fr 2fr; }
-        }
-
+        .future-layout { display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 20px; align-items: center; }
+        .future-layout .image-placeholder { width: 100%; height: auto; aspect-ratio: 4/3; border-radius: 15px; }
+        .future-layout .future-text { text-align: left; font-size: 1.3rem; line-height: 1.7; }
+        
         .investment-layout { display: flex; flex-direction: column; gap: 30px; width: 100%; margin-top: 20px; }
         .packages-list, .total-investment { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
         .packages-list h4, .total-investment h4 { font-size: 1.2rem; text-align: left; margin-bottom: 15px; }
@@ -458,7 +443,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .packages-list li { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
         .packages-list li:last-child { border-bottom: none; }
         .total-investment { text-align: center; }
-        .final-price { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; color: var(--accent-color); }
+        .final-price { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: var(--accent-color); }
+        .special-offers p { font-size: 1rem; text-align: left; }
+        .special-offers i { color: var(--accent-color); margin-right: 10px; }
         
         /* Animated Graphs */
         @keyframes grow-bar-vertical { from { transform: scaleY(0); } to { transform: scaleY(1); } }
@@ -467,27 +454,29 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .animated-bar-container { background-color: var(--border-color); border-radius: 5px; overflow: hidden; }
         .animated-bar { height: 100%; width: 100%; transform-origin: bottom; }
         .slide-active .animated-bar { animation: grow-bar-vertical 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .card.cost-card { justify-content: flex-end; }
-        .animated-bar-container { width: 60px; height: 100px; margin-top: 15px; }
+        .card.cost-card { justify-content: flex-end; height: 300px; }
+        .cost-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .animated-bar-container { width: 80px; height: 150px; margin-top: 15px; }
         .loss-bar { background-color: var(--loss-color); }
         .gain-bar { background-color: var(--gain-color); }
-        .animated-bar-container.horizontal { width: 100%; height: 20px; }
+        .animated-bar-container.horizontal { width: 100%; height: 25px; }
         .animated-bar.horizontal { transform-origin: left; }
         .slide-active .animated-bar.horizontal { animation-name: grow-bar-horizontal; }
         
-        .metrics-grid { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; }
+        .metrics-grid { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; width: 100%; max-width: 900px; }
         .metric-item { background-color: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); }
         .metric-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .metric-label h4 { font-size: 1.1rem; margin: 0; text-align: left; }
+        .metric-label h4 { font-size: 1.2rem; margin: 0; text-align: left; }
         .metric-label span { font-size: 0.9rem; color: var(--secondary-color); }
+        
+        .card.proof-card .image-placeholder { height: 150px; width: 100%; margin-bottom: 15px; }
 
-        @media (min-width: 768px) {
-            .investment-layout { flex-direction: row; align-items: flex-start; }
+        @media (min-width: 1024px) {
+            .investment-layout { flex-direction: row; align-items: stretch; }
             .packages-list { flex: 2; }
             .total-investment { flex: 1; }
-             .presentation-gallery-layout {
-                grid-template-columns: 1fr 1fr;
-            }
+            .presentation-gallery-layout { grid-template-columns: 2fr 1fr; align-items: center; }
+            .future-layout { grid-template-columns: 1fr 1fr; }
         }
 
     </style>
@@ -580,11 +569,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 
                 document.getElementById('prev-button').disabled = currentSlide === 0;
                 document.getElementById('next-button').disabled = currentSlide === slides.length - 1;
-
-                const contentWrapper = container.querySelector('.content-center-wrapper');
-                if (contentWrapper) {
-                  contentWrapper.scrollTop = 0;
-                }
                 
                 // Add active class to trigger animations
                 requestAnimationFrame(() => {
