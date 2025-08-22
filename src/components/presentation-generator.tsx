@@ -105,10 +105,10 @@ export const AboutUsSlide = () => (
             <div className="space-y-6">
                 <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider">SOBRE NÓS</p>
                 <h1 className="text-5xl font-black leading-tight">Somos obcecados por resultados, não por métricas de vaidade.</h1>
-                <p className="text-gray-300 text-lg leading-relaxed">Em um mercado onde muitos se contentam em entregar posts e relatórios, nós entregamos crescimento. Nossa equipe multidisciplinar e nossos estúdios próprios nos dão a agilidade e a qualidade para transformar a presença digital da sua empresa em um ativo que gera lucro e autoridade.</p>
+                <p className="text-gray-300 text-lg leading-relaxed">Em um mercado onde muitos se contentam em entregar posts e relatórios, nós entregamos crescimento. Nosso ambiente colaborativo e estúdios próprios nos dão a agilidade e a qualidade para transformar sua presença digital em um ativo que gera lucro e autoridade.</p>
                 <div className="flex items-center gap-6 pt-4">
                     <div className="text-center">
-                        <p className="text-4xl font-bold text-primary">+50</p>
+                        <p className="text-4xl font-bold text-primary">+203</p>
                         <p className="text-sm text-gray-400">Clientes Atendidos</p>
                     </div>
                     <div className="text-center">
