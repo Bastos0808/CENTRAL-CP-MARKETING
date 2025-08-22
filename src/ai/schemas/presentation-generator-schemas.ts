@@ -102,5 +102,3 @@ export const GeneratePresentationOutputSchema = z.object({
 });
 
 export type GeneratePresentationOutput = z.infer<typeof GeneratePresentationOutputSchema>;
-
-    

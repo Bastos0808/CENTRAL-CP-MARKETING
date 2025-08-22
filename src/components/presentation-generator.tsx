@@ -131,9 +131,17 @@ export default function PresentationGenerator() {
 
     const listToHtml = (items: string[]) => `<ul>${items.map(item => `<li>${item.replace(/<strong>/g, '<strong>').replace(/<\/strong>/g, '</strong>')}</li>`).join('')}</ul>`;
 
+    const kpiIcons: { [key: string]: string } = {
+        TrendingUp: '📈',
+        Target: '🎯',
+        DollarSign: '💰',
+        Repeat: '🔁',
+        Users: '👥',
+    };
+
     const kpiItemsHtml = kpiSlide.kpis.map(kpi => `
         <div class="kpi-item">
-            <h4>${kpi.metric}</h4>
+            <h4>${kpiIcons[kpi.icon] || '-'} ${kpi.metric}</h4>
             <p class="kpi-estimate">${kpi.estimate}</p>
             <p class="kpi-importance">${kpi.importance}</p>
         </div>
