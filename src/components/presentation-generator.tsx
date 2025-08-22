@@ -129,7 +129,22 @@ export default function PresentationGenerator() {
         nextStepsSlide
     } = presentationContent;
 
-    const listToHtml = (items: string[]) => `<ul>${items.map(item => `<li>${item.replace(/<strong>/g, '<strong>').replace(/<\/strong>/g, '</strong>')}</li>`).join('')}</ul>`;
+    const escapeHtml = (text: string | undefined) => {
+        if (!text) return '';
+        return text.replace(/&/g, "&amp;")
+                   .replace(/</g, "&lt;")
+                   .replace(/>/g, "&gt;")
+                   .replace(/"/g, "&quot;")
+                   .replace(/'/g, "&#039;")
+                   .replace(/`(?![^`]*`)/g, '') // Remove stray backticks
+                   .replace(/\n/g, '<br>'); // Convert newlines to breaks
+    };
+
+    const listToHtml = (items: string[]) => {
+        if (!items || items.length === 0) return '<ul></ul>';
+        const listItems = items.map(item => `<li>${escapeHtml(item).replace(/<strong>(.*?)<\/strong>/g, '<strong>$1</strong>')}</li>`).join('');
+        return `<ul>${listItems}</ul>`;
+    };
 
     const kpiIcons: { [key: string]: string } = {
         TrendingUp: '📈',
@@ -141,16 +156,16 @@ export default function PresentationGenerator() {
 
     const kpiItemsHtml = kpiSlide.kpis.map(kpi => `
         <div class="kpi-item">
-            <h4>${kpiIcons[kpi.icon] || '-'} ${kpi.metric}</h4>
-            <p class="kpi-estimate">${kpi.estimate}</p>
-            <p class="kpi-importance">${kpi.importance}</p>
+            <h4>${kpiIcons[kpi.icon] || '-'} ${escapeHtml(kpi.metric)}</h4>
+            <p class="kpi-estimate">${escapeHtml(kpi.estimate)}</p>
+            <p class="kpi-importance">${escapeHtml(kpi.importance)}</p>
         </div>
     `).join('');
 
     const investmentItemsHtml = investmentSlide.items.map(item => `
         <tr>
-            <td>${item.name}</td>
-            <td class="price">${item.price}</td>
+            <td>${escapeHtml(item.name)}</td>
+            <td class="price">${escapeHtml(item.price)}</td>
         </tr>
     `).join('');
     
@@ -162,15 +177,15 @@ export default function PresentationGenerator() {
           <tfoot>
               <tr>
                   <td>Subtotal</td>
-                  <td class="price">${investmentSlide.total}</td>
+                  <td class="price">${escapeHtml(investmentSlide.total)}</td>
               </tr>
     `;
 
-    if (investmentSlide.discount && investmentSlide.discount.trim() !== 'N/A') {
+    if (investmentSlide.discount && investmentSlide.discount.trim() !== 'N/A' && parseFloat(investmentSlide.discount.replace(/[^0-9,-]+/g,"").replace(',','.')) !== 0) {
         investmentHtml += `
               <tr class="discount">
                   <td>Desconto</td>
-                  <td class="price">${investmentSlide.discount}</td>
+                  <td class="price">${escapeHtml(investmentSlide.discount)}</td>
               </tr>
         `;
     }
@@ -178,37 +193,42 @@ export default function PresentationGenerator() {
     investmentHtml += `
               <tr class="total">
                   <td>Total</td>
-                  <td class="price">${investmentSlide.finalTotal}</td>
+                  <td class="price">${escapeHtml(investmentSlide.finalTotal)}</td>
               </tr>
           </tfoot>
       </table>
     `;
 
-    let finalHtml = htmlTemplate
-      .replace('{{presentationTitle}}', presentationTitle || '')
-      .replace('{{clientName}}', form.getValues('clientName') || '')
-      .replace('{{diagnosticTitle}}', diagnosticSlide.title || '')
-      .replace('{{{diagnosticContent}}}', listToHtml(diagnosticSlide.content || []))
-      .replace('{{diagnosticQuestion}}', diagnosticSlide.question || '')
-      .replace('{{actionPlanTitle}}', actionPlanSlide.title || '')
-      .replace('{{{actionPlanPillar1}}}', actionPlanSlide.content[0] || '')
-      .replace('{{{actionPlanPillar2}}}', actionPlanSlide.content[1] || '')
-      .replace('{{{actionPlanPillar3}}}', actionPlanSlide.content[2] || '')
-      .replace('{{timelineTitle}}', timelineSlide.title || '')
-      .replace('{{{timelineContent}}}', listToHtml(timelineSlide.content || []))
-      .replace('{{kpiTitle}}', kpiSlide.title || '')
-      .replace('{{{kpiItems}}}', kpiItemsHtml)
-      .replace('{{whyCpTitle}}', whyCpSlide.title || '')
-      .replace('{{{whyCpContent}}}', listToHtml(whyCpSlide.content || []))
-      .replace('{{justificationTitle}}', justificationSlide.title || '')
-      .replace('{{{justificationContent}}}', justificationSlide.content || '')
-      .replace('{{investmentTitle}}', investmentSlide.title || '')
-      .replace('{{{investmentTable}}}', investmentHtml)
-      .replace('{{nextStepsTitle}}', nextStepsSlide.title || '')
-      .replace('{{{nextStepsContent}}}', listToHtml(nextStepsSlide.content || []));
+    const replacements = {
+        '{{presentationTitle}}': escapeHtml(presentationTitle),
+        '{{clientName}}': escapeHtml(form.getValues('clientName')),
+        '{{diagnosticTitle}}': escapeHtml(diagnosticSlide.title),
+        '{{{diagnosticContent}}}': listToHtml(diagnosticSlide.content),
+        '{{diagnosticQuestion}}': escapeHtml(diagnosticSlide.question),
+        '{{actionPlanTitle}}': escapeHtml(actionPlanSlide.title),
+        '{{{actionPlanPillar1}}}': escapeHtml(actionPlanSlide.content[0]),
+        '{{{actionPlanPillar2}}}': escapeHtml(actionPlanSlide.content[1]),
+        '{{{actionPlanPillar3}}}': escapeHtml(actionPlanSlide.content[2]),
+        '{{timelineTitle}}': escapeHtml(timelineSlide.title),
+        '{{{timelineContent}}}': listToHtml(timelineSlide.content),
+        '{{kpiTitle}}': escapeHtml(kpiSlide.title),
+        '{{{kpiItems}}}': kpiItemsHtml,
+        '{{whyCpTitle}}': escapeHtml(whyCpSlide.title),
+        '{{{whyCpContent}}}': listToHtml(whyCpSlide.content),
+        '{{justificationTitle}}': escapeHtml(justificationSlide.title),
+        '{{{justificationContent}}}': escapeHtml(justificationSlide.content),
+        '{{investmentTitle}}': escapeHtml(investmentSlide.title),
+        '{{{investmentTable}}}': investmentHtml,
+        '{{nextStepsTitle}}': escapeHtml(nextStepsSlide.title),
+        '{{{nextStepsContent}}}': listToHtml(nextStepsSlide.content)
+    };
 
+    let finalHtml = htmlTemplate;
+    for (const [key, value] of Object.entries(replacements)) {
+      finalHtml = finalHtml.replace(new RegExp(key, 'g'), value);
+    }
 
-    const blob = new Blob([finalHtml], { type: 'text/html' });
+    const blob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
