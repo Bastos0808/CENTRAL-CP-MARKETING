@@ -447,18 +447,40 @@ export default function PresentationGenerator() {
     
     const root = createRoot(container);
     
-    root.render(
-        <GeneratedPresentation content={presentationContent} clientName={form.getValues('clientName')} />
-    );
+    // Use a promise to wait for the component to be rendered
+    await new Promise<void>((resolve) => {
+      root.render(
+        <React.StrictMode>
+            <GeneratedPresentation 
+                ref={(el) => {
+                    if (el) {
+                        // Once the ref is set, we can consider it rendered for the next step
+                        resolve();
+                    }
+                }} 
+                content={presentationContent} 
+                clientName={form.getValues('clientName')} 
+            />
+        </React.StrictMode>
+      );
+    });
 
-    // Give React time to render and browser to fetch assets
-    await new Promise(resolve => setTimeout(resolve, 2500));
+    // Give browser extra time to fetch assets like images
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     const slides = container.querySelectorAll<HTMLElement>('[data-slide]');
+    if (slides.length === 0) {
+        toast({ title: 'Erro ao gerar PDF', description: 'Não foi possível encontrar os slides para captura.', variant: 'destructive' });
+        root.unmount();
+        document.body.removeChild(container);
+        setIsDownloading(false);
+        return;
+    }
+    
     const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'px',
-        format: [720, 1280]
+        format: [1280, 720]
     });
 
     try {
