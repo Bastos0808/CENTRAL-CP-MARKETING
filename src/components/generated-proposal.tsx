@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Palette, Megaphone, Mic, Sparkles, Goal, Check, Video, FileSignature } from 'lucide-react';
 import type { ProposalFormValues } from './proposal-generator-v2';
+import { AboutUsSlide } from './presentation-generator';
 
 export const packageOptions = {
     "marketing_vendas": { name: "Plano de Marketing - Vendas", price: 1499, description: "Análise de perfil com otimização\nCriação de projeto para público alvo\nPlanejamento mensal\nMentoria\nCopywriting\nTráfego pago (Meta e Google)\n3 postagens semanais (1 arte e 2 vídeos)\nRelatório mensal\nArtes profissionais\nGestão completa e suporte via WhatsApp.\nContrato de 6 meses.", icon: Palette },
@@ -49,40 +50,6 @@ const slideStyles = {
     investimento: { background: "radial-gradient(ellipse at top center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" },
     proximos: { background: "radial-gradient(ellipse at bottom center, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" }
 };
-
-
-export const AboutUsSlide = () => (
-    <div data-slide style={{ padding: '50px 80px 80px', background: "radial-gradient(ellipse at top left, rgba(230, 81, 0, 0.10), transparent 60%), #0A0A0A" }} className="w-[1920px] h-[1080px] shadow-2xl flex items-center justify-center text-white rounded-lg overflow-hidden">
-        <div className="w-full max-w-7xl mx-auto grid grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-                <p className="text-[#E65100] font-bold text-lg uppercase tracking-wider">SOBRE NÓS</p>
-                <h1 className="text-5xl font-black leading-tight">Somos obcecados por resultados, não por métricas de vaidade.</h1>
-                <p className="text-gray-300 text-lg leading-relaxed">Em um mercado onde muitos se contentam em entregar posts e relatórios, nós entregamos crescimento. Nosso ambiente colaborativo e estúdios próprios nos dão a agilidade e a qualidade para transformar sua presença digital em um ativo que gera lucro e autoridade.</p>
-                <div className="flex items-center gap-6 pt-4">
-                    <div className="text-center">
-                        <p className="text-4xl font-bold text-primary">+203</p>
-                        <p className="text-sm text-gray-400">Clientes Atendidos</p>
-                    </div>
-                    <div className="text-center">
-                        <p className="text-4xl font-bold text-primary">+3 Anos</p>
-                        <p className="text-sm text-gray-400">de Mercado</p>
-                    </div>
-                </div>
-            </div>
-            <div className="grid grid-cols-2 grid-rows-2 gap-4 h-[500px]">
-                <div className="col-span-2 row-span-1 relative rounded-lg overflow-hidden">
-                     <Image src="https://placehold.co/600x240.png" alt="Placeholder de imagem de escritório" layout="fill" objectFit="cover" data-ai-hint="office meeting" />
-                </div>
-                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
-                    <Image src="https://placehold.co/300x300.png" alt="Placeholder de imagem de equipe" layout="fill" objectFit="cover" data-ai-hint="team collaboration" />
-                </div>
-                <div className="col-span-1 row-span-1 relative rounded-lg overflow-hidden">
-                   <Image src="https://placehold.co/300x300.png" alt="Placeholder de imagem de detalhe" layout="fill" objectFit="cover" data-ai-hint="computer screen" />
-                </div>
-            </div>
-        </div>
-    </div>
-);
 
 
 export const GeneratedProposal = React.forwardRef<HTMLDivElement, GeneratedProposalProps>((props, ref) => {
