@@ -48,13 +48,16 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       return parseFloat(currencyString.replace(/[^0-9,-]+/g,"").replace(",", ".")) || 0;
   }
   
-  const cenarioInerciaHtml = highlightKeywords(escapeHtml(inactionCostSlide.cenario_inercia));
+  const cenarioInerciaHtml = `<strong>${highlightKeywords(escapeHtml(inactionCostSlide.cenario_inercia))}</strong>`;
+
 
   const painQuestions = [
     "Qual o impacto disso na operação?",
     "E o custo emocional de tentativas que não deram certo?",
     "Até quando deixar a concorrência na frente?",
   ];
+  
+  const futureIcons = ["fa-calendar-check", "fa-lightbulb", "fa-star", "fa-smile"];
 
   const slides = [
        {
@@ -162,8 +165,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 <div class="impact-list">
                     ${painSlide.content.map((item, index) => `
                         <div class="impact-item">
-                          <p class="question">${escapeHtml(painQuestions[index] || '')}</p>
-                          <p>${highlightKeywords(escapeHtml(item))}</p>
+                          <p class="question" style="color: var(--primary-color); font-weight: 700; border-left: none; font-size: 1.2rem;">${escapeHtml(painQuestions[index] || '')}</p>
+                          <p style="color: var(--primary-color);">${highlightKeywords(escapeHtml(item))}</p>
                         </div>
                     `).join('')}
                 </div>
@@ -187,15 +190,19 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                       <p class="question" style="text-align: center; max-width: 700px;">${cenarioInerciaHtml}</p>
                     </div>`
       },
-      {
+       {
           id: 'future',
           title: `<h2>${escapeHtml(futureSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
-                <p class="question">${escapeHtml(futureSlide.question)}</p>
-                <div class="future-layout">
-                    <div class="image-placeholder" style="background-image: url('https://placehold.co/800x600.png')" data-ai-hint="${escapeHtml(futureSlide.image_prompt)}"></div>
-                    <p class="future-text">${escapeHtml(futureSlide.content)}</p>
+                <p class="question" style="text-align: center;">${escapeHtml(futureSlide.question)}</p>
+                <div class="future-list">
+                  ${futureSlide.content.map((item, index) => `
+                        <div class="future-item">
+                            <i class="fas ${futureIcons[index % futureIcons.length]}"></i>
+                            <p>${escapeHtml(item)}</p>
+                        </div>
+                    `).join('')}
                 </div>
             </div>`
       },
@@ -274,7 +281,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  return `
+  return \`
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -493,11 +500,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             max-width: 900px;
         }
         .impact-item p.question {
-            color: var(--secondary-color);
+            color: var(--primary-color);
             border-left: none;
             padding-left: 0;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             margin-bottom: 10px;
+            font-weight: 700;
         }
         
         .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; flex-wrap: wrap; }
@@ -530,9 +538,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .slide-active .impact-item { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .impact-item p { text-align: left; color: var(--primary-color); }
         
-        .future-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; align-items: center; }
-        .future-layout .image-placeholder { width: 100%; height: auto; aspect-ratio: 4/3; border-radius: 15px; }
-        .future-layout .future-text { text-align: left; font-size: 1.1rem; line-height: 1.7; }
+        .future-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; width: 100%; max-width: 900px; }
+        .future-item { display: flex; align-items: center; background-color: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); opacity: 0; transform: translateY(20px); }
+        .slide-active .future-item { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .future-item i { font-size: 1.5rem; color: var(--accent-color); margin-right: 20px; }
+        .future-item p { text-align: left; font-size: 1.1rem; line-height: 1.6; color: var(--primary-color); margin: 0; }
         
         .investment-layout { display: flex; flex-direction: row; align-items: stretch; gap: 30px; width: 100%; margin-top: 20px; }
         .packages-list { flex: 2; background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
@@ -584,7 +594,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .card.proof-card .image-placeholder { height: 150px; width: 100%; margin-bottom: 15px; }
 
         @media (max-width: 1024px) {
-            .presentation-gallery-layout, .future-layout, .investment-layout { flex-direction: column; }
+            .presentation-gallery-layout, .investment-layout { flex-direction: column; }
         }
 
     </style>
@@ -742,21 +752,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                 animatedNumbers.forEach(el => animateNumber(el));
 
                                 // Animate cost cards and impact items sequentially
-                                const costCards = entry.target.querySelectorAll('.card.cost-card');
-                                if (costCards.length > 0) {
-                                    costCards.forEach((card, index) => {
-                                        setTimeout(() => {
-                                            card.style.animationDelay = (index * 0.3) + 's';
-                                            card.classList.add('animate-in');
-                                        }, 0);
-                                    });
-                                }
-                                
-                                const impactItems = entry.target.querySelectorAll('.impact-item');
-                                if (impactItems.length > 0) {
-                                    impactItems.forEach((item, index) => {
+                                const animatedItems = entry.target.querySelectorAll('.cost-card, .impact-item, .future-item');
+                                if (animatedItems.length > 0) {
+                                    animatedItems.forEach((item, index) => {
                                        setTimeout(() => {
-                                            item.style.animationDelay = (index * 0.3) + 's';
+                                            item.style.animationDelay = (index * 0.2) + 's';
                                             item.classList.add('animate-in');
                                         }, 0);
                                     });
@@ -920,5 +920,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     </script>
 </body>
 </html>
-`;
+\`;
 }

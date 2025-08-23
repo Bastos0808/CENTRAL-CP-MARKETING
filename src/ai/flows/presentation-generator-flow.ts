@@ -101,8 +101,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             **Slide 5: A Visualização do Futuro**
             - **title:** Gere o título do slide: "O Futuro que Vamos Construir Juntos".
             - **question:** Gere a pergunta: "Como seria se, em vez de se preocupar com o gargalo, sua única preocupação fosse em como gerenciar o crescimento?".
-            - **content:** Gere um parágrafo que descreva vividamente a conquista da meta de faturamento em 6 meses e a transformação do negócio em 1 ano, usando as respostas sobre 'o que faria com mais clientes' e o 'impacto pessoal'.
-            - **image_prompt:** Crie um prompt de texto para um gerador de imagem (como DALL-E) que represente visualmente o sucesso do cliente. Ex: "Foto realista de uma clínica médica moderna e movimentada, com pacientes felizes na recepção e médicos sorrindo, luz natural, estilo cinematográfico".
+            - **content:** Gere 3 ou 4 frases curtas e impactantes que pintem um quadro vívido do futuro com a parceria da CP. Use as respostas sobre 'o que faria com mais clientes' e o 'impacto pessoal'. Foque em transformações, não em ações. Exemplos: "Agenda cheia com previsibilidade, permitindo investimentos estratégicos.", "Foco total na sua paixão: atender bem, em vez de se preocupar em como atrair clientes.", "Reconhecimento como a principal autoridade no seu mercado.", "Mais tempo e tranquilidade para você e sua família.".
 
             ---
             **Slide 7: A Estratégia**
