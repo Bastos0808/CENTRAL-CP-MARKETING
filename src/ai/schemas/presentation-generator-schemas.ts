@@ -130,6 +130,7 @@ export const GeneratePresentationOutputSchema = z.object({
   
   metricsSlide: z.object({
     title: z.string(),
+    subtitle: z.string(),
     crescimentoPercentual: z.string(),
     metaLeadsQualificados: z.string(),
     metaTaxaConversao: z.string(),

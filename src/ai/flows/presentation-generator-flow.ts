@@ -117,6 +117,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             ---
             **Slide 9: Métricas de Sucesso**
             - **metricsSlide.title:** Gere o título do slide: "Seu Crescimento em Números".
+            - **metricsSlide.subtitle:** Gere um subtítulo motivacional como: "O sucesso será medido com dados claros. Nossas metas mensais são:"
             - **metricsSlide.crescimentoPercentual:** Calcule a porcentagem de crescimento necessária para ir do faturamento médio para a meta. Formate como string (Ex: '140%').
             - **metricsSlide.metaLeadsQualificados:** Com base na meta de faturamento e no ticket médio, calcule uma meta realista de leads qualificados por mês. Retorne como string (Ex: "88").
             - **metricsSlide.metaTaxaConversao:** Defina uma meta de taxa de conversão realista para atingir o objetivo. Retorne como string (Ex: "20%").
