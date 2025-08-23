@@ -16,7 +16,7 @@ const escapeHtml = (text: string | undefined): string => {
 const highlightKeywords = (text: string): string => {
     const keywords = ['frustração', 'risco', 'concorrência', 'estagnado', 'perda', 'dificuldades', 'impacto operacional', 'falharam'];
     const regex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'gi');
-    return text.replace(regex, '<strong>$1</strong>');
+    return text.replace(regex, '<strong style="color: var(--accent-color); font-weight: bold;">$1</strong>');
 }
 
 interface CreateProposalData {
@@ -170,18 +170,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             </div>`
       },
       {
-          id: 'future',
-          title: `<h2>${escapeHtml(futureSlide.title)}</h2>`,
-          content: `
-            <div class="content-center-wrapper">
-                <p class="question">${escapeHtml(futureSlide.question)}</p>
-                <div class="future-layout">
-                    <div class="image-placeholder" style="background-image: url('https://placehold.co/800x600.png')" data-ai-hint="${escapeHtml(futureSlide.image_prompt)}"></div>
-                    <p class="future-text">${escapeHtml(futureSlide.content)}</p>
-                </div>
-            </div>`
-      },
-      {
           id: 'inaction-cost',
           title: `<h2>${escapeHtml(inactionCostSlide.title)}</h2>`,
           content: `<div class="content-center-wrapper">
@@ -198,6 +186,18 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                       <br>
                       <p class="question" style="text-align: center; max-width: 700px;">${cenarioInerciaHtml}</p>
                     </div>`
+      },
+      {
+          id: 'future',
+          title: `<h2>${escapeHtml(futureSlide.title)}</h2>`,
+          content: `
+            <div class="content-center-wrapper">
+                <p class="question">${escapeHtml(futureSlide.question)}</p>
+                <div class="future-layout">
+                    <div class="image-placeholder" style="background-image: url('https://placehold.co/800x600.png')" data-ai-hint="${escapeHtml(futureSlide.image_prompt)}"></div>
+                    <p class="future-text">${escapeHtml(futureSlide.content)}</p>
+                </div>
+            </div>`
       },
       {
           id: 'strategy',
@@ -492,7 +492,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             margin: 1rem auto;
             max-width: 900px;
         }
-        p.question strong { color: var(--accent-color); }
+        .impact-item p.question {
+            color: var(--secondary-color);
+            border-left: none;
+            padding-left: 0;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
         
         .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; flex-wrap: wrap; }
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
@@ -521,12 +527,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         
         .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px; opacity: 0; transform: translateY(20px); text-align: left; }
-        .impact-item.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .slide-active .impact-item { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .impact-item p { text-align: left; color: var(--primary-color); }
-        .impact-item p.question { margin-bottom: 10px; }
-        .impact-item strong { color: var(--accent-color); font-weight: bold; }
-
-
+        
         .future-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; align-items: center; }
         .future-layout .image-placeholder { width: 100%; height: auto; aspect-ratio: 4/3; border-radius: 15px; }
         .future-layout .future-text { text-align: left; font-size: 1.1rem; line-height: 1.7; }
@@ -564,7 +567,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .animated-bar { height: 100%; width: 100%; transform-origin: bottom; }
         .slide-active .animated-bar { animation: grow-bar-vertical 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .card.cost-card { opacity: 0; transform: translateY(20px); }
-        .slide-active .card.cost-card { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .slide-active .cost-card { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .cost-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
         .loss-bar { background-color: var(--loss-color); }
         .gain-bar { background-color: var(--gain-color); }
@@ -743,8 +746,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                 if (costCards.length > 0) {
                                     costCards.forEach((card, index) => {
                                         setTimeout(() => {
+                                            card.style.animationDelay = (index * 0.3) + 's';
                                             card.classList.add('animate-in');
-                                        }, index * 400);
+                                        }, 0);
                                     });
                                 }
                                 
@@ -752,8 +756,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                 if (impactItems.length > 0) {
                                     impactItems.forEach((item, index) => {
                                        setTimeout(() => {
+                                            item.style.animationDelay = (index * 0.3) + 's';
                                             item.classList.add('animate-in');
-                                        }, index * 300);
+                                        }, 0);
                                     });
                                 }
                                 
@@ -914,5 +919,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>`;
+</html>
+`;
 }
