@@ -24,7 +24,7 @@ interface CreateProposalData {
 }
 
 
-export function createInteractiveProposal(data: CreateProposalaData): string {
+export function createInteractiveProposal(data: CreateProposalData): string {
   const { presentationData } = data;
 
   const {
@@ -50,6 +50,11 @@ export function createInteractiveProposal(data: CreateProposalaData): string {
   
   const cenarioInerciaHtml = highlightKeywords(escapeHtml(inactionCostSlide.cenario_inercia));
 
+  const painQuestions = [
+    "Qual o impacto disso na operação?",
+    "E o custo emocional de tentativas que não deram certo?",
+    "Até quando deixar a concorrência na frente?",
+  ];
 
   const slides = [
        {
@@ -153,9 +158,14 @@ export function createInteractiveProposal(data: CreateProposalaData): string {
           title: `<h2>${escapeHtml(painSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
-                <p class="question">${escapeHtml(painSlide.question)}</p>
+                <p class="question" style="text-align:center;">${escapeHtml(painSlide.question)}</p>
                 <div class="impact-list">
-                    ${painSlide.content.map(item => `<div class="impact-item"><i class="fas fa-arrow-down"></i> <p>${highlightKeywords(escapeHtml(item))}</p></div>`).join('')}
+                    ${painSlide.content.map((item, index) => `
+                        <div class="impact-item">
+                          <p class="question">${escapeHtml(painQuestions[index] || '')}</p>
+                          <p>${highlightKeywords(escapeHtml(item))}</p>
+                        </div>
+                    `).join('')}
                 </div>
             </div>`
       },
@@ -179,12 +189,10 @@ export function createInteractiveProposal(data: CreateProposalaData): string {
                           <div class="card cost-card">
                               <h3>Custo em 6 Meses</h3>
                               <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_6_meses)}</span>
-                              <div class="animated-bar-container"><div class="animated-bar loss-bar"></div></div>
                           </div>
                           <div class="card cost-card">
                               <h3>Custo em 1 Ano</h3>
                               <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_1_ano)}</span>
-                              <div class="animated-bar-container"><div class="animated-bar loss-bar double"></div></div>
                           </div>
                       </div>
                       <br>
@@ -511,11 +519,13 @@ export function createInteractiveProposal(data: CreateProposalaData): string {
         .image-gallery { display: flex; flex-direction: column; gap: 15px; width: 100%; height: 100%; }
         .image-placeholder { flex: 1; width: 100%; min-height: 200px; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
         
-        .impact-list { width: 100%; margin-top: 30px; }
-        .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: flex-start; text-align: left; margin-bottom: 15px; opacity: 0; transform: translateY(20px); }
+        .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
+        .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px; opacity: 0; transform: translateY(20px); text-align: left; }
         .impact-item.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .impact-item i { font-size: 1.5rem; color: var(--accent-color); margin-right: 20px; }
-        .impact-item p { text-align: left; }
+        .impact-item p { text-align: left; color: var(--primary-color); }
+        .impact-item p.question { margin-bottom: 10px; }
+        .impact-item strong { color: var(--accent-color); font-weight: bold; }
+
 
         .future-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; align-items: center; }
         .future-layout .image-placeholder { width: 100%; height: auto; aspect-ratio: 4/3; border-radius: 15px; }
@@ -554,9 +564,8 @@ export function createInteractiveProposal(data: CreateProposalaData): string {
         .animated-bar { height: 100%; width: 100%; transform-origin: bottom; }
         .slide-active .animated-bar { animation: grow-bar-vertical 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .card.cost-card { opacity: 0; transform: translateY(20px); }
-        .card.cost-card.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .slide-active .card.cost-card { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .cost-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-        .animated-bar-container.cost { width: 80px; height: 150px; margin-top: 15px; }
         .loss-bar { background-color: var(--loss-color); }
         .gain-bar { background-color: var(--gain-color); }
         .animated-bar-container.horizontal { width: 100%; height: 25px; }
@@ -730,7 +739,7 @@ export function createInteractiveProposal(data: CreateProposalaData): string {
                                 animatedNumbers.forEach(el => animateNumber(el));
 
                                 // Animate cost cards and impact items sequentially
-                                const costCards = entry.target.querySelectorAll('.cost-card');
+                                const costCards = entry.target.querySelectorAll('.card.cost-card');
                                 if (costCards.length > 0) {
                                     costCards.forEach((card, index) => {
                                         setTimeout(() => {
