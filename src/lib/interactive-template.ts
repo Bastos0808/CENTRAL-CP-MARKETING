@@ -145,7 +145,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>${escapeHtml(strategySlide.title)}</h2>`,
           content: `<div class="content-center-wrapper"><div class="card-grid"><div class="card"><i class="fas fa-users"></i> <h4>Aquisição</h4> <p>${escapeHtml(strategySlide.content[0])}</p> </div><div class="card"><i class="fas fa-chart-line"></i> <h4>Conversão</h4> <p>${escapeHtml(strategySlide.content[1])}</p> </div><div class="card"><i class="fas fa-star"></i> <h4>Autoridade</h4> <p>${escapeHtml(strategySlide.content[2])}</p> </div></div></div>`
       },
-      {
+       {
           id: 'social-proof',
           title: `<h2>Resultados que Falam por Si</h2>`,
           content: `<div class="content-center-wrapper"><p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p>
@@ -322,6 +322,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border: 1px solid var(--border-color);
             position: relative;
         }
+
+        .sky-container::-webkit-scrollbar {
+            width: 0;
+            background: transparent;
+        }
         
         .sky-container-content {
             width: 100%;
@@ -431,7 +436,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%;}
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; }
         .side-content-intro { flex: 1; }
-        .video-container { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; flex: 0 0 40%; aspect-ratio: 16/9;}
+        .video-container { width: 100%; max-height: 250px; border-radius: 10px; overflow: hidden; background-color: #000; aspect-ratio: 16/9;}
         .video-container video { width: 100%; height: 100%; object-fit: cover; }
         
         .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; flex-grow: 1; }
