@@ -107,7 +107,10 @@ export const GeneratePresentationOutputSchema = z.object({
   futureSlide: z.object({
     title: z.string(),
     question: z.string(),
-    content: z.array(z.string()),
+    content: z.array(z.object({
+        title: z.string(),
+        description: z.string(),
+    })),
   }),
 
   inactionCostSlide: z.object({

@@ -101,7 +101,9 @@ const presentationGeneratorFlow = ai.defineFlow(
             **Slide 5: A Visualização do Futuro**
             - **futureSlide.title:** Gere o título do slide: "O Futuro que Vamos Construir Juntos".
             - **futureSlide.question:** Gere a pergunta: "Como seria se, em vez de se preocupar com o gargalo, sua única preocupação fosse em como gerenciar o crescimento?".
-            - **futureSlide.content:** Gere 3 ou 4 frases curtas e impactantes que pintem um quadro vívido do futuro com a parceria da CP. Use as respostas sobre 'o que faria com mais clientes' e o 'impacto pessoal'. Foque em transformações, não em ações. Exemplos: "Agenda cheia com previsibilidade, permitindo investimentos estratégicos.", "Foco total na sua paixão: atender bem, em vez de se preocupar em como atrair clientes.", "Reconhecimento como a principal autoridade no seu mercado.", "Mais tempo e tranquilidade para você e sua família.".
+            - **futureSlide.content:** Gere um array com 3 ou 4 objetos, cada um com um "title" e uma "description". Use as respostas sobre 'o que faria com mais clientes' e o 'impacto pessoal' para criar transformações vívidas e persuasivas. Foque em benefícios, não em ações.
+                - Exemplo de objeto: { title: "Agenda Previsível", description: "Tenha a clareza de saber como sua agenda estará nas próximas semanas, permitindo investimentos e contratações estratégicas." }.
+                - Outro exemplo: { title: "Foco na Sua Paixão", description: "Gaste seu tempo atendendo bem seus clientes, em vez de se preocupar em como atrair novos." }.
 
             ---
             **Slide 7: A Estratégia**

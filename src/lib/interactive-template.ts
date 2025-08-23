@@ -196,11 +196,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           content: `
             <div class="content-center-wrapper">
                 <p class="question">${escapeHtml(futureSlide.question)}</p>
-                <div class="future-list">
+                <div class="card-grid">
                   ${futureSlide.content.map((item, index) => `
-                        <div class="future-item">
+                        <div class="future-item card">
                             <i class="fas ${futureIcons[index % futureIcons.length]}"></i>
-                            <p>${escapeHtml(item)}</p>
+                            <h4>${escapeHtml(item.title)}</h4>
+                            <p>${escapeHtml(item.description)}</p>
                         </div>
                     `).join('')}
                 </div>
@@ -281,7 +282,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  return `<!DOCTYPE html>
+  return \`<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -545,11 +546,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px; opacity: 0; transform: translateY(20px); text-align: left; }
         .slide-active .impact-item.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         
-        .future-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; width: 100%; max-width: 900px; }
-        .future-item { display: flex; align-items: center; background-color: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); opacity: 0; transform: translateY(20px); }
+        .future-item { opacity: 0; transform: translateY(20px); }
         .slide-active .future-item.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .future-item i { font-size: 1.5rem; color: var(--accent-color); margin-right: 20px; }
-        .future-item p { text-align: left; font-size: 1.1rem; line-height: 1.6; color: var(--primary-color); margin: 0; }
         
         .investment-layout { display: flex; flex-direction: row; align-items: stretch; gap: 30px; width: 100%; margin-top: 20px; }
         .packages-list { flex: 2; background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
@@ -935,5 +933,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>`;
+</html>\`;
 }
