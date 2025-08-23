@@ -1,5 +1,4 @@
 
-
 import type { GeneratePresentationOutput } from "@/ai/schemas/presentation-generator-schemas";
 
 // Helper function to safely escape HTML content
@@ -79,7 +78,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                       </div>
                       <div class="side-content-intro">
                            <div class="image-gallery">
-                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799842/Prancheta_34_hviyd6.png')"></div>
                                <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
                                <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524572/PODCAST_01_kglzeu.png')"></div>
                           </div>
@@ -431,13 +429,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             max-width: 900px;
         }
         
-        .presentation-gallery-layout { display: flex; gap: 20px; align-items: stretch; width: 100%; height: 100%; }
+        .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; height: 100%; }
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; }
         .side-content-intro { flex: 1; }
         .video-container { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; flex: 0 0 40%; }
         .video-container video { width: 100%; height: 100%; object-fit: cover; }
         
-        .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-grow: 1; }
+        .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; flex-grow: 1; }
         .feature-item { display: flex; align-items: flex-start; text-align: left; }
         .feature-item i { font-size: 1.5rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
         .feature-item h4 { margin: 0 0 5px 0; font-size: 1.1rem; text-align: left; color: var(--primary-color); }
@@ -739,5 +737,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     </script>
 </body>
 </html>
-`
+`;
 }
+  
