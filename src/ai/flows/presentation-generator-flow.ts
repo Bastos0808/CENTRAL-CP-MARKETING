@@ -108,7 +108,11 @@ const presentationGeneratorFlow = ai.defineFlow(
             ---
             **Slide 7: A Estratégia**
             - **strategySlide.title:** Gere o título do slide: "Nosso Plano para Virar o Jogo".
-            - **strategySlide.content:** Gere três parágrafos para os pilares. Pilar 'Aquisição' deve focar em resolver o 'gargalo de geração'. Pilar 'Conversão' deve focar em resolver a falha da 'experiência anterior com leads desqualificados'. Pilar 'Autoridade' deve focar em escalar a 'confiança da indicação'.
+            - **strategySlide.content:** Para cada um dos três pilares, gere um objeto com "title" e "description".
+              - Para o primeiro pilar (Aquisição), o título deve ser 'Aquisição'. A descrição deve focar em resolver o 'gargalo de geração'.
+              - Para o segundo pilar (Conversão), o título deve ser 'Conversão'. A descrição deve focar em resolver a falha da 'experiência anterior com leads desqualificados'.
+              - Para o terceiro pilar (Autoridade), o título deve ser 'Autoridade'. A descrição deve focar em escalar a 'confiança da indicação'.
+              NÃO use markdown (como **) nos títulos.
 
             ---
             **Slide 9: Métricas de Sucesso**

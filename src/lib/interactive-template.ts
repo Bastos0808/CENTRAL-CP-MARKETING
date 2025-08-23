@@ -58,6 +58,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
   ];
   
   const futureIcons = ["fa-calendar-check", "fa-lightbulb", "fa-star", "fa-smile"];
+  const strategyIcons = ["fa-users", "fa-chart-line", "fa-star"];
 
   const slides = [
        {
@@ -210,7 +211,15 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       {
           id: 'strategy',
           title: `<h2>${escapeHtml(strategySlide.title)}</h2>`,
-          content: `<div class="content-center-wrapper"><div class="card-grid"><div class="card"><i class="fas fa-users"></i> <h4>Aquisição</h4> <p>${escapeHtml(strategySlide.content[0])}</p> </div><div class="card"><i class="fas fa-chart-line"></i> <h4>Conversão</h4> <p>${escapeHtml(strategySlide.content[1])}</p> </div><div class="card"><i class="fas fa-star"></i> <h4>Autoridade</h4> <p>${escapeHtml(strategySlide.content[2])}</p> </div></div></div>`
+          content: `<div class="content-center-wrapper"><div class="card-grid">
+              ${strategySlide.content.map((item, index) => `
+                  <div class="card">
+                      <i class="fas ${strategyIcons[index % strategyIcons.length]}"></i>
+                      <h4>${escapeHtml(item.title)}</h4>
+                      <p>${escapeHtml(item.description)}</p>
+                  </div>
+              `).join('')}
+          </div></div>`
       },
        {
           id: 'social-proof',

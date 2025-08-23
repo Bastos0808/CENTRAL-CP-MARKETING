@@ -122,7 +122,10 @@ export const GeneratePresentationOutputSchema = z.object({
   
   strategySlide: z.object({
     title: z.string(),
-    content: z.array(z.string())
+    content: z.array(z.object({
+      title: z.string(),
+      description: z.string(),
+    })),
   }),
   
   metricsSlide: z.object({
