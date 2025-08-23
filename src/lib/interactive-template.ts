@@ -77,7 +77,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                           </div>
                       </div>
                       <div class="side-content-intro">
-                          <div class="image-gallery">
+                           <div class="image-gallery">
                                <div class="image-placeholder" style="background-image: url('https://i.postimg.cc/R01f7zJb/Whats-App-Image-2024-07-16-at-15-28-56.jpg')" data-ai-hint="business success"></div>
                                 <div class="image-placeholder" style="background-image: url('https://i.postimg.cc/tCTz2M1K/Whats-App-Image-2024-07-16-at-15-28-55.jpg')" data-ai-hint="fashion store"></div>
                                 <div class="image-placeholder" style="background-image: url('https://i.postimg.cc/d1hK5Jqg/Whats-App-Image-2024-07-16-at-15-28-52.jpg')" data-ai-hint="corporate office"></div>
@@ -308,7 +308,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .sky-container {
             width: 100%;
-            max-width: 1600px; /* Aumentado */
+            max-width: 1400px;
             height: 90vh;
             padding: 40px;
             background-color: var(--card-background);
@@ -408,15 +408,15 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         
         .presentation-gallery-layout {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 2fr 1fr;
             gap: 20px;
             align-items: center;
             width: 100%;
             height: 100%;
         }
-        .main-content-intro { flex: 1; display: flex; flex-direction: column; gap: 20px; justify-content: center; }
-        .side-content-intro { flex: 1; }
-        .video-container { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background-color: #000; }
+        .main-content-intro { flex: 1; display: flex; flex-direction: column; gap: 20px; justify-content: center; height: 100%; }
+        .side-content-intro { flex: 1; height: 100%; display: flex; align-items: center; }
+        .video-container { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background-color: #000; flex-shrink: 0; }
         .video-container video { width: 100%; height: 100%; object-fit: cover; }
         
         .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -425,19 +425,20 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .features-list h4 { margin: 0 0 5px 0; font-size: 1.1rem; text-align: left; color: var(--primary-color); }
         .features-list p { font-size: 0.9rem; text-align: left; margin: 0; }
 
-        .image-gallery { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .image-gallery { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; }
         .image-placeholder { width: 100%; height: 160px; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
         
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
         .impact-item i { font-size: 1.8rem; color: var(--accent-color); margin-right: 20px; }
 
-        .future-layout { display: grid; grid-template-columns: 1fr; gap: 30px; margin-top: 20px; align-items: center; }
+        .future-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; align-items: center; }
         .future-layout .image-placeholder { width: 100%; height: auto; aspect-ratio: 4/3; border-radius: 15px; }
         .future-layout .future-text { text-align: left; font-size: 1.3rem; line-height: 1.7; }
         
-        .investment-layout { display: flex; flex-direction: column; gap: 30px; width: 100%; margin-top: 20px; }
-        .packages-list, .total-investment { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .investment-layout { display: flex; flex-direction: row; align-items: stretch; gap: 30px; width: 100%; margin-top: 20px; }
+        .packages-list { flex: 2; background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
+        .total-investment { flex: 1; background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
         .packages-list h4, .total-investment h4 { font-size: 1.2rem; text-align: left; margin-bottom: 15px; }
         .packages-list ul { list-style: none; padding: 0; text-align: left; }
         .packages-list li { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
@@ -471,12 +472,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         
         .card.proof-card .image-placeholder { height: 150px; width: 100%; margin-bottom: 15px; }
 
-        @media (min-width: 1024px) {
-            .investment-layout { flex-direction: row; align-items: stretch; }
-            .packages-list { flex: 2; }
-            .total-investment { flex: 1; }
-            .presentation-gallery-layout { grid-template-columns: 2fr 1fr; align-items: center; }
-            .future-layout { grid-template-columns: 1fr 1fr; }
+        @media (max-width: 1024px) {
+            .presentation-gallery-layout { grid-template-columns: 1fr; }
+            .future-layout { grid-template-columns: 1fr; }
+            .investment-layout { flex-direction: column; }
         }
 
     </style>
