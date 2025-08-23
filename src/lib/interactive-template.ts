@@ -109,7 +109,15 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 </div>
                 <div class="analysis-box">
                     <h4>Análise do Gargalo</h4>
-                    <p>${escapeHtml(diagnosticSlide.content[0])}</p>
+                    <p>${escapeHtml(diagnosticSlide.gargalo)}</p>
+                </div>
+                <div class="analysis-box">
+                    <h4>Como Alcançaremos a Meta</h4>
+                    <p>${escapeHtml(diagnosticSlide.comoAlcancaremos)}</p>
+                </div>
+                <div class="analysis-box">
+                    <h4>Por Que o Custo da Inação Existe</h4>
+                    <p>${escapeHtml(diagnosticSlide.porqueCustoExiste)}</p>
                 </div>
             </div>`
       },
@@ -439,7 +447,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
         .highlight.loss { color: var(--loss-color); }
         .highlight-text { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); }
-        .analysis-box { margin-top: 30px; background-color: rgba(254, 73, 0, 0.1); border-left: 4px solid var(--accent-color); padding: 20px; border-radius: 5px; width: 100%; max-width: 900px; }
+        .analysis-box { margin-top: 20px; background-color: rgba(254, 73, 0, 0.1); border-left: 4px solid var(--accent-color); padding: 20px; border-radius: 5px; width: 100%; max-width: 900px; }
         .analysis-box h4 { text-align: left; font-size: 1rem; color: var(--accent-color); margin: 0 0 10px 0; }
         .analysis-box p { text-align: left; font-size: 1rem; margin: 0; }
         
@@ -806,5 +814,3 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 </html>
 `
 }
-
-    

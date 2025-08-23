@@ -84,9 +84,12 @@ const presentationGeneratorFlow = ai.defineFlow(
             **Slide 3: O Diagnóstico**
             - **title:** Gere o título do slide: "Entendemos o seu Desafio".
             - **question:** Gere a pergunta reflexiva: "Você sente que seu negócio tem potencial para muito mais, mas algo está travando esse crescimento?".
-            - **content:** Com base nos campos 'principalGargalo' e 'impactoGargalo', escreva um parágrafo que humaniza o problema. Em vez de apenas citar o gargalo, explique como ele se manifesta no dia a dia da empresa de forma empática. Por exemplo, se o gargalo é 'geração de leads' e o impacto é 'equipe ociosa', você pode escrever: "O principal desafio que identificamos não é apenas a falta de novos contatos, mas o que isso representa: uma equipe talentosa com tempo ocioso e um potencial de faturamento que não está sendo realizado. É a sensação de ter um motor potente, mas que não consegue tracionar como deveria."
             - **meta:** Extraia a Meta de Faturamento. Ex: "${inputForAI.metaFaturamento} em 6 meses".
             - **custo:** Extraia o Custo do Problema. Ex: "${inputForAI.custoProblema} deixados na mesa todo mês".
+            - **gargalo:** Com base nos campos 'principalGargalo' e 'impactoGargalo', escreva um parágrafo que humaniza o problema. Em vez de apenas citar o gargalo, explique como ele se manifesta no dia a dia da empresa de forma empática. Por exemplo, se o gargalo é 'geração de leads' e o impacto é 'equipe ociosa', você pode escrever: "O principal desafio que identificamos não é apenas a falta de novos contatos, mas o que isso representa: uma equipe talentosa com tempo ocioso e um potencial de faturamento que não está sendo realizado. É a sensação de ter um motor potente, mas que não consegue tracionar como deveria."
+            - **comoAlcancaremos:** Descreva em um parágrafo como o plano macro irá atingir a meta. Ex: "Para atingir essa meta, implementaremos um sistema de aquisição de clientes focado em tráfego pago, direcionado para o seu público ideal, combinado com uma comunicação estratégica no Instagram para construir autoridade e converter seguidores em pacientes."
+            - **porqueCustoExiste:** Explique por que o custo da inação existe, conectando-o à ausência de marketing eficaz. Ex: "Esse valor é o reflexo direto de potenciais clientes que, hoje, não encontram sua clínica online e acabam fechando com concorrentes que investem em visibilidade. Cada mês sem uma estratégia de marketing ativa é um mês permitindo que seus concorrentes capturem uma fatia maior do seu mercado."
+
 
             ---
             **Slide 4: A Dor e Suas Consequências**
@@ -148,5 +151,3 @@ const presentationGeneratorFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

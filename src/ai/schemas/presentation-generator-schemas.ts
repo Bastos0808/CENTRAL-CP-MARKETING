@@ -91,10 +91,11 @@ export const GeneratePresentationOutputSchema = z.object({
   diagnosticSlide: z.object({
     title: z.string(),
     question: z.string(),
-    content: z.array(z.string()),
     meta: z.string(),
+    custo: z.string(),
     gargalo: z.string(),
-    custo: z.string()
+    comoAlcancaremos: z.string(),
+    porqueCustoExiste: z.string(),
   }),
 
   painSlide: z.object({
