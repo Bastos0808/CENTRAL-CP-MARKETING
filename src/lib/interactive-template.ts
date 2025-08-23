@@ -248,6 +248,16 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                              <h4 class="testimonial-author">- Laura Mendes, Advogada Tributarista</h4>
                              <span class="testimonial-metric">+300% de alcance orgânico</span>
                           </div>
+                          <div class="card testimonial-card">
+                             <p class="testimonial-text">"Tínhamos um processo de vendas desorganizado e perdíamos clientes por falta de follow-up. A implementação do CRM pela CP mudou nosso jogo. Agora, nenhuma oportunidade é perdida."</p>
+                             <h4 class="testimonial-author">- Fernando Costa, Imobiliária Prime</h4>
+                             <span class="testimonial-metric">+35% na Taxa de Conversão</span>
+                          </div>
+                          <div class="card testimonial-card">
+                             <p class="testimonial-text">"A produção audiovisual da CP elevou a percepção da nossa marca. Os vídeos institucionais e de produto transmitiram um profissionalismo que as fotos nunca conseguiram."</p>
+                             <h4 class="testimonial-author">- Camila Rocha, Arquiteta</h4>
+                             <span class="testimonial-metric">Contratos 50% maiores</span>
+                          </div>
                       </div>
                     </div>`
       },
@@ -690,11 +700,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             { y: 100, z: 30 }, // Posição 2
             { y: 90, z: 35 },  // Posição 3
             { y: 80, z: 40 },  // Posição 4
-            { y: 70, z: 45 },  // Posição 5
-            { y: 60, z: 50 },  // Posição 6
-            { y: 50, z: 55 },  // Posição 7
-            { y: 40, z: 60 },   // Posição 8
-            { y: 30, z: 65 }    // Posição 9
+            { y: 60, z: 50 },  // Posição 5
+            { y: 50, z: 55 },  // Posição 6
+            { y: 40, z: 60 },   // Posição 7
+            { y: 30, z: 65 }    // Posição 8
         ];
         
         function animateCounter(element) {
