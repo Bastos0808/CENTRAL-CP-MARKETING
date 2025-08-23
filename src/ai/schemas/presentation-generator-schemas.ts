@@ -134,6 +134,7 @@ export const GeneratePresentationOutputSchema = z.object({
     crescimentoPercentual: z.string(),
     metaLeadsQualificados: z.string(),
     metaTaxaConversao: z.string(),
+    comoAlcancaremos: z.string().describe("Um parágrafo detalhado explicando como a CP Marketing alcançará as metas apresentadas."),
   }),
   
   investmentSlide: z.object({

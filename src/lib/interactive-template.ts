@@ -256,6 +256,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                               <span class="highlight gain animated-counter" data-target="${extractNumber(metricsSlide.metaTaxaConversao)}" data-suffix="%">0%</span>
                           </div>
                       </div>
+                      <div class="explanation-text">
+                        <p>${escapeHtml(metricsSlide.comoAlcancaremos)}</p>
+                      </div>
                     </div>`
       },
       {
@@ -592,6 +595,22 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         .slide-active .metric-card.animate-in {
             animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .explanation-text {
+            margin-top: 30px;
+            max-width: 800px;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-left: 3px solid var(--accent-color);
+            border-radius: 5px;
+        }
+        .explanation-text p {
+            font-size: 1rem;
+            line-height: 1.7;
+            text-align: center;
+            color: var(--secondary-color);
         }
 
         @media (max-width: 1024px) {

@@ -121,6 +121,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             - **metricsSlide.crescimentoPercentual:** Calcule a porcentagem de crescimento necessária para ir do faturamento médio para a meta. Formate como string (Ex: '140%').
             - **metricsSlide.metaLeadsQualificados:** Com base na meta de faturamento e no ticket médio, calcule uma meta realista de leads qualificados por mês. Retorne como string (Ex: "88").
             - **metricsSlide.metaTaxaConversao:** Defina uma meta de taxa de conversão realista para atingir o objetivo. Retorne como string (Ex: "20%").
+            - **metricsSlide.comoAlcancaremos:** Crie um parágrafo detalhado e persuasivo explicando COMO a CP Marketing alcançará essas métricas. Conecte os pilares da estratégia (Aquisição, Conversão, Autoridade) com os números. Por exemplo, explique que a meta de leads será atingida através de campanhas de tráfego pago altamente segmentadas, a taxa de conversão virá de uma comunicação estratégica que qualifica o lead, e o crescimento geral será sustentado pela construção de autoridade da marca.
         `,
     });
     
