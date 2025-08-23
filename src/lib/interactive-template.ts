@@ -282,7 +282,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  return \`<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -933,5 +933,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>\`;
+</html>`;
 }
