@@ -14,9 +14,9 @@ const escapeHtml = (text: string | undefined): string => {
 
 // Helper function to highlight keywords in a sentence
 const highlightKeywords = (text: string): string => {
-    const keywords = ['frustração', 'risco', 'concorrência', 'estagnado', 'perda', 'dificuldades', 'impacto operacional', 'falharam'];
-    const regex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'gi');
-    return text.replace(regex, '<strong style="color: var(--accent-color); font-weight: bold;">$1</strong>');
+    if (!text) return '';
+    // Highlight text within <strong> tags with a specific style
+    return text.replace(/<strong>(.*?)<\/strong>/g, '<strong class="highlight-phrase">$1</strong>');
 }
 
 interface CreateProposalData {
@@ -239,22 +239,15 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>${escapeHtml(metricsSlide.title)}</h2>`,
           content: `<div class="content-center-wrapper">
                       <p class="question">${escapeHtml(metricsSlide.subtitle)}</p>
-                      <div class="card-grid">
-                          <div class="metric-card card">
-                              <i class="fas ${metricsIcons[0]}"></i>
-                              <h4>Crescimento Percentual</h4>
-                              <span class="highlight gain animated-counter" data-target="${extractNumber(metricsSlide.crescimentoPercentual)}" data-suffix="%">0%</span>
-                          </div>
-                          <div class="metric-card card">
-                              <i class="fas ${metricsIcons[1]}"></i>
-                              <h4>Leads Qualificados</h4>
-                              <span class="highlight gain animated-counter" data-target="${extractNumber(metricsSlide.metaLeadsQualificados)}">0</span>
-                          </div>
-                           <div class="metric-card card">
-                              <i class="fas ${metricsIcons[2]}"></i>
-                              <h4>Taxa de Conversão</h4>
-                              <span class="highlight gain animated-counter" data-target="${extractNumber(metricsSlide.metaTaxaConversao)}" data-suffix="%">0%</span>
-                          </div>
+                      <div class="card-grid metric-grid">
+                          ${metricsSlide.metrics.map((metric, index) => `
+                            <div class="metric-card card">
+                                <i class="fas ${metricsIcons[index % metricsIcons.length]}"></i>
+                                <h4>${escapeHtml(metric.title)}</h4>
+                                <span class="highlight gain animated-counter" data-target="${extractNumber(metric.value)}" data-suffix="${metric.value.includes('%') ? '%' : ''}">${metric.value.includes('%') ? '0%' : '0'}</span>
+                                <p class="metric-description">${highlightKeywords(escapeHtml(metric.description))}</p>
+                            </div>
+                          `).join('')}
                       </div>
                       <div class="explanation-text">
                         <p>${escapeHtml(metricsSlide.comoAlcancaremos)}</p>
@@ -290,7 +283,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  return `<!DOCTYPE html>
+  return \`<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -488,7 +481,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; max-width: 1200px; }
         .card-grid.two-cols { grid-template-columns: 1fr 1fr; }
-        .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
+        .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center;}
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
         .card h4 { font-size: 1.1rem; margin-bottom: 10px; text-align: center; }
         .card p {font-size: 0.9rem; text-align: center;}
@@ -496,7 +489,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .highlight { font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
         .highlight.loss { color: var(--loss-color); }
         .highlight.gain { color: var(--gain-color); }
-        .highlight-text { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); }
+        
+        .highlight-phrase {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
         
         p.question {
             font-weight: 600;
@@ -517,10 +514,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             font-weight: 700;
         }
 
-        .impact-item p.impact-text {
-            color: var(--primary-color);
-        }
-        
         .impact-item p.impact-text strong {
             color: var(--accent-color);
             font-weight: bold;
@@ -588,15 +581,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         
         .card.proof-card .image-placeholder { height: 150px; width: 100%; margin-bottom: 15px; }
 
-        /* Metrics Slide New Styles */
-        .metric-card {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        .slide-active .metric-card.animate-in {
-            animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
+        .metric-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); max-width: 1200px; }
+        .metric-card { opacity: 0; transform: translateY(20px); align-items: flex-start; text-align: left; padding: 20px; }
+        .slide-active .metric-card.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .metric-card h4 { text-align: left; }
+        .metric-card .highlight { text-align: left; font-size: clamp(2.5rem, 4vw, 3.5rem); margin: 0 0 15px 0;}
+        .metric-card .metric-description { text-align: left; font-size: 0.9rem; color: var(--secondary-color); margin: 0; line-height: 1.5; }
+        
         .explanation-text {
             margin-top: 30px;
             max-width: 800px;
@@ -961,5 +952,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>`;
+</html>\`;
 }

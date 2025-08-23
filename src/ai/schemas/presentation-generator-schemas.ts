@@ -131,9 +131,11 @@ export const GeneratePresentationOutputSchema = z.object({
   metricsSlide: z.object({
     title: z.string(),
     subtitle: z.string(),
-    crescimentoPercentual: z.string(),
-    metaLeadsQualificados: z.string(),
-    metaTaxaConversao: z.string(),
+    metrics: z.array(z.object({
+        title: z.string(),
+        value: z.string(),
+        description: z.string(),
+    })).length(3),
     comoAlcancaremos: z.string().describe("Um parágrafo detalhado explicando como a CP Marketing alcançará as metas apresentadas."),
   }),
   
