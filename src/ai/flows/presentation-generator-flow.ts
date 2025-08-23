@@ -83,10 +83,9 @@ const presentationGeneratorFlow = ai.defineFlow(
             ---
             **Slide 3: O Diagnóstico**
             - **title:** Gere o título do slide: "Entendemos o seu Desafio".
-            - **question:** Gere a pergunta reflexiva: "Você sente que a ${inputForAI.clientName} tem o potencial para atingir um novo patamar, mas o cenário atual tem sido um freio?".
-            - **content:** Deixe este campo em branco. Os dados serão preenchidos diretamente.
+            - **question:** Gere a pergunta reflexiva: "Você sente que seu negócio tem potencial para muito mais, mas algo está travando esse crescimento?".
+            - **content:** Com base nos campos 'principalGargalo' e 'impactoGargalo', escreva um parágrafo que humaniza o problema. Em vez de apenas citar o gargalo, explique como ele se manifesta no dia a dia da empresa de forma empática. Por exemplo, se o gargalo é 'geração de leads' e o impacto é 'equipe ociosa', você pode escrever: "O principal desafio que identificamos não é apenas a falta de novos contatos, mas o que isso representa: uma equipe talentosa com tempo ocioso e um potencial de faturamento que não está sendo realizado. É a sensação de ter um motor potente, mas que não consegue tracionar como deveria."
             - **meta:** Extraia a Meta de Faturamento. Ex: "${inputForAI.metaFaturamento} em 6 meses".
-            - **gargalo:** Extraia o Principal Gargalo. Ex: "${inputForAI.principalGargalo}".
             - **custo:** Extraia o Custo do Problema. Ex: "${inputForAI.custoProblema} deixados na mesa todo mês".
 
             ---
@@ -149,3 +148,5 @@ const presentationGeneratorFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

@@ -83,8 +83,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                       </div>
                       <div class="side-content-intro">
                            <div class="image-gallery">
-                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
                                <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524572/PODCAST_01_kglzeu.png')"></div>
+                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
                           </div>
                       </div>
                     </div>`
@@ -95,22 +95,21 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           content: `
             <div class="content-center-wrapper">
                 <p class="question">${escapeHtml(diagnosticSlide.question)}</p>
-                <div class="card-grid">
+                <div class="card-grid two-cols">
                     <div class="card">
                         <h3>Meta Principal</h3>
                         <p class="card-subtitle">Onde queremos chegar</p>
                         <span class="highlight animated-number" data-target="${extractNumber(diagnosticSlide.meta)}">R$ 0,00</span>
                     </div>
                     <div class="card">
-                        <h3>Gargalo Crítico</h3>
-                        <p class="card-subtitle">O que impede o crescimento hoje</p>
-                        <span class="highlight-text">${escapeHtml(diagnosticSlide.gargalo)}</span>
-                    </div>
-                    <div class="card">
                         <h3>Custo da Inação</h3>
                         <p class="card-subtitle">O valor que fica na mesa</p>
                         <span class="highlight loss animated-number" data-target="${extractNumber(diagnosticSlide.custo)}">R$ 0,00</span>
                     </div>
+                </div>
+                <div class="analysis-box">
+                    <h4>Análise do Gargalo</h4>
+                    <p>${escapeHtml(diagnosticSlide.content[0])}</p>
                 </div>
             </div>`
       },
@@ -167,9 +166,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>Resultados que Falam por Si</h2>`,
           content: `<div class="content-center-wrapper"><p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p>
                       <div class="card-grid">
-                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/R01f7zJb/Whats-App-Image-2024-07-16-at-15-28-56.jpg')"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div>
-                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/tCTz2M1K/Whats-App-Image-2024-07-16-at-15-28-55.jpg')"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div>
-                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/d1hK5Jqg/Whats-App-Image-2024-07-16-at-15-28-52.jpg')"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div>
+                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524564/Case_2_j99jwd.png')"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div>
+                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524565/Case_3_xypeop.png')"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div>
+                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524562/Case_1_q1yqcv.png')"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div>
                       </div>
                     </div>`
       },
@@ -324,7 +323,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .sky-container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1600px;
             height: 90vh;
             max-height: 800px;
             padding: 40px;
@@ -431,6 +430,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
 
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; max-width: 1200px; }
+        .card-grid.two-cols { grid-template-columns: 1fr 1fr; }
         .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
         .card h4 { font-size: 1.1rem; margin-bottom: 10px; text-align: center; }
@@ -439,6 +439,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
         .highlight.loss { color: var(--loss-color); }
         .highlight-text { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); }
+        .analysis-box { margin-top: 30px; background-color: rgba(254, 73, 0, 0.1); border-left: 4px solid var(--accent-color); padding: 20px; border-radius: 5px; width: 100%; max-width: 900px; }
+        .analysis-box h4 { text-align: left; font-size: 1rem; color: var(--accent-color); margin: 0 0 10px 0; }
+        .analysis-box p { text-align: left; font-size: 1rem; margin: 0; }
         
         p.question {
             font-weight: 600;
@@ -451,9 +454,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             max-width: 900px;
         }
         
-        .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%;}
-        .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; }
-        .side-content-intro { flex: 1; }
+        .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; flex-wrap: wrap; }
+        .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
+        .side-content-intro { flex: 1; min-width: 300px; }
         .video-container { 
             width: 100%; 
             max-height: 250px; 
@@ -521,9 +524,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .card.proof-card .image-placeholder { height: 150px; width: 100%; margin-bottom: 15px; }
 
         @media (max-width: 1024px) {
-            .presentation-gallery-layout { flex-direction: column; }
-            .future-layout { grid-template-columns: 1fr; }
-            .investment-layout { flex-direction: column; }
+            .presentation-gallery-layout, .future-layout, .investment-layout { flex-direction: column; }
         }
 
     </style>
@@ -805,3 +806,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 </html>
 `
 }
+
+    
