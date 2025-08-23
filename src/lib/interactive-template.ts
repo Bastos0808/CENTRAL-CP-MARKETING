@@ -83,8 +83,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                       </div>
                       <div class="side-content-intro">
                            <div class="image-gallery">
-                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524572/PODCAST_01_kglzeu.png')"></div>
                                <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
+                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524572/PODCAST_01_kglzeu.png')"></div>
                           </div>
                       </div>
                     </div>`
@@ -107,17 +107,34 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                         <span class="highlight loss animated-number" data-target="${extractNumber(diagnosticSlide.custo)}">R$ 0,00</span>
                     </div>
                 </div>
-                <div class="analysis-box">
-                    <h4>Análise do Gargalo</h4>
-                    <p>${escapeHtml(diagnosticSlide.gargalo)}</p>
-                </div>
-                <div class="analysis-box">
-                    <h4>Como Alcançaremos a Meta</h4>
-                    <p>${escapeHtml(diagnosticSlide.comoAlcancaremos)}</p>
-                </div>
-                <div class="analysis-box">
-                    <h4>Por Que o Custo da Inação Existe</h4>
-                    <p>${escapeHtml(diagnosticSlide.porqueCustoExiste)}</p>
+                <div class="accordion-container">
+                    <div class="accordion-item">
+                        <button class="accordion-trigger">
+                            <h4>Análise do Gargalo</h4>
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <p>${escapeHtml(diagnosticSlide.gargalo)}</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-trigger">
+                            <h4>Como Alcançaremos a Meta</h4>
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <div class="accordion-content">
+                           <p>${escapeHtml(diagnosticSlide.comoAlcancaremos)}</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-trigger">
+                            <h4>Por Que o Custo da Inação Existe</h4>
+                             <i class="fas fa-plus"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <p>${escapeHtml(diagnosticSlide.porqueCustoExiste)}</p>
+                        </div>
+                    </div>
                 </div>
             </div>`
       },
@@ -333,7 +350,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             width: 100%;
             max-width: 1600px;
             height: 90vh;
-            max-height: 800px;
             padding: 40px;
             background-color: var(--card-background);
             backdrop-filter: blur(10px);
@@ -447,9 +463,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
         .highlight.loss { color: var(--loss-color); }
         .highlight-text { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); }
-        .analysis-box { margin-top: 20px; background-color: rgba(254, 73, 0, 0.1); border-left: 4px solid var(--accent-color); padding: 20px; border-radius: 5px; width: 100%; max-width: 900px; }
-        .analysis-box h4 { text-align: left; font-size: 1rem; color: var(--accent-color); margin: 0 0 10px 0; }
-        .analysis-box p { text-align: left; font-size: 1rem; margin: 0; }
         
         p.question {
             font-weight: 600;
@@ -507,6 +520,18 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .special-offers p { font-size: 0.9rem; text-align: left; }
         .special-offers i { color: var(--accent-color); margin-right: 10px; }
         
+        /* Accordion Styles */
+        .accordion-container { width: 100%; max-width: 900px; margin-top: 20px; }
+        .accordion-item { border-bottom: 1px solid var(--border-color); }
+        .accordion-item:last-child { border-bottom: none; }
+        .accordion-trigger { background: none; border: none; width: 100%; text-align: left; padding: 15px 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .accordion-trigger h4 { font-size: 1.1rem; color: var(--primary-color); margin: 0; text-align: left; }
+        .accordion-trigger i { color: var(--accent-color); transition: transform 0.3s ease; }
+        .accordion-item.active .accordion-trigger i { transform: rotate(45deg); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .accordion-content p { background-color: rgba(254, 73, 0, 0.1); padding: 20px; border-left: 3px solid var(--accent-color); margin: 0 5px 15px; border-radius: 5px; text-align: left; font-size: 1rem; }
+
+
         /* Animated Graphs */
         @keyframes grow-bar-vertical { from { transform: scaleY(0); } to { transform: scaleY(1); } }
         @keyframes grow-bar-horizontal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
@@ -623,6 +648,36 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             }, frameRate);
         }
 
+        function setupAccordion() {
+            const accordionItems = document.querySelectorAll('.accordion-item');
+            accordionItems.forEach(item => {
+                const trigger = item.querySelector('.accordion-trigger');
+                const content = item.querySelector('.accordion-content');
+                
+                trigger.addEventListener('click', () => {
+                    const isActive = item.classList.contains('active');
+                    
+                    // Close all other items
+                    accordionItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                            otherItem.querySelector('.accordion-content').style.maxHeight = '0px';
+                        }
+                    });
+
+                    // Toggle current item
+                    if (isActive) {
+                        item.classList.remove('active');
+                        content.style.maxHeight = '0px';
+                    } else {
+                        item.classList.add('active');
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
+            });
+        }
+
+
         function updateSlideContent() {
             const container = document.querySelector('.sky-container-content');
             
@@ -653,6 +708,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                     slideWrapper.classList.add('slide-active');
                     
                     if (slide.id === 'diagnosis') {
+                        setupAccordion();
                         const observer = new IntersectionObserver((entries) => {
                             entries.forEach(entry => {
                                 if (entry.isIntersecting) {
@@ -813,4 +869,3 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 </body>
 </html>
 `
-}
