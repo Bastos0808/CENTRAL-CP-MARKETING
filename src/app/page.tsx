@@ -127,7 +127,6 @@ export default function Home() {
     const allTabs = [
         { value: 'production', label: 'Produção', icon: Workflow, enabled: canAccessProduction },
         { value: 'commercial', label: 'Comercial', icon: Target, content: commercialTools, enabled: canAccessCommercial },
-        { value: 'internal', label: 'Interno', icon: Dices, content: internalTools, enabled: isAdmin },
     ];
 
     const enabledTabs = allTabs.filter(tab => tab.enabled);
