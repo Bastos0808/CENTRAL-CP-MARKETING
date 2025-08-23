@@ -431,10 +431,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             max-width: 900px;
         }
         
-        .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; height: 100%; }
+        .presentation-gallery-layout { display: flex; gap: 20px; align-items: stretch; width: 100%; height: 100%; }
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; }
         .side-content-intro { flex: 1; }
-        .video-container { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; flex: 0 0 40%; /* Reduced video size */ }
+        .video-container { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; flex: 0 0 40%; }
         .video-container video { width: 100%; height: 100%; object-fit: cover; }
         
         .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-grow: 1; }
@@ -569,7 +569,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             TweenLite.to(container, 0.3, { opacity: 0, ease: Power2.easeOut, onComplete: () => {
                 const firstChild = container.firstChild;
                  if (firstChild && firstChild.classList) {
-                  firstChild.classList.remove('slide-active');
+                    firstChild.classList.remove('slide-active');
                 }
 
                 if (currentSlide < 0 || currentSlide >= slides.length) {
