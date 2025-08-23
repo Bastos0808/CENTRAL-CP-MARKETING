@@ -227,10 +227,27 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           id: 'social-proof',
           title: `<h2>Resultados que Falam por Si</h2>`,
           content: `<div class="content-center-wrapper"><p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p>
-                      <div class="card-grid">
-                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524564/Case_2_j99jwd.png')"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div>
-                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524565/Case_3_xypeop.png')"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div>
-                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524562/Case_1_q1yqcv.png')"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div>
+                      <div class="card-grid testimonial-grid">
+                          <div class="card testimonial-card">
+                            <p class="testimonial-text">"Estávamos invisíveis online. A CP não só nos colocou no mapa, como transformou nosso Instagram em uma máquina de agendamentos. A agenda nunca esteve tão cheia."</p>
+                            <h4 class="testimonial-author">- Dr. Ricardo Alves, Clínica Dermato+</h4>
+                            <span class="testimonial-metric">+250% em agendamentos qualificados</span>
+                          </div>
+                          <div class="card testimonial-card">
+                            <p class="testimonial-text">"Nosso Custo por Lead era altíssimo e só atraíamos curiosos. A equipe de tráfego da CP otimizou tudo e hoje temos um fluxo constante de clientes com perfil de compra."</p>
+                            <h4 class="testimonial-author">- Sofia Martins, Consultoria Financeira</h4>
+                            <span class="testimonial-metric">-40% no Custo por Lead</span>
+                          </div>
+                          <div class="card testimonial-card">
+                             <p class="testimonial-text">"Achava que marketing era só post bonito. Com a CP, entendi o que é estratégia. Hoje, cada real investido volta multiplicado. É outro nível de previsibilidade para o negócio."</p>
+                             <h4 class="testimonial-author">- Bruno Lima, E-commerce de Moda</h4>
+                             <span class="testimonial-metric">ROAS de 8.5 em 6 meses</span>
+                          </div>
+                          <div class="card testimonial-card">
+                             <p class="testimonial-text">"Gravar o podcast foi um divisor de águas para a minha autoridade. O processo foi impecável e o resultado foi uma audiência engajada que confia no meu trabalho."</p>
+                             <h4 class="testimonial-author">- Laura Mendes, Advogada Tributarista</h4>
+                             <span class="testimonial-metric">+300% de alcance orgânico</span>
+                          </div>
                       </div>
                     </div>`
       },
@@ -283,7 +300,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  return \`<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -579,7 +596,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .slide-active .cost-card.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .cost-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
         
-        .card.proof-card .image-placeholder { height: 150px; width: 100%; margin-bottom: 15px; }
+        .testimonial-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+        .testimonial-card { text-align: left; background: #1a1a1a; padding: 20px; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-between; opacity: 0; transform: translateY(20px);}
+        .slide-active .testimonial-card.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .testimonial-text { font-style: italic; color: var(--secondary-color); border-left: 3px solid var(--accent-color); padding-left: 15px; margin-bottom: 20px; flex-grow: 1; text-align: left; }
+        .testimonial-author { font-weight: bold; color: var(--primary-color); text-align: left; margin-bottom: 5px; }
+        .testimonial-metric { font-weight: 700; color: var(--gain-color); text-align: left; font-size: 1.1rem; }
 
         .metric-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); max-width: 1200px; }
         .metric-card { opacity: 0; transform: translateY(20px); align-items: flex-start; text-align: left; padding: 20px; }
@@ -786,7 +808,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                 animatedCounters.forEach(el => animateCounter(el));
 
                                 // Animate items sequentially
-                                const animatedItems = entry.target.querySelectorAll('.cost-card, .impact-item, .future-item, .metric-card');
+                                const animatedItems = entry.target.querySelectorAll('.cost-card, .impact-item, .future-item, .metric-card, .testimonial-card');
                                 if (animatedItems.length > 0) {
                                     animatedItems.forEach((item, index) => {
                                        setTimeout(() => {
@@ -952,5 +974,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>\`;
+</html>`;
 }
