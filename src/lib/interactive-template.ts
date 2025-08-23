@@ -161,12 +161,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>${escapeHtml(painSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
-                <p class="question" style="text-align:center;">${escapeHtml(painSlide.question)}</p>
+                <p class="question">${escapeHtml(painSlide.question)}</p>
                 <div class="impact-list">
                     ${painSlide.content.map((item, index) => `
                         <div class="impact-item">
-                          <p class="question" style="color: var(--primary-color); font-weight: 700; border-left: none; font-size: 1.2rem;">${escapeHtml(painQuestions[index] || '')}</p>
-                          <p style="color: var(--primary-color);">${highlightKeywords(escapeHtml(item))}</p>
+                          <p class="question impact-question">${escapeHtml(painQuestions[index] || '')}</p>
+                          <p class="impact-text">${highlightKeywords(escapeHtml(item))}</p>
                         </div>
                     `).join('')}
                 </div>
@@ -195,7 +195,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>${escapeHtml(futureSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
-                <p class="question" style="text-align: center;">${escapeHtml(futureSlide.question)}</p>
+                <p class="question">${escapeHtml(futureSlide.question)}</p>
                 <div class="future-list">
                   ${futureSlide.content.map((item, index) => `
                         <div class="future-item">
@@ -498,13 +498,22 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             margin: 1rem auto;
             max-width: 900px;
         }
-        .impact-item p.question {
+        .impact-item p.impact-question {
             color: var(--primary-color);
             border-left: none;
             padding-left: 0;
             font-size: 1.2rem;
             margin-bottom: 10px;
             font-weight: 700;
+        }
+
+        .impact-item p.impact-text {
+            color: var(--primary-color);
+        }
+        
+        .impact-item p.impact-text strong {
+            color: var(--accent-color);
+            font-weight: bold;
         }
         
         .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; flex-wrap: wrap; }
@@ -534,13 +543,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         
         .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px; opacity: 0; transform: translateY(20px); text-align: left; }
-        .slide-active .impact-item { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .impact-item p { text-align: left; color: var(--primary-color); }
-        .impact-item p strong { color: var(--accent-color); font-weight: bold; }
+        .slide-active .impact-item.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         
         .future-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; width: 100%; max-width: 900px; }
         .future-item { display: flex; align-items: center; background-color: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); opacity: 0; transform: translateY(20px); }
-        .slide-active .future-item { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .slide-active .future-item.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .future-item i { font-size: 1.5rem; color: var(--accent-color); margin-right: 20px; }
         .future-item p { text-align: left; font-size: 1.1rem; line-height: 1.6; color: var(--primary-color); margin: 0; }
         
@@ -752,15 +759,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                 animatedNumbers.forEach(el => animateNumber(el));
                                 
                                 // Animate cost cards sequentially
-                                if (entry.target.dataset.slideId === 'inaction-cost') {
-                                    const costCards = entry.target.querySelectorAll('.cost-card');
-                                    costCards.forEach((card, index) => {
-                                        setTimeout(() => {
-                                            card.style.animationDelay = (index * 0.3) + 's';
-                                            card.classList.add('animate-in');
-                                        }, 0);
-                                    });
-                                }
+                                const costCards = entry.target.querySelectorAll('.cost-card');
+                                costCards.forEach((card, index) => {
+                                    setTimeout(() => {
+                                        card.style.animationDelay = (index * 0.3) + 's';
+                                        card.classList.add('animate-in');
+                                    }, 0);
+                                });
 
                                 // Animate impact items sequentially
                                 const animatedItems = entry.target.querySelectorAll('.impact-item, .future-item');

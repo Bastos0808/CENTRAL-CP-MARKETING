@@ -82,38 +82,38 @@ const presentationGeneratorFlow = ai.defineFlow(
 
             ---
             **Slide 3: O Diagnóstico**
-            - **title:** Gere o título do slide: "Entendemos o seu Desafio".
-            - **question:** Gere a pergunta reflexiva: "Você sente que seu negócio tem potencial para muito mais, mas algo está travando esse crescimento?".
-            - **meta:** Extraia a Meta de Faturamento. Ex: "${inputForAI.metaFaturamento} em 6 meses".
-            - **custo:** Extraia o Custo do Problema. Ex: "${inputForAI.custoProblema} deixados na mesa todo mês".
-            - **gargalo:** Com base nos campos 'principalGargalo' e 'impactoGargalo', escreva um parágrafo que humaniza o problema. Em vez de apenas citar o gargalo, explique como ele se manifesta no dia a dia da empresa de forma empática. Por exemplo, se o gargalo é 'geração de leads' e o impacto é 'equipe ociosa', você pode escrever: "O principal desafio que identificamos não é apenas a falta de novos contatos, mas o que isso representa: uma equipe talentosa com tempo ocioso e um potencial de faturamento que não está sendo realizado. É a sensação de ter um motor potente, mas que não consegue tracionar como deveria."
-            - **comoAlcancaremos:** Descreva em um parágrafo como o plano macro irá atingir a meta. Ex: "Para atingir essa meta, implementaremos um sistema de aquisição de clientes focado em tráfego pago, direcionado para o seu público ideal, combinado com uma comunicação estratégica no Instagram para construir autoridade e converter seguidores em pacientes."
-            - **porqueCustoExiste:** Explique por que o custo da inação existe, conectando-o à ausência de marketing eficaz. Ex: "Esse valor é o reflexo direto de potenciais clientes que, hoje, não encontram sua clínica online e acabam fechando com concorrentes que investem em visibilidade. Cada mês sem uma estratégia de marketing ativa é um mês permitindo que seus concorrentes capturem uma fatia maior do seu mercado."
+            - **diagnosticSlide.title:** Gere o título do slide: "Entendemos o seu Desafio".
+            - **diagnosticSlide.question:** Gere a pergunta reflexiva: "Você sente que seu negócio tem potencial para muito mais, mas algo está travando esse crescimento?".
+            - **diagnosticSlide.meta:** Extraia a Meta de Faturamento. Ex: "${inputForAI.metaFaturamento} em 6 meses".
+            - **diagnosticSlide.custo:** Extraia o Custo do Problema. Ex: "${inputForAI.custoProblema} deixados na mesa todo mês".
+            - **diagnosticSlide.gargalo:** Com base nos campos 'principalGargalo' e 'impactoGargalo', escreva um parágrafo que humaniza o problema. Em vez de apenas citar o gargalo, explique como ele se manifesta no dia a dia da empresa de forma empática. Por exemplo, se o gargalo é 'geração de leads' e o impacto é 'equipe ociosa', você pode escrever: "O principal desafio que identificamos não é apenas a falta de novos contatos, mas o que isso representa: uma equipe talentosa com tempo ocioso e um potencial de faturamento que não está sendo realizado. É a sensação de ter um motor potente, mas que não consegue tracionar como deveria."
+            - **diagnosticSlide.comoAlcancaremos:** Descreva em um parágrafo como o plano macro irá atingir a meta. Ex: "Para atingir essa meta, implementaremos um sistema de aquisição de clientes focado em tráfego pago, direcionado para o seu público ideal, combinado com uma comunicação estratégica no Instagram para construir autoridade e converter seguidores em pacientes."
+            - **diagnosticSlide.porqueCustoExiste:** Explique por que o custo da inação existe, conectando-o à ausência de marketing eficaz. Ex: "Esse valor é o reflexo direto de potenciais clientes que, hoje, não encontram sua clínica online e acabam fechando com concorrentes que investem em visibilidade. Cada mês sem uma estratégia de marketing ativa é um mês permitindo que seus concorrentes capturem uma fatia maior do seu mercado."
 
 
             ---
             **Slide 4: A Dor e Suas Consequências**
-            - **title:** Gere o título do slide: "O Custo Real de Adiar a Decisão".
-            - **question:** Gere a pergunta: "Adiamos decisões por medo de errar, mas qual o custo de não decidir?".
-            - **content:** Gere três parágrafos curtos sobre as consequências. O primeiro sobre o impacto operacional do gargalo. O segundo deve destacar a frustração das tentativas passadas que falharam. O terceiro deve usar a internet para encontrar um exemplo de empresa do mesmo setor que enfrentou dificuldades (sem citar o nome) e descrever o risco que a concorrência representa. Seja emotivo e gere senso de urgência.
+            - **painSlide.title:** Gere o título do slide: "O Custo Real de Adiar a Decisão".
+            - **painSlide.question:** Gere a pergunta: "Adiamos decisões por medo de errar, mas qual o custo de não decidir?".
+            - **painSlide.content:** Gere três parágrafos curtos sobre as consequências. O primeiro sobre o impacto operacional do gargalo. O segundo deve destacar a frustração das tentativas passadas que falharam. O terceiro deve usar a internet para encontrar um exemplo de empresa do mesmo setor que enfrentou dificuldades (sem citar o nome) e descrever o risco que a concorrência representa. Seja emotivo e gere senso de urgência.
 
             ---
             **Slide 5: A Visualização do Futuro**
-            - **title:** Gere o título do slide: "O Futuro que Vamos Construir Juntos".
-            - **question:** Gere a pergunta: "Como seria se, em vez de se preocupar com o gargalo, sua única preocupação fosse em como gerenciar o crescimento?".
-            - **content:** Gere 3 ou 4 frases curtas e impactantes que pintem um quadro vívido do futuro com a parceria da CP. Use as respostas sobre 'o que faria com mais clientes' e o 'impacto pessoal'. Foque em transformações, não em ações. Exemplos: "Agenda cheia com previsibilidade, permitindo investimentos estratégicos.", "Foco total na sua paixão: atender bem, em vez de se preocupar em como atrair clientes.", "Reconhecimento como a principal autoridade no seu mercado.", "Mais tempo e tranquilidade para você e sua família.".
+            - **futureSlide.title:** Gere o título do slide: "O Futuro que Vamos Construir Juntos".
+            - **futureSlide.question:** Gere a pergunta: "Como seria se, em vez de se preocupar com o gargalo, sua única preocupação fosse em como gerenciar o crescimento?".
+            - **futureSlide.content:** Gere 3 ou 4 frases curtas e impactantes que pintem um quadro vívido do futuro com a parceria da CP. Use as respostas sobre 'o que faria com mais clientes' e o 'impacto pessoal'. Foque em transformações, não em ações. Exemplos: "Agenda cheia com previsibilidade, permitindo investimentos estratégicos.", "Foco total na sua paixão: atender bem, em vez de se preocupar em como atrair clientes.", "Reconhecimento como a principal autoridade no seu mercado.", "Mais tempo e tranquilidade para você e sua família.".
 
             ---
             **Slide 7: A Estratégia**
-            - **title:** Gere o título do slide: "Nosso Plano para Virar o Jogo".
-            - **content:** Gere três parágrafos para os pilares. Pilar 'Aquisição' deve focar em resolver o 'gargalo de geração'. Pilar 'Conversão' deve focar em resolver a falha da 'experiência anterior com leads desqualificados'. Pilar 'Autoridade' deve focar em escalar a 'confiança da indicação'.
+            - **strategySlide.title:** Gere o título do slide: "Nosso Plano para Virar o Jogo".
+            - **strategySlide.content:** Gere três parágrafos para os pilares. Pilar 'Aquisição' deve focar em resolver o 'gargalo de geração'. Pilar 'Conversão' deve focar em resolver a falha da 'experiência anterior com leads desqualificados'. Pilar 'Autoridade' deve focar em escalar a 'confiança da indicação'.
 
             ---
             **Slide 9: Métricas de Sucesso**
-            - **title:** Gere o título do slide: "Seu Crescimento em Números".
-            - **crescimentoPercentual:** Calcule a porcentagem de crescimento necessária para ir do faturamento médio para a meta. Formate como string (Ex: '140%').
-            - **metaLeadsQualificados:** Com base na meta de faturamento e no ticket médio, calcule uma meta realista de leads qualificados por mês. Retorne como string (Ex: "88").
-            - **metaTaxaConversao:** Defina uma meta de taxa de conversão realista para atingir o objetivo. Retorne como string (Ex: "20%").
+            - **metricsSlide.title:** Gere o título do slide: "Seu Crescimento em Números".
+            - **metricsSlide.crescimentoPercentual:** Calcule a porcentagem de crescimento necessária para ir do faturamento médio para a meta. Formate como string (Ex: '140%').
+            - **metricsSlide.metaLeadsQualificados:** Com base na meta de faturamento e no ticket médio, calcule uma meta realista de leads qualificados por mês. Retorne como string (Ex: "88").
+            - **metricsSlide.metaTaxaConversao:** Defina uma meta de taxa de conversão realista para atingir o objetivo. Retorne como string (Ex: "20%").
         `,
     });
     
@@ -150,5 +150,4 @@ const presentationGeneratorFlow = ai.defineFlow(
     return output!;
   }
 );
-
     
