@@ -408,26 +408,25 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         
         .presentation-gallery-layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
+            display: flex;
             gap: 20px;
-            align-items: flex-start;
+            align-items: stretch; /* Make columns same height */
             width: 100%;
             height: 100%;
         }
-        .main-content-intro { flex: 1; display: flex; flex-direction: column; gap: 20px; justify-content: center; height: 100%; }
-        .side-content-intro { flex: 1; height: 100%; display: flex; align-items: center; }
-        .video-container { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background-color: #000; flex-shrink: 0; }
+        .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; }
+        .side-content-intro { flex: 1; }
+        .video-container { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; flex-shrink: 0; }
         .video-container video { width: 100%; height: 100%; object-fit: cover; }
         
-        .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex-grow: 1; }
         .features-list .feature-item { display: flex; align-items: flex-start; text-align: left; }
         .features-list i { font-size: 1.5rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
         .features-list h4 { margin: 0 0 5px 0; font-size: 1.1rem; text-align: left; color: var(--primary-color); }
         .features-list p { font-size: 0.9rem; text-align: left; margin: 0; }
 
-        .image-gallery { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; }
-        .image-placeholder { width: 100%; height: 0; padding-bottom: 56.25%; /* 16:9 Aspect Ratio */ background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
+        .image-gallery { display: flex; flex-direction: column; gap: 15px; width: 100%; height: 100%; }
+        .image-placeholder { flex: 1; width: 100%; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
         
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
@@ -474,7 +473,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .card.proof-card .image-placeholder { height: 150px; width: 100%; margin-bottom: 15px; }
 
         @media (max-width: 1024px) {
-            .presentation-gallery-layout { grid-template-columns: 1fr; }
+            .presentation-gallery-layout { flex-direction: column; }
             .future-layout { grid-template-columns: 1fr; }
             .investment-layout { flex-direction: column; }
         }
@@ -550,8 +549,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             const container = document.querySelector('.sky-container-content');
             
             TweenLite.to(container, 0.3, { opacity: 0, ease: Power2.easeOut, onComplete: () => {
-                if (container.firstChild && container.firstChild.classList) {
-                  container.firstChild.classList.remove('slide-active');
+                const firstChild = container.firstChild;
+                if (firstChild && firstChild.classList) {
+                  firstChild.classList.remove('slide-active');
                 }
 
                 if (currentSlide < 0 || currentSlide >= slides.length) {
