@@ -78,9 +78,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                       </div>
                       <div class="side-content-intro">
                            <div class="image-gallery">
-                               <div class="image-placeholder" style="background-image: url('https://i.postimg.cc/R01f7zJb/Whats-App-Image-2024-07-16-at-15-28-56.jpg')" data-ai-hint="business success"></div>
-                                <div class="image-placeholder" style="background-image: url('https://i.postimg.cc/tCTz2M1K/Whats-App-Image-2024-07-16-at-15-28-55.jpg')" data-ai-hint="fashion store"></div>
-                                <div class="image-placeholder" style="background-image: url('https://i.postimg.cc/d1hK5Jqg/Whats-App-Image-2024-07-16-at-15-28-52.jpg')" data-ai-hint="corporate office"></div>
+                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799842/Prancheta_34_hviyd6.png')"></div>
+                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
+                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524572/PODCAST_01_kglzeu.png')"></div>
                           </div>
                       </div>
                     </div>`
@@ -151,9 +151,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>Resultados que Falam por Si</h2>`,
           content: `<div class="content-center-wrapper"><p>Clientes que confiaram em nossa metodologia e alcançaram o sucesso.</p>
                       <div class="card-grid">
-                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/R01f7zJb/Whats-App-Image-2024-07-16-at-15-28-56.jpg')" data-ai-hint="business success"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div>
-                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/tCTz2M1K/Whats-App-Image-2024-07-16-at-15-28-55.jpg')" data-ai-hint="fashion store"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div>
-                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/d1hK5Jqg/Whats-App-Image-2024-07-16-at-15-28-52.jpg')" data-ai-hint="corporate office"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div>
+                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/R01f7zJb/Whats-App-Image-2024-07-16-at-15-28-56.jpg')"></div><h4>Case 1: Clínica Estética</h4><p>+250% em agendamentos qualificados.</p></div>
+                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/tCTz2M1K/Whats-App-Image-2024-07-16-at-15-28-55.jpg')"></div><h4>Case 2: E-commerce de Moda</h4><p>+80% no faturamento online.</p></div>
+                          <div class="card proof-card"><div class="image-placeholder" style="background-image: url('https://i.postimg.cc/d1hK5Jqg/Whats-App-Image-2024-07-16-at-15-28-52.jpg')"></div><h4>Case 3: Consultoria B2B</h4><p>-40% no Custo por Lead (CPL).</p></div>
                       </div>
                     </div>`
       },
@@ -308,8 +308,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .sky-container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1600px;
             height: 90vh;
+            max-height: 900px;
             padding: 40px;
             background-color: var(--card-background);
             backdrop-filter: blur(10px);
@@ -410,7 +411,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 20px;
-            align-items: center;
+            align-items: flex-start;
             width: 100%;
             height: 100%;
         }
@@ -426,7 +427,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .features-list p { font-size: 0.9rem; text-align: left; margin: 0; }
 
         .image-gallery { display: grid; grid-template-columns: 1fr; gap: 15px; width: 100%; }
-        .image-placeholder { width: 100%; height: 160px; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
+        .image-placeholder { width: 100%; height: 0; padding-bottom: 56.25%; /* 16:9 Aspect Ratio */ background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
         
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
