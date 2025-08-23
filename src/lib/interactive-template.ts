@@ -50,29 +50,29 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                               <div class="feature-item">
                                 <i class="fas fa-building"></i>
                                 <div>
-                                    <h4>Estrutura Física</h4>
-                                    <p>Mais que um escritório, um centro de produção de resultados para sua marca.</p>
+                                    <h4>Estrutura Física Completa</h4>
+                                    <p>Nossa sede não é apenas um escritório, mas um centro de produção de resultados. Com estrutura física robusta, garantimos um ambiente propício para a criação e execução de estratégias de alto impacto para sua marca.</p>
                                 </div>
                               </div>
                               <div class="feature-item">
                                 <i class="fas fa-video"></i>
                                 <div>
                                     <h4>Estúdios Próprios</h4>
-                                    <p>Agilidade e qualidade de cinema para seu conteúdo, sem depender de terceiros.</p>
+                                    <p>Garantimos agilidade e qualidade de cinema para seu conteúdo audiovisual. Com estúdios próprios, eliminamos a dependência de terceiros e temos controle total sobre a produção, do roteiro à finalização.</p>
                                 </div>
                               </div>
                                <div class="feature-item">
                                 <i class="fas fa-users"></i>
                                 <div>
-                                    <h4>Time Presencial</h4>
-                                    <p>Especialistas em estratégia, tráfego e conteúdo colaborando em tempo real no seu projeto.</p>
+                                    <h4>Time Presencial e Multidisciplinar</h4>
+                                    <p>Especialistas em estratégia, tráfego, design e conteúdo trabalham lado a lado, em tempo real, no seu projeto. A colaboração presencial garante sinergia e agilidade na tomada de decisões.</p>
                                 </div>
                               </div>
                               <div class="feature-item">
                                 <i class="fas fa-lightbulb"></i>
                                 <div>
-                                    <h4>Metodologia</h4>
-                                    <p>O CP MÖDUS: nosso sistema validado para transformar potencial de negócio em performance de mercado.</p>
+                                    <h4>Metodologia CP MÖDUS</h4>
+                                    <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado. O CP MÖDUS é nossa bússola, guiando cada passo do projeto com foco em resultados mensuráveis.</p>
                                 </div>
                               </div>
                           </div>
@@ -309,7 +309,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .sky-container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1600px;
             height: 90vh;
             max-height: 800px;
             padding: 40px;
@@ -386,10 +386,31 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border-top: 1px solid var(--border-color);
             text-align: center;
         }
-        .nav-button { background: none; border: 1px solid var(--accent-color); color: var(--accent-color); padding: 12px 25px; margin: 0 10px; cursor: pointer; font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-weight: 700; border-radius: 50px; transition: all 0.3s ease; }
-        .nav-button:not(:disabled):hover { background-color: var(--accent-color); color: white; }
-        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
         
+        .nav-button { 
+            background: none; 
+            border: 1px solid var(--accent-color); 
+            color: var(--accent-color); 
+            padding: 10px 20px; 
+            margin: 0 10px; 
+            cursor: pointer; 
+            font-family: 'Montserrat', sans-serif; 
+            text-transform: uppercase; 
+            font-weight: 700; 
+            border-radius: 50px; 
+            transition: all 0.3s ease; 
+        }
+        .nav-button:not(:disabled):hover { 
+            transform: scale(1.05);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+        .nav-button:disabled { 
+            border-color: var(--border-color);
+            color: var(--border-color);
+            opacity: 0.5;
+            cursor: not-allowed; 
+        }
+
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; max-width: 1200px; }
         .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
@@ -410,7 +431,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             max-width: 900px;
         }
         
-        .presentation-gallery-layout { display: flex; gap: 20px; align-items: stretch; width: 100%; height: 100%; }
+        .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; height: 100%; }
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; }
         .side-content-intro { flex: 1; }
         .video-container { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; flex: 0 0 40%; /* Reduced video size */ }
@@ -547,7 +568,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             
             TweenLite.to(container, 0.3, { opacity: 0, ease: Power2.easeOut, onComplete: () => {
                 const firstChild = container.firstChild;
-                if (firstChild && firstChild.classList) {
+                 if (firstChild && firstChild.classList) {
                   firstChild.classList.remove('slide-active');
                 }
 
