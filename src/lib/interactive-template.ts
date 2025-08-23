@@ -35,6 +35,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     investmentValue,
     packages,
   } = presentationData;
+  
+  const extractNumber = (currencyString: string) => {
+      if (!currencyString) return 0;
+      return parseFloat(currencyString.replace(/[^0-9,-]+/g,"").replace(",", ".")) || 0;
+  }
 
   const slides = [
        {
@@ -91,9 +96,21 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             <div class="content-center-wrapper">
                 <p class="question">${escapeHtml(diagnosticSlide.question)}</p>
                 <div class="card-grid">
-                    <div class="card"><h3>Meta Principal</h3><span class="highlight">${escapeHtml(diagnosticSlide.meta)}</span></div>
-                    <div class="card"><h3>Gargalo Crítico</h3><span class="highlight-text">${escapeHtml(diagnosticSlide.gargalo)}</span></div>
-                    <div class="card"><h3>Custo da Inação</h3><span class="highlight loss">${escapeHtml(diagnosticSlide.custo)}</span></div>
+                    <div class="card">
+                        <h3>Meta Principal</h3>
+                        <p class="card-subtitle">Onde queremos chegar</p>
+                        <span class="highlight animated-number" data-target="${extractNumber(diagnosticSlide.meta)}">R$ 0,00</span>
+                    </div>
+                    <div class="card">
+                        <h3>Gargalo Crítico</h3>
+                        <p class="card-subtitle">O que impede o crescimento hoje</p>
+                        <span class="highlight-text">${escapeHtml(diagnosticSlide.gargalo)}</span>
+                    </div>
+                    <div class="card">
+                        <h3>Custo da Inação</h3>
+                        <p class="card-subtitle">O valor que fica na mesa</p>
+                        <span class="highlight loss animated-number" data-target="${extractNumber(diagnosticSlide.custo)}">R$ 0,00</span>
+                    </div>
                 </div>
             </div>`
       },
@@ -322,7 +339,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border: 1px solid var(--border-color);
             position: relative;
         }
-
+        
         .sky-container::-webkit-scrollbar {
             width: 0;
             background: transparent;
@@ -365,7 +382,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         h1, h2, h3 { font-weight: 900; margin-bottom: 20px; text-align: center; }
         h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); text-transform: uppercase; line-height: 1.3; color: var(--accent-color); }
         h2 { font-size: clamp(1.5rem, 3vw, 2.5rem); margin: 0; padding-bottom: 20px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
-        h3 { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; }
+        h3 { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--primary-color); text-transform: uppercase; letter-spacing: 2px; }
         p { font-size: clamp(0.9rem, 1.2vw, 1.1rem); line-height: 1.6; color: var(--secondary-color); max-width: 800px; text-align: center; margin-left: auto; margin-right: auto;}
         
         .intro-container .fancy-text { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
@@ -418,6 +435,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
         .card h4 { font-size: 1.1rem; margin-bottom: 10px; text-align: center; }
         .card p {font-size: 0.9rem; text-align: center;}
+        .card p.card-subtitle { font-size: 0.9rem; color: var(--secondary-color); margin-top: -15px; margin-bottom: 10px; height: 30px; }
         .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
         .highlight.loss { color: var(--loss-color); }
         .highlight-text { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); }
@@ -442,7 +460,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border-radius: 10px; 
             overflow: hidden; 
             background-color: #000; 
-            aspect-ratio: 16/9;
         }
         .video-container video { 
             width: 100%; 
@@ -575,6 +592,27 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             { y: 40, z: 60 },   // Posição 8
             { y: 30, z: 65 }    // Posição 9
         ];
+        
+        function animateNumber(element) {
+            const target = parseInt(element.dataset.target, 10);
+            const duration = 1500; // 1.5 seconds
+            const frameRate = 1000 / 60; // 60fps
+            const totalFrames = Math.round(duration / frameRate);
+            let frame = 0;
+            
+            const counter = setInterval(() => {
+                frame++;
+                const progress = frame / totalFrames;
+                const currentNumber = Math.round(target * progress);
+                
+                element.textContent = currentNumber.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                
+                if (frame === totalFrames) {
+                    clearInterval(counter);
+                    element.textContent = target.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                }
+            }, frameRate);
+        }
 
         function updateSlideContent() {
             const container = document.querySelector('.sky-container-content');
@@ -604,6 +642,19 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 // Add active class to trigger animations
                 requestAnimationFrame(() => {
                     slideWrapper.classList.add('slide-active');
+                    
+                    if (slide.id === 'diagnosis') {
+                        const observer = new IntersectionObserver((entries) => {
+                            entries.forEach(entry => {
+                                if (entry.isIntersecting) {
+                                    const animatedNumbers = entry.target.querySelectorAll('.animated-number');
+                                    animatedNumbers.forEach(el => animateNumber(el));
+                                    observer.unobserve(entry.target);
+                                }
+                            });
+                        }, { threshold: 0.5 });
+                        observer.observe(slideWrapper);
+                    }
                 });
 
                 TweenLite.to(container, 0.5, { opacity: 1, ease: Power2.easeIn });
