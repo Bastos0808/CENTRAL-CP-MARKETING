@@ -281,8 +281,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  return \`
-<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -537,6 +536,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px; opacity: 0; transform: translateY(20px); text-align: left; }
         .slide-active .impact-item { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .impact-item p { text-align: left; color: var(--primary-color); }
+        .impact-item p strong { color: var(--accent-color); font-weight: bold; }
         
         .future-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; width: 100%; max-width: 900px; }
         .future-item { display: flex; align-items: center; background-color: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); opacity: 0; transform: translateY(20px); }
@@ -577,7 +577,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .animated-bar { height: 100%; width: 100%; transform-origin: bottom; }
         .slide-active .animated-bar { animation: grow-bar-vertical 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .card.cost-card { opacity: 0; transform: translateY(20px); }
-        .slide-active .cost-card { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .slide-active .cost-card.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .cost-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
         .loss-bar { background-color: var(--loss-color); }
         .gain-bar { background-color: var(--gain-color); }
@@ -750,9 +750,20 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                 // Animate numbers
                                 const animatedNumbers = entry.target.querySelectorAll('.animated-number');
                                 animatedNumbers.forEach(el => animateNumber(el));
+                                
+                                // Animate cost cards sequentially
+                                if (entry.target.dataset.slideId === 'inaction-cost') {
+                                    const costCards = entry.target.querySelectorAll('.cost-card');
+                                    costCards.forEach((card, index) => {
+                                        setTimeout(() => {
+                                            card.style.animationDelay = (index * 0.3) + 's';
+                                            card.classList.add('animate-in');
+                                        }, 0);
+                                    });
+                                }
 
-                                // Animate cost cards and impact items sequentially
-                                const animatedItems = entry.target.querySelectorAll('.cost-card, .impact-item, .future-item');
+                                // Animate impact items sequentially
+                                const animatedItems = entry.target.querySelectorAll('.impact-item, .future-item');
                                 if (animatedItems.length > 0) {
                                     animatedItems.forEach((item, index) => {
                                        setTimeout(() => {
@@ -919,6 +930,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>
-\`;
+</html>`;
 }
