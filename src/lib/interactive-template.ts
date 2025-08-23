@@ -40,6 +40,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       if (!currencyString) return 0;
       return parseFloat(currencyString.replace(/[^0-9,-]+/g,"").replace(",", ".")) || 0;
   }
+  
+    const cenarioInerciaHtml = escapeHtml(inactionCostSlide.cenario_inercia)
+      .replace(/faturamento pode continuar estagnado/g, '<strong>faturamento pode continuar estagnado</strong>')
+      .replace(/concorrência, que investe em marketing, pode abocanhar uma fatia maior do seu mercado/g, '<strong>concorrência, que investe em marketing, pode abocanhar uma fatia maior do seu mercado</strong>');
+
 
   const slides = [
        {
@@ -83,8 +88,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                       </div>
                       <div class="side-content-intro">
                            <div class="image-gallery">
-                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
                                <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524572/PODCAST_01_kglzeu.png')"></div>
+                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
                           </div>
                       </div>
                     </div>`
@@ -166,19 +171,19 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>${escapeHtml(inactionCostSlide.title)}</h2>`,
           content: `<div class="content-center-wrapper">
                       <div class="card-grid cost-grid">
-                          <div class="card cost-card">
+                          <div class="card cost-card" data-cost-card="1">
                               <h3>Custo em 6 Meses</h3>
                               <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_6_meses)}</span>
                               <div class="animated-bar-container"><div class="animated-bar loss-bar"></div></div>
                           </div>
-                          <div class="card cost-card">
+                          <div class="card cost-card" data-cost-card="2">
                               <h3>Custo em 1 Ano</h3>
                               <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_1_ano)}</span>
                               <div class="animated-bar-container"><div class="animated-bar loss-bar double"></div></div>
                           </div>
                       </div>
                       <br>
-                      <p class="question" style="text-align: center; max-width: 700px;">${escapeHtml(inactionCostSlide.cenario_inercia)}</p>
+                      <p class="question" style="text-align: center; max-width: 700px;">${cenarioInerciaHtml}</p>
                     </div>`
       },
       {
@@ -474,6 +479,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             margin: 1rem auto;
             max-width: 900px;
         }
+        p.question strong { color: var(--accent-color); }
         
         .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; flex-wrap: wrap; }
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
@@ -535,11 +541,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         /* Animated Graphs */
         @keyframes grow-bar-vertical { from { transform: scaleY(0); } to { transform: scaleY(1); } }
         @keyframes grow-bar-horizontal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .animated-bar-container { background-color: var(--border-color); border-radius: 5px; overflow: hidden; }
         .animated-bar { height: 100%; width: 100%; transform-origin: bottom; }
         .slide-active .animated-bar { animation: grow-bar-vertical 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .card.cost-card { justify-content: flex-end; height: 300px; }
+        .card.cost-card { justify-content: flex-end; height: 300px; opacity: 0; transform: translateY(20px); }
+        .card.cost-card.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .cost-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
         .animated-bar-container { width: 80px; height: 150px; margin-top: 15px; }
         .loss-bar { background-color: var(--loss-color); }
@@ -707,19 +715,33 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 requestAnimationFrame(() => {
                     slideWrapper.classList.add('slide-active');
                     
-                    if (slide.id === 'diagnosis') {
-                        setupAccordion();
-                        const observer = new IntersectionObserver((entries) => {
-                            entries.forEach(entry => {
-                                if (entry.isIntersecting) {
-                                    const animatedNumbers = entry.target.querySelectorAll('.animated-number');
-                                    animatedNumbers.forEach(el => animateNumber(el));
-                                    observer.unobserve(entry.target);
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                // Animate numbers
+                                const animatedNumbers = entry.target.querySelectorAll('.animated-number');
+                                animatedNumbers.forEach(el => animateNumber(el));
+
+                                // Animate cost cards sequentially
+                                const costCards = entry.target.querySelectorAll('.cost-card');
+                                if (costCards.length > 0) {
+                                    costCards.forEach((card, index) => {
+                                        setTimeout(() => {
+                                            card.classList.add('animate-in');
+                                        }, index * 400); // Stagger the animation
+                                    });
                                 }
-                            });
-                        }, { threshold: 0.5 });
-                        observer.observe(slideWrapper);
-                    }
+                                
+                                // Set up accordion for diagnosis slide
+                                if (entry.target.dataset.slideId === 'diagnosis') {
+                                    setupAccordion();
+                                }
+                                
+                                observer.unobserve(entry.target);
+                            }
+                        });
+                    }, { threshold: 0.5 });
+                    observer.observe(slideWrapper);
                 });
 
                 TweenLite.to(container, 0.5, { opacity: 1, ease: Power2.easeIn });
