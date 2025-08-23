@@ -307,7 +307,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .sky-container {
             width: 100%;
-            max-width: 1600px;
+            max-width: 1400px;
             height: 90vh;
             max-height: 800px;
             padding: 40px;
@@ -318,7 +318,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            overflow: hidden;
+            overflow-y: auto;
             border: 1px solid var(--border-color);
             position: relative;
         }
@@ -339,8 +339,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             justify-content: center;
             align-items: center;
             width: 100%;
-            max-height: calc(90vh - 150px);
-            overflow-y: hidden;
+            padding: 1rem 0;
         }
 
 
@@ -360,9 +359,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         h1, h2, h3 { font-weight: 900; margin-bottom: 20px; text-align: center; }
         h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); text-transform: uppercase; line-height: 1.3; color: var(--accent-color); }
-        h2 { font-size: clamp(2rem, 3.5vw, 3rem); margin: 0; padding-bottom: 20px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        h2 { font-size: clamp(1.5rem, 3vw, 2.5rem); margin: 0; padding-bottom: 20px; text-shadow: 0 0 10px rgba(0,0,0,0.5); }
         h3 { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; }
-        p { font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.6; color: var(--secondary-color); max-width: 800px; text-align: center; margin-left: auto; margin-right: auto;}
+        p { font-size: clamp(0.9rem, 1.2vw, 1.1rem); line-height: 1.6; color: var(--secondary-color); max-width: 800px; text-align: center; margin-left: auto; margin-right: auto;}
         
         .intro-container .fancy-text { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--secondary-color); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
         .proposal-meta { margin-top: 20px; font-size: 0.9rem; color: var(--secondary-color); }
@@ -412,15 +411,15 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; max-width: 1200px; }
         .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;}
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
-        .card h4 { font-size: 1.2rem; margin-bottom: 10px; text-align: center; }
-        .card p {font-size: 1rem; text-align: center;}
-        .highlight { color: var(--highlight-color); font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; display: block; margin: 10px 0; }
+        .card h4 { font-size: 1.1rem; margin-bottom: 10px; text-align: center; }
+        .card p {font-size: 0.9rem; text-align: center;}
+        .highlight { color: var(--highlight-color); font-size: clamp(1.8rem, 3vw, 2.5rem); font-weight: 900; display: block; margin: 10px 0; }
         .highlight.loss { color: var(--loss-color); }
-        .highlight-text { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
+        .highlight-text { font-size: 1.3rem; font-weight: 700; color: var(--primary-color); }
         
         p.question {
             font-weight: 600;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             color: var(--primary-color);
             border-left: 3px solid var(--accent-color);
             padding-left: 1rem;
@@ -429,39 +428,39 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             max-width: 900px;
         }
         
-        .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; height: 100%; }
+        .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%;}
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; }
         .side-content-intro { flex: 1; }
-        .video-container { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; flex: 0 0 40%; }
+        .video-container { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; flex: 0 0 40%; aspect-ratio: 16/9;}
         .video-container video { width: 100%; height: 100%; object-fit: cover; }
         
         .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; flex-grow: 1; }
         .feature-item { display: flex; align-items: flex-start; text-align: left; }
-        .feature-item i { font-size: 1.5rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
-        .feature-item h4 { margin: 0 0 5px 0; font-size: 1.1rem; text-align: left; color: var(--primary-color); }
-        .feature-item p { font-size: 0.9rem; text-align: left; margin: 0; }
+        .feature-item i { font-size: 1.2rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
+        .feature-item h4 { margin: 0 0 5px 0; font-size: 1rem; text-align: left; color: var(--primary-color); }
+        .feature-item p { font-size: 0.8rem; text-align: left; margin: 0; }
 
         .image-gallery { display: flex; flex-direction: column; gap: 15px; width: 100%; height: 100%; }
-        .image-placeholder { flex: 1; width: 100%; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
+        .image-placeholder { flex: 1; width: 100%; min-height: 200px; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
         
         .impact-list { width: 100%; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; display: flex; align-items: center; text-align: left; margin-bottom: 15px; }
-        .impact-item i { font-size: 1.8rem; color: var(--accent-color); margin-right: 20px; }
+        .impact-item i { font-size: 1.5rem; color: var(--accent-color); margin-right: 20px; }
 
         .future-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px; align-items: center; }
         .future-layout .image-placeholder { width: 100%; height: auto; aspect-ratio: 4/3; border-radius: 15px; }
-        .future-layout .future-text { text-align: left; font-size: 1.3rem; line-height: 1.7; }
+        .future-layout .future-text { text-align: left; font-size: 1.1rem; line-height: 1.7; }
         
         .investment-layout { display: flex; flex-direction: row; align-items: stretch; gap: 30px; width: 100%; margin-top: 20px; }
         .packages-list { flex: 2; background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
         .total-investment { flex: 1; background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); }
-        .packages-list h4, .total-investment h4 { font-size: 1.2rem; text-align: left; margin-bottom: 15px; }
-        .packages-list ul { list-style: none; padding: 0; text-align: left; }
+        .packages-list h4, .total-investment h4 { font-size: 1.1rem; text-align: left; margin-bottom: 15px; }
+        .packages-list ul { list-style: none; padding: 0; text-align: left; font-size: 0.9rem; }
         .packages-list li { padding: 10px 0; border-bottom: 1px solid var(--border-color); }
         .packages-list li:last-child { border-bottom: none; }
         .total-investment { text-align: center; }
-        .final-price { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: var(--accent-color); }
-        .special-offers p { font-size: 1rem; text-align: left; }
+        .final-price { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; color: var(--accent-color); }
+        .special-offers p { font-size: 0.9rem; text-align: left; }
         .special-offers i { color: var(--accent-color); margin-right: 10px; }
         
         /* Animated Graphs */
@@ -483,8 +482,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .metrics-grid { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; width: 100%; max-width: 900px; }
         .metric-item { background-color: #1a1a1a; padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); }
         .metric-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .metric-label h4 { font-size: 1.2rem; margin: 0; text-align: left; }
-        .metric-label span { font-size: 0.9rem; color: var(--secondary-color); }
+        .metric-label h4 { font-size: 1.1rem; margin: 0; text-align: left; }
+        .metric-label span { font-size: 0.8rem; color: var(--secondary-color); }
         
         .card.proof-card .image-placeholder { height: 150px; width: 100%; margin-bottom: 15px; }
 
@@ -737,6 +736,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     </script>
 </body>
 </html>
-`;
+`
 }
-  
