@@ -82,9 +82,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                           <p>Desenvolvemos um sistema validado para transformar <strong class="highlight-text">potencial de negócio em performance de mercado</strong>, com processos claros e foco total em ROI.</p>
                       </div>
                        <div class="intro-image-gallery-block">
-                          <img src="https://placehold.co/600x800.png" alt="Imagem da estrutura 1" data-ai-hint="modern office" class="main-image" />
+                          <img src="https://placehold.co/600x400.png" alt="Imagem da estrutura 1" data-ai-hint="modern office" class="main-image" />
                           <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" />
                           <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 3" data-ai-hint="team meeting" />
+                          <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 4" data-ai-hint="video production" />
                       </div>
                     </div>`
       },
@@ -306,7 +307,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             --primary-color: #ffffff;
             --secondary-color: #a7a7a7;
             --background-color: #000000;
-            --accent-color: #FE5400;
+            --accent-color: #FE5412;
             --highlight-color: #360FC5;
             --card-background: rgba(17, 17, 17, 0.85);
             --border-color: #222222;
@@ -491,8 +492,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .highlight.loss { color: var(--loss-color); }
         .highlight.gain { color: var(--gain-color); }
         
-        .highlight-phrase, .highlight-text {
+        .highlight-phrase {
             color: var(--accent-color);
+            font-weight: bold;
+        }
+        .highlight-text {
+            color: #FE5412; /* Laranja específico */
             font-weight: bold;
         }
         
@@ -553,8 +558,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .intro-image-gallery-block {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto auto;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             height: 100%;
         }
@@ -568,9 +572,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         .intro-image-gallery-block img:hover {
             transform: scale(1.03);
-        }
-        .intro-image-gallery-block .main-image {
-            grid-column: 1 / -1;
         }
 
         .video-modal-overlay {
