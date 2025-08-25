@@ -69,12 +69,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>Por que a CP Marketing?</h2>`,
           content: `<div class="presentation-gallery-layout">
                       <div class="main-content-intro">
-                          <div class="video-preview-container" id="video-preview">
-                              <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" muted loop playsinline></video>
-                              <div class="play-icon-overlay">
-                                  <i class="fas fa-play"></i>
-                              </div>
-                          </div>
                            <div class="features-list">
                               <div class="feature-item">
                                 <i class="fas fa-building"></i>
@@ -102,6 +96,13 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                 <div>
                                     <h4>Metodologia CP MÖDUS</h4>
                                     <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado. O CP MÖDUS é nossa bússola, guiando cada passo do projeto com foco em resultados mensuráveis.</p>
+                                </div>
+                              </div>
+                               <div class="feature-item video-button-item">
+                                <i class="fas fa-play-circle"></i>
+                                <div>
+                                    <h4>Conheça Nossa Estrutura</h4>
+                                    <button class="simple-video-button" id="open-video-button">Assista ao Tour pelo nosso Estúdio</button>
                                 </div>
                               </div>
                           </div>
@@ -554,42 +555,19 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
         .side-content-intro { flex: 1; min-width: 300px; }
 
-        .video-preview-container {
-            position: relative;
-            width: 100%;
-            height: 250px;
-            border-radius: 10px;
-            overflow: hidden;
+        .simple-video-button {
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            border-radius: 5px;
             cursor: pointer;
-            background-color: #000;
+            transition: all 0.3s ease;
         }
-        .video-preview-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .play-icon-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.3s ease;
-        }
-        .video-preview-container:hover .play-icon-overlay {
-            background-color: rgba(0,0,0,0.7);
-        }
-        .play-icon-overlay i {
-            font-size: 3rem;
-            color: white;
-            transition: transform 0.3s ease;
-        }
-        .video-preview-container:hover .play-icon-overlay i {
-            transform: scale(1.1);
+        .simple-video-button:hover {
+            background-color: var(--accent-color);
+            color: var(--background-color);
         }
 
         .video-modal-overlay {
@@ -635,6 +613,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         
         .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; flex-grow: 1; }
         .feature-item { display: flex; align-items: flex-start; text-align: left; }
+        .feature-item.video-button-item { grid-column: span 2; }
         .feature-item i { font-size: 1.2rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
         .feature-item h4 { margin: 0 0 5px 0; font-size: 1rem; text-align: left; color: var(--primary-color); }
         .feature-item p { font-size: 0.8rem; text-align: left; margin: 0; }
@@ -709,6 +688,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         @media (max-width: 1024px) {
             .presentation-gallery-layout, .investment-layout { flex-direction: column; }
+        }
+        
+        @media (max-width: 768px) {
+            .features-list { grid-template-columns: 1fr; }
         }
 
     </style>
@@ -937,6 +920,31 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             stars = new THREE.Points(starGeometry, starMaterial);
             scene.add(stars);
         }
+        
+        function setupVideoModal() {
+            const videoButton = document.getElementById('open-video-button');
+            const videoModal = document.getElementById('video-modal');
+            const modalVideoPlayer = document.getElementById('modal-video-player');
+            const closeVideoModal = document.getElementById('close-video-modal');
+
+            const closeModal = () => {
+                videoModal.classList.remove('visible');
+                modalVideoPlayer.pause();
+                modalVideoPlayer.currentTime = 0;
+            };
+
+            if(videoButton) {
+                videoButton.addEventListener('click', () => {
+                    videoModal.classList.add('visible');
+                    modalVideoPlayer.play();
+                });
+            }
+            
+            if(closeVideoModal) closeVideoModal.addEventListener('click', closeModal);
+            if(videoModal) videoModal.addEventListener('click', (e) => {
+                if (e.target === videoModal) closeModal();
+            });
+        }
 
         function init() {
             scene = new THREE.Scene();
@@ -1005,31 +1013,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             const introContainer = document.querySelector('.intro-container');
             const proposalWrapper = document.querySelector('.proposal-container-wrapper');
             const closeButton = document.querySelector('.close-button');
-            const videoPreview = document.getElementById('video-preview');
-            const videoModal = document.getElementById('video-modal');
-            const modalVideoPlayer = document.getElementById('modal-video-player');
-            const closeVideoModal = document.getElementById('close-video-modal');
-
-            if(videoPreview){
-                videoPreview.addEventListener('click', () => {
-                    videoModal.classList.add('visible');
-                    modalVideoPlayer.play();
-                });
-            }
-
-            const closeModal = () => {
-                videoModal.classList.remove('visible');
-                modalVideoPlayer.pause();
-                modalVideoPlayer.currentTime = 0;
-            };
-
-            if(closeVideoModal) closeVideoModal.addEventListener('click', closeModal);
             
-            if(videoModal) videoModal.addEventListener('click', (e) => {
-                if (e.target === videoModal) {
-                    closeModal();
-                }
-            });
+            setupVideoModal();
 
             document.querySelector('.shift-camera-button').addEventListener('click', function() {
                 let introTimeline = new TimelineMax();
