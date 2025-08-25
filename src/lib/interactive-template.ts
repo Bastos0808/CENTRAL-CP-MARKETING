@@ -67,47 +67,48 @@ export function createInteractiveProposal(data: CreateProposalData): string {
        {
           id: 'cp-intro',
           title: `<h2>Por que a CP Marketing?</h2>`,
-          content: `<div class="presentation-gallery-layout">
-                      <div class="main-content-intro">
-                           <div class="features-list">
-                              <div class="feature-item">
-                                <i class="fas fa-building"></i>
-                                <div>
-                                    <h4>Estrutura Física Completa</h4>
-                                    <p>Nossa sede não é apenas um escritório, mas um centro de produção de resultados. Com estrutura física robusta, garantimos um ambiente propício para a criação e execução de estratégias de alto impacto para sua marca.</p>
-                                </div>
-                              </div>
-                              <div class="feature-item">
-                                <i class="fas fa-video"></i>
-                                <div>
-                                    <h4>Estúdios Próprios</h4>
-                                    <p>Garantimos agilidade e qualidade de cinema para seu conteúdo audiovisual. Com estúdios próprios, eliminamos a dependência de terceiros e temos controle total sobre a produção, do roteiro à finalização.</p>
-                                </div>
-                              </div>
-                               <div class="feature-item">
-                                <i class="fas fa-users"></i>
-                                <div>
-                                    <h4>Time Presencial e Multidisciplinar</h4>
-                                    <p>Especialistas em estratégia, tráfego, design e conteúdo trabalham lado a lado, em tempo real, no seu projeto. A colaboração presencial garante sinergia e agilidade na tomada de decisões.</p>
-                                </div>
-                              </div>
-                              <div class="feature-item">
-                                <i class="fas fa-lightbulb"></i>
-                                <div>
-                                    <h4>Metodologia CP MÖDUS</h4>
-                                    <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado. O CP MÖDUS é nossa bússola, guiando cada passo do projeto com foco em resultados mensuráveis.</p>
-                                </div>
-                              </div>
-                          </div>
-                      </div>
-                      <div class="side-content-intro">
-                           <button class="cta-button icon-only" id="open-video-button"><i class="fas fa-play"></i></button>
-                           <div class="image-gallery-intro">
-                                <div class="gallery-item"><img src="https://placehold.co/300x300.png" alt="Imagem da estrutura 1" data-ai-hint="office workspace" /></div>
-                                <div class="gallery-item"><img src="https://placehold.co/300x300.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" /></div>
-                                <div class="gallery-item"><img src="https://placehold.co/300x300.png" alt="Imagem da estrutura 3" data-ai-hint="team meeting" /></div>
-                           </div>
-                      </div>
+          content: `<div class="intro-grid">
+                        <div class="grid-item text-item">
+                            <i class="fas fa-building"></i>
+                            <div>
+                                <h4>Estrutura Física Completa</h4>
+                                <p>Nossa sede não é apenas um escritório, mas um centro de produção de resultados com ambiente propício para a criação e execução de estratégias de alto impacto.</p>
+                            </div>
+                        </div>
+                        <div class="grid-item image-item tall">
+                            <img src="https://placehold.co/400x600.png" alt="Imagem da estrutura 1" data-ai-hint="modern office" />
+                        </div>
+                        <div class="grid-item image-item wide">
+                             <img src="https://placehold.co/600x400.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" />
+                        </div>
+                         <div class="grid-item text-item">
+                            <i class="fas fa-video"></i>
+                            <div>
+                                <h4>Estúdios Próprios</h4>
+                                <p>Garantimos agilidade e qualidade de cinema para seu conteúdo audiovisual, eliminando a dependência de terceiros e tendo controle total sobre a produção.</p>
+                            </div>
+                        </div>
+                        <div class="grid-item image-item square video-container">
+                             <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 3" data-ai-hint="team meeting" />
+                             <button class="cta-button icon-only" id="open-video-button"><i class="fas fa-play"></i></button>
+                        </div>
+                        <div class="grid-item text-item">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <h4>Time Multidisciplinar</h4>
+                                <p>Especialistas em estratégia, tráfego, design e conteúdo trabalham lado a lado, em tempo real, no seu projeto para garantir sinergia e agilidade.</p>
+                            </div>
+                        </div>
+                         <div class="grid-item text-item">
+                            <i class="fas fa-lightbulb"></i>
+                            <div>
+                                <h4>Metodologia CP MÖDUS</h4>
+                                <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado, guiando cada passo com foco em resultados.</p>
+                            </div>
+                        </div>
+                        <div class="grid-item image-item wide">
+                             <img src="https://placehold.co/600x400.png" alt="Imagem da estrutura 4" data-ai-hint="creative workspace" />
+                        </div>
                     </div>`
       },
       {
@@ -440,7 +441,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             padding: 1rem 0;
         }
 
-
         .close-button { 
             position: absolute;
             top: 20px; 
@@ -546,35 +546,90 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             font-weight: bold;
         }
         
-        .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; flex-wrap: wrap; }
-        .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
-        .side-content-intro { flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; }
-
-        .image-gallery-intro {
+        /* New Intro Grid */
+        .intro-grid {
             display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             width: 100%;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
+            max-width: 1200px;
+            align-items: stretch;
         }
-        .gallery-item {
-            width: 100%;
-            padding-top: 100%; /* Creates a square aspect ratio */
-            position: relative;
-            border-radius: 8px;
+        .grid-item {
+            background: var(--card-background);
+            border-radius: 10px;
             overflow: hidden;
             border: 1px solid var(--border-color);
         }
-        .gallery-item img {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .grid-item.text-item {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .text-item i {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+        .text-item h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        .text-item p {
+            font-size: 1rem;
+            color: var(--secondary-color);
+            text-align: left;
+            margin: 0;
+        }
+        .grid-item.image-item {
+            position: relative;
+        }
+        .image-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
-        .gallery-item:hover img {
+        .image-item:hover img {
             transform: scale(1.05);
+        }
+        .grid-item.wide { grid-column: span 2; }
+        .grid-item.tall { grid-row: span 2; }
+        
+        @media (max-width: 768px) {
+            .grid-item.wide, .grid-item.tall {
+                grid-column: span 1;
+                grid-row: span 1;
+            }
+        }
+        
+        .video-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .cta-button.icon-only {
+            position: absolute;
+            background-color: rgba(254, 73, 0, 0.8);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .cta-button.icon-only:hover {
+            transform: scale(1.1);
+            background-color: var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-color);
         }
 
         .video-modal-overlay {
@@ -618,12 +673,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             cursor: pointer;
         }
         
-        .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 25px; flex-grow: 1; }
-        .feature-item { display: flex; align-items: flex-start; text-align: left; }
-        .feature-item i { font-size: 1.2rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
-        .feature-item h4 { margin: 0 0 5px 0; font-size: 1rem; text-align: left; color: var(--primary-color); }
-        .feature-item p { font-size: 0.8rem; text-align: left; margin: 0; }
-
         .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px; opacity: 0; transform: translateY(20px); text-align: left; }
         .slide-active .impact-item.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
@@ -643,26 +692,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .special-offers p { font-size: 0.9rem; text-align: left; }
         .special-offers i { color: var(--accent-color); margin-right: 10px; }
 
-        .cta-button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px; /* Space between button and gallery */
-        }
-        .cta-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px var(--accent-color);
-        }
-        
         /* Accordion Styles */
         .accordion-container { width: 100%; max-width: 900px; margin-top: 20px; }
         .accordion-item { border-bottom: 1px solid var(--border-color); }
@@ -710,11 +739,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
 
         @media (max-width: 1024px) {
-            .presentation-gallery-layout, .investment-layout { flex-direction: column; }
-        }
-        
-        @media (max-width: 768px) {
-            .features-list { grid-template-columns: 1fr; }
+             .investment-layout { flex-direction: column; }
         }
 
     </style>
@@ -861,6 +886,30 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             });
         }
 
+        function setupVideoModal() {
+            const videoButton = document.getElementById('open-video-button');
+            const videoModal = document.getElementById('video-modal');
+            const modalVideoPlayer = document.getElementById('modal-video-player');
+            const closeVideoModal = document.getElementById('close-video-modal');
+
+            const closeModal = () => {
+                videoModal.classList.remove('visible');
+                modalVideoPlayer.pause();
+                modalVideoPlayer.currentTime = 0;
+            };
+
+            if(videoButton) {
+                videoButton.addEventListener('click', () => {
+                    videoModal.classList.add('visible');
+                    modalVideoPlayer.play();
+                });
+            }
+            
+            if(closeVideoModal) closeVideoModal.addEventListener('click', closeModal);
+            if(videoModal) videoModal.addEventListener('click', (e) => {
+                if (e.target === videoModal) closeModal();
+            });
+        }
 
         function updateSlideContent() {
             const container = document.querySelector('.sky-container-content');
@@ -884,6 +933,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 container.innerHTML = '';
                 container.appendChild(slideWrapper);
                 
+                // Moved video setup here to ensure the button exists.
                 if (slide.id === 'cp-intro') {
                     setupVideoModal();
                 }
@@ -946,31 +996,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             });
             stars = new THREE.Points(starGeometry, starMaterial);
             scene.add(stars);
-        }
-        
-        function setupVideoModal() {
-            const videoButton = document.getElementById('open-video-button');
-            const videoModal = document.getElementById('video-modal');
-            const modalVideoPlayer = document.getElementById('modal-video-player');
-            const closeVideoModal = document.getElementById('close-video-modal');
-
-            const closeModal = () => {
-                videoModal.classList.remove('visible');
-                modalVideoPlayer.pause();
-                modalVideoPlayer.currentTime = 0;
-            };
-
-            if(videoButton) {
-                videoButton.addEventListener('click', () => {
-                    videoModal.classList.add('visible');
-                    modalVideoPlayer.play();
-                });
-            }
-            
-            if(closeVideoModal) closeVideoModal.addEventListener('click', closeModal);
-            if(videoModal) videoModal.addEventListener('click', (e) => {
-                if (e.target === videoModal) closeModal();
-            });
         }
 
         function init() {
