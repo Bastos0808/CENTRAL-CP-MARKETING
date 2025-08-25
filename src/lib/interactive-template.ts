@@ -82,8 +82,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                             <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado.</p>
                         </div>
                         <div class="intro-video-cta-block">
-                             <h4>Conheça Nossa Estrutura por Dentro</h4>
-                             <p>Veja em 1 minuto o que nos torna diferentes.</p>
                              <button class="cta-button icon-only" id="open-video-button"><i class="fas fa-play"></i></button>
                         </div>
                         <div class="intro-image-gallery-block">
