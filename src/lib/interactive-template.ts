@@ -55,6 +55,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
   const painQuestions = [
     { title: "Qual o impacto disso na operação?", content: painSlide.impacto_operacional },
     { title: "E o custo emocional de tentativas que não deram certo?", content: painSlide.impacto_frustracao },
+    { title: "Até quando deixar a concorrência na frente?", content: painSlide.historia_alerta },
   ];
   
   const futureIcons = ["fa-calendar-check", "fa-lightbulb", "fa-star", "fa-smile"];
@@ -158,7 +159,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           content: `
             <div class="content-center-wrapper">
                 <p class="question">${escapeHtml(painSlide.question)}</p>
-
                 <div class="market-scenario">
                   <div class="market-scenario-icons">
                       <i class="fas fa-chart-line-down icon-animated"></i>
@@ -167,7 +167,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                   </div>
                   <p class="impact-text">${highlightKeywords(escapeHtml(painSlide.historia_alerta))}</p>
                 </div>
-                
                 <div class="accordion-container impact-list">
                     ${painQuestions.map(item => `
                         <div class="accordion-item">
@@ -187,18 +186,22 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           id: 'inaction-cost',
           title: `<h2>${escapeHtml(inactionCostSlide.title)}</h2>`,
           content: `<div class="content-center-wrapper">
-                      <div class="card-grid cost-grid">
-                          <div class="card cost-card">
-                              <h3>Custo em 6 Meses</h3>
-                              <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_6_meses)}</span>
+                      <div class="inaction-cost-layout">
+                          <div class="inaction-cost-image">
+                              <img src="https://placehold.co/600x800.png" alt="Empresário preocupado com as finanças" data-ai-hint="desperate businessman"/>
                           </div>
-                          <div class="card cost-card">
-                              <h3>Custo em 1 Ano</h3>
-                              <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_1_ano)}</span>
+                          <div class="inaction-cost-content">
+                              <div class="card cost-card">
+                                  <h3>Custo em 6 Meses</h3>
+                                  <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_6_meses)}</span>
+                              </div>
+                              <div class="card cost-card">
+                                  <h3>Custo em 1 Ano</h3>
+                                  <span class="highlight loss">${escapeHtml(inactionCostSlide.custo_1_ano)}</span>
+                              </div>
+                              <p class="question">${cenarioInerciaHtml}</p>
                           </div>
                       </div>
-                      <br>
-                      <p class="question" style="text-align: center; max-width: 700px;">${cenarioInerciaHtml}</p>
                     </div>`
       },
        {
@@ -410,8 +413,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .sky-container {
             width: 100%;
             max-width: 1600px;
-            max-height: 90vh;
             height: auto;
+            max-height: 90vh;
             padding: 40px;
             background-color: var(--card-background);
             backdrop-filter: blur(10px);
@@ -420,14 +423,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             position: relative;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
         }
         
         .sky-container-content {
             flex-grow: 1;
             width: 100%;
-            transition: opacity 0.4s ease-in-out;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--accent-color) var(--border-color);
@@ -439,18 +439,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             justify-content: center;
             align-items: center;
             width: 100%;
-            min-height: 100%;
             padding: 1rem 0;
             box-sizing: border-box;
+            flex-grow: 1;
         }
-        .sky-container-content > .slide-content-wrapper > .content-center-wrapper {
-             min-height: 0;
-        }
-        .sky-container-content:not(:has(> .slide-content-wrapper)) > .content-center-wrapper {
-            min-height: 100%;
-        }
-
-
+        
         .close-button { 
             position: absolute;
             top: 20px; 
@@ -727,9 +720,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .accordion-item.warning .accordion-content p { color: #fca5a5; }
 
         @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .card.cost-card { opacity: 0; transform: translateY(20px); }
+        
+        .inaction-cost-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; width: 100%; max-width: 1100px; }
+        .inaction-cost-image img { width: 100%; border-radius: 10px; filter: grayscale(80%); opacity: 0.8; }
+        .inaction-cost-content { display: flex; flex-direction: column; gap: 20px; }
+        .cost-card { opacity: 0; transform: translateY(20px); }
         .slide-active .cost-card.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .cost-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
         
         .testimonial-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
         .testimonial-card { text-align: left; background: #1a1a1a; padding: 20px; border-radius: 10px; display: flex; flex-direction: column; justify-content: space-between; opacity: 0; transform: translateY(20px);}
@@ -767,6 +763,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
              .intro-grid-container { grid-template-columns: 1fr; }
              .card-grid.three-cols { grid-template-columns: 1fr; }
              .sky-container { padding: 20px; }
+             .inaction-cost-layout { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
