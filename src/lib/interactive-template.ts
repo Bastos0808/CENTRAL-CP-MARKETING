@@ -1010,10 +1010,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             const modalVideoPlayer = document.getElementById('modal-video-player');
             const closeVideoModal = document.getElementById('close-video-modal');
 
-            videoPreview.addEventListener('click', () => {
-                videoModal.classList.add('visible');
-                modalVideoPlayer.play();
-            });
+            if(videoPreview){
+                videoPreview.addEventListener('click', () => {
+                    videoModal.classList.add('visible');
+                    modalVideoPlayer.play();
+                });
+            }
 
             const closeModal = () => {
                 videoModal.classList.remove('visible');
@@ -1021,8 +1023,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 modalVideoPlayer.currentTime = 0;
             };
 
-            closeVideoModal.addEventListener('click', closeModal);
-            videoModal.addEventListener('click', (e) => {
+            if(closeVideoModal) closeVideoModal.addEventListener('click', closeModal);
+            
+            if(videoModal) videoModal.addEventListener('click', (e) => {
                 if (e.target === videoModal) {
                     closeModal();
                 }
