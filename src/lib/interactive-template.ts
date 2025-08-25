@@ -861,6 +861,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 container.innerHTML = '';
                 container.appendChild(slideWrapper);
                 
+                if (slide.id === 'cp-intro') {
+                    setupVideoModal();
+                }
+                
                 document.getElementById('prev-button').disabled = currentSlide === 0;
                 document.getElementById('next-button').disabled = currentSlide === slides.length - 1;
                 
@@ -1014,8 +1018,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             const proposalWrapper = document.querySelector('.proposal-container-wrapper');
             const closeButton = document.querySelector('.close-button');
             
-            setupVideoModal();
-
             document.querySelector('.shift-camera-button').addEventListener('click', function() {
                 let introTimeline = new TimelineMax();
                 introTimeline.add([
