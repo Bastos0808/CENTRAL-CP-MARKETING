@@ -81,7 +81,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                             <h4>Metodologia CP MÖDUS</h4>
                             <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado.</p>
                         </div>
-                        <div class="intro-video-cta-block">
+                         <div class="intro-video-cta-block">
                              <button class="cta-button icon-only" id="open-video-button"><i class="fas fa-play"></i></button>
                         </div>
                         <div class="intro-image-gallery-block">
@@ -390,7 +390,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border-radius: 15px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start; /* MODIFICADO */
             align-items: center;
             overflow-y: auto;
             border: 1px solid var(--border-color);
@@ -457,7 +457,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .nav-arrows { 
             width: 100%;
             padding-top: 20px;
-            margin-top: auto;
+            margin-top: 20px; /* MODIFICADO */
             border-top: 1px solid var(--border-color);
             text-align: center;
         }
@@ -576,8 +576,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             justify-content: center;
             align-items: center;
         }
-        .intro-video-cta-block h4 { margin-bottom: 10px; text-align: center; }
-        .intro-video-cta-block p { font-size: 0.9rem; margin-bottom: 20px; text-align: center; }
         
         .cta-button.icon-only {
             background-color: rgba(254, 73, 0, 0.8);
