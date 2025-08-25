@@ -557,7 +557,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         .image-gallery-intro {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
         }
         .gallery-item {
