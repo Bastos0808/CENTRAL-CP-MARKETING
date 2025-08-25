@@ -1,5 +1,4 @@
 
-
 import type { GeneratePresentationOutput } from "@/ai/schemas/presentation-generator-schemas";
 
 // Helper function to safely escape HTML content
@@ -54,9 +53,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
 
   const painQuestions = [
-    "Qual o impacto disso na operação?",
-    "E o custo emocional de tentativas que não deram certo?",
-    "Até quando deixar a concorrência na frente?",
+    { title: "Qual o impacto disso na operação?", content: painSlide.impacto_operacional },
+    { title: "E o custo emocional de tentativas que não deram certo?", content: painSlide.impacto_frustracao },
+    { title: "Até quando deixar a concorrência na frente?", content: painSlide.historia_alerta, isWarning: true },
   ];
   
   const futureIcons = ["fa-calendar-check", "fa-lightbulb", "fa-star", "fa-smile"];
@@ -160,19 +159,18 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           content: `
             <div class="content-center-wrapper">
                 <p class="question">${escapeHtml(painSlide.question)}</p>
-                <div class="impact-list">
-                    <div class="impact-item">
-                        <p class="question impact-question">Qual o impacto disso na operação?</p>
-                        <p class="impact-text">${highlightKeywords(escapeHtml(painSlide.impacto_operacional))}</p>
-                    </div>
-                    <div class="impact-item">
-                        <p class="question impact-question">E o custo emocional de tentativas que não deram certo?</p>
-                        <p class="impact-text">${highlightKeywords(escapeHtml(painSlide.impacto_frustracao))}</p>
-                    </div>
-                    <div class="impact-item warning">
-                        <p class="question impact-question">Até quando deixar a concorrência na frente?</p>
-                        <p class="impact-text">${highlightKeywords(escapeHtml(painSlide.historia_alerta))}</p>
-                    </div>
+                <div class="accordion-container impact-list">
+                    ${painQuestions.map(item => `
+                        <div class="accordion-item ${item.isWarning ? 'warning' : ''}">
+                            <button class="accordion-trigger">
+                                <h4>${escapeHtml(item.title)}</h4>
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            <div class="accordion-content">
+                                <p class="impact-text">${highlightKeywords(escapeHtml(item.content))}</p>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             </div>`
       },
@@ -686,6 +684,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .accordion-item.story-accordion { border: 1px solid var(--loss-color); border-radius: 10px; margin-bottom: 25px; background: rgba(239, 68, 68, 0.1); }
         .accordion-trigger { background: none; border: none; width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 1.2rem; font-weight: 700; color: var(--loss-color); text-transform: uppercase; letter-spacing: 1px; }
         .accordion-item:not(.story-accordion) .accordion-trigger { font-size: inherit; font-weight: inherit; color: inherit; text-transform: none; letter-spacing: normal; padding: 15px 5px; }
+        .accordion-item.warning .accordion-trigger h4 { color: var(--loss-color); }
         .accordion-trigger h4 { font-size: 1.1rem; color: var(--primary-color); margin: 0; text-align: left; }
         .accordion-trigger i { color: var(--accent-color); transition: transform 0.3s ease; }
         .accordion-item.story-accordion .accordion-trigger i { color: var(--loss-color); }
@@ -693,7 +692,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
         .accordion-content p { background-color: transparent; border: none; margin: 0 5px 15px; padding: 0 10px; border-radius: 5px; text-align: left; font-size: 1rem; color: #fca5a5; font-style: italic; }
         .accordion-item:not(.story-accordion) .accordion-content p { background: rgba(254, 73, 0, 0.1); border-left: 3px solid var(--accent-color); padding: 20px; text-align: left; font-style: normal; color: var(--secondary-color); }
-
+        .accordion-item.warning .accordion-content p { color: #fca5a5; }
 
         @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .card.cost-card { opacity: 0; transform: translateY(20px); }
