@@ -11,7 +11,7 @@ import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./ui/accordion";
-import { Loader2, Wand2, ArrowRight, TrendingUp, HandCoins, UserCheck, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, Briefcase, Smile, ChevronsUp, FileText, Eye, Download } from "lucide-react";
+import { Loader2, Wand2, ArrowRight, TrendingUp, HandCoins, UserCheck, DollarSign, ListChecks, Check, BrainCircuit, Goal, Target, Briefcase, Smile, ChevronsUp, FileText, Eye, Download, TestTube2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { generatePresentation } from "@/ai/flows/presentation-generator-flow";
@@ -141,7 +141,9 @@ export default function PresentationGenerator() {
     try {
       const result = await generatePresentation(values);
       setPresentationContent(result);
-      toast({ title: "Apresentação Gerada!", description: "O conteúdo dos slides está pronto. Clique em 'Baixar Apresentação'." });
+      // Save to sessionStorage and redirect
+      sessionStorage.setItem('presentationData', JSON.stringify(result));
+      router.push('/gerador-apresentacoes/preview');
     } catch(error) {
       console.error("Error generating presentation:", error);
       toast({ title: "Erro na Geração", description: "Não foi possível gerar a apresentação. Tente novamente.", variant: "destructive" });
@@ -152,8 +154,8 @@ export default function PresentationGenerator() {
   
   const handleDownloadInteractive = () => {
     if (!presentationContent) {
-      toast({ title: "Erro", description: "Gere o conteúdo da apresentação primeiro.", variant: "destructive" });
-      return;
+        toast({ title: "Gere o conteúdo primeiro", description: "Preencha o formulário e gere o conteúdo da apresentação para poder baixar o arquivo.", variant: "destructive" });
+        return;
     }
 
     try {
@@ -347,8 +349,8 @@ export default function PresentationGenerator() {
                 <div className="flex items-center gap-4">
                     <Button type="button" variant="secondary" onClick={handleFillWithExample}>Preencher com Exemplo</Button>
                     <Button type="submit" disabled={isLoading} className="w-full">
-                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowRight className="mr-2 h-4 w-4" />}
-                        Gerar Conteúdo da Apresentação
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Eye className="mr-2 h-4 w-4" />}
+                        {isLoading ? "Gerando..." : "Gerar e Ver Preview"}
                     </Button>
                 </div>
             </form>
@@ -358,8 +360,8 @@ export default function PresentationGenerator() {
       
       <Card className="lg:sticky top-8">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Gerada</CardTitle>
-          <CardDescription>A IA gerou o conteúdo. Clique no botão abaixo para baixar a apresentação interativa em HTML.</CardDescription>
+          <CardTitle className="flex items-center gap-2"><Wand2 /> Etapa 2: Apresentação Final</CardTitle>
+          <CardDescription>Após visualizar o preview, você pode baixar o arquivo final aqui.</CardDescription>
         </CardHeader>
         <CardContent>
           {presentationContent ? (
@@ -378,7 +380,7 @@ export default function PresentationGenerator() {
             </div>
           ) : (
             <div className="text-center text-muted-foreground p-8 border-dashed border-2 rounded-md">
-              <p>O conteúdo da apresentação aparecerá aqui após a geração.</p>
+              <p>O botão de download aparecerá aqui após a geração do conteúdo.</p>
             </div>
           )}
         </CardContent>
