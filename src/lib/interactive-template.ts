@@ -657,17 +657,19 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .story-box {
             width: 100%;
             max-width: 900px;
-            background: rgba(254, 84, 18, 0.1);
-            border-left: 4px solid var(--accent-color);
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 5px solid var(--loss-color);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 8px;
         }
         .story-box p {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-style: italic;
+            font-weight: 500;
+            line-height: 1.7;
             text-align: center;
-            color: var(--secondary-color);
+            color: #fca5a5;
         }
         
         .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
