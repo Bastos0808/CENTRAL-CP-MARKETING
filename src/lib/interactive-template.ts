@@ -101,12 +101,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                           </div>
                       </div>
                       <div class="side-content-intro">
-                           <div class="video-cta-card">
-                                <i class="fas fa-play-circle video-icon"></i>
-                                <h4>Conheça Nossa Estrutura por Dentro</h4>
-                                <p>Veja em detalhes o estúdio e o ambiente onde sua marca vai crescer.</p>
-                                <button class="cta-button" id="open-video-button">Assistir Agora</button>
-                           </div>
+                           <button class="cta-button icon-only" id="open-video-button"><i class="fas fa-play"></i></button>
                            <div class="image-gallery-intro">
                                 <div class="gallery-item"><img src="https://placehold.co/300x300.png" alt="Imagem da estrutura 1" data-ai-hint="office workspace" /></div>
                                 <div class="gallery-item"><img src="https://placehold.co/300x300.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" /></div>
@@ -553,11 +548,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         
         .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; flex-wrap: wrap; }
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
-        .side-content-intro { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; }
+        .side-content-intro { flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; }
 
         .image-gallery-intro {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 10px;
         }
         .gallery-item {
@@ -581,49 +577,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             transform: scale(1.05);
         }
 
-        .video-cta-card {
-            background-color: var(--card-background);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .video-cta-card .video-icon {
-            font-size: 3rem;
-            color: var(--accent-color);
-            margin-bottom: 15px;
-        }
-        .video-cta-card h4 {
-            font-size: 1.2rem;
-            color: var(--primary-color);
-            margin: 0 0 10px 0;
-        }
-        .video-cta-card p {
-            font-size: 0.9rem;
-            color: var(--secondary-color);
-            margin-bottom: 20px;
-        }
-        .cta-button {
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 50px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .cta-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px var(--accent-color);
-        }
-        
         .video-modal-overlay {
             position: fixed;
             top: 0;
@@ -689,6 +642,26 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .final-price { font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; color: var(--accent-color); }
         .special-offers p { font-size: 0.9rem; text-align: left; }
         .special-offers i { color: var(--accent-color); margin-right: 10px; }
+
+        .cta-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px; /* Space between button and gallery */
+        }
+        .cta-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--accent-color);
+        }
         
         /* Accordion Styles */
         .accordion-container { width: 100%; max-width: 900px; margin-top: 20px; }
