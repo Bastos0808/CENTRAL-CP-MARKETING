@@ -390,9 +390,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border-radius: 15px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* MODIFICADO */
+            justify-content: flex-start;
             align-items: center;
-            overflow-y: auto;
             border: 1px solid var(--border-color);
             position: relative;
         }
@@ -409,6 +408,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             display: flex;
             flex-direction: column;
             justify-content: center;
+            overflow-y: auto;
+            min-height: 0;
         }
         
         .content-center-wrapper {
@@ -457,9 +458,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .nav-arrows { 
             width: 100%;
             padding-top: 20px;
-            margin-top: 20px; /* MODIFICADO */
+            margin-top: auto; /* Push to bottom */
             border-top: 1px solid var(--border-color);
             text-align: center;
+            flex-shrink: 0; /* Prevent shrinking */
         }
         
         .nav-button { 
@@ -526,21 +528,19 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             font-weight: bold;
         }
         
-        /* New Intro Grid Container */
         .intro-grid-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: auto 1fr;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: auto auto;
             gap: 20px;
             width: 100%;
             max-width: 1200px;
             align-items: stretch;
-            height: 100%;
         }
 
         .intro-text-block {
-            grid-column: 1 / 2;
-            grid-row: 1 / 3;
+            grid-column: span 7;
+            grid-row: span 2;
             background: var(--card-background);
             border-radius: 10px;
             padding: 25px;
@@ -564,7 +564,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
         
         .intro-video-cta-block {
-            grid-column: 2 / 3;
+            grid-column: span 5;
             grid-row: 1 / 2;
             background: var(--card-background);
             border-radius: 10px;
@@ -595,10 +595,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
 
         .intro-image-gallery-block {
-            grid-column: 2 / 3;
+            grid-column: span 5;
             grid-row: 2 / 3;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
         }
         .intro-image-gallery-block img {
@@ -611,10 +611,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
          .intro-image-gallery-block img:hover {
             transform: scale(1.03);
-        }
-        /* Make one image larger */
-        .intro-image-gallery-block img:first-child {
-            grid-column: 1 / 3; /* Span across two columns */
         }
         
         @media (max-width: 900px) {
