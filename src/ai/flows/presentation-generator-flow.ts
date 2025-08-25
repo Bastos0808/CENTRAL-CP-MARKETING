@@ -77,7 +77,13 @@ const presentationGeneratorFlow = ai.defineFlow(
 
             **Instrução:** Agora, gere o conteúdo para cada slide da apresentação, preenchendo todos os campos do objeto de saída com textos curtos, diretos e persuasivos, usando os dados acima.
 
+            **Histórias de Alerta por Setor (Use estas como base para o 'diagnosticSlide.story' e 'painSlide.historia_alerta'):**
+            - **Saúde/Estética:** "No setor de [Setor], uma clínica renomada, que já foi referência, viu sua agenda esvaziar ao ignorar as novas formas de atrair pacientes online. Hoje, eles lutam para se reerguer enquanto novos concorrentes, que investiram no digital desde o início, dominam o mercado que um dia foi deles. É uma história que se repete com quem acredita que apenas a qualidade do serviço é suficiente."
+            - **B2B/Serviços:** "Uma consultoria B2B extremamente competente viu seus contratos diminuírem drasticamente. O motivo? Seus concorrentes criaram uma forte presença de autoridade no LinkedIn e com artigos, enquanto eles dependiam apenas de indicações. Quando a base de indicações secou, já era tarde demais."
+            - **Varejo Premium:** "Uma loja de moda com produtos incríveis fechou as portas. O erro fatal foi não construir uma comunidade online e não investir em tráfego pago. Enquanto isso, novas marcas, com produtos talvez inferiores mas com uma forte presença digital, conquistaram seus clientes."
+            - **Genérico:** "Uma empresa líder em seu mercado local, confiante em sua reputação, subestimou a velocidade da mudança digital. Em dois anos, viu concorrentes menores e mais ágeis capturarem sua base de clientes, usando anúncios direcionados e conteúdo relevante. Recuperar o terreno perdido custou o triplo do que teria custado para inovar."
             ---
+
             **Slide 1: Título da Proposta**
             - **presentationTitle:** Crie um título inspirador e direto para a apresentação. Algo como "A Estratégia para a [Nome do Cliente] Dobrar o Faturamento" ou "O Plano para Transformar a [Nome do Cliente] em Referência de Mercado".
 
@@ -85,7 +91,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             **Slide 2: O Diagnóstico**
             - **diagnosticSlide.title:** Gere o título do slide: "Entendemos o seu Desafio".
             - **diagnosticSlide.question:** Gere a pergunta reflexiva: "Você sente que seu negócio tem potencial para muito mais, mas algo está travando esse crescimento?".
-            - **diagnosticSlide.story:** Para criar um senso de urgência, pesquise na internet por um caso (sem citar o nome) de uma empresa no mesmo setor que a '${inputForAI.clientName}' que enfrentou grandes dificuldades ou faliu por negligenciar o marketing digital. Crie uma narrativa curta (2-3 frases) e emotiva sobre esse caso, focada no risco de não agir. Exemplo: "No setor de [Setor], a [Empresa Fictícia], que já foi referência, viu seu faturamento despencar ao ignorar as novas formas de atrair clientes online. Hoje, eles lutam para se reerguer enquanto novos concorrentes, que investiram no digital, dominam o mercado que um dia foi deles. É uma história que se repete."
+            - **diagnosticSlide.story:** Com base no setor do cliente ('${inputForAI.companySector}'), escolha a **História de Alerta** mais apropriada da lista acima e adapte-a levemente para o campo, mantendo o tom emocional. Substitua "[Setor]" pelo setor do cliente.
             - **diagnosticSlide.meta:** Extraia a Meta de Faturamento. Ex: "${inputForAI.metaFaturamento} em 6 meses".
             - **diagnosticSlide.custo:** Extraia o Custo do Problema. Ex: "${inputForAI.custoProblema} deixados na mesa todo mês".
             - **diagnosticSlide.gargalo:** Com base nos campos 'principalGargalo' e 'impactoGargalo', escreva um parágrafo que humaniza o problema. Em vez de apenas citar o gargalo, explique como ele se manifesta no dia a dia da empresa de forma empática. Por exemplo, se o gargalo é 'geração de leads' e o impacto é 'equipe ociosa', você pode escrever: "O principal desafio que identificamos não é apenas a falta de novos contatos, mas o que isso representa: uma equipe talentosa com tempo ocioso e um potencial de faturamento que não está sendo realizado. É a sensação de ter um motor potente, mas que não consegue tracionar como deveria."
@@ -99,7 +105,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             - **painSlide.question:** Gere a pergunta: "Adiamos decisões por medo de errar, mas qual o custo de não decidir?".
             - **painSlide.impacto_operacional:** Gere um parágrafo curto sobre o impacto operacional do gargalo no dia a dia.
             - **painSlide.impacto_frustracao:** Gere um parágrafo curto destacando a frustração das tentativas passadas que falharam, usando o campo 'sentimentoPessoal'.
-            - **painSlide.historia_alerta:** Use a mesma história gerada para o diagnosticSlide.story, mas aqui você pode elaborar um pouco mais, focando na concorrência.
+            - **painSlide.historia_alerta:** Reutilize a mesma história gerada para o 'diagnosticSlide.story'.
 
             ---
             **Slide 4: A Visualização do Futuro**
