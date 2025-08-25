@@ -310,7 +310,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  return \`<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -402,7 +402,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .sky-container {
             width: 100%;
             max-width: 1600px;
-            max-height: 1080px;
+            height: auto;
+            max-height: 90vh;
             padding: 40px;
             background-color: var(--card-background);
             backdrop-filter: blur(10px);
@@ -424,6 +425,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             justify-content: center;
             overflow-y: auto;
             min-height: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--border-color);
         }
         
         .content-center-wrapper {
@@ -619,7 +622,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             width: 90%;
             height: 90%;
             max-width: 1600px;
-            max-height: 900px;
+            max-height: 90vh; /* Ajuste para não cortar */
         }
         .video-modal-content video {
             width: 100%;
@@ -659,13 +662,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .floating-video-button:hover {
             transform: scale(1.05);
             box-shadow: 0 0 20px var(--accent-color);
-        }
-        
-        @media (max-width: 900px) {
-            .intro-grid-container {
-                grid-template-columns: 1fr;
-            }
-            .card-grid.three-cols { grid-template-columns: 1fr; }
         }
         
         .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
@@ -739,9 +735,30 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             color: var(--secondary-color);
         }
 
+        /* Responsive Styles */
         @media (max-width: 1024px) {
              .investment-layout { flex-direction: column; }
+             .intro-grid-container { grid-template-columns: 1fr; }
+             .card-grid.three-cols { grid-template-columns: 1fr; }
+             .sky-container { padding: 20px; }
         }
+
+        @media (max-width: 768px) {
+            .sky-container { padding: 15px; }
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.3rem; }
+            h3 { font-size: 1rem; }
+            p { font-size: 0.85rem; }
+            .card { padding: 15px; }
+            .button .text { font-size: 1rem; }
+            .button .border { height: 45px; }
+            .nav-button { padding: 8px 15px; font-size: 0.8rem; }
+            .intro-text-block h4 { font-size: 1.1rem; }
+            .intro-text-block p { font-size: 0.9rem; }
+            .testimonial-grid { grid-template-columns: 1fr; }
+            .metric-grid { grid-template-columns: 1fr; }
+        }
+        
 
     </style>
 </head>
@@ -1129,5 +1146,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>\`;
+</html>`;
 }
