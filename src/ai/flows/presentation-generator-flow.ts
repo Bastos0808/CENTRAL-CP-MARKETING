@@ -92,6 +92,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             - **diagnosticSlide.title:** Gere o título do slide: "Entendemos o seu Desafio".
             - **diagnosticSlide.question:** Gere a pergunta reflexiva: "Você sente que seu negócio tem potencial para muito mais, mas algo está travando esse crescimento?".
             - **diagnosticSlide.story:** Com base no setor do cliente ('${inputForAI.companySector}'), escolha a **História de Alerta** mais apropriada da lista acima e adapte-a levemente para o campo, mantendo o tom emocional. Substitua "[Setor]" pelo setor do cliente.
+            - **diagnosticSlide.faturamentoAtual:** Extraia o Faturamento Médio Atual. Ex: "${inputForAI.faturamentoMedio}".
             - **diagnosticSlide.meta:** Extraia a Meta de Faturamento. Ex: "${inputForAI.metaFaturamento} em 6 meses".
             - **diagnosticSlide.custo:** Extraia o Custo do Problema. Ex: "${inputForAI.custoProblema} deixados na mesa todo mês".
             - **diagnosticSlide.gargalo:** Com base nos campos 'principalGargalo' e 'impactoGargalo', escreva um parágrafo que humaniza o problema. Em vez de apenas citar o gargalo, explique como ele se manifesta no dia a dia da empresa de forma empática. Por exemplo, se o gargalo é 'geração de leads' e o impacto é 'equipe ociosa', você pode escrever: "O principal desafio que identificamos não é apenas a falta de novos contatos, mas o que isso representa: uma equipe talentosa com tempo ocioso e um potencial de faturamento que não está sendo realizado. É a sensação de ter um motor potente, mas que não consegue tracionar como deveria."
@@ -169,4 +170,6 @@ const presentationGeneratorFlow = ai.defineFlow(
     return output!;
   }
 );
+    
+
     

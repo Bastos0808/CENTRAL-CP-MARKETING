@@ -93,21 +93,28 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>${escapeHtml(diagnosticSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
-                <div class="accordion-item story-accordion">
-                    <button class="accordion-trigger">
-                        CASO REAL: A História que se Repete
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    <div class="accordion-content">
-                         <p>${escapeHtml(diagnosticSlide.story)}</p>
+                <div class="accordion-container">
+                     <div class="accordion-item story-accordion">
+                        <button class="accordion-trigger">
+                            CASO REAL: A História que se Repete
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <div class="accordion-content">
+                             <p>${escapeHtml(diagnosticSlide.story)}</p>
+                        </div>
                     </div>
                 </div>
                 <p class="question">${escapeHtml(diagnosticSlide.question)}</p>
-                <div class="card-grid two-cols">
+                <div class="card-grid three-cols">
+                    <div class="card">
+                        <h3>Faturamento Atual</h3>
+                        <p class="card-subtitle">Ponto de Partida</p>
+                        <span class="highlight animated-number" data-target="${extractNumber(diagnosticSlide.faturamentoAtual)}">R$ 0,00</span>
+                    </div>
                     <div class="card">
                         <h3>Meta Principal</h3>
                         <p class="card-subtitle">Onde queremos chegar</p>
-                        <span class="highlight animated-number" data-target="${extractNumber(diagnosticSlide.meta)}">R$ 0,00</span>
+                        <span class="highlight gain animated-number" data-target="${extractNumber(diagnosticSlide.meta)}">R$ 0,00</span>
                     </div>
                     <div class="card">
                         <h3>Custo da Inação</h3>
@@ -303,7 +310,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  return `<!DOCTYPE html>
+  return \`<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -496,7 +503,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
 
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; max-width: 1200px; }
-        .card-grid.two-cols { grid-template-columns: 1fr 1fr; }
+        .card-grid.three-cols { grid-template-columns: repeat(3, 1fr); }
         .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center;}
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
         .card h4 { font-size: 1.1rem; margin-bottom: 10px; text-align: center; }
@@ -658,6 +665,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             .intro-grid-container {
                 grid-template-columns: 1fr;
             }
+            .card-grid.three-cols { grid-template-columns: 1fr; }
         }
         
         .story-box {
@@ -1140,5 +1148,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>`;
+</html>\`;
 }

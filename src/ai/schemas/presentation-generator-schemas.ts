@@ -93,6 +93,7 @@ export const GeneratePresentationOutputSchema = z.object({
     title: z.string(),
     question: z.string(),
     story: z.string().describe("Uma história curta e emotiva sobre uma empresa do mesmo setor que faliu por falta de marketing."),
+    faturamentoAtual: z.string(),
     meta: z.string(),
     custo: z.string(),
     gargalo: z.string(),
@@ -160,3 +161,5 @@ export const GeneratePresentationOutputSchema = z.object({
 });
 
 export type GeneratePresentationOutput = z.infer<typeof GeneratePresentationOutputSchema>;
+
+    
