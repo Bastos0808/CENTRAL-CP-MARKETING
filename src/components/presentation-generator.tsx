@@ -95,6 +95,7 @@ export default function PresentationGenerator() {
     resolver: zodResolver(DiagnosticFormSchema),
     defaultValues: {
       clientName: "",
+      companySector: "",
       faturamentoMedio: undefined,
       metaFaturamento: undefined,
       ticketMedio: undefined,
@@ -185,6 +186,7 @@ export default function PresentationGenerator() {
   const handleFillWithExample = () => {
     form.reset({
         clientName: "Clínica Vitalize",
+        companySector: "Saúde e Bem-estar",
         tempoEmpresa: "5 anos",
         faturamentoMedio: 50000,
         metaFaturamento: 120000,
@@ -222,17 +224,30 @@ export default function PresentationGenerator() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-               <FormField
-                control={form.control}
-                name="clientName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome do Cliente</FormLabel>
-                    <FormControl><Input placeholder="Ex: Clínica TopMed" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <FormField
+                        control={form.control}
+                        name="clientName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nome do Cliente</FormLabel>
+                            <FormControl><Input placeholder="Ex: Clínica TopMed" {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                       <FormField
+                        control={form.control}
+                        name="companySector"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Setor da Empresa</FormLabel>
+                            <FormControl><Input placeholder="Ex: Saúde, Estética" {...field} /></FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                </div>
 
               <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
                 <AccordionItem value="item-1">

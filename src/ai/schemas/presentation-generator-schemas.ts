@@ -41,6 +41,7 @@ const packageKeys = Object.keys(packageOptions) as [keyof typeof packageOptions,
 
 export const DiagnosticFormSchema = z.object({
   clientName: z.string().min(1, "O nome do cliente é obrigatório."),
+  companySector: z.string().optional(),
   
   // Bloco 1: Cenário e Metas
   tempoEmpresa: z.string().optional(),
