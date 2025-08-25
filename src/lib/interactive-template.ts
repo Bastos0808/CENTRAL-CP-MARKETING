@@ -68,27 +68,24 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           id: 'cp-intro',
           title: `<h2>Por que a CP Marketing?</h2>`,
           content: `<div class="intro-grid-container">
-                        <div class="intro-text-block">
-                            <h4>Estrutura Física Completa</h4>
-                            <p>Nossa sede não é apenas um escritório, mas um centro de produção de resultados com ambiente propício para a criação e execução de estratégias de alto impacto.</p>
-                            
-                            <h4>Estúdios Próprios</h4>
-                            <p>Garantimos agilidade e qualidade de cinema para seu conteúdo audiovisual, eliminando a dependência de terceiros.</p>
-                             
-                            <h4>Time Multidisciplinar</h4>
-                            <p>Especialistas em estratégia, tráfego, design e conteúdo trabalham lado a lado, em tempo real, no seu projeto.</p>
-                            
-                            <h4>Metodologia CP MÖDUS</h4>
-                            <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado.</p>
-                        </div>
-                         <div class="intro-video-cta-block">
-                             <button class="cta-button icon-only" id="open-video-button"><i class="fas fa-play"></i></button>
-                        </div>
-                        <div class="intro-image-gallery-block">
-                            <img src="https://placehold.co/600x400.png" alt="Imagem da estrutura 1" data-ai-hint="modern office" />
-                            <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" />
-                            <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 3" data-ai-hint="team meeting" />
-                        </div>
+                      <div class="intro-text-block">
+                          <h4><i class="fas fa-building"></i> Estrutura Física Completa</h4>
+                          <p>Nossa sede não é apenas um escritório, mas um <strong class="highlight-text">centro de produção de resultados</strong> com ambiente propício para a criação e execução de estratégias de alto impacto.</p>
+                          
+                          <h4><i class="fas fa-video"></i> Estúdios Próprios</h4>
+                          <p>Garantimos <strong class="highlight-text">agilidade e qualidade de cinema</strong> para seu conteúdo audiovisual, eliminando a dependência de terceiros e otimizando seu tempo.</p>
+                           
+                          <h4><i class="fas fa-users-cog"></i> Time Multidisciplinar</h4>
+                          <p>Especialistas em estratégia, tráfego, design e conteúdo trabalham <strong class="highlight-text">lado a lado, em tempo real</strong>, no seu projeto, garantindo uma visão 360º.</p>
+                          
+                          <h4><i class="fas fa-drafting-compass"></i> Metodologia CP MÖDUS</h4>
+                          <p>Desenvolvemos um sistema validado para transformar <strong class="highlight-text">potencial de negócio em performance de mercado</strong>, com processos claros e foco total em ROI.</p>
+                      </div>
+                       <div class="intro-image-gallery-block">
+                          <img src="https://placehold.co/600x800.png" alt="Imagem da estrutura 1" data-ai-hint="modern office" class="main-image" />
+                          <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" />
+                          <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 3" data-ai-hint="team meeting" />
+                      </div>
                     </div>`
       },
       {
@@ -309,7 +306,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             --primary-color: #ffffff;
             --secondary-color: #a7a7a7;
             --background-color: #000000;
-            --accent-color: #FE4900;
+            --accent-color: #FE5400;
             --highlight-color: #360FC5;
             --card-background: rgba(17, 17, 17, 0.85);
             --border-color: #222222;
@@ -394,11 +391,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             align-items: center;
             border: 1px solid var(--border-color);
             position: relative;
-        }
-        
-        .sky-container::-webkit-scrollbar {
-            width: 0;
-            background: transparent;
         }
         
         .sky-container-content {
@@ -499,7 +491,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .highlight.loss { color: var(--loss-color); }
         .highlight.gain { color: var(--gain-color); }
         
-        .highlight-phrase {
+        .highlight-phrase, .highlight-text {
             color: var(--accent-color);
             font-weight: bold;
         }
@@ -530,76 +522,41 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         
         .intro-grid-container {
             display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            grid-template-rows: auto auto;
-            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
             width: 100%;
             max-width: 1200px;
-            align-items: stretch;
+            align-items: flex-start;
         }
-
-        .intro-text-block {
-            grid-column: span 7;
-            grid-row: span 2;
-            background: var(--card-background);
-            border-radius: 10px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        
         .intro-text-block h4 {
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             color: var(--primary-color);
             margin-top: 15px;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .intro-text-block h4 i {
+            color: var(--accent-color);
+            font-size: 1.2em;
         }
         .intro-text-block p {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: var(--secondary-color);
             text-align: left;
-            margin: 0;
-        }
-        
-        .intro-video-cta-block {
-            grid-column: span 5;
-            grid-row: 1 / 2;
-            background: var(--card-background);
-            border-radius: 10px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .cta-button.icon-only {
-            background-color: rgba(254, 73, 0, 0.8);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .cta-button.icon-only:hover {
-            transform: scale(1.1);
-            background-color: var(--accent-color);
-            box-shadow: 0 0 20px var(--accent-color);
+            margin: 0 0 20px 0;
+            padding-left: 35px;
         }
 
         .intro-image-gallery-block {
-            grid-column: span 5;
-            grid-row: 2 / 3;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
             gap: 15px;
+            height: 100%;
         }
         .intro-image-gallery-block img {
             width: 100%;
@@ -609,19 +566,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             border: 1px solid var(--border-color);
             transition: transform 0.3s ease;
         }
-         .intro-image-gallery-block img:hover {
+        .intro-image-gallery-block img:hover {
             transform: scale(1.03);
         }
-        
-        @media (max-width: 900px) {
-            .intro-grid-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto;
-            }
-             .intro-text-block, .intro-video-cta-block, .intro-image-gallery-block {
-                grid-column: 1 / -1;
-                grid-row: auto;
-            }
+        .intro-image-gallery-block .main-image {
+            grid-column: 1 / -1;
         }
 
         .video-modal-overlay {
@@ -663,6 +612,37 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             color: white;
             font-size: 2.5rem;
             cursor: pointer;
+        }
+        
+        .floating-video-button {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .floating-video-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+        
+        @media (max-width: 900px) {
+            .intro-grid-container {
+                grid-template-columns: 1fr;
+            }
         }
         
         .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
@@ -772,6 +752,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 <div class="sky-container-content">
                     <!-- Conteúdo dos slides será injetado aqui -->
                 </div>
+                 <button id="open-video-button" class="floating-video-button">
+                    <i class="fas fa-play"></i> Assista nosso tour
+                 </button>
                 <div class="nav-arrows">
                     <button id="prev-button" class="nav-button">Voltar</button>
                     <button id="next-button" class="nav-button">Avançar</button>
@@ -925,11 +908,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 container.innerHTML = '';
                 container.appendChild(slideWrapper);
                 
-                // Moved video setup here to ensure the button exists.
-                if (slide.id === 'cp-intro') {
-                    setupVideoModal();
-                }
-                
                 document.getElementById('prev-button').disabled = currentSlide === 0;
                 document.getElementById('next-button').disabled = currentSlide === slides.length - 1;
                 
@@ -1053,6 +1031,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
 
         window.onload = function() {
             init();
+            setupVideoModal();
 
             const introContainer = document.querySelector('.intro-container');
             const proposalWrapper = document.querySelector('.proposal-container-wrapper');
