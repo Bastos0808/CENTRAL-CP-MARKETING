@@ -91,6 +91,7 @@ export const GeneratePresentationOutputSchema = z.object({
   diagnosticSlide: z.object({
     title: z.string(),
     question: z.string(),
+    story: z.string().describe("Uma história curta e emotiva sobre uma empresa do mesmo setor que faliu por falta de marketing."),
     meta: z.string(),
     custo: z.string(),
     gargalo: z.string(),
@@ -101,7 +102,9 @@ export const GeneratePresentationOutputSchema = z.object({
   painSlide: z.object({
     title: z.string(),
     question: z.string(),
-    content: z.array(z.string()),
+    impacto_operacional: z.string(),
+    impacto_frustracao: z.string(),
+    historia_alerta: z.string(),
   }),
   
   futureSlide: z.object({

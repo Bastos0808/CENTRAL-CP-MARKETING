@@ -82,10 +82,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                           <p>Desenvolvemos um sistema validado para transformar <strong class="highlight-text">potencial de negócio em performance de mercado</strong>, com processos claros e foco total em ROI.</p>
                       </div>
                        <div class="intro-image-gallery-block">
-                          <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131379/IMAGENS_DA_EMPRESA_1_jrqzwi.png" alt="Estrutura da CP Marketing" />
                           <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131380/IMAGENS_DA_EMPRESA_2_jwqgy4.png" alt="Estúdio de Podcast CP Marketing" />
-                          <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131379/IMAGENS_DA_EMPRESA_3_moxf28.png" alt="Sala de Reunião CP Marketing" />
                           <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131379/IMAGENS_DA_EMPRESA_4_vwnghn.png" alt="Equipe CP Marketing" />
+                          <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131379/IMAGENS_DA_EMPRESA_3_moxf28.png" alt="Sala de Reunião CP Marketing" />
+                          <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131379/IMAGENS_DA_EMPRESA_1_jrqzwi.png" alt="Estrutura da CP Marketing" />
                       </div>
                     </div>`
       },
@@ -94,6 +94,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>${escapeHtml(diagnosticSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
+                <div class="story-box">
+                    <p>${escapeHtml(diagnosticSlide.story)}</p>
+                </div>
                 <p class="question">${escapeHtml(diagnosticSlide.question)}</p>
                 <div class="card-grid two-cols">
                     <div class="card">
@@ -145,12 +148,18 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             <div class="content-center-wrapper">
                 <p class="question">${escapeHtml(painSlide.question)}</p>
                 <div class="impact-list">
-                    ${painSlide.content.map((item, index) => `
-                        <div class="impact-item">
-                          <p class="question impact-question">${escapeHtml(painQuestions[index] || '')}</p>
-                          <p class="impact-text">${highlightKeywords(escapeHtml(item))}</p>
-                        </div>
-                    `).join('')}
+                    <div class="impact-item">
+                        <p class="question impact-question">Qual o impacto disso na operação?</p>
+                        <p class="impact-text">${highlightKeywords(escapeHtml(painSlide.impacto_operacional))}</p>
+                    </div>
+                    <div class="impact-item">
+                        <p class="question impact-question">E o custo emocional de tentativas que não deram certo?</p>
+                        <p class="impact-text">${highlightKeywords(escapeHtml(painSlide.impacto_frustracao))}</p>
+                    </div>
+                    <div class="impact-item warning">
+                        <p class="question impact-question">Até quando deixar a concorrência na frente?</p>
+                        <p class="impact-text">${highlightKeywords(escapeHtml(painSlide.historia_alerta))}</p>
+                    </div>
                 </div>
             </div>`
       },
@@ -646,8 +655,25 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             }
         }
         
+        .story-box {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(254, 84, 18, 0.1);
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .story-box p {
+            font-size: 1rem;
+            font-style: italic;
+            text-align: center;
+            color: var(--secondary-color);
+        }
+        
         .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px; opacity: 0; transform: translateY(20px); text-align: left; }
+        .impact-item.warning { border-left: 3px solid var(--loss-color); }
         .slide-active .impact-item.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         
         .future-item { opacity: 0; transform: translateY(20px); }

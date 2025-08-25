@@ -57,6 +57,7 @@ const presentationGeneratorFlow = ai.defineFlow(
             **Dados do Diagnóstico:**
             ---
             - **Nome do Cliente:** ${inputForAI.clientName}
+            - **Setor do Cliente:** ${inputForAI.companySector || 'Não informado'}
             - **Tempo de Empresa:** ${inputForAI.tempoEmpresa}
             - **Faturamento Médio Atual:** ${inputForAI.faturamentoMedio}
             - **Meta de Faturamento (6 meses):** ${inputForAI.metaFaturamento}
@@ -81,9 +82,10 @@ const presentationGeneratorFlow = ai.defineFlow(
             - **presentationTitle:** Crie um título inspirador e direto para a apresentação. Algo como "A Estratégia para a [Nome do Cliente] Dobrar o Faturamento" ou "O Plano para Transformar a [Nome do Cliente] em Referência de Mercado".
 
             ---
-            **Slide 3: O Diagnóstico**
+            **Slide 2: O Diagnóstico**
             - **diagnosticSlide.title:** Gere o título do slide: "Entendemos o seu Desafio".
             - **diagnosticSlide.question:** Gere a pergunta reflexiva: "Você sente que seu negócio tem potencial para muito mais, mas algo está travando esse crescimento?".
+            - **diagnosticSlide.story:** Para criar um senso de urgência, pesquise na internet por um caso (sem citar o nome) de uma empresa no mesmo setor que a '${inputForAI.clientName}' que enfrentou grandes dificuldades ou faliu por negligenciar o marketing digital. Crie uma narrativa curta (2-3 frases) e emotiva sobre esse caso, focada no risco de não agir. Exemplo: "No setor de [Setor], a [Empresa Fictícia], que já foi referência, viu seu faturamento despencar ao ignorar as novas formas de atrair clientes online. Hoje, eles lutam para se reerguer enquanto novos concorrentes, que investiram no digital, dominam o mercado que um dia foi deles. É uma história que se repete."
             - **diagnosticSlide.meta:** Extraia a Meta de Faturamento. Ex: "${inputForAI.metaFaturamento} em 6 meses".
             - **diagnosticSlide.custo:** Extraia o Custo do Problema. Ex: "${inputForAI.custoProblema} deixados na mesa todo mês".
             - **diagnosticSlide.gargalo:** Com base nos campos 'principalGargalo' e 'impactoGargalo', escreva um parágrafo que humaniza o problema. Em vez de apenas citar o gargalo, explique como ele se manifesta no dia a dia da empresa de forma empática. Por exemplo, se o gargalo é 'geração de leads' e o impacto é 'equipe ociosa', você pode escrever: "O principal desafio que identificamos não é apenas a falta de novos contatos, mas o que isso representa: uma equipe talentosa com tempo ocioso e um potencial de faturamento que não está sendo realizado. É a sensação de ter um motor potente, mas que não consegue tracionar como deveria."
@@ -92,13 +94,15 @@ const presentationGeneratorFlow = ai.defineFlow(
 
 
             ---
-            **Slide 4: A Dor e Suas Consequências**
+            **Slide 3: A Dor e Suas Consequências**
             - **painSlide.title:** Gere o título do slide: "O Custo Real de Adiar a Decisão".
             - **painSlide.question:** Gere a pergunta: "Adiamos decisões por medo de errar, mas qual o custo de não decidir?".
-            - **painSlide.content:** Gere três parágrafos curtos sobre as consequências. O primeiro sobre o impacto operacional do gargalo. O segundo deve destacar a frustração das tentativas passadas que falharam. O terceiro deve usar a internet para encontrar um exemplo de empresa do mesmo setor que enfrentou dificuldades (sem citar o nome) e descrever o risco que a concorrência representa. Seja emotivo e gere senso de urgência.
+            - **painSlide.impacto_operacional:** Gere um parágrafo curto sobre o impacto operacional do gargalo no dia a dia.
+            - **painSlide.impacto_frustracao:** Gere um parágrafo curto destacando a frustração das tentativas passadas que falharam, usando o campo 'sentimentoPessoal'.
+            - **painSlide.historia_alerta:** Use a mesma história gerada para o diagnosticSlide.story, mas aqui você pode elaborar um pouco mais, focando na concorrência.
 
             ---
-            **Slide 5: A Visualização do Futuro**
+            **Slide 4: A Visualização do Futuro**
             - **futureSlide.title:** Gere o título do slide: "O Futuro que Vamos Construir Juntos".
             - **futureSlide.question:** Gere a pergunta: "Como seria se, em vez de se preocupar com o gargalo, sua única preocupação fosse em como gerenciar o crescimento?".
             - **futureSlide.content:** Gere um array com 3 ou 4 objetos, cada um com um "title" e uma "description". Use as respostas sobre 'o que faria com mais clientes' e o 'impacto pessoal' para criar transformações vívidas e persuasivas. Foque em benefícios, não em ações.
@@ -106,7 +110,7 @@ const presentationGeneratorFlow = ai.defineFlow(
                 - Outro exemplo: { title: "Foco na Sua Paixão", description: "Gaste seu tempo atendendo bem seus clientes, em vez de se preocupar em como atrair novos." }.
 
             ---
-            **Slide 7: A Estratégia**
+            **Slide 6: A Estratégia**
             - **strategySlide.title:** Gere o título do slide: "Nosso Plano para Virar o Jogo".
             - **strategySlide.content:** Para cada um dos três pilares, gere um objeto com "title" e "description".
               - Para o primeiro pilar (Aquisição), o título deve ser 'Aquisição'. A descrição deve focar em resolver o 'gargalo de geração'.
@@ -115,7 +119,7 @@ const presentationGeneratorFlow = ai.defineFlow(
               NÃO use markdown (como **) nos títulos.
 
             ---
-            **Slide 9: Métricas de Sucesso**
+            **Slide 8: Métricas de Sucesso**
             - **metricsSlide.title:** Gere o título do slide: "Seu Crescimento em Números".
             - **metricsSlide.subtitle:** Gere um subtítulo motivacional como: "O sucesso será medido com dados claros. Nossas metas mensais são:"
             - **metricsSlide.metrics:** Para cada uma das 3 métricas abaixo, gere um objeto com 'title', 'value' e 'description'.
@@ -137,7 +141,7 @@ const presentationGeneratorFlow = ai.defineFlow(
       output.investmentValue = finalInvestment.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       output.packages = input.packages?.map(key => packageOptions[key as keyof typeof packageOptions]) || [];
       
-      // Manually populate fields for slide 6, which are direct calculations
+      // Manually populate fields for slide 5, which are direct calculations
       const custoMensal = input.custoProblema || 0;
       output.inactionCostSlide = {
           title: "O Custo da Inação",
@@ -146,7 +150,7 @@ const presentationGeneratorFlow = ai.defineFlow(
           cenario_inercia: "Enquanto a decisão é adiada, o faturamento pode continuar estagnado e a concorrência, que investe em marketing, pode abocanhar uma fatia maior do seu mercado, tornando a recuperação futura ainda mais difícil e cara."
       };
       
-       // Manually populate fields for slide 10, which are also more direct
+       // Manually populate fields for slide 9, which are also more direct
        output.investmentSlide = {
            title: "O Investimento no seu Crescimento",
            ancoragemPreco: `Considerando que o problema atual custa ${inputForAI.custoProblema} por mês, o investimento para resolver a causa raiz desse problema é significativamente menor.`,
