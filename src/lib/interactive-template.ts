@@ -1,4 +1,5 @@
 
+
 import type { GeneratePresentationOutput } from "@/ai/schemas/presentation-generator-schemas";
 
 // Helper function to safely escape HTML content
@@ -408,35 +409,28 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             background-color: var(--card-background);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
             border: 1px solid var(--border-color);
             position: relative;
         }
         
         .sky-container-content {
             width: 100%;
-            flex-grow: 1;
+            height: 100%;
             transition: opacity 0.4s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
             overflow-y: auto;
-            min-height: 0;
             scrollbar-width: thin;
             scrollbar-color: var(--accent-color) var(--border-color);
         }
         
         .content-center-wrapper {
-            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             width: 100%;
+            min-height: 100%;
             padding: 1rem 0;
+            box-sizing: border-box;
         }
 
         .close-button { 
@@ -475,10 +469,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .nav-arrows { 
             width: 100%;
             padding-top: 20px;
-            margin-top: auto; /* Push to bottom */
+            margin-top: 20px;
             border-top: 1px solid var(--border-color);
             text-align: center;
-            flex-shrink: 0; /* Prevent shrinking */
         }
         
         .nav-button { 
@@ -506,7 +499,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         }
 
         .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; width: 100%; margin-top: 30px; max-width: 1200px; }
-        .card-grid.three-cols { grid-template-columns: repeat(3, 1fr); }
+        .card-grid.three-cols { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
         .card { background-color: #1a1a1a; padding: 25px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center;}
         .card i { font-size: 2rem; color: var(--accent-color); margin-bottom: 15px; }
         .card h4 { font-size: 1.1rem; margin-bottom: 10px; text-align: center; }
@@ -620,9 +613,9 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .video-modal-content {
             position: relative;
             width: 90%;
-            height: 90%;
+            height: auto;
             max-width: 1600px;
-            max-height: 90vh; /* Ajuste para não cortar */
+            max-height: 90vh;
         }
         .video-modal-content video {
             width: 100%;
@@ -798,14 +791,14 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 <div class="sky-container-content">
                     <!-- Conteúdo dos slides será injetado aqui -->
                 </div>
-                 <button id="open-video-button" class="floating-video-button">
-                    <i class="fas fa-play"></i> Assista nosso tour
-                 </button>
                 <div class="nav-arrows">
                     <button id="prev-button" class="nav-button">Voltar</button>
                     <button id="next-button" class="nav-button">Avançar</button>
                 </div>
             </div>
+            <button id="open-video-button" class="floating-video-button">
+                <i class="fas fa-play"></i> Assista nosso tour
+            </button>
             <div class="close-button">
                 <div class="left"></div>
                 <div class="right"></div>
