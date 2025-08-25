@@ -67,47 +67,29 @@ export function createInteractiveProposal(data: CreateProposalData): string {
        {
           id: 'cp-intro',
           title: `<h2>Por que a CP Marketing?</h2>`,
-          content: `<div class="intro-grid">
-                        <div class="grid-item text-item">
-                            <i class="fas fa-building"></i>
-                            <div>
-                                <h4>Estrutura Física Completa</h4>
-                                <p>Nossa sede não é apenas um escritório, mas um centro de produção de resultados com ambiente propício para a criação e execução de estratégias de alto impacto.</p>
-                            </div>
+          content: `<div class="intro-grid-container">
+                        <div class="intro-text-block">
+                            <h4>Estrutura Física Completa</h4>
+                            <p>Nossa sede não é apenas um escritório, mas um centro de produção de resultados com ambiente propício para a criação e execução de estratégias de alto impacto.</p>
+                            
+                            <h4>Estúdios Próprios</h4>
+                            <p>Garantimos agilidade e qualidade de cinema para seu conteúdo audiovisual, eliminando a dependência de terceiros.</p>
+                             
+                            <h4>Time Multidisciplinar</h4>
+                            <p>Especialistas em estratégia, tráfego, design e conteúdo trabalham lado a lado, em tempo real, no seu projeto.</p>
+                            
+                            <h4>Metodologia CP MÖDUS</h4>
+                            <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado.</p>
                         </div>
-                        <div class="grid-item image-item tall">
-                            <img src="https://placehold.co/400x600.png" alt="Imagem da estrutura 1" data-ai-hint="modern office" />
-                        </div>
-                        <div class="grid-item image-item wide">
-                             <img src="https://placehold.co/600x400.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" />
-                        </div>
-                         <div class="grid-item text-item">
-                            <i class="fas fa-video"></i>
-                            <div>
-                                <h4>Estúdios Próprios</h4>
-                                <p>Garantimos agilidade e qualidade de cinema para seu conteúdo audiovisual, eliminando a dependência de terceiros e tendo controle total sobre a produção.</p>
-                            </div>
-                        </div>
-                        <div class="grid-item image-item square video-container">
-                             <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 3" data-ai-hint="team meeting" />
+                        <div class="intro-video-cta-block">
+                             <h4>Conheça Nossa Estrutura por Dentro</h4>
+                             <p>Veja em 1 minuto o que nos torna diferentes.</p>
                              <button class="cta-button icon-only" id="open-video-button"><i class="fas fa-play"></i></button>
                         </div>
-                        <div class="grid-item text-item">
-                            <i class="fas fa-users"></i>
-                            <div>
-                                <h4>Time Multidisciplinar</h4>
-                                <p>Especialistas em estratégia, tráfego, design e conteúdo trabalham lado a lado, em tempo real, no seu projeto para garantir sinergia e agilidade.</p>
-                            </div>
-                        </div>
-                         <div class="grid-item text-item">
-                            <i class="fas fa-lightbulb"></i>
-                            <div>
-                                <h4>Metodologia CP MÖDUS</h4>
-                                <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado, guiando cada passo com foco em resultados.</p>
-                            </div>
-                        </div>
-                        <div class="grid-item image-item wide">
-                             <img src="https://placehold.co/600x400.png" alt="Imagem da estrutura 4" data-ai-hint="creative workspace" />
+                        <div class="intro-image-gallery-block">
+                            <img src="https://placehold.co/600x400.png" alt="Imagem da estrutura 1" data-ai-hint="modern office" />
+                            <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" />
+                            <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 3" data-ai-hint="team meeting" />
                         </div>
                     </div>`
       },
@@ -546,81 +528,65 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             font-weight: bold;
         }
         
-        /* New Intro Grid */
-        .intro-grid {
+        /* New Intro Grid Container */
+        .intro-grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr;
             gap: 20px;
             width: 100%;
             max-width: 1200px;
             align-items: stretch;
+            height: 100%;
         }
-        .grid-item {
+
+        .intro-text-block {
+            grid-column: 1 / 2;
+            grid-row: 1 / 3;
             background: var(--card-background);
             border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-        .grid-item.text-item {
             padding: 25px;
+            border: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
-        .text-item i {
-            font-size: 1.5rem;
-            color: var(--accent-color);
-            margin-bottom: 15px;
-        }
-        .text-item h4 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+        .intro-text-block h4 {
+            font-size: 1.1rem;
             color: var(--primary-color);
+            margin-top: 15px;
+            margin-bottom: 5px;
+            text-align: left;
         }
-        .text-item p {
+        .intro-text-block p {
             font-size: 1rem;
             color: var(--secondary-color);
             text-align: left;
             margin: 0;
         }
-        .grid-item.image-item {
-            position: relative;
-        }
-        .image-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-        .image-item:hover img {
-            transform: scale(1.05);
-        }
-        .grid-item.wide { grid-column: span 2; }
-        .grid-item.tall { grid-row: span 2; }
         
-        @media (max-width: 768px) {
-            .grid-item.wide, .grid-item.tall {
-                grid-column: span 1;
-                grid-row: span 1;
-            }
-        }
-        
-        .video-container {
-            position: relative;
+        .intro-video-cta-block {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+            background: var(--card-background);
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            text-align: center;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
+        .intro-video-cta-block h4 { margin-bottom: 10px; text-align: center; }
+        .intro-video-cta-block p { font-size: 0.9rem; margin-bottom: 20px; text-align: center; }
+        
         .cta-button.icon-only {
-            position: absolute;
             background-color: rgba(254, 73, 0, 0.8);
             border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
             color: white;
             border: none;
             cursor: pointer;
@@ -630,6 +596,40 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             transform: scale(1.1);
             background-color: var(--accent-color);
             box-shadow: 0 0 20px var(--accent-color);
+        }
+
+        .intro-image-gallery-block {
+            grid-column: 2 / 3;
+            grid-row: 2 / 3;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .intro-image-gallery-block img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease;
+        }
+         .intro-image-gallery-block img:hover {
+            transform: scale(1.03);
+        }
+        /* Make one image larger */
+        .intro-image-gallery-block img:first-child {
+            grid-column: 1 / 3; /* Span across two columns */
+        }
+        
+        @media (max-width: 900px) {
+            .intro-grid-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+             .intro-text-block, .intro-video-cta-block, .intro-image-gallery-block {
+                grid-column: 1 / -1;
+                grid-row: auto;
+            }
         }
 
         .video-modal-overlay {
