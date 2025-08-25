@@ -98,20 +98,15 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                     <p>Desenvolvemos um sistema validado para transformar potencial de negócio em performance de mercado. O CP MÖDUS é nossa bússola, guiando cada passo do projeto com foco em resultados mensuráveis.</p>
                                 </div>
                               </div>
-                               <div class="feature-item video-button-item">
-                                <i class="fas fa-play-circle"></i>
-                                <div>
-                                    <h4>Conheça Nossa Estrutura</h4>
-                                    <button class="simple-video-button" id="open-video-button">Assista ao Tour pelo nosso Estúdio</button>
-                                </div>
-                              </div>
                           </div>
                       </div>
                       <div class="side-content-intro">
-                           <div class="image-gallery">
-                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755524572/PODCAST_01_kglzeu.png')"></div>
-                               <div class="image-placeholder" style="background-image: url('https://res.cloudinary.com/dp3gukavt/image/upload/v1755799843/Prancheta_30_wj7xqg.png')"></div>
-                          </div>
+                           <div class="video-cta-card">
+                                <i class="fas fa-play-circle video-icon"></i>
+                                <h4>Conheça Nossa Estrutura por Dentro</h4>
+                                <p>Veja em detalhes o estúdio e o ambiente onde sua marca vai crescer.</p>
+                                <button class="cta-button" id="open-video-button">Assistir Agora</button>
+                           </div>
                       </div>
                     </div>`
       },
@@ -555,21 +550,50 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
         .side-content-intro { flex: 1; min-width: 300px; }
 
-        .simple-video-button {
-            background: none;
-            border: 1px solid var(--accent-color);
+        .video-cta-card {
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+        }
+        .video-cta-card .video-icon {
+            font-size: 3rem;
             color: var(--accent-color);
-            padding: 8px 16px;
+            margin-bottom: 15px;
+        }
+        .video-cta-card h4 {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+        }
+        .video-cta-card p {
             font-size: 0.9rem;
-            border-radius: 5px;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+        .cta-button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        .simple-video-button:hover {
-            background-color: var(--accent-color);
-            color: var(--background-color);
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--accent-color);
         }
-
+        
         .video-modal-overlay {
             position: fixed;
             top: 0;
@@ -611,16 +635,12 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             cursor: pointer;
         }
         
-        .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; flex-grow: 1; }
+        .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 15px 25px; flex-grow: 1; }
         .feature-item { display: flex; align-items: flex-start; text-align: left; }
-        .feature-item.video-button-item { grid-column: span 2; }
         .feature-item i { font-size: 1.2rem; color: var(--accent-color); margin-right: 15px; margin-top: 5px; }
         .feature-item h4 { margin: 0 0 5px 0; font-size: 1rem; text-align: left; color: var(--primary-color); }
         .feature-item p { font-size: 0.8rem; text-align: left; margin: 0; }
 
-        .image-gallery { display: flex; flex-direction: column; gap: 15px; width: 100%; height: 100%; }
-        .image-placeholder { flex: 1; width: 100%; min-height: 200px; background-color: var(--border-color); border-radius: 10px; background-size: cover; background-position: center; }
-        
         .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
         .impact-item { background-color: #1a1a1a; border: 1px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px; opacity: 0; transform: translateY(20px); text-align: left; }
         .slide-active .impact-item.animate-in { animation: fade-in-up 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
