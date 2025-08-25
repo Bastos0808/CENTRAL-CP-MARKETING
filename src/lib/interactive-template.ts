@@ -93,8 +93,14 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>${escapeHtml(diagnosticSlide.title)}</h2>`,
           content: `
             <div class="content-center-wrapper">
-                <div class="story-box">
-                    <p>${escapeHtml(diagnosticSlide.story)}</p>
+                <div class="accordion-item story-accordion">
+                    <button class="accordion-trigger">
+                        CASO REAL: A História que se Repete
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <div class="accordion-content">
+                         <p>${escapeHtml(diagnosticSlide.story)}</p>
+                    </div>
                 </div>
                 <p class="question">${escapeHtml(diagnosticSlide.question)}</p>
                 <div class="card-grid two-cols">
@@ -658,10 +664,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             width: 100%;
             max-width: 900px;
             background: rgba(239, 68, 68, 0.1);
-            border-left: 5px solid var(--loss-color);
+            border: 1px solid var(--loss-color);
             padding: 25px;
             margin-bottom: 25px;
             border-radius: 8px;
+            text-align: center;
         }
         .story-box p {
             font-size: 1.1rem;
@@ -696,12 +703,17 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .accordion-container { width: 100%; max-width: 900px; margin-top: 20px; }
         .accordion-item { border-bottom: 1px solid var(--border-color); }
         .accordion-item:last-child { border-bottom: none; }
-        .accordion-trigger { background: none; border: none; width: 100%; text-align: left; padding: 15px 5px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .accordion-item.story-accordion { border: 1px solid var(--loss-color); border-radius: 10px; margin-bottom: 25px; background: rgba(239, 68, 68, 0.1); }
+        .accordion-trigger { background: none; border: none; width: 100%; text-align: left; padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 1.2rem; font-weight: 700; color: var(--loss-color); text-transform: uppercase; letter-spacing: 1px; }
+        .accordion-item:not(.story-accordion) .accordion-trigger { font-size: inherit; font-weight: inherit; color: inherit; text-transform: none; letter-spacing: normal; padding: 15px 5px; }
         .accordion-trigger h4 { font-size: 1.1rem; color: var(--primary-color); margin: 0; text-align: left; }
         .accordion-trigger i { color: var(--accent-color); transition: transform 0.3s ease; }
+        .accordion-item.story-accordion .accordion-trigger i { color: var(--loss-color); }
         .accordion-item.active .accordion-trigger i { transform: rotate(45deg); }
         .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
-        .accordion-content p { background-color: rgba(254, 73, 0, 0.1); padding: 20px; border-left: 3px solid var(--accent-color); margin: 0 5px 15px; border-radius: 5px; text-align: left; font-size: 1rem; }
+        .accordion-content p { background-color: transparent; border: none; margin: 0 5px 15px; padding: 0 10px; border-radius: 5px; text-align: left; font-size: 1rem; color: #fca5a5; font-style: italic; }
+        .accordion-item:not(.story-accordion) .accordion-content p { background: rgba(254, 73, 0, 0.1); border-left: 3px solid var(--accent-color); padding: 20px; text-align: left; font-style: normal; color: var(--secondary-color); }
+
 
         @keyframes fade-in-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .card.cost-card { opacity: 0; transform: translateY(20px); }
@@ -866,17 +878,24 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             const accordionItems = document.querySelectorAll('.accordion-item');
             accordionItems.forEach(item => {
                 const trigger = item.querySelector('.accordion-trigger');
+                if (!trigger) return;
                 const content = item.querySelector('.accordion-content');
+                if (!content) return;
                 
                 trigger.addEventListener('click', () => {
                     const isActive = item.classList.contains('active');
                     
-                    accordionItems.forEach(otherItem => {
-                        if (otherItem !== item) {
-                            otherItem.classList.remove('active');
-                            otherItem.querySelector('.accordion-content').style.maxHeight = '0px';
-                        }
-                    });
+                    // This logic makes accordions exclusive within their container
+                    const parentContainer = item.closest('.accordion-container');
+                    if (parentContainer) {
+                        parentContainer.querySelectorAll('.accordion-item.active').forEach(activeItem => {
+                             if (activeItem !== item) {
+                                activeItem.classList.remove('active');
+                                activeItem.querySelector('.accordion-content').style.maxHeight = '0px';
+                            }
+                        });
+                    }
+
 
                     if (isActive) {
                         item.classList.remove('active');
@@ -888,6 +907,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 });
             });
         }
+
 
         function setupVideoModal() {
             const videoButton = document.getElementById('open-video-button');
@@ -964,9 +984,8 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                     });
                                 }
                                 
-                                if (entry.target.dataset.slideId === 'diagnosis') {
-                                    setupAccordion();
-                                }
+                                // Always setup accordion for any slide that might have it
+                                setupAccordion();
                                 
                                 observer.unobserve(entry.target);
                             }
