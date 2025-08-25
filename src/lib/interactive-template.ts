@@ -82,10 +82,10 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                           <p>Desenvolvemos um sistema validado para transformar <strong class="highlight-text">potencial de negócio em performance de mercado</strong>, com processos claros e foco total em ROI.</p>
                       </div>
                        <div class="intro-image-gallery-block">
-                          <img src="https://placehold.co/600x400.png" alt="Imagem da estrutura 1" data-ai-hint="modern office" class="main-image" />
-                          <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" />
-                          <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 3" data-ai-hint="team meeting" />
-                          <img src="https://placehold.co/400x400.png" alt="Imagem da estrutura 4" data-ai-hint="video production" />
+                          <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131379/IMAGENS_DA_EMPRESA_1_jrqzwi.png" alt="Estrutura da CP Marketing" />
+                          <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131380/IMAGENS_DA_EMPRESA_2_jwqgy4.png" alt="Estúdio de Podcast CP Marketing" />
+                          <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131379/IMAGENS_DA_EMPRESA_3_moxf28.png" alt="Sala de Reunião CP Marketing" />
+                          <img src="https://res.cloudinary.com/dp3gukavt/image/upload/v1756131379/IMAGENS_DA_EMPRESA_4_vwnghn.png" alt="Equipe CP Marketing" />
                       </div>
                     </div>`
       },
