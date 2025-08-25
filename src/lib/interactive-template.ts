@@ -107,6 +107,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                                 <p>Veja em detalhes o estúdio e o ambiente onde sua marca vai crescer.</p>
                                 <button class="cta-button" id="open-video-button">Assistir Agora</button>
                            </div>
+                           <div class="image-gallery-intro">
+                                <div class="gallery-item"><img src="https://placehold.co/300x300.png" alt="Imagem da estrutura 1" data-ai-hint="office workspace" /></div>
+                                <div class="gallery-item"><img src="https://placehold.co/300x300.png" alt="Imagem da estrutura 2" data-ai-hint="podcast studio" /></div>
+                                <div class="gallery-item"><img src="https://placehold.co/300x300.png" alt="Imagem da estrutura 3" data-ai-hint="team meeting" /></div>
+                           </div>
                       </div>
                     </div>`
       },
@@ -548,7 +553,33 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         
         .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; flex-wrap: wrap; }
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
-        .side-content-intro { flex: 1; min-width: 300px; }
+        .side-content-intro { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; }
+
+        .image-gallery-intro {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+        .gallery-item {
+            width: 100%;
+            padding-top: 100%; /* Creates a square aspect ratio */
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .gallery-item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
 
         .video-cta-card {
             background-color: var(--card-background);
@@ -560,7 +591,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             align-items: center;
             justify-content: center;
             text-align: center;
-            height: 100%;
         }
         .video-cta-card .video-icon {
             font-size: 3rem;
