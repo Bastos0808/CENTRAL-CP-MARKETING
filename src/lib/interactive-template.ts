@@ -1,4 +1,5 @@
 
+
 import type { GeneratePresentationOutput } from "@/ai/schemas/presentation-generator-schemas";
 
 // Helper function to safely escape HTML content
@@ -68,8 +69,11 @@ export function createInteractiveProposal(data: CreateProposalData): string {
           title: `<h2>Por que a CP Marketing?</h2>`,
           content: `<div class="presentation-gallery-layout">
                       <div class="main-content-intro">
-                          <div class="video-container">
-                              <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" autoplay loop muted playsinline></video>
+                          <div class="video-preview-container" id="video-preview">
+                              <video src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" muted loop playsinline></video>
+                              <div class="play-icon-overlay">
+                                  <i class="fas fa-play"></i>
+                              </div>
                           </div>
                            <div class="features-list">
                               <div class="feature-item">
@@ -243,7 +247,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                              <h4 class="testimonial-author">- Bruno Lima, E-commerce de Moda</h4>
                              <span class="testimonial-metric">ROAS de 8.5 em 6 meses</span>
                           </div>
-                          <div class="card testimonial-card">
+                           <div class="card testimonial-card">
                              <p class="testimonial-text">"Gravar o podcast foi um divisor de águas para a minha autoridade. O processo foi impecável e o resultado foi uma audiência engajada que confia no meu trabalho."</p>
                              <h4 class="testimonial-author">- Laura Mendes, Advogada Tributarista</h4>
                              <span class="testimonial-metric">+300% de alcance orgânico</span>
@@ -549,17 +553,84 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .presentation-gallery-layout { display: flex; gap: 20px; align-items: flex-start; width: 100%; flex-wrap: wrap; }
         .main-content-intro { flex: 2; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
         .side-content-intro { flex: 1; min-width: 300px; }
-        .video-container { 
-            width: 100%; 
-            max-height: 250px; 
-            border-radius: 10px; 
-            overflow: hidden; 
-            background-color: #000; 
+
+        .video-preview-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            background-color: #000;
         }
-        .video-container video { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: contain; 
+        .video-preview-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .play-icon-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+        .video-preview-container:hover .play-icon-overlay {
+            background-color: rgba(0,0,0,0.7);
+        }
+        .play-icon-overlay i {
+            font-size: 3rem;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        .video-preview-container:hover .play-icon-overlay i {
+            transform: scale(1.1);
+        }
+
+        .video-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .video-modal-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .video-modal-content {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            max-width: 1600px;
+            max-height: 900px;
+        }
+        .video-modal-content video {
+            width: 100%;
+            height: 100%;
+        }
+        .close-video-modal-button {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
         }
         
         .features-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; flex-grow: 1; }
@@ -646,6 +717,14 @@ export function createInteractiveProposal(data: CreateProposalData): string {
     <!-- Fundo 3D -->
     <div id="webgl-container"></div>
     
+    <!-- Modal de Vídeo -->
+    <div id="video-modal" class="video-modal-overlay">
+        <div class="video-modal-content">
+            <button id="close-video-modal" class="close-video-modal-button">&times;</button>
+            <video id="modal-video-player" src="https://banco.linkscp.com.br/wp-content/uploads/2025/08/video-tour-horizontal-2.mp4" controls></video>
+        </div>
+    </div>
+
     <!-- Camada da Interface -->
     <div class="ui-layer">
         <!-- Capa Inicial -->
@@ -926,6 +1005,28 @@ export function createInteractiveProposal(data: CreateProposalData): string {
             const introContainer = document.querySelector('.intro-container');
             const proposalWrapper = document.querySelector('.proposal-container-wrapper');
             const closeButton = document.querySelector('.close-button');
+            const videoPreview = document.getElementById('video-preview');
+            const videoModal = document.getElementById('video-modal');
+            const modalVideoPlayer = document.getElementById('modal-video-player');
+            const closeVideoModal = document.getElementById('close-video-modal');
+
+            videoPreview.addEventListener('click', () => {
+                videoModal.classList.add('visible');
+                modalVideoPlayer.play();
+            });
+
+            const closeModal = () => {
+                videoModal.classList.remove('visible');
+                modalVideoPlayer.pause();
+                modalVideoPlayer.currentTime = 0;
+            };
+
+            closeVideoModal.addEventListener('click', closeModal);
+            videoModal.addEventListener('click', (e) => {
+                if (e.target === videoModal) {
+                    closeModal();
+                }
+            });
 
             document.querySelector('.shift-camera-button').addEventListener('click', function() {
                 let introTimeline = new TimelineMax();
