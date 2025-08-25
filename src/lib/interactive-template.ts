@@ -310,7 +310,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
       }
   ];
 
-  return `<!DOCTYPE html>
+  return \`<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -402,7 +402,7 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         .sky-container {
             width: 100%;
             max-width: 1600px;
-            height: 90vh;
+            max-height: 1080px;
             padding: 40px;
             background-color: var(--card-background);
             backdrop-filter: blur(10px);
@@ -666,25 +666,6 @@ export function createInteractiveProposal(data: CreateProposalData): string {
                 grid-template-columns: 1fr;
             }
             .card-grid.three-cols { grid-template-columns: 1fr; }
-        }
-        
-        .story-box {
-            width: 100%;
-            max-width: 900px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid var(--loss-color);
-            padding: 25px;
-            margin-bottom: 25px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .story-box p {
-            font-size: 1.1rem;
-            font-style: italic;
-            font-weight: 500;
-            line-height: 1.7;
-            text-align: center;
-            color: #fca5a5;
         }
         
         .impact-list { width: 100%; max-width: 900px; margin-top: 30px; }
@@ -1148,5 +1129,5 @@ export function createInteractiveProposal(data: CreateProposalData): string {
         };
     </script>
 </body>
-</html>`;
+</html>\`;
 }
